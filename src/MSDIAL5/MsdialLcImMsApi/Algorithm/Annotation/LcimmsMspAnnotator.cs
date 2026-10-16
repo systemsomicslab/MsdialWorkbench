@@ -26,12 +26,16 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             db.Sort(comparer);
             this.omics = omics;
             ReferObject = mspDB;
+            _dataBaseSource = mspDB.DataBaseSource;
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
         public string Id { get; }
 
         private readonly TargetOmics omics;
+        // Read off the database rather than passed in: the annotator already holds the library it
+        // is searching, so the fact travels with the thing it is a fact about.
+        private readonly DataBaseSource _dataBaseSource;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
@@ -92,16 +96,32 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
                 MatchedPeaksPercentage = (float)matchedPeaksScores[0], MatchedPeaksCount = (float)matchedPeaksScores[1],
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.MspDB, AnnotatorID = annotatorID, Priority = Priority,
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksScores[0], matchedPeaksScores[1])
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
-                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
+                // Guarded overload. It returns the -1 not-computed sentinel when either side
+                // carries no usable value, which is what keeps a reference with no retention
+                // time out of the score average below. The `RtSimilarity >= 0` test there was
+                // always written for this sentinel; it simply never received one, because the
+                // three-argument overload scores whatever it is handed. See RetentionMatchPolicy.
+                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance, out _);
                 result.RtSimilarity = (float)rtSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
             }
             if (parameter.IsUseCcsForAnnotationScoring) {
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
+            // RuleBased when this is a lipidomics run: the spectral comparison above is a
+            // permissive pre-filter there, and the characteristic-ion rules decide the match.
+            result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(result.MeasuredTerms, omics, _dataBaseSource);
             result.TotalScore = (float)CalculateAnnotatedScoreCore(result, parameter);
 
             return result;
@@ -222,8 +242,18 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
                 ValidateOnLipidomics(result, property, scan, reference, parameter);
             else
                 ValidateBase(result, property, reference, parameter);
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(
+                parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && rtRequirementMet && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
+            // No retention clause on the suggestion. "Use retention time for SCORING" must not
+            // reject a candidate -- that is what "use retention time for FILTERING" is for, and
+            // the two settings mean different things. Because both verdicts used to share the
+            // clause and FilterByThreshold is their disjunction, a retention-time disagreement
+            // deleted the candidate from the stored results outright. It now costs the reference
+            // match and leaves the precursor-only suggestion standing, which is what the evidence
+            // supports. This is the shape MassAnnotator and DimsMspAnnotator already had.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            AnnotationEvidence.RecordSpectrumVerdict(result, omics, parameter.MinimumSpectrumMatch);
         }
 
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
@@ -236,8 +266,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            var rtDiff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = rtDiff <= parameter.RtTolerance;
+            result.IsRtMatch = RetentionMatchPolicy.IsRetentionTimeMatch(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
 
             var ccsDiff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
             result.IsCcsMatch = ccsDiff <= parameter.CcsTolerance;

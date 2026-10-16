@@ -37,7 +37,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 name,
                 sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
-                isSpectrumMatch, isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch);
+                isSpectrumMatch, isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch,
+                spectrumCompared: true);
         }
     }
 
@@ -56,8 +57,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             string name,
             double sqweightedDotProduct, double sqsimpleDotProduct, double sqreverseDotProduct,
             double matchedPeaksPercentage, int matchedPeaksCount,
-            bool isSpectrumMatch, bool isLipidClassMatch, bool isLipidChainsMatch, bool isLipidPositionMatch, bool isOtherLipidMatch)
-            : base(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksPercentage, matchedPeaksCount, isSpectrumMatch) {
+            bool isSpectrumMatch, bool isLipidClassMatch, bool isLipidChainsMatch, bool isLipidPositionMatch, bool isOtherLipidMatch,
+            bool spectrumCompared)
+            : base(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct, matchedPeaksPercentage, matchedPeaksCount, isSpectrumMatch, spectrumCompared) {
             IsLipidClassMatch = isLipidClassMatch;
             IsLipidChainsMatch = isLipidChainsMatch;
             IsLipidPositionMatch = isLipidPositionMatch;
@@ -83,7 +85,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public static new LipidMs2MatchResult Empty =>
-            empty ?? (empty = new LipidMs2MatchResult(string.Empty, 0, 0, 0, 0, 0, false, false, false, false, false));
+            empty ?? (empty = new LipidMs2MatchResult(string.Empty, 0, 0, 0, 0, 0, false, false, false, false, false, spectrumCompared: false));
         private static LipidMs2MatchResult empty;
     }
 }

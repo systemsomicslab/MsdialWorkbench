@@ -36,6 +36,12 @@ jobs:
             ${{ runner.os }}-nuget-
       - name: Add package source
         run: dotnet nuget add source ${{ github.workspace }}/Assemblies
+      # Master Build restores "Release vendor unsupported" in locked mode against the
+      # packages.lock.ReleaseVendorUnsupported.json files. Doing the same here makes a stale
+      # lock file fail the pull request rather than master. It runs before the Debug restore
+      # so that the build below still uses that restore's output.
+      - name: Check lock files
+        run: dotnet restore /property:Configuration="Release vendor unsupported"
       - name: Restore packages
         run: dotnet restore /property:Configuration="Debug vendor unsupported"
       - name: Build

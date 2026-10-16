@@ -76,16 +76,36 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.TextDB, AnnotatorID = sourceKey, Priority = Priority,
+                // No Spectrum bit: a text database holds no reference spectrum, so nothing here
+                // opens one. That is the fact this record is meant to make visible.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
 
             if (parameter.IsUseTimeForAnnotationScoring) {
-                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
+                // Guarded overload. It returns the -1 not-computed sentinel when either side
+                // carries no usable value, which is what keeps a reference with no retention
+                // time out of the score average below. The `RtSimilarity >= 0` test there was
+                // always written for this sentinel; it simply never received one, because the
+                // three-argument overload scores whatever it is handed. See RetentionMatchPolicy.
+                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance, out _);
                 result.RtSimilarity = (float)rtSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
             }
             if (parameter.IsUseCcsForAnnotationScoring) {
                 var ccsSimilarity = MsScanMatching.GetGaussianSimilarity(property.CollisionCrossSection, reference.CollisionCrossSection, parameter.CcsTolerance);
                 result.CcsSimilarity = (float)ccsSimilarity;
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.Ccs, property.CollisionCrossSection, reference.CollisionCrossSection);
             }
+            // A text database holds no reference spectrum, so nothing here opened one and the
+            // evidence is the precursor mass (with whatever time or CCS terms the mode adds).
+            // ValidateBase then sets IsReferenceMatched from those alone, which is what makes this
+            // record necessary: without it an export cannot separate these names from MS/MS
+            // reference matches.
+            result.EvidenceSource = AnnotationEvidenceSource.PrecursorOnly;
             result.TotalScore = (float)CalculateTotalScoreCore(result, parameter);
 
             return result;
@@ -183,9 +203,17 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
-            result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+            result.IsRtMatch = RetentionMatchPolicy.IsRetentionTimeMatch(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
             result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch
+                && RetentionMatchPolicy.RetentionTimeRequirementMet(
+                    parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch)
+                && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch);
+            // As above. The collision-cross-section clause stays, matching ImmsMspAnnotator: only
+            // the retention-time behaviour was asked to change here.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch
+                && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
+                && !result.IsReferenceMatched;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

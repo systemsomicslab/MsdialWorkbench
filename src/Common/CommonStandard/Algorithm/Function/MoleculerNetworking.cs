@@ -128,23 +128,28 @@ namespace CompMs.Common.Algorithm.Function
 
         private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             var counter = 0;
-            var max = srcPeakScans.Count * dstPeakScans.Count;
+            var isSelfComparison = ReferenceEquals(srcPeakScans, dstPeakScans);
+            var max = isSelfComparison
+                ? srcPeakScans.Count * (srcPeakScans.Count - 1) / 2
+                : srcPeakScans.Count * dstPeakScans.Count;
             var edges = new List<EdgeData>();
             var checkedPeaks = new HashSet<int>[new[] { srcPeakScans, dstPeakScans }.SelectMany(pss => pss, (_, ps) => ps.Peak.ID).DefaultIfEmpty().Max() + 1];
             for (int i = 0; i < srcPeakScans.Count; i++) {
                 var srcPeakScan = srcPeakScans[i];
+                var firstDestinationIndex = isSelfComparison ? i + 1 : 0;
+                var destinationCount = dstPeakScans.Count - firstDestinationIndex;
 
                 if (srcPeakScan.Scan.Spectrum.Count <= 0) {
-                    counter += dstPeakScans.Count;
-                    report?.Invoke(counter / (double)max);
+                    counter += destinationCount;
+                    report?.Invoke(max == 0 ? 1d : counter / (double)max);
                     continue;
                 }
                 var srcCheckedPeaks = checkedPeaks[srcPeakScan.Peak.ID] ?? (checkedPeaks[srcPeakScan.Peak.ID] = new HashSet<int>());
 
-                for (int j = 0; j < dstPeakScans.Count; j++) {
+                for (int j = firstDestinationIndex; j < dstPeakScans.Count; j++) {
                     PeakScanPair<T> dstPeakScan = dstPeakScans[j];
                     counter++;
-                    report?.Invoke(counter / (double)max);
+                    report?.Invoke(max == 0 ? 1d : counter / (double)max);
                     if (dstPeakScan.Scan.Spectrum.Count <= 0) continue;
 
                     var dstCheckedPeaks = checkedPeaks[dstPeakScan.Peak.ID] ?? (checkedPeaks[dstPeakScan.Peak.ID] = new HashSet<int>());

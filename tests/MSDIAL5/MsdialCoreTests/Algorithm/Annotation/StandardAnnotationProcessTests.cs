@@ -90,6 +90,53 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             CollectionAssert.IsSubsetOf(highScoreSubset, chromPeaks[0].MatchResults.MatchResults);
         }
 
+        [TestMethod()]
+        public async Task TheCandidatePopulationSurvivesTruncation() {
+            // The whole reason keys 41-43 exist. The mock annotator scores four candidates and
+            // NUMBER_OF_ANNOTATION_RESULTS is 3, so one is discarded before anything is stored --
+            // and the discarded one leaves no trace anywhere else. Each stored result carries the
+            // size of the population it was selected from.
+            var chromPeaks = new[] { new ChromatogramPeakFeature { }, };
+            chromPeaks[0].PeakCharacter.IsotopeWeightNumber = 0;
+            var msdecResults = new MSDecResultCollection([new MSDecResult { },], 0d);
+            var annotator = new MockAnnotator("Annotator");
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
+
+            await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 1);
+
+            var stored = chromPeaks[0].MatchResults.MatchResults;
+            Assert.AreEqual(3, stored.Count, "three survived: the cap, and the mock's own threshold");
+            foreach (var result in stored) {
+                Assert.AreEqual(4, result.CandidatesFound,
+                    "every stored result reports the population it was selected from, not the "
+                    + "number of results that were stored");
+                Assert.AreEqual(3, result.CandidatesAboveThreshold,
+                    "the mock names the three that are matched or suggested, dropping the 0.6");
+                Assert.AreEqual(2, result.CandidatesReferenceMatched,
+                    "and its IsReferenceMatched predicate accepts the two scoring 0.8 or better");
+            }
+        }
+
+        [TestMethod()]
+        public async Task ADiscardedCandidateIsNotStamped() {
+            // The counts describe the population, so they must not be written onto candidates the
+            // process threw away: a stamped-but-unstored object could later be picked up by a
+            // manual search and would then carry numbers for a selection it never survived.
+            var chromPeaks = new[] { new ChromatogramPeakFeature { }, };
+            chromPeaks[0].PeakCharacter.IsotopeWeightNumber = 0;
+            var msdecResults = new MSDecResultCollection([new MSDecResult { },], 0d);
+            var annotator = new MockAnnotator("Annotator");
+            var process = new StandardAnnotationProcess(new MockFactory(annotator.Id, annotator), annotator, annotator);
+
+            await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 1);
+
+            var discarded = annotator.Dummies.Single(d => d.TotalScore == 0.60f);
+            Assert.IsFalse(chromPeaks[0].MatchResults.MatchResults.Contains(discarded), "fixture precondition");
+            Assert.IsNull(discarded.CandidatesFound);
+            Assert.IsNull(discarded.CandidatesAboveThreshold);
+            Assert.IsNull(discarded.CandidatesReferenceMatched);
+        }
+
         class MockProvider : IDataProvider
         {
             public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
@@ -221,8 +268,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 throw new NotImplementedException();
             }
 
+            // Matches what the real MsScanMatchResultEvaluator does -- suggested or matched --
+            // rather than passing everything through. It has to: with a pass-through the scored
+            // population and the named subset are the same number, so no test could tell
+            // CandidatesFound from CandidatesAboveThreshold. With this the four dummies give three
+            // distinct figures: 4 scored, 3 named, 2 reference-matched.
             public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
-                return results.ToList();
+                return results.Where(result => IsReferenceMatched(result) || IsAnnotationSuggested(result)).ToList();
             }
 
             public MsScanMatchResult Dummy { get; }

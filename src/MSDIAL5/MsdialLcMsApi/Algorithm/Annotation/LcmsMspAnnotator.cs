@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
@@ -17,7 +18,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             : base(mspDB.Database, parameter, annotatorID, priority, SourceType.MspDB) {
             Id = annotatorID;
             ReferObject = mspDB;
-            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.CID, true);
+            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.CID, true, mspDB.DataBaseSource);
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
@@ -25,7 +26,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             : base(mspDB.Database, parameter, annotatorID, priority, SourceType.MspDB) {
             Id = annotatorID;
             ReferObject = mspDB;
-            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, type, true);
+            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, type, true, mspDB.DataBaseSource);
             evaluator = new MsScanMatchResultEvaluator(parameter);
         }
 
@@ -50,8 +51,18 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             var result = scorer.Score(query, reference);
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && result.IsSpectrumMatch;
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && !result.IsReferenceMatched;
+            // The peak and the reference are no longer in scope here, so the requirement is
+            // read from the record the scorer just wrote from those same two values.
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(query.Parameter.IsUseTimeForAnnotationScoring, result);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && rtRequirementMet && result.IsSpectrumMatch;
+            // No retention clause on the suggestion. "Use retention time for SCORING" must not
+            // reject a candidate -- that is what "use retention time for FILTERING" is for, and
+            // the two settings mean different things. Because both verdicts used to share the
+            // clause and FilterByThreshold is their disjunction, a retention-time disagreement
+            // deleted the candidate from the stored results outright. It now costs the reference
+            // match and leaves the precursor-only suggestion standing, which is what the evidence
+            // supports. This is the shape MassAnnotator and DimsMspAnnotator already had.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
             return result;
         }
 

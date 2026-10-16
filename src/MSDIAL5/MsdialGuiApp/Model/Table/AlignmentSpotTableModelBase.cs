@@ -54,13 +54,13 @@ namespace CompMs.App.Msdial.Model.Table
         }
 
         public override void MarkAllAsConfirmed() {
-            IDoCommand command = new MarkAllAsCommand(PeakSpots, true);
+            IDoCommand command = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(PeakSpots, true);
             command.Do();
             _undoManager.Add(command);
         }
 
         public override void MarkAllAsUnconfirmed() {
-            IDoCommand command = new MarkAllAsCommand(PeakSpots, false);
+            IDoCommand command = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(PeakSpots, false);
             command.Do();
             _undoManager.Add(command);
         }
@@ -70,35 +70,6 @@ namespace CompMs.App.Msdial.Model.Table
                 return;
             }
             _target.Value.SwitchPeakSpotTag(tag);
-        }
-
-        sealed class MarkAllAsCommand : IDoCommand {
-            private readonly IReadOnlyList<AlignmentSpotPropertyModel> _peaks;
-            private readonly List<AlignmentSpotPropertyModel> _confirmeds;
-            private readonly bool _status;
-
-            public MarkAllAsCommand(IReadOnlyList<AlignmentSpotPropertyModel> peaks, bool status)
-            {
-                _peaks = peaks;
-                _status = status;
-                _confirmeds = new List<AlignmentSpotPropertyModel>();
-            }
-
-            void IDoCommand.Do() {
-                _confirmeds.Clear();
-                foreach (var peak in _peaks) {
-                    if (peak.Confirmed != _status) {
-                        peak.Confirmed = _status;
-                        _confirmeds.Add(peak);
-                    }
-                }
-            }
-
-            void IDoCommand.Undo() {
-                foreach (var peak in _confirmeds) {
-                    peak.Confirmed = !_status;
-                }
-            }
         }
     }
 }

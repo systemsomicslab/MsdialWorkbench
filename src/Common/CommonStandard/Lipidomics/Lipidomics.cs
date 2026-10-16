@@ -962,11 +962,11 @@ namespace CompMs.Common.Lipidomics
                     //20260203
                     case LbmClass.SPEHex:
                         result = LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                            totalCarbon, totalDbBond, totalOxidized, adduct);
+                            totalCarbon, totalDbBond, adduct);
                         break;
                     case LbmClass.SPGHex:
                         result = LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                            totalCarbon, totalDbBond, totalOxidized, adduct);
+                            totalCarbon, totalDbBond, adduct);
                         break;
                     default:
                         return null;

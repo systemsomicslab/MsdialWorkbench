@@ -24,12 +24,12 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly List<FileChromatogram> _fileChromatograms;
 
-        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, AlignmentFileBeanModel alignmentFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter) {
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, AlignmentFileBeanModel alignmentFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter, bool useOriginalRtPeakBounds = false) {
             _chromatogramSpotSerializer = chromatogramSpotSerializer ?? throw new ArgumentNullException(nameof(chromatogramSpotSerializer));
             _alignmentFile = alignmentFile ?? throw new ArgumentNullException(nameof(alignmentFile));
             var classToProp = projectParameter.ClassProperties.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
                 .Select(_ => projectParameter.ClassProperties.ToDictionary(prop => prop.Name, prop => prop)).ToReactiveProperty().AddTo(Disposables);
-            _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToProp)).ToList();           
+            _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToProp, useOriginalRtPeakBounds)).ToList();
             foreach (var fileChromatogram in _fileChromatograms) {
                 Disposables.Add(fileChromatogram);
             }
@@ -51,23 +51,40 @@ namespace CompMs.App.Msdial.Model.Loader
             }
         }
 
+        internal static PeakOfChromatogram? SelectPeakArea(
+            Chromatogram chromatogram, ChromatogramPeakInfo peakInfo,
+            double alignedLeft, double alignedRight, bool useOriginalRtPeakBounds) {
+            if (useOriginalRtPeakBounds) {
+                const double serializedRtTolerance = 1e-5d;
+                return chromatogram.AsPeak(
+                    peakInfo.ChromXsLeft.Value - serializedRtTolerance,
+                    peakInfo.ChromXsRight.Value + serializedRtTolerance);
+            }
+            return chromatogram.AsPeak(alignedLeft, alignedRight);
+        }
+
         class FileChromatogram : IDisposable {
             private readonly IObservable<bool> _includes;
             private readonly IObservable<string> _clss;
             private readonly IObservable<string> _name;
             private readonly IObservable<Color> _color;
+            private readonly bool _useOriginalRtPeakBounds;
             private CompositeDisposable? _disposables = new();
 
-            public FileChromatogram(AnalysisFileBeanModel file, IObservable<Dictionary<string, FileClassPropertyModel>> class2Prop) {
+            public FileChromatogram(AnalysisFileBeanModel file, IObservable<Dictionary<string, FileClassPropertyModel>> class2Prop, bool useOriginalRtPeakBounds) {
                 _includes = file.ObserveProperty(f => f.AnalysisFileIncluded).ToReactiveProperty().AddTo(_disposables);
                 _name = file.ObserveProperty(f => f.AnalysisFileName).ToReactiveProperty(string.Empty).AddTo(_disposables);
                 _clss = file.ObserveProperty(f => f.AnalysisFileClass).ToReactiveProperty(string.Empty).AddTo(_disposables);
                 _color = class2Prop.CombineLatest(_clss, (c2p, cls) => c2p.TryGetValue(cls, out var prop) ? prop.ObserveProperty(p => p.Color) : Observable.Return(Colors.Blue)).Switch(); 
+                _useOriginalRtPeakBounds = useOriginalRtPeakBounds;
             }
 
             public IObservable<PeakChromatogram?> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel?> _peak, ChromatogramPeakInfo _peakInfo) {
                 var chromatogram = new Chromatogram(_peakInfo.Chromatogram, _spot.ChromXType, _spot.ChromXUnit);
-                var chromatogramArea = _peak.DefaultIfNull(p => chromatogram.AsPeak(p.ChromXsLeft.Value, p.ChromXsRight.Value));
+                // Automatic alignment correction keeps the EIC on raw RT; aligned peak bounds are on another axis.
+                var chromatogramArea = _useOriginalRtPeakBounds
+                    ? Observable.Return(SelectPeakArea(chromatogram, _peakInfo, 0d, 0d, true))
+                    : _peak.DefaultIfNull(p => SelectPeakArea(chromatogram, _peakInfo, p.ChromXsLeft.Value, p.ChromXsRight.Value, false));
 
                 return new IObservable<IObservable<PeakChromatogram?>>[]
                 {

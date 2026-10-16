@@ -59,14 +59,5 @@ namespace CompMs.MsdialCore.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 4.24.
-        /// </summary>
-        internal static string VERSION {
-            get {
-                return ResourceManager.GetString("VERSION", resourceCulture);
-            }
-        }
     }
 }

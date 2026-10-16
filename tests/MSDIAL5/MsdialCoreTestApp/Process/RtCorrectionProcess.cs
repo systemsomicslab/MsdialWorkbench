@@ -35,15 +35,13 @@ public sealed class RtCorrectionProcess
             return -1;
         }
 
-        var standards = TextLibraryParser.StandardTextLibraryReader(libraryFile.FullName, out var error)
-            ?.Where(standard => standard.IsTargetMolecule)
-            .OrderBy(standard => standard.ChromXs.RT.Value)
-            .ToList() ?? [];
-        if (!error.IsEmptyOrNull()) {
-            Console.Error.WriteLine(error);
+        // Checked before any raw data is read, and handed to Prepare so it is read only once.
+        List<MoleculeMsReference> standards;
+        try {
+            standards = RetentionTimeCorrectionProcess.LoadStandards(libraryFile.FullName);
         }
-        if (standards.Count == 0) {
-            Console.Error.WriteLine("No enabled RT correction standards were found.");
+        catch (Exception ex) when (ex is IOException || ex is InvalidDataException) {
+            Console.Error.WriteLine($"RT correction standard library could not be used: {ex.Message}");
             return -1;
         }
 
@@ -65,6 +63,7 @@ public sealed class RtCorrectionProcess
         RetentionTimeCorrectionProcess.Prepare(
             analysisFiles,
             parameter,
+            standards,
             Path.GetDirectoryName(outputFile.FullName) ?? ".");
         var analysisFilesByPath = analysisFiles.ToDictionary(
             file => Path.GetFullPath(file.AnalysisFilePath),

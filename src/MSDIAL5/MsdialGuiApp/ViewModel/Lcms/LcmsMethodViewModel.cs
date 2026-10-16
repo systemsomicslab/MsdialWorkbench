@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
@@ -49,9 +50,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
+            // No sample is open after one fails to open: the command then acts on nothing, not on the sample that was disposed.
             analysisAsObservable
-                .Where(vm => vm is not null)
-                .SelectSwitch(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm!.ExperimentSpectrumViewModel, (a, b) => b))
+                .SelectSwitch(vm => vm is null
+                    ? Observable.Never<ExperimentSpectrumViewModel?>()
+                    : ShowExperimentSpectrumCommand
+                        .Where(_ => vm.EnsureRawDataAvailable("Show experiment spectrum"))
+                        .WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
 
@@ -59,12 +64,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .SelectSwitch(vm => vm.StartWith(vm.Value))
                 .ToReactiveProperty()
                 .AddTo(Disposables);
-            var proteinResultContainerAsObservable =
-                new[]
+            // Likewise, the protein groups are emptied rather than left on a result that was disposed.
+            var proteinResultContainerAsObservable = selectedViewModel
+                .Select(vm => vm switch
                 {
-                    selectedViewModel.SkipNull().OfType<LcmsAnalysisViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
-                    selectedViewModel.SkipNull().OfType<LcmsAlignmentViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
-                }.Merge().Switch();
+                    LcmsAnalysisViewModel analysis => analysis.ProteinResultContainerAsObservable,
+                    LcmsAlignmentViewModel alignment => alignment.ProteinResultContainerAsObservable,
+                    _ => Observable.Return<ProteinResultContainerModel?>(null),
+                })
+                .Switch();
 
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
@@ -210,6 +218,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 return;
                 //Console.WriteLine("Please select an item in Alignment navigator!!");
             }
+        }
+
+        /// <summary>"Re-run lipid RT check" on the loaded alignment result (Data visualization tab).</summary>
+        public DelegateCommand ShowLipidRtCheckSettingCommand => _lipidRtCheckSettingCommand ??= new DelegateCommand(LipidRtCheckSettingMethod);
+        private DelegateCommand? _lipidRtCheckSettingCommand;
+
+        private void LipidRtCheckSettingMethod() {
+            if (!(SelectedViewModel.Value is IAlignmentResultViewModel)) {
+                _broker.Publish(new ErrorMessageBoxRequest { Content = "Please select an alignment result file.", });
+                return;
+            }
+            var m = _model.ShowLipidRtCheckSettingView();
+            if (m is null) {
+                return;
+            }
+            // The view shows it as a modal dialog, so that no tag is edited by hand while the check runs on the spots;
+            // the view model is disposed after that dialog has closed.
+            using var vm = new LipidRtCheckSettingViewModel(m);
+            _broker.Publish(vm);
         }
 
         public DelegateCommand ShowMolecularNetworkingExportSettingCommand => _molecularNetworkingExportSettingCommand ??= new DelegateCommand(MolecularNetworkingExportSettingMethod);

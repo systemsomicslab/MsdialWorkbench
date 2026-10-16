@@ -44,7 +44,12 @@ namespace CompMs.MsdialGcMsApi.Export
                 "Matched peaks count",
                 "Fragment presence %",
                 "Total score",
-                "Spectrum"
+                "Spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched"
             };
         }
 
@@ -74,6 +79,14 @@ namespace CompMs.MsdialGcMsApi.Export
                 ["Fragment presence %"] = NegativeIfNull(matchResult?.MatchedPeaksPercentage, "F2"),
                 ["Total score"] = NegativeIfNull(matchResult?.TotalScore, "F2"),
                 ["Spectrum"] = EncodeSpectrum(scan),
+                // Not NegativeIfNull, which this file uses for the score columns above: a
+                // count of -1 reads as data, and the point of these members is that "not
+                // recorded" must not look like a number.
+                ["Measured terms"] = AnnotationEvidenceFormat.Terms(matchResult),
+                ["Evidence source"] = AnnotationEvidenceFormat.Source(matchResult),
+                ["Candidates found"] = AnnotationEvidenceFormat.Count(matchResult?.CandidatesFound),
+                ["Candidates above threshold"] = AnnotationEvidenceFormat.Count(matchResult?.CandidatesAboveThreshold),
+                ["Candidates reference matched"] = AnnotationEvidenceFormat.Count(matchResult?.CandidatesReferenceMatched),
             };
         }
 

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.Common;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -93,7 +94,9 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task SaveAsync() {
             // TODO: implement process when project save failed.
-            Storage.Parameter.ProjectParam.MsdialVersionNumber = Properties.Resources.VERSION;
+            // The full identity, not the displayed version: this is provenance, and a project has
+            // to be able to say which build made it after two builds on one day.
+            Storage.Parameter.ProjectParam.MsdialVersionNumber = MsdialBuildIdentity.FullIdentity;
             Storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using (var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath)) {
                 await Task.WhenAll(new[]
@@ -137,9 +140,27 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task LoadAsync() {
             var factory = new MethodSettingModelFactory(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, Storage, _projectBaseParameter, StudyContext, ProcessOption.All, _broker);
-            var method = factory.BuildMethod();
-            await method.LoadAsync(default).ConfigureAwait(false);
-            Method = method;
+            Method = await OpenMethodAsync(factory.BuildMethod(), _analysisFileBeanModelCollection, _broker).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Opens a method just built for the dataset, after asking once whether to go on when the raw data of some samples are missing.
+        /// A method whose opening is declined (<see cref="OperationCanceledException"/>) or fails is disposed.
+        /// </summary>
+        internal static async Task<IMethodModel> OpenMethodAsync(IMethodModel method, AnalysisFileBeanModelCollection files, IMessageBroker broker) {
+            try {
+                // Asked once, before the first sample opens; processing reads every sample, so excluded ones count too.
+                var missing = files.RefreshRawDataAvailability();
+                if (missing.Count > 0 && !RawDataGuard.ConfirmOpen(broker, method.BrowsingWithoutRawData, missing, files.Count)) {
+                    throw new OperationCanceledException("Opening was declined because raw data files are missing.");
+                }
+                await method.LoadAsync(default).ConfigureAwait(false);
+            }
+            catch {
+                method.Dispose();
+                throw;
+            }
+            return method;
         }
 
         public static async Task<DatasetModel> LoadAsync(string datasetFile, IMessageBroker broker) {
