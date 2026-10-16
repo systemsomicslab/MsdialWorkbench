@@ -101,6 +101,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<AnalysisResultExportWin>);
             broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
+            broker.ToObservable<LipidRtCheckSettingViewModel>()
+                .Subscribe(ShowChildDialog<LipidRtCheckSettingView>);
             broker.ToObservable<TargetCompoundLibrarySettingViewModel>()
                 .Subscribe(ShowChildSettingDialog<TargetCompoundsLibrarySettingView>("Select library file", height: 600, width: 400));
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()

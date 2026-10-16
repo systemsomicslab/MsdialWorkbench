@@ -220,6 +220,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
+        /// <summary>"Re-run lipid RT check" on the loaded alignment result (Data visualization tab).</summary>
+        public DelegateCommand ShowLipidRtCheckSettingCommand => _lipidRtCheckSettingCommand ??= new DelegateCommand(LipidRtCheckSettingMethod);
+        private DelegateCommand? _lipidRtCheckSettingCommand;
+
+        private void LipidRtCheckSettingMethod() {
+            if (!(SelectedViewModel.Value is IAlignmentResultViewModel)) {
+                _broker.Publish(new ErrorMessageBoxRequest { Content = "Please select an alignment result file.", });
+                return;
+            }
+            var m = _model.ShowLipidRtCheckSettingView();
+            if (m is null) {
+                return;
+            }
+            // The view shows it as a modal dialog, so that no tag is edited by hand while the check runs on the spots;
+            // the view model is disposed after that dialog has closed.
+            using var vm = new LipidRtCheckSettingViewModel(m);
+            _broker.Publish(vm);
+        }
+
         public DelegateCommand ShowMolecularNetworkingExportSettingCommand => _molecularNetworkingExportSettingCommand ??= new DelegateCommand(MolecularNetworkingExportSettingMethod);
         private DelegateCommand? _molecularNetworkingExportSettingCommand;
 

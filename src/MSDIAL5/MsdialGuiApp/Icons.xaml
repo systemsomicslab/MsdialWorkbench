@@ -2641,6 +2641,39 @@
             </GeometryDrawing>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <!-- Lipid RT check: a homologous series in retention-time order, with a check mark. -->
+    <DrawingImage x:Key="LipidRtCheck_icon_is">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="M 0,0 H 32 V 32 H 0 Z"/>
+                <GeometryDrawing Geometry="M 3,3 V 29 H 29">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF505050" Thickness="1.5"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M 6,26 L 25,7">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#FF255C60" Thickness="1" DashStyle="{x:Static DashStyles.Dash}"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#FF00A79D">
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <EllipseGeometry Center="8,24" RadiusX="2.4" RadiusY="2.4"/>
+                            <EllipseGeometry Center="13,19" RadiusX="2.4" RadiusY="2.4"/>
+                            <EllipseGeometry Center="18,14" RadiusX="2.4" RadiusY="2.4"/>
+                            <EllipseGeometry Center="23,9" RadiusX="2.4" RadiusY="2.4"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M 17,23 L 21,27 L 30,16">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="Green" Thickness="3" StartLineCap="Round" EndLineCap="Round" LineJoin="Round"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
     <DrawingImage x:Key="TreeForProteomics_icon_is">
         <DrawingImage.Drawing>
             <GeometryDrawing>

@@ -9,6 +9,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -251,6 +252,7 @@ public sealed class LcmsProcess
             AlignmentResultContainer result;
             IReadOnlyList<MSDecResult> align_decResults;
             IDisposable? alignmentLightMsdecResults = null;
+            LipidRtUnitRun? lipidRtRun;
             if (isAlignmentLightMode) {
                 Console.WriteLine("Alignment light mode: streaming peak matrix, file-backed alignment deconvolution access, GUI chromatogram serialization, GUI alignment object serialization, and ion-abundance correlation links are disabled; text exports remain enabled.");
                 Console.WriteLine("Alignment started.");
@@ -267,6 +269,7 @@ public sealed class LcmsProcess
                 result = lightResult.Container;
                 align_decResults = lightResult.MsdecResults;
                 alignmentLightMsdecResults = lightResult.MsdecResults as IDisposable;
+                lipidRtRun = lightResult.LipidRtRun;
                 Console.WriteLine("Alignment finished.");
             }
             else {
@@ -284,10 +287,12 @@ public sealed class LcmsProcess
                     result = aligner.Alignment(files, alignmentFile, serializer);
                 }
                 Console.WriteLine("Alignment finished.");
+                lipidRtRun = aligner.LipidRtRun;
                 result.Save(alignmentFile);
                 align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
                 MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
             }
+            WriteLipidRtReview(lipidRtRun, outputFolder, alignmentFile.FileName);
 
             var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
             var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
@@ -428,6 +433,36 @@ public sealed class LcmsProcess
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// Says what the lipid RT check did on the alignment, and writes its review list as
+    /// "&lt;alignment stem&gt;_lipidrt_review.tsv" next to the alignment exports.
+    /// </summary>
+    /// <remarks>
+    /// The review list is written whenever the check ran, also with no rows, so that an empty
+    /// file means "ran and found nothing to review" and a missing one means "did not run". The
+    /// Confirmed tags themselves are in the alignment's tag file and in the Comment column of the
+    /// exports, and the verdicts in the mzTab-M opt_global_lipid_rt_* columns.
+    /// </remarks>
+    internal static string? WriteLipidRtReview(LipidRtUnitRun? run, string outputFolder, string alignmentStem) {
+        if (run is null) {
+            return null;
+        }
+        if (run.Result is null) {
+            if (run.Error is not null || run.Tags.Withdrawn > 0) {
+                Console.WriteLine($"Lipid RT check (alignment): {run.Describe()}");
+            }
+            return null;
+        }
+        Console.WriteLine($"Lipid RT check (alignment): {run.Describe()}");
+        var items = LipidRtReviewList.Build(run.Result);
+        var reviewFile = Path.Combine(outputFolder, alignmentStem + "_lipidrt_review.tsv");
+        using (var writer = new StreamWriter(reviewFile, append: false, new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
+            LipidRtReviewList.Write(writer, items);
+        }
+        Console.WriteLine($"Lipid RT check review list: {reviewFile} ({items.Count} rows)");
+        return reviewFile;
     }
 
     private static IEnumerable<AlignmentSpotProperty> FlattenSpots(IEnumerable<AlignmentSpotProperty> spots) {

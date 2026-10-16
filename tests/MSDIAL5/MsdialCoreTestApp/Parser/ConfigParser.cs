@@ -469,7 +469,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
-                            () => ReadLcmsConsoleParameter(method, value)));
+                            () => ReadLcmsConsoleParameter(param, method, value)));
                     }
                 }
             }
@@ -479,7 +479,7 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         /// <summary>
-        /// Say what the settings LcmsProcess reads for itself would do with one line.
+        /// Say what the settings only an LC-MS run uses would do with one line.
         /// </summary>
         /// <remarks>
         /// LcmsProcess reads six settings with readers of their own, and calls them after
@@ -492,16 +492,22 @@ namespace CompMs.App.MsdialConsole.Parser
         /// This asks the same line readers the side readers use, so the record cannot disagree
         /// with the run: a value the side reader takes is applied, and a value it passes over --
         /// "yes" for a switch, "2.0" for a priority -- is unusable, because the run used the
-        /// default. Nothing is assigned here, so which keys take effect is unchanged. A new
-        /// setting LcmsProcess reads for itself belongs in this list.
+        /// default. For those six nothing is assigned here, so which keys take effect is
+        /// unchanged. A new setting LcmsProcess reads for itself belongs in this list.
+        ///
+        /// The lipid RT check keys are here for the same reason, and are the exception to "nothing
+        /// is assigned": their setting lives on the parameter, which is assigned here, in the
+        /// same pass. They are LC-MS keys rather than common ones because only LC-MS processing
+        /// runs the check (hooks A and B), and a key read by every mode would be recorded as
+        /// applied in a GC-MS run that never uses it.
         ///
         /// Only the LC-MS reader asks. No other mode calls these readers, so in a GC-MS, DIMS,
         /// IMMS or LC-IM-MS method file the same keys really have no effect and are still
         /// reported as unrecognised.
         /// </remarks>
-        private static MethodKeyOutcome ReadLcmsConsoleParameter(string method, string value) {
+        private static MethodKeyOutcome ReadLcmsConsoleParameter(MsdialLcmsParameter param, string method, string value) {
             foreach (var line in LcmsConsoleLines) {
-                var outcome = line(method, value);
+                var outcome = line(param, method, value);
                 if (!outcome.IsUnknownKey) {
                     return outcome;
                 }
@@ -509,14 +515,64 @@ namespace CompMs.App.MsdialConsole.Parser
             return MethodKeyOutcome.UnknownKey;
         }
 
-        private static readonly Func<string, string, MethodKeyOutcome>[] LcmsConsoleLines = {
-            (method, value) => MspAnnotatorSettingsFilePathLine(method, value, _ => { }),
-            (method, value) => TextAnnotatorSettingsFilePathLine(method, value, _ => { }),
-            (method, value) => LbmAnnotatorPriorityLine(method, value, _ => { }),
-            (method, value) => AlignmentLightModeLine(method, value, _ => { }),
-            (method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
-            (method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
+        private static readonly Func<MsdialLcmsParameter, string, string, MethodKeyOutcome>[] LcmsConsoleLines = {
+            (param, method, value) => MspAnnotatorSettingsFilePathLine(method, value, _ => { }),
+            (param, method, value) => TextAnnotatorSettingsFilePathLine(method, value, _ => { }),
+            (param, method, value) => LbmAnnotatorPriorityLine(method, value, _ => { }),
+            (param, method, value) => AlignmentLightModeLine(method, value, _ => { }),
+            (param, method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
+            (param, method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
+            (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
         };
+
+        /// <summary>
+        /// The lipid retention-time order check's settings (SPEC section 11 with the addendum's
+        /// defaults).
+        /// </summary>
+        /// <remarks>
+        /// "Lipid RT check" takes Auto, True or False. Auto is the default and runs the check when
+        /// Target omics is Lipidomics; True does not make it run for another target omics, because
+        /// the rules are lipid retention rules, so only False changes anything. The choices take
+        /// the names of their values in any letter case, and nothing else: a number is refused
+        /// rather than read as the value it happens to index.
+        /// </remarks>
+        private static MethodKeyOutcome LipidRtCheckLine(LipidRtCheckParameter target, string method, string value) {
+            switch (method.ToLowerInvariant()) {
+                case "lipid rt check":
+                    if (string.Equals(value, "auto", StringComparison.OrdinalIgnoreCase)) {
+                        return Assign<bool?>(null, v => target.IsEnabled = v);
+                    }
+                    return TrueOrFalse(value, v => target.IsEnabled = v);
+                case "lipid rt check operating point":
+                    return Named<LipidRtOperatingPoint>(value, v => target.OperatingPoint = v);
+                case "lipid rt check chromatography":
+                    return Named<LipidRtChromatography>(value, v => target.Chromatography = v);
+                case "lipid rt check plausibility profile":
+                    return Named<LipidRtPlausibilityProfileKind>(value, v => target.PlausibilityProfile = v);
+                case "lipid rt check class-level matches":
+                    return Named<LipidRtClassLevelPolicy>(value, v => target.ClassLevelPolicy = v);
+                case "lipid rt check minor duplicates":
+                    return Named<LipidRtMinorDuplicatePolicy>(value, v => target.MinorDuplicatePolicy = v);
+                case "lipid rt check secondary-only features":
+                    return Named<LipidRtSecondaryOnlyPolicy>(value, v => target.SecondaryOnlyPolicy = v);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        /// <summary>
+        /// Read one of the named values of an enum, in any letter case; a number or an unknown name
+        /// is unusable.
+        /// </summary>
+        private static MethodKeyOutcome Named<TEnum>(string text, Action<TEnum> assign) where TEnum : struct, Enum {
+            var trimmed = text.Trim();
+            foreach (var name in Enum.GetNames(typeof(TEnum))) {
+                if (string.Equals(name, trimmed, StringComparison.OrdinalIgnoreCase)) {
+                    return Assign((TEnum)Enum.Parse(typeof(TEnum), name), assign);
+                }
+            }
+            return MethodKeyOutcome.UnusableValue;
+        }
 
         /// <summary>
         /// Read a setting from the last line its line reader takes.

@@ -511,6 +511,30 @@ namespace CompMs.MsdialCore.Parameter
         [Key(17)]
         public PostCuratorParameter PostCurationParameter { get; set; } = new PostCuratorParameter();
 
+        /// <summary>
+        /// The lipid retention-time order check. LC-MS only in this version: hook A per analysis file and hook B after
+        /// alignment, both when <see cref="LipidRtCheckParameter.IsEnabledFor"/> and the target omics is lipidomics.
+        /// </summary>
+        /// <remarks>
+        /// Key 18 is the next free key of this class (MsdialDimsParameter uses 20, the other modes 150 and up). A project
+        /// written before it has no element here, and MessagePack then assigns null rather than the initializer, so the
+        /// getter hands out the defaults instead of null: an older lipidomics project runs the check with the defaults.
+        /// The defaults are put in place once, atomically, because hook A reads this from the per-file parallel loop.
+        /// </remarks>
+        [Key(18)]
+        public LipidRtCheckParameter LipidRtCheckParam {
+            get {
+                var parameter = _lipidRtCheckParam;
+                if (parameter is null) {
+                    System.Threading.Interlocked.CompareExchange(ref _lipidRtCheckParam, new LipidRtCheckParameter(), null);
+                    parameter = _lipidRtCheckParam;
+                }
+                return parameter;
+            }
+            set => _lipidRtCheckParam = value;
+        }
+        private LipidRtCheckParameter _lipidRtCheckParam = new LipidRtCheckParameter();
+
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
             pStrings.Add("# Project information");

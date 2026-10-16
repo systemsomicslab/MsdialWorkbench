@@ -7,6 +7,7 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -126,7 +127,11 @@ internal sealed class LcmsAlignmentLightRunner {
             TotalAlignmentSpotCount = resultSpots.Count,
             AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(resultSpots),
         };
-        return new LcmsAlignmentLightResult(container, msdecResults);
+        // Hook B of the lipid RT check, as PeakAligner runs it after packing the spots. In light mode the alignment
+        // objects are not saved, so the verdicts and the Confirmed tags reach only this run's exports (the Comment
+        // column, the mzTab-M columns and the review list) and are not persisted.
+        var lipidRt = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, _parameter);
+        return new LcmsAlignmentLightResult(container, msdecResults, lipidRt);
     }
 
     private List<AlignmentSpotProperty> InitializeSpots(IReadOnlyList<ChromatogramPeakFeature> master) {
@@ -514,11 +519,15 @@ internal sealed class LcmsAlignmentLightRunner {
 }
 
 internal sealed class LcmsAlignmentLightResult {
-    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults) {
+    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults, LipidRtUnitRun? lipidRtRun = null) {
         Container = container;
         MsdecResults = msdecResults;
+        LipidRtRun = lipidRtRun;
     }
 
     public AlignmentResultContainer Container { get; }
     public IReadOnlyList<MSDecResult> MsdecResults { get; }
+
+    /// <summary>What the lipid RT check did on the light alignment (hook B).</summary>
+    public LipidRtUnitRun? LipidRtRun { get; }
 }

@@ -6,6 +6,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
@@ -13,7 +14,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject {
+    public sealed class ChromatogramPeakFeatureModel : DisposableModelBase, IPeakSpotModel, IFilterable, IMoleculeProperty, IIonProperty, IChromatogramPeak, IAnnotatedObject, IPeakSpotTagEditable, ILipidRtCheckedObject {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
@@ -176,14 +177,70 @@ namespace CompMs.App.Msdial.Model.DataObj
             if (value == innerModel.TagCollection.IsSelected(tag)) {
                 return false;
             }
+            // A person's toggle: turning a tag on makes it the person's and lifts a suppression; turning off a tag a tool
+            // set (e.g. the lipid RT check's Confirmed) also suppresses it, so the tool does not set it again.
             if (value) {
-                innerModel.TagCollection.Select(tag);
+                innerModel.TagCollection.SelectByPerson(tag);
             }
             else {
-                innerModel.TagCollection.Deselect(tag);
+                innerModel.TagCollection.DeselectByPerson(tag);
             }
             OnPropertyChanged(propertyname);
+            OnPropertyChanged(nameof(ConfirmedDetail));
             return true;
+        }
+
+        public void SelectPeakSpotTagByPerson(PeakSpotTag tag) {
+            innerModel.TagCollection.SelectByPerson(tag);
+            OnPropertyChanged(PeakSpotTagPropertyNames.Of(tag));
+            OnPropertyChanged(nameof(ConfirmedDetail));
+        }
+
+        public PeakSpotTagState CapturePeakSpotTag(PeakSpotTag tag) {
+            return PeakSpotTagState.Capture(innerModel.TagCollection, tag);
+        }
+
+        public void RestorePeakSpotTag(PeakSpotTagState state) {
+            if (state is null) {
+                throw new ArgumentNullException(nameof(state));
+            }
+            state.RestoreTo(innerModel.TagCollection);
+            OnPropertyChanged(PeakSpotTagPropertyNames.Of(state.Tag));
+            OnPropertyChanged(nameof(ConfirmedDetail));
+        }
+
+        public LipidRtCheckState CaptureLipidRtCheck() {
+            return new LipidRtCheckState(PeakSpotTagState.Capture(innerModel.TagCollection, PeakSpotTag.CONFIRMED), innerModel.LipidRtVerdict);
+        }
+
+        public void WithdrawLipidRtCheck() {
+            LipidRtTagProtocol.Withdraw(innerModel.TagCollection);
+            innerModel.LipidRtVerdict = null;
+            RaiseLipidRtCheckChanged();
+        }
+
+        public void RestoreLipidRtCheck(LipidRtCheckState state) {
+            if (state is null) {
+                throw new ArgumentNullException(nameof(state));
+            }
+            state.Confirmed.RestoreTo(innerModel.TagCollection);
+            innerModel.LipidRtVerdict = state.Verdict;
+            RaiseLipidRtCheckChanged();
+        }
+
+        /// <summary>The lipid RT check's verdict on this peak (hook A); null when the check has none (addendum B2).</summary>
+        public LipidRtVerdict? LipidRtVerdict => innerModel.LipidRtVerdict;
+
+        /// <summary>
+        /// Who set or removed the Confirmed tag, and the lipid RT check's verdict, for the tag's tooltip; null when there is
+        /// nothing to add to the tag itself.
+        /// </summary>
+        public string? ConfirmedDetail => LipidRtCheckDescription.ConfirmedDetail(innerModel.TagCollection, innerModel.LipidRtVerdict);
+
+        private void RaiseLipidRtCheckChanged() {
+            OnPropertyChanged(nameof(Confirmed));
+            OnPropertyChanged(nameof(LipidRtVerdict));
+            OnPropertyChanged(nameof(ConfirmedDetail));
         }
 
         public void SwitchPeakSpotTag(PeakSpotTag tag) {
