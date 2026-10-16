@@ -65,6 +65,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     evaluator.Add(pair.AnnotatorID, pair.AnnotationQueryFactory.CreateEvaluator());
                 }
             }
+            foreach (var db in storage.StagedLipidDatabases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, pair.AnnotationQueryFactory.CreateEvaluator());
+                }
+            }
             return evaluator;
         }
 
@@ -81,6 +86,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 }
             }
             foreach (var db in storage.EadLipidomicsDatabases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, new MsScanMatchResultEvaluator(pair.AnnotationQueryFactory.PrepareParameter()));
+                }
+            }
+            foreach (var db in storage.StagedLipidDatabases) {
                 foreach (var pair in db.Pairs) {
                     evaluator.Add(pair.AnnotatorID, new MsScanMatchResultEvaluator(pair.AnnotationQueryFactory.PrepareParameter()));
                 }

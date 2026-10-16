@@ -78,6 +78,27 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
+        public void MatchResultEvaluatorKnowsTheStagedLipidAnnotator() {
+            var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics, };
+            var searchParameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, };
+            var database = new StagedLipidDatabase("DB", new[] { new LipidSeed("PC 34:1", FacadeLipidParser.Default.Parse("PC 34:1"), 5.0) });
+            var annotator = new StagedLipidDatabaseAnnotator(database, "StagedLipid", 2, searchParameter);
+            var storage = DataBaseStorage.CreateEmpty();
+            storage.AddStagedLipidDataBase(database, new List<IAnnotatorParameterPair<StagedLipidDatabase>> {
+                new StagedLipidAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, parameter.PeakPickBaseParam, searchParameter, ignoreIsotopicPeak: true)),
+            });
+            var result = new MsScanMatchResult { AnnotatorID = "StagedLipid", IsReferenceMatched = true };
+
+            foreach (var evaluator in new[] {
+                FacadeMatchResultEvaluator.FromDataBases(storage),
+                FacadeMatchResultEvaluator.FromDataBases(storage, new StandardAnnotationQueryFactoryGenerationVisitor(parameter.PeakPickBaseParam, parameter.RefSpecMatchBaseParam), new StandardLoadAnnotatorVisitor(parameter)),
+            }) {
+                CollectionAssert.AreEqual(new[] { result }, evaluator.FilterByThreshold(new[] { result }));
+                Assert.IsTrue(evaluator.IsReferenceMatched(result));
+            }
+        }
+
+        [TestMethod()]
         public void StorageWithoutStagedLipidDatabasesStillLoads() {
             var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics, };
             var storage = DataBaseStorage.CreateEmpty();

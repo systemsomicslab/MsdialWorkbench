@@ -69,6 +69,11 @@ public static class AnnotationCandidates
                 map.Add(pair.AnnotatorID, db.DataBaseID);
             }
         }
+        foreach (var db in storage.StagedLipidDatabases) {
+            foreach (var pair in db.Pairs) {
+                map.Add(pair.AnnotatorID, db.DataBaseID);
+            }
+        }
         return map;
     }
 }
