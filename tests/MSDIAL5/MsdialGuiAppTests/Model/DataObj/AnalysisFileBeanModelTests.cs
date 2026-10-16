@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.App.Msdial.Utility.Tests;
+using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parser;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -91,6 +94,28 @@ namespace CompMs.App.Msdial.Model.DataObj.Tests
 
             model.File.PeakAreaBeanInformationFilePath = string.Empty;
             Assert.IsFalse(model.PeakListFileExists());
+        }
+
+        [TestMethod()]
+        public void ReleasingTheLoaderOrDisposingTheModelClosesTheDeconvolutionFile() {
+            // With an application running, as in MS-DIAL, the model's disposables are disposed on its dispatcher.
+            TestApplication.Ensure();
+            var dcl = Path.Combine(_folder, "sample.dcl");
+            MsdecResultsWriter.Write(dcl, new List<MSDecResult> { new MSDecResult { ScanID = 0, PrecursorMz = 300.1, }, });
+            var model = AnalysisFileBeanModelTestHelper.Create();
+            model.File.DeconvolutionFilePath = dcl;
+
+            // Reprocessing rewrites the .dcl after DatasetModel releases the loaders.
+            Assert.IsNotNull(model.MSDecLoader.LoadMSDecResult(0));
+            Assert.IsTrue(TestFiles.IsOpen(dcl));
+            model.ReleaseMSDecLoader();
+            Assert.IsFalse(TestFiles.IsOpen(dcl));
+
+            // Closing the dataset disposes its file models, and the loader opened again goes with them.
+            Assert.IsNotNull(model.MSDecLoader.LoadMSDecResult(0));
+            model.Dispose();
+            TestApplication.WaitForBackgroundWork();
+            Assert.IsFalse(TestFiles.IsOpen(dcl));
         }
 
         private static AnalysisFileBeanModel Create(string analysisFilePath) {
