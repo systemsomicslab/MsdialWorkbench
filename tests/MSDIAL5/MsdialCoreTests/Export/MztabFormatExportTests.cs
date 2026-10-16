@@ -4,8 +4,10 @@ using CompMs.Common.Enum;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
@@ -173,8 +175,8 @@ namespace CompMs.MsdialCore.Export.Tests
 
         /// <summary>
         /// Agilent and Bruker both write a ".d" folder, and ms_run-format is told apart by what the folder holds.
-        /// A folder that is not on disk when the file is exported (moved, archived, or a project opened on another
-        /// machine) gets a neutral user term, not a vendor it may not be.
+        /// When no format was recorded for it, a folder that is not on disk when the file is exported (moved, archived,
+        /// or a project opened on another machine) gets a neutral user term, not a vendor it may not be.
         /// </summary>
         /// <remarks>
         /// ms_run-id_format is not checked: SetRawFileMetadataDic overwrites it with "MS-DIAL set Datapoint Number"
@@ -229,8 +231,9 @@ namespace CompMs.MsdialCore.Export.Tests
         }
 
         /// <summary>
-        /// A .raw is a Waters folder or a Thermo file. One that is not on disk when the file is exported used to throw
-        /// from File.GetAttributes; it gets a neutral user term, as an unrecognisable .d folder does.
+        /// A .raw is a Waters folder or a Thermo file. When no format was recorded for it, one that is not on disk when
+        /// the file is exported (which used to throw from File.GetAttributes) gets a neutral user term, as an
+        /// unrecognisable .d folder does.
         /// </summary>
         [DataTestMethod()]
         [DataRow("folder", "[MS, MS:1000526, Waters raw format, ]")]
@@ -270,6 +273,288 @@ namespace CompMs.MsdialCore.Export.Tests
             finally {
                 Directory.Delete(scratch, recursive: true);
             }
+        }
+
+        /// <summary>
+        /// A .d folder is read as RawDataHandler reads it, AcqData first, so one that holds both an AcqData folder and a
+        /// Bruker analysis file is Agilent's. This is the one case whose ms_run-format changed when formats began to be
+        /// recorded: it used to be described by the Bruker file.
+        /// </summary>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task ADotDFolderHoldingAcqDataIsAgilentsWhateverElseItHolds() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var scratch = Path.Combine(Path.GetTempPath(), $"msdial-mztab-dotd-both-{System.Guid.NewGuid():N}");
+            try {
+                foreach (var file in storage.AnalysisFiles) {
+                    var folder = Path.Combine(scratch, file.AnalysisFileName + ".d");
+                    Directory.CreateDirectory(Path.Combine(folder, "AcqData"));
+                    File.WriteAllBytes(Path.Combine(folder, "analysis.tdf"), new byte[0]);
+                    file.AnalysisFilePath = folder;
+                }
+
+                var formats = MsRunFormats(ExportToLines(storage, container, msdecs));
+
+                Assert.AreEqual(storage.AnalysisFiles.Count, formats.Length);
+                Assert.IsTrue(formats.All(format => format == "[MS, MS:1001509, Agilent MassHunter format, ]"), string.Join(" | ", formats));
+            }
+            finally {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        /// <summary>
+        /// A format recorded while the raw data were present is what ms_run-format says after they are gone, with the
+        /// term the exporter writes for that format on disk.
+        /// </summary>
+        [DataTestMethod()]
+        [DataRow(RawFileFormat.ThermoRaw, ".raw", "[MS, MS:1000563, Thermo RAW format, ]")]
+        [DataRow(RawFileFormat.WatersRaw, ".raw", "[MS, MS:1000526, Waters raw format, ]")]
+        [DataRow(RawFileFormat.AgilentMassHunterD, ".d", "[MS, MS:1001509, Agilent MassHunter format, ]")]
+        [DataRow(RawFileFormat.BrukerTdf, ".d", "[MS, MS:1002817, Bruker TDF format, ]")]
+        [DataRow(RawFileFormat.BrukerTsf, ".d", "[MS, MS:1003282, Bruker TSF format, ]")]
+        [DataRow(RawFileFormat.BrukerBaf, ".d", "[MS, MS:1000815, Bruker BAF format, ]")]
+        [DataRow(RawFileFormat.SciexWiff, ".wiff", "[MS, MS:1000562, ABI WIFF format, ]")]
+        [DataRow(RawFileFormat.ShimadzuLcd, ".lcd", "[MS, MS:1003009, Shimadzu Biotech LCD format, ]")]
+        [DataRow(RawFileFormat.MzML, ".mzML", "[MS, MS:1000584, mzML format, ]")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task ARecordedFormatIsWrittenWhenTheRawDataAreGone(RawFileFormat recorded, string extension, string expectedFormat) {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var gone = Path.Combine(Path.GetTempPath(), $"msdial-mztab-gone-{System.Guid.NewGuid():N}");
+            foreach (var file in storage.AnalysisFiles) {
+                file.AnalysisFilePath = Path.Combine(gone, file.AnalysisFileName + extension);
+                file.RawFileFormat = recorded;
+            }
+
+            var formats = MsRunFormats(ExportToLines(storage, container, msdecs));
+
+            Assert.AreEqual(storage.AnalysisFiles.Count, formats.Length);
+            Assert.IsTrue(formats.All(format => format == expectedFormat), string.Join(" | ", formats));
+            foreach (var format in formats) {
+                AssertIsAPsiMsFileFormat(format);
+            }
+            Assert.IsFalse(Directory.Exists(gone), "exporting must not create the raw data folder");
+        }
+
+        /// <summary>
+        /// A recorded format that cannot be the file at the path (a Thermo format on a .d) is not trusted; the file is
+        /// described by what the disk shows, as when nothing is recorded.
+        /// </summary>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task ARecordedFormatThatDoesNotMatchThePathIsIgnored() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var scratch = Path.Combine(Path.GetTempPath(), $"msdial-mztab-mismatch-{System.Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try {
+                Assert.AreEqual(2, storage.AnalysisFiles.Count);
+                // Present: a Bruker TDF folder recorded as Thermo. Gone: a .d recorded as Thermo.
+                var present = Path.Combine(scratch, "present.d");
+                Directory.CreateDirectory(present);
+                File.WriteAllBytes(Path.Combine(present, "analysis.tdf"), new byte[0]);
+                storage.AnalysisFiles[0].AnalysisFilePath = present;
+                storage.AnalysisFiles[0].RawFileFormat = RawFileFormat.ThermoRaw;
+                storage.AnalysisFiles[1].AnalysisFilePath = Path.Combine(scratch, "gone.d");
+                storage.AnalysisFiles[1].RawFileFormat = RawFileFormat.ThermoRaw;
+
+                var formats = MsRunFormats(ExportToLines(storage, container, msdecs));
+
+                CollectionAssert.AreEqual(new[] { "[MS, MS:1002817, Bruker TDF format, ]", "[,, Unknown .d folder format, ]" }, formats);
+            }
+            finally {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        /// <summary>
+        /// A recorded format is never replaced, so it can outlive the file it was recorded for. Raw data on disk are
+        /// described by what is there, exactly as before formats were recorded: a Waters folder where a Thermo file was
+        /// recorded is Waters, and a Thermo file where a Waters folder was recorded is Thermo.
+        /// </summary>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task RawDataOnDiskAreDescribedByWhatIsThereWhateverWasRecorded() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var scratch = Path.Combine(Path.GetTempPath(), $"msdial-mztab-replaced-{System.Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try {
+                Assert.AreEqual(2, storage.AnalysisFiles.Count);
+                var waters = Path.Combine(scratch, "was_thermo.raw");
+                Directory.CreateDirectory(waters);
+                storage.AnalysisFiles[0].AnalysisFilePath = waters;
+                storage.AnalysisFiles[0].RawFileFormat = RawFileFormat.ThermoRaw;
+                var thermo = Path.Combine(scratch, "was_waters.RAW");
+                File.WriteAllBytes(thermo, new byte[0]);
+                storage.AnalysisFiles[1].AnalysisFilePath = thermo;
+                storage.AnalysisFiles[1].RawFileFormat = RawFileFormat.WatersRaw;
+
+                var formats = MsRunFormats(ExportToLines(storage, container, msdecs));
+
+                CollectionAssert.AreEqual(new[] { "[MS, MS:1000526, Waters raw format, ]", "[MS, MS:1000563, Thermo RAW format, ]" }, formats);
+                Assert.AreEqual(RawFileFormat.ThermoRaw, storage.AnalysisFiles[0].RawFileFormat, "exporting does not change what is recorded");
+                Assert.AreEqual(RawFileFormat.WatersRaw, storage.AnalysisFiles[1].RawFileFormat, "exporting does not change what is recorded");
+            }
+            finally {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        /// <summary>
+        /// Registration to export: the format is recorded while the raw data are present, the project is saved, the raw
+        /// data are deleted, and the project reloaded from what was saved still names each format with its PSI-MS term.
+        /// </summary>
+        [DataTestMethod()]
+        [DataRow("thermo", "waters")]
+        [DataRow("bruker-tdf", "agilent")]
+        [DataRow("bruker-tsf", "bruker-baf")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task AFormatRecordedAtRegistrationOutlivesTheRawData(string firstKind, string secondKind) {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            Assert.AreEqual(2, storage.AnalysisFiles.Count);
+            var kinds = new[] { firstKind, secondKind };
+            var scratch = Path.Combine(Path.GetTempPath(), $"msdial-mztab-e2e-{System.Guid.NewGuid():N}");
+            var expected = new string[kinds.Length];
+            try {
+                for (int i = 0; i < kinds.Length; i++) {
+                    var file = storage.AnalysisFiles[i];
+                    (file.AnalysisFilePath, expected[i]) = CreateRawData(scratch, file.AnalysisFileName, kinds[i]);
+                    Assert.AreEqual(RawFileFormat.Unknown, file.RawFileFormat, "the fixture predates recorded formats");
+                    Assert.IsTrue(RawFileFormatClassifier.RecordIfUnknown(file), kinds[i]);
+                }
+            }
+            finally {
+                // The project is saved and exported only after the raw data are gone.
+                Directory.Delete(scratch, recursive: true);
+            }
+
+            var memory = new MemoryStream();
+            using (IStreamManager manager = ZipStreamManager.OpenCreate(memory)) {
+                await storage.SaveAsync(manager, "Test", "TestFolder");
+                manager.Complete();
+            }
+            IMsdialDataStorage<ParameterBase> reloaded;
+            using (var manager = ZipStreamManager.OpenGet(memory)) {
+                reloaded = await MsdialDataStorage.Serializer.LoadAsync(manager, "Test", null, "TestFolder");
+            }
+
+            var formats = MsRunFormats(ExportToLines(reloaded, container, msdecs));
+
+            CollectionAssert.AreEqual(expected, formats);
+            foreach (var format in formats) {
+                AssertIsAPsiMsFileFormat(format);
+            }
+            Assert.IsFalse(Directory.Exists(scratch), "exporting must not create the raw data folder");
+        }
+
+        /// <summary>
+        /// Every PSI-MS term the exporter can write as ms_run-format, for any recorded format, is a file format term.
+        /// </summary>
+        [TestMethod()]
+        public void EveryPsiMsFormatTermIsAFileFormat() {
+            var written = 0;
+            foreach (var format in System.Enum.GetValues(typeof(RawFileFormat)).Cast<RawFileFormat>()) {
+                foreach (var extension in new[] { ".RAW", ".D", ".MZML", ".TXT" }) {
+                    var term = MztabFormatExporter.MsRunFormatTerms(format, extension).Format;
+                    if (term.StartsWith("[MS,")) {
+                        AssertIsAPsiMsFileFormat(term);
+                        written++;
+                    }
+                }
+            }
+            Assert.IsTrue(written > 0);
+        }
+
+        /// <summary>
+        /// The children of MS:1000560 (mass spectrometer file format) that the exporter writes, with their names as in
+        /// psi-ms.obo (checked against data-version 4.2.2, where none of them is obsolete).
+        /// </summary>
+        private static readonly Dictionary<string, string> PsiMsFileFormats = new Dictionary<string, string>
+        {
+            ["MS:1000526"] = "Waters raw format",
+            ["MS:1000562"] = "ABI WIFF format",
+            ["MS:1000563"] = "Thermo RAW format",
+            ["MS:1000584"] = "mzML format",
+            ["MS:1000815"] = "Bruker BAF format",
+            ["MS:1001509"] = "Agilent MassHunter format",
+            ["MS:1002817"] = "Bruker TDF format",
+            ["MS:1003009"] = "Shimadzu Biotech LCD format",
+            ["MS:1003282"] = "Bruker TSF format",
+        };
+
+        private static void AssertIsAPsiMsFileFormat(string term) {
+            // An mzTab-M parameter: [CV label, accession, name, value].
+            var fields = term.TrimStart('[').TrimEnd(']').Split(',').Select(field => field.Trim()).ToArray();
+            Assert.AreEqual(4, fields.Length, term);
+            Assert.AreEqual("MS", fields[0], term);
+            Assert.IsTrue(PsiMsFileFormats.TryGetValue(fields[1], out var name), $"{fields[1]} is not a known file format term: {term}");
+            Assert.AreEqual(name, fields[2], term);
+            Assert.AreEqual(string.Empty, fields[3], term);
+        }
+
+        private static (string Path, string ExpectedFormat) CreateRawData(string folder, string name, string kind) {
+            switch (kind) {
+                case "thermo": {
+                    var path = Path.Combine(folder, name + ".raw");
+                    Directory.CreateDirectory(folder);
+                    File.WriteAllBytes(path, new byte[0]);
+                    return (path, "[MS, MS:1000563, Thermo RAW format, ]");
+                }
+                case "waters": {
+                    var path = Path.Combine(folder, name + ".raw");
+                    Directory.CreateDirectory(path);
+                    return (path, "[MS, MS:1000526, Waters raw format, ]");
+                }
+                case "agilent": {
+                    var path = Path.Combine(folder, name + ".d");
+                    Directory.CreateDirectory(Path.Combine(path, "AcqData"));
+                    return (path, "[MS, MS:1001509, Agilent MassHunter format, ]");
+                }
+                case "bruker-tdf":
+                case "bruker-tsf":
+                case "bruker-baf": {
+                    var path = Path.Combine(folder, name + ".d");
+                    Directory.CreateDirectory(path);
+                    File.WriteAllBytes(Path.Combine(path, "analysis." + kind.Substring("bruker-".Length)), new byte[0]);
+                    var expected = kind == "bruker-tdf" ? "[MS, MS:1002817, Bruker TDF format, ]"
+                        : kind == "bruker-tsf" ? "[MS, MS:1003282, Bruker TSF format, ]"
+                        : "[MS, MS:1000815, Bruker BAF format, ]";
+                    return (path, expected);
+                }
+                default:
+                    throw new System.ArgumentException(kind);
+            }
+        }
+
+        private static string[] MsRunFormats(string[] lines) {
+            return lines.Select(line => line.Split('\t'))
+                .Where(f => f[0] == "MTD" && f.Length > 2 && f[1].StartsWith("ms_run[") && f[1].EndsWith("]-format"))
+                .Select(f => f[2])
+                .ToArray();
         }
 
 

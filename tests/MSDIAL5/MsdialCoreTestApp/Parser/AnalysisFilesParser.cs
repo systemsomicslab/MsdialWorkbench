@@ -237,7 +237,9 @@ namespace CompMs.App.MsdialConsole.Parser
                     PeakAreaBeanInformationFilePath = Path.Combine(fileDir, afFilename + "_" + dtString + ".pai"),
                     RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean(fileDir + "\\" + afFilename + "_" + dtString + ".rtc"),
                     AnalysisBatch = afBatch,
-                    DilutionFactor = afInjectVolume
+                    DilutionFactor = afInjectVolume,
+                    // Recorded while the file is present, so mzTab-M can still name its format after the raw data are gone.
+                    RawFileFormat = RawFileFormatClassifier.Classify(afFilepath),
                 });
                 counter++;
             }
@@ -286,7 +288,9 @@ namespace CompMs.App.MsdialConsole.Parser
                     AnalysisFileType = AnalysisFileType.Sample,
                     DeconvolutionFilePath = Path.Combine(fileDir, filename + "_" + dtString + ".dcl"),
                     PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_" + dtString + ".pai"),
-                    RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean(Path.Combine(fileDir, filename + "_" + dtString + ".rtc")) 
+                    RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean(Path.Combine(fileDir, filename + "_" + dtString + ".rtc")),
+                    // Recorded while the file is present, so mzTab-M can still name its format after the raw data are gone.
+                    RawFileFormat = RawFileFormatClassifier.Classify(filepath),
                 });
                 counter++;
             }

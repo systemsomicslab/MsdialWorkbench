@@ -4,8 +4,10 @@ using CompMs.Common.Enum;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1597,104 +1599,10 @@ namespace CompMs.MsdialCore.Export
                 var analysisFilePath = files[i].AnalysisFilePath;
                 var analysisFileExtention = Path.GetExtension(analysisFilePath).ToUpper();
 
-                var msRunFormat = ""; // analysed file format
-                var msRunIDFormat = ""; // analysed file Datapoint Number
-                switch (analysisFileExtention)
-                {
-                    case (".ABF"):
-                        msRunFormat = "[,, ABF(Analysis Base File) file, ]";
-                        msRunIDFormat = "[,, ABF file Datapoint Number, ]";
-                        break;
-                    case (".IBF"):
-                        msRunFormat = "[,, IBF file, ]";
-                        msRunIDFormat = "[,, IBF file Datapoint Number, ]";
-                        break;
-                    case (".WIFF"):
-                    case (".WIFF2"):
-                        msRunFormat = "[MS, MS:1000562, ABI WIFF format, ]";
-                        msRunIDFormat = "[MS, MS:1000770, WIFF nativeID format, ]";
-                        break;
-                    case (".D"):
-                        // Agilent and Bruker both write a ".d" folder. Bruker's holds analysis.baf
-                        // (BAF) or analysis.tdf / analysis.tsf (timsTOF); Agilent's holds AcqData.
-                        if (File.Exists(Path.Combine(analysisFilePath, "analysis.tdf")))
-                        {
-                            msRunFormat = "[MS, MS:1002817, Bruker TDF format, ]";
-                            msRunIDFormat = "[MS, MS:1002818, Bruker TDF nativeID format, ]";
-                        }
-                        else if (File.Exists(Path.Combine(analysisFilePath, "analysis.tsf")))
-                        {
-                            msRunFormat = "[MS, MS:1003282, Bruker TSF format, ]";
-                            msRunIDFormat = "[MS, MS:1003283, Bruker TSF nativeID format, ]";
-                        }
-                        else if (File.Exists(Path.Combine(analysisFilePath, "analysis.baf")))
-                        {
-                            msRunFormat = "[MS, MS:1000815, Bruker BAF format, ]";
-                            msRunIDFormat = "[MS, MS:1000772, Bruker BAF nativeID format, ]";
-                        }
-                        else if (Directory.Exists(Path.Combine(analysisFilePath, "AcqData")))
-                        {
-                            msRunFormat = "[MS, MS:1001509, Agilent MassHunter format, ]";
-                            msRunIDFormat = "[MS, MS:1001508, Agilent MassHunter nativeID format, ]";
-                        }
-                        else
-                        {
-                            msRunFormat = "[,, Unknown .d folder format, ]";
-                            msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
-                        }
-                        break;
-                    case (".CDF"):
-                        msRunFormat = "[EDAM, format:3650, netCDF, ]";
-                        msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
-                        break;
-                    case (".MZML"):
-                        msRunFormat = "[MS, MS:1000584, mzML format, ]";
-                        msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
-                        break;
-                    case (".RAW"):
-                        // A Waters .raw is a folder and a Thermo .raw a file; a .raw that is not there is neither,
-                        // and is described as unknown, as a .d folder that holds nothing recognisable is.
-                        if (Directory.Exists(analysisFilePath))
-                        {
-                            msRunFormat = "[MS, MS:1000526, Waters raw format, ]";
-                            msRunIDFormat = "[MS, MS:1000769, Waters nativeID format, ]";
-                        }
-                        else if (File.Exists(analysisFilePath))
-                        {
-                            msRunFormat = "[MS, MS:1000563, Thermo RAW format, ]";
-                            msRunIDFormat = "[MS, MS:1000768, Thermo nativeID format, ]";
-                        }
-                        else
-                        {
-                            msRunFormat = "[,, Unknown .raw format, ]";
-                            msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
-                        }
-                        break;
-                    case (".LRP"):
-                        msRunFormat = "[,, LRP file, ]";
-                        msRunIDFormat = "[,, LRP file Datapoint Number, ]";
-                        break;
-                    case (".HMD"):
-                        msRunFormat = "[,, Hive HMD file, ]";
-                        msRunIDFormat = "[,, Hive HMD file Datapoint Number, ]";
-                        break;
-                    case (".MZB"):
-                        msRunFormat = "[,, Hive mzB file, ]";
-                        msRunIDFormat = "[,, Hive mzB file Datapoint Number, ]";
-                        break;
-                    case (".LCD"):
-                        msRunFormat = "[MS, MS:1003009, Shimadzu Biotech LCD format, ]";
-                        msRunIDFormat = "[MS, MS:1000929, Shimadzu Biotech nativeID format, ]";
-                        break;
-                    case (".QGD"):
-                        msRunFormat = "[,, Shimadzu GC/MS format, ]";
-                        msRunIDFormat = "[,, Shimadzu GC/MS format file Datapoint Number, ]";
-                        break;
-                    default:
-                        msRunFormat = "[,, Unknown file format, ]";
-                        msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
-                        break;
-                }
+                // A file on disk is described by what the disk shows, as before formats were recorded. A file whose raw
+                // data have since been deleted or moved is described by the format recorded while they were present; with
+                // nothing recorded (a project saved before formats were recorded) it gets the unknown terms.
+                var (msRunFormat, msRunIDFormat) = MsRunFormatTerms(RawFileFormatClassifier.Resolve(files[i]), analysisFileExtention);
                 msRunIDFormat = "[,, MS-DIAL set Datapoint Number, ]";
                 var id = files[i].AnalysisFileId + 1;
                 fileMetadataDic.Add(id, new RawFileMetadata()
@@ -1716,6 +1624,73 @@ namespace CompMs.MsdialCore.Export
                 });
             }
             return fileMetadataDic;
+        }
+
+        /// <summary>
+        /// The ms_run format and nativeID format terms for a raw data file of <paramref name="format"/>. An unknown
+        /// format is described by a user term that names only the extension (<paramref name="upperExtension"/>, upper case).
+        /// </summary>
+        /// <remarks>
+        /// These are the terms the exporter wrote when it told the format from the file on disk, kept as they were.
+        /// The nativeID format is not written: every run's id_format is "MS-DIAL set Datapoint Number", because
+        /// spectra_ref uses MS-DIAL's scan numbers. imzML has no term here and is written as an unknown file.
+        /// </remarks>
+        internal static (string Format, string IdFormat) MsRunFormatTerms(RawFileFormat format, string upperExtension)
+        {
+            switch (format)
+            {
+                case RawFileFormat.Abf:
+                    return ("[,, ABF(Analysis Base File) file, ]", "[,, ABF file Datapoint Number, ]");
+                case RawFileFormat.Ibf:
+                    return ("[,, IBF file, ]", "[,, IBF file Datapoint Number, ]");
+                case RawFileFormat.SciexWiff:
+                case RawFileFormat.SciexWiff2:
+                    return ("[MS, MS:1000562, ABI WIFF format, ]", "[MS, MS:1000770, WIFF nativeID format, ]");
+                // Agilent and Bruker both write a ".d" folder. Bruker's holds analysis.baf
+                // (BAF) or analysis.tdf / analysis.tsf (timsTOF); Agilent's holds AcqData.
+                case RawFileFormat.BrukerTdf:
+                    return ("[MS, MS:1002817, Bruker TDF format, ]", "[MS, MS:1002818, Bruker TDF nativeID format, ]");
+                case RawFileFormat.BrukerTsf:
+                    return ("[MS, MS:1003282, Bruker TSF format, ]", "[MS, MS:1003283, Bruker TSF nativeID format, ]");
+                case RawFileFormat.BrukerBaf:
+                    return ("[MS, MS:1000815, Bruker BAF format, ]", "[MS, MS:1000772, Bruker BAF nativeID format, ]");
+                case RawFileFormat.AgilentMassHunterD:
+                    return ("[MS, MS:1001509, Agilent MassHunter format, ]", "[MS, MS:1001508, Agilent MassHunter nativeID format, ]");
+                case RawFileFormat.NetCdf:
+                    return ("[EDAM, format:3650, netCDF, ]", "[MS, MS:1000776, scan number only nativeID format, ]");
+                case RawFileFormat.MzML:
+                    return ("[MS, MS:1000584, mzML format, ]", "[MS, MS:1000776, scan number only nativeID format, ]");
+                // A Waters .raw is a folder and a Thermo .raw a file.
+                case RawFileFormat.WatersRaw:
+                    return ("[MS, MS:1000526, Waters raw format, ]", "[MS, MS:1000769, Waters nativeID format, ]");
+                case RawFileFormat.ThermoRaw:
+                    return ("[MS, MS:1000563, Thermo RAW format, ]", "[MS, MS:1000768, Thermo nativeID format, ]");
+                case RawFileFormat.KanomaxLrp:
+                    return ("[,, LRP file, ]", "[,, LRP file Datapoint Number, ]");
+                case RawFileFormat.HiveHmd:
+                    return ("[,, Hive HMD file, ]", "[,, Hive HMD file Datapoint Number, ]");
+                case RawFileFormat.HiveMzb:
+                    return ("[,, Hive mzB file, ]", "[,, Hive mzB file Datapoint Number, ]");
+                case RawFileFormat.ShimadzuLcd:
+                    return ("[MS, MS:1003009, Shimadzu Biotech LCD format, ]", "[MS, MS:1000929, Shimadzu Biotech nativeID format, ]");
+                case RawFileFormat.ShimadzuQgd:
+                    return ("[,, Shimadzu GC/MS format, ]", "[,, Shimadzu GC/MS format file Datapoint Number, ]");
+                case RawFileFormat.ImzML:
+                case RawFileFormat.Unknown:
+                default:
+                    break;
+            }
+            // A .raw or .d whose format was never recorded and that is not on disk (or holds nothing recognisable)
+            // is neither vendor's, and is described as unknown rather than as a vendor it may not be.
+            switch (upperExtension)
+            {
+                case (".RAW"):
+                    return ("[,, Unknown .raw format, ]", "[,, Unknown file format Datapoint Number, ]");
+                case (".D"):
+                    return ("[,, Unknown .d folder format, ]", "[,, Unknown file format Datapoint Number, ]");
+                default:
+                    return ("[,, Unknown file format, ]", "[,, Unknown file format Datapoint Number, ]");
+            }
         }
 
         static string SetAdductTypeString(string adductIons)
