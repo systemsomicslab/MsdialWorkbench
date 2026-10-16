@@ -15,6 +15,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,12 +61,20 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ReactiveProperty.WPF" Version="8.2.0"/>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0"/>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0"/>
+    <!-- Must support C# 12 collection expressions ("[...]"), which the generator's emitted code
+         uses (see LipidSpectrumGeneratorTypeGenerator.cs) and which Roslyn only understands from
+         4.8.0 onward; the runtime host in LipidSpectrumPreviewService compiles that emitted code
+         with this exact package, independent of the .NET SDK's own (newer) bundled compiler. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\ChartDrawing\ChartDrawing.csproj"/>
     <ProjectReference Include="..\..\Common\CommonMVVM\CommonMVVM.csproj"/>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj"/>
+    <!-- Plain reference (no OutputItemType=Analyzer): hosts LipidSpectrumGeneratorTypeGenerator
+         directly at runtime for the XML editor's live preview, instead of running it at build time. -->
+    <ProjectReference Include="..\..\Common\CompMs.Common.Lipidomics.SourceGenerator\CompMs.Common.Lipidomics.SourceGenerator.csproj"/>
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj"/>
     <ProjectReference Include="..\MsdialGuiApp\MsdialGuiApp.csproj"/>
   </ItemGroup>

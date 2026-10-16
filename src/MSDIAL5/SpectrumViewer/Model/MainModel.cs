@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.SpectrumViewer.Model.LipidSpectrumXml;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
@@ -28,8 +29,8 @@ namespace CompMs.App.SpectrumViewer.Model
             SplitSpectrumModels = new ReadOnlyObservableCollection<SplitSpectrumsModel>(splitSpectrumModels);
             splitSpectrumModels.Add(new SplitSpectrumsModel(spectrumModelSerialNumber++));
 
-            generatorEditorModels = new ObservableCollection<SpectrumGeneratorEditorModel>();
-            GeneratorEditorModels = new ReadOnlyObservableCollection<SpectrumGeneratorEditorModel>(generatorEditorModels);
+            xmlEditorModels = new ObservableCollection<LipidSpectrumXmlEditorModel>();
+            XmlEditorModels = new ReadOnlyObservableCollection<LipidSpectrumXmlEditorModel>(xmlEditorModels);
         }
 
         public LipidQueryBean LipidQueries { get; }
@@ -86,15 +87,15 @@ namespace CompMs.App.SpectrumViewer.Model
             splitSpectrumModels.Remove(splitSpectrumModel);
         }
 
-        public ReadOnlyObservableCollection<SpectrumGeneratorEditorModel> GeneratorEditorModels { get; }
-        private readonly ObservableCollection<SpectrumGeneratorEditorModel> generatorEditorModels;
+        public ReadOnlyObservableCollection<LipidSpectrumXmlEditorModel> XmlEditorModels { get; }
+        private readonly ObservableCollection<LipidSpectrumXmlEditorModel> xmlEditorModels;
 
-        public void AddSpectrumGeneratorEditorModel() {
-            generatorEditorModels.Add(new SpectrumGeneratorEditorModel());
+        public void AddLipidSpectrumXmlEditorModel() {
+            xmlEditorModels.Add(new LipidSpectrumXmlEditorModel());
         }
 
-        public void RemoveSpectrumGeneratorEditorModel(SpectrumGeneratorEditorModel editorModel) {
-            generatorEditorModels.Remove(editorModel);
+        public void RemoveLipidSpectrumXmlEditorModel(LipidSpectrumXmlEditorModel editorModel) {
+            xmlEditorModels.Remove(editorModel);
         }
     }
 }
