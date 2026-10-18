@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Properties;
+﻿using CompMs.Common;
+using CompMs.App.Msdial.Properties;
 using System;
 using System.Linq;
 
@@ -14,9 +15,13 @@ namespace CompMs.App.Msdial.Utility
 
         }
 
+        /// <summary>
+        /// What the user sees: main version and build date, plus a laboratory suffix if this build
+        /// carries one. See <see cref="MsdialBuildIdentity"/>.
+        /// </summary>
         public string Version {
             get {
-                return Resources.VERSION;
+                return MsdialBuildIdentity.DisplayVersion;
             }
         }
 

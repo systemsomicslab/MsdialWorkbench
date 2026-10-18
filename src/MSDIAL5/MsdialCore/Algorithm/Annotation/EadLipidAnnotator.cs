@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
@@ -36,13 +37,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 case DataBaseSource.OadLipid:
                     _lipidGenerator = new DGTSLipidGeneratorDecorator(new LipidGenerator(new OadChainVariationGenerator(chainGenerator: new Omega3nChainNoOxiVariationGenerator(), minLength: 12)));
                     _description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.DoubleBondPosition;
-                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, useMs2: true, db.Source);
                     break;
                 case DataBaseSource.EidLipid:
-                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EID, useMs2: true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EID, useMs2: true, db.Source);
                     break;
                 case DataBaseSource.EieioLipid:
-                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true);
+                    _scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, useMs2: true, db.Source);
                     break;
             }
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
@@ -62,8 +63,16 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public MsScanMatchResult CalculateScore((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference) query, MoleculeMsReference reference) {
             var result = _scorer.Score(query.Item1, reference);
             var parameter = query.Item1.Parameter;
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(parameter.IsUseTimeForAnnotationScoring, result);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && rtRequirementMet && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
+            // No retention clause on the suggestion. "Use retention time for SCORING" must not
+            // reject a candidate -- that is what "use retention time for FILTERING" is for, and
+            // the two settings mean different things. Because both verdicts used to share the
+            // clause and FilterByThreshold is their disjunction, a retention-time disagreement
+            // deleted the candidate from the stored results outright. It now costs the reference
+            // match and leaves the precursor-only suggestion standing, which is what the evidence
+            // supports. This is the shape MassAnnotator and DimsMspAnnotator already had.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
             return result;
         }
 

@@ -539,7 +539,9 @@
                     O: Overannotation (Ctrl+5)
                 </TextBlock>
             </ToolTipService.ToolTip>
-            <CheckBox IsChecked="{Binding Confirmed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"/>
+            <!-- Who set the Confirmed tag (a person, the lipid RT check or another tool) and the check's verdict; null leaves the legend above. -->
+            <CheckBox IsChecked="{Binding Confirmed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="White" Background="Green" Style="{StaticResource IconCheckBox}"
+                      ToolTip="{Binding ConfirmedDetail, Mode=OneWay}" ToolTipService.ShowDuration="60000"/>
             <CheckBox IsChecked="{Binding LowQualitySpectrum, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="L" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
             <CheckBox IsChecked="{Binding Misannotation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="M" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>
             <CheckBox IsChecked="{Binding Coelution, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Content="C" Foreground="White" Background="Red" Style="{StaticResource IconCheckBox}"/>

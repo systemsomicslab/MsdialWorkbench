@@ -72,7 +72,12 @@ namespace CompMs.MsdialLcImMsApi.Export
                 "Total score",
                 "S/N",
                 "MS1 isotopes",
-                "MSMS spectrum" };
+                "MSMS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched" };
         }
 
         /// <summary>

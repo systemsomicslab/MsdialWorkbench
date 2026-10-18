@@ -14,6 +14,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
@@ -232,11 +233,57 @@ namespace CompMs.App.Msdial.Model.Setting
             UseQuantmassDefinedInLibrary = parameter.IsReplaceQuantmassByUserDefinedValue;
             OnlyReportTopHit = parameter.RefSpecMatchBaseParam.OnlyReportTopHitInMspSearch;
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _riToleranceScale = parameter.RiCompoundType;
+            RiDictionarySettingModel.PropertyChanged += OnRiDictionarySettingChanged;
         }
 
         public bool IsReadOnly { get; }
 
         public MsRefSearchParameterBase SearchParameter { get; }
+
+        /// <summary>
+        /// The RI tolerance held by <see cref="SearchParameter"/>, as a property that announces its
+        /// own changes. MsRefSearchParameterBase is a plain MessagePack object with no change
+        /// notification, so a value assigned here -- by the scale following below, or by loading a
+        /// parameter file -- would otherwise never reach the text box showing it.
+        /// </summary>
+        public float RiTolerance {
+            get => SearchParameter.RiTolerance;
+            private set {
+                if (SearchParameter.RiTolerance == value) {
+                    return;
+                }
+                SearchParameter.RiTolerance = value;
+                OnPropertyChanged(nameof(RiTolerance));
+            }
+        }
+
+        // The retention-index scale the current tolerance was chosen on. Not the same as
+        // RiDictionarySettingModel.CompoundType, which is the scale selected now.
+        private RiCompoundType _riToleranceScale;
+
+        private void OnRiDictionarySettingChanged(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(RiDictionarySettingModel.CompoundType)) {
+                FollowRetentionIndexScale(RiDictionarySettingModel.CompoundType);
+            }
+        }
+
+        /// <summary>
+        /// Move the RI tolerance onto a newly selected index scale, unless the analyst has typed a
+        /// value of their own. See <see cref="RetentionIndexToleranceDefault"/> for why 20 and 20000
+        /// are the same window and why carrying either onto the other scale is useless.
+        /// </summary>
+        private void FollowRetentionIndexScale(RiCompoundType selected) {
+            var previous = _riToleranceScale;
+            if (previous == selected) {
+                return;
+            }
+            _riToleranceScale = selected;
+            if (!RetentionIndexToleranceDefault.IsDefaultFor(RiTolerance, previous)) {
+                return; // the analyst chose this number, so it is not ours to replace.
+            }
+            RiTolerance = RetentionIndexToleranceDefault.For(selected);
+        }
 
         public RetentionType RetentionType {
             get => _retentionType;
@@ -297,7 +344,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 UseQuantmassDefinedInLibrary = gcmsParameter.IsReplaceQuantmassByUserDefinedValue;
             }
             MspFilePath = parameter.ReferenceFileParam.MspFilePath;
-            SearchParameter.RiTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
+            RiTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance;
             SearchParameter.RtTolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance;
             SearchParameter.Ms1Tolerance = parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance;
             SearchParameter.SquaredWeightedDotProductCutOff = parameter.RefSpecMatchBaseParam.MspSearchParam.SquaredWeightedDotProductCutOff;

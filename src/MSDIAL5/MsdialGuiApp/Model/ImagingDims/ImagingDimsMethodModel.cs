@@ -31,7 +31,7 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
     private readonly IMsdialDataStorage<MsdialDimsParameter> _storage;
 
     public ImagingDimsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialDimsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker)
-        : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter)
+        : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter, broker)
     {
         _storage = storage;
         _broker = broker;
@@ -96,6 +96,9 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
         Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
         return null;
     }
+
+    // The ion images are drawn from the raw data.
+    public override BrowsingWithoutRawData BrowsingWithoutRawData => BrowsingWithoutRawData.NotSupported;
 
     public override Task LoadAsync(CancellationToken token) {
         foreach (var file in AnalysisFileModelCollection.AnalysisFiles) {

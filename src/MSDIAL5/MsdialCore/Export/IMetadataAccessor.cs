@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Components;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CompMs.Common.Utility;
 
 namespace CompMs.MsdialCore.Export
 {
@@ -30,6 +31,16 @@ namespace CompMs.MsdialCore.Export
             _trimSpectrumToExcelLimit = trimSpectrumToExcelLimit;
         }
         public ParameterBase Parameter => _parameter;
+
+        /// <summary>
+        /// The reference lookup this accessor resolves the representative match result through.
+        /// </summary>
+        /// <remarks>
+        /// Exposed for exports that describe candidates other than the representative one, which need the
+        /// same lookup applied to a different match result. <see cref="Parameter"/> is already read the
+        /// same way by the mzTab-M exporter.
+        /// </remarks>
+        public IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? Refer => _refer;
         public string[] GetHeaders() => GetHeadersCore();
 
         IReadOnlyDictionary<string, string> IMetadataAccessor.GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
@@ -70,6 +81,11 @@ namespace CompMs.MsdialCore.Export
                 "Spectrum reference file name",
                 "MS1 isotopic spectrum",
                 "MS/MS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched",
             };
         }
 
@@ -91,10 +107,13 @@ namespace CompMs.MsdialCore.Export
                 comments = comments.Append($"Tag: {spot.TagCollection}");
             }
             var comment = string.Join("; ", comments);
+            var hadProductIonSpectrum = spot.IsMsmsAssigned;
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
-                { "Metabolite name", UnknownIfEmpty(spot.Name) },
+                // The same name the alignment table, mzTab-M and the exported spectra show. What the
+                // prefix used to say is two columns along, in "Evidence source", where it says more.
+                { "Metabolite name", UnknownIfEmpty(AnnotationName.Canonical(spot.Name, matchResult?.IsLipidChainsMatch ?? false)) },
                 { "Adduct type", spot?.AdductType.AdductIonName ?? "null" },
                 { "Post curation result", GetPostCurationResult(spot) },
                 { "Fill %", spot.FillParcentage.ToString("F2") },
@@ -111,16 +130,21 @@ namespace CompMs.MsdialCore.Export
                 { "Isotope tracking parent ID", spot.PeakCharacter.IsotopeParentPeakID.ToString() },
                 { "Isotope tracking weight number", spot.PeakCharacter.IsotopeWeightNumber.ToString() },
                 { "m/z similarity", ValueOrNull(matchResult.AcurateMassSimilarity, "F2") },
-                { "Simple dot product", ValueOrNull(matchResult.SimpleDotProduct, "F3") },
-                { "Weighted dot product", ValueOrNull(matchResult.WeightedDotProduct, "F3") },
-                { "Reverse dot product", ValueOrNull(matchResult.ReverseDotProduct, "F3") },
-                { "Matched peaks count", ValueOrNull(matchResult.MatchedPeaksCount, "F2") },
-                { "Matched peaks percentage", ValueOrNull(matchResult.MatchedPeaksPercentage, "F2") },
+                { "Simple dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.SimpleDotProduct, "F3") },
+                { "Weighted dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.WeightedDotProduct, "F3") },
+                { "Reverse dot product", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.ReverseDotProduct, "F3") },
+                { "Matched peaks count", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.MatchedPeaksCount, "F2") },
+                { "Matched peaks percentage", AnnotationScoreFormat.Score(matchResult, hadProductIonSpectrum, static r => r.MatchedPeaksPercentage, "F2") },
                 { "Total score", ValueOrNull(matchResult.TotalScore, "F3") },
                 { "S/N average", spot.SignalToNoiseAve.ToString("0.00") },
                 { "Spectrum reference file name", ValueOrNull(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == spot.RepresentativeFileID)?.FileName) },
                 { "MS1 isotopic spectrum", GetIsotopesListContent(spot) },
                 { "MS/MS spectrum", GetSpectrumListContent(msdec) },
+                { "Measured terms", AnnotationEvidenceFormat.Terms(matchResult) },
+                { "Evidence source", AnnotationEvidenceFormat.Source(matchResult) },
+                { "Candidates found", AnnotationEvidenceFormat.Count(matchResult?.CandidatesFound) },
+                { "Candidates above threshold", AnnotationEvidenceFormat.Count(matchResult?.CandidatesAboveThreshold) },
+                { "Candidates reference matched", AnnotationEvidenceFormat.Count(matchResult?.CandidatesReferenceMatched) },
             };
         }
 

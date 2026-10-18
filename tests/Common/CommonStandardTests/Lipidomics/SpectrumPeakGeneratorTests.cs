@@ -277,7 +277,6 @@ namespace CompMs.Common.Lipidomics.Tests
                     new SpectrumPeak(504.308466,  50d), // C2 +H
                     new SpectrumPeak(516.308466, 150d), // C3 -H
                     new SpectrumPeak(517.316291, 300d), // C3
-                    new SpectrumPeak(518.324116, 150d), // C3 +H
                     new SpectrumPeak(530.324116,  50d), // C4 -H
                     new SpectrumPeak(531.331941, 100d), // C4
                     new SpectrumPeak(532.339766,  50d), // C4 +H

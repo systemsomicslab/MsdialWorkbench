@@ -79,12 +79,29 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
                 Name = reference.Name, LibraryID = reference.ScanID, InChIKey = reference.InChIKey,
                 AcurateMassSimilarity = (float)ms1Similarity, IsotopeSimilarity = (float)isotopeSimilarity,
                 Source = SourceType.TextDB, AnnotatorID = sourceKey, Priority = Priority,
+                // No Spectrum bit: a text database holds no reference spectrum, so nothing here
+                // opens one. That is the fact this record is meant to make visible.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithComparedValues(MeasuredTerms.AccurateMass, property.PrecursorMz, reference.PrecursorMz)
+                    .With(MeasuredTerms.Isotope, isotopeSimilarity),
             };
             if (parameter.IsUseTimeForAnnotationScoring) {
-                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
+                // Guarded overload. It returns the -1 not-computed sentinel when either side
+                // carries no usable value, which is what keeps a reference with no retention
+                // time out of the score average below. The `RtSimilarity >= 0` test there was
+                // always written for this sentinel; it simply never received one, because the
+                // three-argument overload scores whatever it is handed. See RetentionMatchPolicy.
+                var rtSimilarity = MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance, out _);
                 result.RtSimilarity = (float)rtSimilarity;
-
+                result.MeasuredTerms = result.MeasuredTerms.WithComparedValues(
+                    MeasuredTerms.RetentionTime, property.ChromXs.RT.Value, reference.ChromXs.RT.Value);
             }
+            // A text database holds no reference spectrum, so nothing here opened one and the
+            // evidence is the precursor mass (with whatever time or CCS terms the mode adds).
+            // ValidateBase then sets IsReferenceMatched from those alone, which is what makes this
+            // record necessary: without it an export cannot separate these names from MS/MS
+            // reference matches.
+            result.EvidenceSource = AnnotationEvidenceSource.PrecursorOnly;
             result.TotalScore = (float)CalculateTotalScoreCore(result, parameter);
 
             return result;
@@ -158,10 +175,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
-            var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = diff <= parameter.RtTolerance;
+            result.IsRtMatch = RetentionMatchPolicy.IsRetentionTimeMatch(property.ChromXs.RT.Value, reference.ChromXs.RT.Value, parameter.RtTolerance);
 
-            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch);
+            // A retention-time-anchored text database is exactly where mixed entries occur,
+            // and this annotator never sets IsAnnotationSuggested: failing the requirement
+            // here would erase the row rather than lower it.
+            result.IsReferenceMatched = result.IsPrecursorMzMatch
+                && RetentionMatchPolicy.RetentionTimeRequirementMet(
+                    parameter.IsUseTimeForAnnotationScoring, property.ChromXs.RT.Value, reference.ChromXs.RT.Value, result.IsRtMatch);
+            // This annotator had no suggestion path at all, so a retention-time disagreement left
+            // both verdicts false and the candidate vanished -- on exactly the path a
+            // retention-time-anchored text database is used for. A text database row is
+            // precursor-only evidence by construction, which is what a suggestion means.
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

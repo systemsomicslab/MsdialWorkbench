@@ -967,24 +967,6 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             }
         }
 
-        public float SampleMaxOverBlankAverage {
-            get => innerModel.SampleMaxOverBlankAverage;
-            set {
-                if (innerModel.SampleMaxOverBlankAverage == value) return;
-                innerModel.SampleMaxOverBlankAverage = value;
-                OnPropertyChanged(nameof(SampleMaxOverBlankAverage));
-            }
-        }
-
-        public float SampleAverageOverBlankAverage {
-            get => innerModel.SampleAverageOverBlankAverage;
-            set {
-                if (innerModel.SampleAverageOverBlankAverage == value) return;
-                innerModel.SampleAverageOverBlankAverage = value;
-                OnPropertyChanged(nameof(SampleAverageOverBlankAverage));
-            }
-        }
-
         public bool IsKeepRemovableFeaturesAndAssignedTagForChecking {
             get => innerModel.IsKeepRemovableFeaturesAndAssignedTagForChecking;
             set {

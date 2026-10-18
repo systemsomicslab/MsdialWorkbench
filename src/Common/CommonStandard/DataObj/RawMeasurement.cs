@@ -70,6 +70,7 @@ namespace CompMs.Common.DataObj {
         public List<double> CollisionEnergyTargets { get; set; }
         public MaldiFrameLaserInfo MaldiFrameLaserInfo { get; set; }
         public List<MaldiFrameInfo> MaldiFrames { get; set; }
+        public RawDataMetadata Metadata { get; set; }
 
         public RawMeasurement()
         {
@@ -83,6 +84,7 @@ namespace CompMs.Common.DataObj {
             MaldiFrameLaserInfo = new MaldiFrameLaserInfo();
 
             MaldiFrames = new List<MaldiFrameInfo>();
+            Metadata = new RawDataMetadata();
         }
     }
 

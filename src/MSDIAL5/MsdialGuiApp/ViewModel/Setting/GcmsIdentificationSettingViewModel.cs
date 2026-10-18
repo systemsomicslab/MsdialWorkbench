@@ -129,6 +129,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             MspFilePath = model.ToReactivePropertyAsSynchronized(m => m.MspFilePath).AddTo(Disposables);
             BrowseMspCommand = new ReactiveCommand().WithSubscribe(Browse).AddTo(Disposables);
             SearchParameter = new MsRefSearchParameterBaseViewModel(model.SearchParameter).AddTo(Disposables);
+            // MsRefSearchParameterBaseViewModel only pushes the box into the parameter, never back,
+            // so a tolerance the model re-seeds for a newly selected RI scale has to be carried in.
+            model.ObserveProperty(m => m.RiTolerance, isPushCurrentValueAtFirst: false)
+                .Subscribe(tolerance => SearchParameter.RiTolerance.Value = tolerance.ToString())
+                .AddTo(Disposables);
             UseQuantMassesDefinedInMsp = model.ToReactivePropertySlimAsSynchronized(m => m.UseQuantmassDefinedInLibrary).AddTo(Disposables);
             OnlyReportTopHit = model.ToReactivePropertySlimAsSynchronized(m => m.OnlyReportTopHit).AddTo(Disposables);
 

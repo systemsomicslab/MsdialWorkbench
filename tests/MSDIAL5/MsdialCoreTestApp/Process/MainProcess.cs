@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
+using CompMs.App.MsdialConsole.Parser;
+using CompMs.App.MsdialConsole.Process.MoleculerNetworking;
 using CompMs.App.MsdialConsole.Properties;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -441,6 +442,121 @@ public static class MainProcess
         });
 
         root.Add(cmd);
+    }
+
+    /// <summary>
+    /// Write a method file for one processing mode, holding the built-in defaults.
+    /// </summary>
+    /// <remarks>
+    /// Written to standard output unless --output is given, so it can be piped or redirected. An
+    /// existing file is not replaced without --force: the file most likely to be named is the method
+    /// file somebody has already edited.
+    /// </remarks>
+    public static void SetTemplateCommand(Command root) {
+        var cmd = new Command("template", "Write a method file template holding the built-in defaults for a processing mode");
+        var modes = Enum.GetValues(typeof(MethodFileMode)).Cast<MethodFileMode>()
+            .ToDictionary(MethodFileTemplate.CommandName, StringComparer.OrdinalIgnoreCase);
+        var mode = new Argument<string>("mode") {
+            Description = "The command the method file is for: " + string.Join(", ", modes.Keys),
+        };
+        // Not AcceptOnlyFromAmong: it compares case-sensitively, and "LCMS" names the same command.
+        mode.Validators.Add(result => {
+            var value = result.GetValueOrDefault<string>();
+            if (value is null || !modes.ContainsKey(value)) {
+                result.AddError($"Unknown mode '{value}'. Use one of: {string.Join(", ", modes.Keys)}.");
+            }
+        });
+        var output = new Option<FileInfo>("--output", "-o") {
+            Description = "File to write the template to. Standard output when omitted",
+        };
+        var force = new Option<bool>("--force", "-f") {
+            Description = "Replace the output file if it already exists",
+        };
+        var ionMode = new Option<IonMode>("--ionmode") {
+            Description = "Positive or Negative. The searched adduct follows it ([M+H]+ or [M-H]-)",
+            DefaultValueFactory = _ => IonMode.Positive,
+        };
+        // IonMode also has Both, and the enum parser takes any number. The method-file reader
+        // understands neither, so a template holding one would run as Positive without saying so.
+        ionMode.Validators.Add(result => {
+            var value = result.GetValueOrDefault<IonMode>();
+            if (value != IonMode.Positive && value != IonMode.Negative) {
+                result.AddError("--ionmode must be Positive or Negative.");
+            }
+        });
+        cmd.Arguments.Add(mode);
+        cmd.Options.Add(output);
+        cmd.Options.Add(force);
+        cmd.Options.Add(ionMode);
+        cmd.SetAction(parseResult => {
+            var text = MethodFileTemplate.Create(modes[parseResult.GetRequiredValue(mode)], parseResult.GetValue(ionMode));
+            var file = parseResult.GetValue(output);
+            if (file is null) {
+                Console.Out.Write(text);
+                return 0;
+            }
+            if (file.Exists && !parseResult.GetValue(force)) {
+                Console.Error.WriteLine($"{file.FullName} already exists. Use --force to replace it.");
+                return 1;
+            }
+            try {
+                file.Directory?.Create();
+                File.WriteAllText(file.FullName, text, new System.Text.UTF8Encoding(false));
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
+                Console.Error.WriteLine($"The template could not be written to {file.FullName}: {ex.Message}");
+                return 1;
+            }
+            Console.WriteLine($"Method file template written to {file.FullName}");
+            return 0;
+        });
+        root.Subcommands.Add(cmd);
+    }
+
+    public static void SetNormalizeCommand(Command root) {
+        var cmd = new Command(
+            "normalize",
+            "Normalize an aligned result against internal standards and export the matrix");
+        var input = new Option<FileInfo>("--input", "-i") { Required = true };
+        input.Description = "MS-DIAL project file holding the alignment to normalize";
+        var standards = new Option<FileInfo>("--standards", "-s") { Required = true };
+        standards.Description = "Table of internal standards: StandardName, TargetClass, Concentration, optional PeakID, AssignName (true exports the peak at PeakID under StandardName, as an internal standard assignment, with none of the annotation it had; a peak not already carrying that name is renamed only with --allow-mismatched-peak-ids), DilutionRate, MolecularWeight";
+        var output = new Option<DirectoryInfo>("--output", "-o") { Required = true };
+        output.Description = "Directory to write the raw and normalized alignment matrices into";
+        var unit = new Option<IonAbundanceUnit>("--unit", "-u") {
+            DefaultValueFactory = _ => IonAbundanceUnit.NormalizedByInternalStandardPeakHeight,
+        };
+        unit.Description = "Unit of the normalized abundance, e.g. pmol_per_microL_plasma";
+        var alignment = new Option<int>("--alignment") { DefaultValueFactory = _ => 0 };
+        alignment.Description = "Index of the alignment result within the project";
+        var dilution = new Option<bool>("--apply-dilution-factor", "-d");
+        dilution.Description = "Multiply each file's normalized values by its dilution factor after normalizing";
+        var allowUnresolved = new Option<bool>("--allow-unresolved-standards");
+        allowUnresolved.Description = "Continue when a standard is not found, leaving the classes no other standard quantifies without a concentration";
+        var allowMismatched = new Option<bool>("--allow-mismatched-peak-ids");
+        allowMismatched.Description = "Continue when a standard's alignment ID holds a different compound or none; needed for AssignName to rename a peak";
+        var peakIdsOnly = new Option<bool>("--peak-ids-only");
+        peakIdsOnly.Description = "Take each standard only from its PeakID: one without a PeakID, or with one not in the alignment, is unresolved and never looked up by name";
+        cmd.Options.Add(input);
+        cmd.Options.Add(standards);
+        cmd.Options.Add(output);
+        cmd.Options.Add(unit);
+        cmd.Options.Add(alignment);
+        cmd.Options.Add(dilution);
+        cmd.Options.Add(allowUnresolved);
+        cmd.Options.Add(allowMismatched);
+        cmd.Options.Add(peakIdsOnly);
+        cmd.SetAction(parseResult => new NormalizationProcess().Run(
+            parseResult.GetRequiredValue(input),
+            parseResult.GetRequiredValue(standards),
+            parseResult.GetRequiredValue(output),
+            parseResult.GetValue(unit),
+            parseResult.GetValue(alignment),
+            parseResult.GetValue(dilution),
+            parseResult.GetValue(allowUnresolved),
+            parseResult.GetValue(allowMismatched),
+            parseResult.GetValue(peakIdsOnly)));
+        root.Subcommands.Add(cmd);
     }
 
     public static void SetEicCommand(Command root) {

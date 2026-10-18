@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net48;net472;net8.0</TargetFrameworks>
@@ -7,6 +7,8 @@
     <Configurations>Debug;Release</Configurations>
     <LangVersion>latest</LangVersion>
     <Nullable>annotations</Nullable>
+    <!-- This assembly is the one MsdialBuildIdentity reads; see Directory.Build.targets. -->
+    <MsdialEmitBuildIdentity>true</MsdialEmitBuildIdentity>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +41,7 @@
     <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />

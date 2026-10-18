@@ -15,6 +15,7 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
     public MsdialLcmsParameter LcmsParameter { get; }
     public IProgress<int>? Progress { get; set; }
     public bool SkipIonAbundanceCorrelationLinks { get; set; }
+    public AlignmentRetentionTimeCorrectionCollection? AlignmentRtCorrection { get; set; }
 
     public LcmsAlignmentProcessFactory(
         IMsdialDataStorage<MsdialLcmsParameter> storage, 
@@ -28,11 +29,11 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
     }
 
     public override DataAccessor CreateDataAccessor() {
-        return new LcmsDataAccessor(LcmsParameter);
+        return new LcmsDataAccessor(LcmsParameter, AlignmentRtCorrection);
     }
 
     public override IGapFiller CreateGapFiller() {
-        return new LcmsGapFiller(LcmsParameter);
+        return new LcmsGapFiller(LcmsParameter, AlignmentRtCorrection);
     }
 
     public override PeakAligner CreatePeakAligner() {
@@ -40,6 +41,6 @@ public class LcmsAlignmentProcessFactory : AlignmentProcessFactory
     }
 
     public override IPeakJoiner CreatePeakJoiner() {
-        return new LcmsPeakJoiner(LcmsParameter.AlignmentBaseParam, new LcmsDataAccessor(LcmsParameter), _evaluator, Progress);
+        return new LcmsPeakJoiner(LcmsParameter.AlignmentBaseParam, new LcmsDataAccessor(LcmsParameter, AlignmentRtCorrection), _evaluator, Progress);
     }
 }

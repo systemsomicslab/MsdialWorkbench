@@ -111,23 +111,37 @@ public class EadLipidomicsAnnotationProcess : IAnnotationProcess
             r.SpectrumID = msdecResult.RawSpectrumID;
             return r;
         }).ToList();
+        // Two populations are live in this method and they must not share numbers. This one is the
+        // molecular-species query; each EAD factory below scores its own generated-lipid library.
+        var moleculePopulation = CandidatePopulation.Of(candidates, results, _evaluator.IsReferenceMatched);
         if (results.Count > 0) {
             var matches = _evaluator.SelectReferenceMatchResults(results);
             var topResults = new List<MsScanMatchResult>();
             if (matches.Count > 0) {
-                var best = _evaluator.SelectTopHit(matches);
+                var best = moleculePopulation.RecordOn(_evaluator.SelectTopHit(matches));
                 chromPeakFeature.MatchResults.AddResult(best);
                 topResults.Add(best);
                 foreach (var factory in _eadQueryFactories) {
                     var query2 = factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, factory.PrepareParameter());
+                    // Called EXACTLY ONCE, and it has to stay that way. This annotator's
+                    // FindCandidates goes through Search -> EadLipidDatabase.Generates, which
+                    // assigns ScanIDs and registers references: it MUTATES the database. Counting
+                    // by calling FindCandidates a second time would therefore change existing
+                    // values, not merely double the work. The list returned is already
+                    // materialised -- IMatchResultFinder.FindCandidates is declared List<T> and
+                    // this implementation ends in ToList -- so counting it below re-enters nothing.
                     var candidates2 = query2.FindCandidates();
                     var results2 = _evaluator.FilterByThreshold(candidates2);
-                    topResults.AddRange(_evaluator.SelectTopN(results2, NUMBER_OF_ANNOTATION_RESULTS));
+                    // Per factory: one (peak, annotator) pair, its own population.
+                    var eadPopulation = CandidatePopulation.Of(candidates2, results2, _evaluator.IsReferenceMatched);
+                    topResults.AddRange(eadPopulation.RecordOnAll(_evaluator.SelectTopN(results2, NUMBER_OF_ANNOTATION_RESULTS)));
                 }
             }
             else {
-                topResults.AddRange(_evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS));
+                topResults.AddRange(moleculePopulation.RecordOnAll(_evaluator.SelectTopN(results, NUMBER_OF_ANNOTATION_RESULTS)));
             }
+            // AddResults filters by reference identity, so re-offering `best` here is a no-op
+            // rather than a duplicate row -- and it keeps the molecule population's numbers.
             chromPeakFeature.MatchResults.AddResults(topResults);
         }
     }

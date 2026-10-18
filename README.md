@@ -31,6 +31,12 @@ However, if the discussion is something that cannot be done openly by any means,
 8. Select `MsdialGuiApp` from the `Startup Projects` pull-down menu.
 9. Click `▶ MsdialGuiApp` button on the right side of 8.
 
+By default, building the project does not download the large library files. To download missing library files during a build, pass the MSBuild property explicitly:
+
+```powershell
+dotnet build .\src\MSDIAL5\MsdialGuiApp\MsdialGuiApp.csproj -p:DownloadLibraries=true
+```
+
 ### Important Note
 The 'Debug/Release vendor unsupported' version is a special configuration designed for the purpose of source code distribution.
 Due to licensing restrictions, this version cannot read proprietary data formats from mass spectrometry manufacturers.
@@ -65,4 +71,3 @@ The source code is licensed under GNU LESSER GENERAL PUBLIC LICENSE (LGPL) versi
 See LGPL.txt for full text of the license.
 This software uses third-party software.
 A full list of third-party software licenses in MsdialWorkbench is in the file THIRD-PARTY-LICENSE-README.txt.
-

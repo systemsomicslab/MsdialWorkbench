@@ -44,12 +44,26 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return results.Where(result => result.IsReferenceMatched).ToList();
         }
 
+        /// <summary>
+        /// The best of several candidates from ONE annotator.
+        /// </summary>
+        /// <remarks>
+        /// The evidence rank sits below the two verdicts and above the score. Below them because
+        /// they are the stronger statement -- the annotator's full acceptance criteria were met --
+        /// and because moving it above would change what a text-database precursor-only match
+        /// outranks, which is a separate decision from this one. Above the score because a
+        /// qualitative judgement that a spectrum decided a name is not something a large enough
+        /// similarity should be able to buy past.
+        ///
+        /// Candidates that record no evidence source all rank alike, so a project written before
+        /// the record existed is ordered exactly as it was; Argmax keeps the first of a tie.
+        /// </remarks>
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
             if (results is null) {
                 throw new ArgumentNullException(nameof(results));
             }
 
-            return results.DefaultIfEmpty().Argmax(result => (result?.IsReferenceMatched ?? false, result?.IsAnnotationSuggested ?? false, result?.TotalScore ?? double.MinValue));
+            return results.DefaultIfEmpty().Argmax(result => (result?.IsReferenceMatched ?? false, result?.IsAnnotationSuggested ?? false, AnnotationEvidence.RankOf(result), result?.TotalScore ?? double.MinValue));
         }
     }
 }

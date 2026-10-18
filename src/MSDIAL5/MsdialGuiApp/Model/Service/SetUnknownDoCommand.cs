@@ -14,6 +14,7 @@ namespace CompMs.App.Msdial.Model.Service
         private List<MsScanMatchResult>? _manuallyResutls;
         private MsScanMatchResult? _unknownResult;
         private IMoleculeProperty? _previousMolecule;
+        private LipidRtCheckState? _previousLipidRtCheck;
 
         public SetUnknownDoCommand(IMoleculeProperty molecule, MsScanMatchResultContainerModel container)
         {
@@ -24,11 +25,24 @@ namespace CompMs.App.Msdial.Model.Service
         void IDoCommand.Do()
         {
             _manuallyResutls = _container.GetManuallyResults();
-            _unknownResult = new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown };
+            // The only site that records Manual. Built fresh with no name, no key and no score, so
+            // there is nothing to overwrite and no inherited value; Redo re-enters Do(), so this one
+            // assignment covers the undo/redo cycle. Without it a deliberate human "unknown" is
+            // byte-identical to an unannotated peak from a project written before key 40 existed.
+            _unknownResult = new MsScanMatchResult {
+                Source = SourceType.Manual | SourceType.Unknown,
+                EvidenceSource = AnnotationEvidenceSource.Manual,
+            };
             _previousMolecule = new MoleculeProperty(_molecule.Name, _molecule.Formula, _molecule.Ontology, _molecule.SMILES, _molecule.InChIKey);
             DataAccess.ClearMoleculePropertyInfomation(_molecule);
             _container.RemoveManuallyResults();
             _container.AddResult(_unknownResult);
+
+            // The lipid RT check's verdict and its own Confirmed were about the annotation that is now gone (addendum A6).
+            if (_molecule is ILipidRtCheckedObject checkedObject) {
+                _previousLipidRtCheck = checkedObject.CaptureLipidRtCheck();
+                checkedObject.WithdrawLipidRtCheck();
+            }
         }
 
         void IDoCommand.Undo()
@@ -44,6 +58,10 @@ namespace CompMs.App.Msdial.Model.Service
             _molecule.InChIKey = _previousMolecule.InChIKey;
             _container.RemoveResult(_unknownResult);
             _container.AddResults(_manuallyResutls);
+
+            if (_molecule is ILipidRtCheckedObject checkedObject && _previousLipidRtCheck is not null) {
+                checkedObject.RestoreLipidRtCheck(_previousLipidRtCheck);
+            }
         }
     }
 }

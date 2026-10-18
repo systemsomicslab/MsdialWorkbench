@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using CompMs.Common.Utility;
 
 namespace CompMs.MsdialCore.Export;
 
@@ -129,6 +130,14 @@ public sealed class NistRecordBuilder
         }
     }
 
+    /// <summary>
+    /// The compound name, canonicalised: see AnnotationName.Canonical. Callers pass the feature so
+    /// the structural level is decided from its match record rather than from the text.
+    /// </summary>
+    public void SetNameProperty(IAnnotatedObject? annotated, string name) {
+        SetNameProperty(annotated.CanonicalName(name));
+    }
+
     public void SetNameProperty(string name) {
         if (!string.IsNullOrEmpty(name) && !string.Equals(name, "unknown", StringComparison.CurrentCultureIgnoreCase)) {
             _contents["NAME"] = name;
@@ -142,13 +151,30 @@ public sealed class NistRecordBuilder
             $"|MS2SCAN={peak.MS2RawSpectrumID}",
             $"|PEAKHEIGHT={peak.PeakFeature.PeakHeightTop:F0}",
             $"|PEAKAREA={peak.PeakFeature.PeakAreaAboveZero:F0}",
-            $"|ISOTOPE=M+{peak.PeakCharacter.IsotopeWeightNumber}");
+            $"|ISOTOPE=M+{peak.PeakCharacter.IsotopeWeightNumber}",
+            Evidence(peak));
     }
 
     public void SetComment(AlignmentSpotProperty spot) {
         _contents["COMMENT"] = string.Concat($"{spot.Comment}",
             $"|PEAKID={spot.MasterAlignmentID}",
-            $"|ISOTOPE=M+{spot.PeakCharacter.IsotopeWeightNumber}");
+            $"|ISOTOPE=M+{spot.PeakCharacter.IsotopeWeightNumber}",
+            Evidence(spot));
+    }
+
+    /// <summary>
+    /// The evidence record, beside PEAKID, in the same COMMENT field.
+    /// </summary>
+    /// <remarks>
+    /// PEAKID is the join back to the peak table, the alignment table and mzTab-M; this is what the
+    /// join was for. A spectrum that leaves MS-DIAL for MS-FINDER, ICEBERG or SIRIUS now carries
+    /// what MS-DIAL had already established about it, instead of leaving that behind in a table.
+    /// A reader that does not know these keys skips them as it already skips PEAKID.
+    /// </remarks>
+    private static string Evidence(IAnnotatedObject? annotated) {
+        var result = annotated?.MatchResults?.Representative;
+        return $"|EVIDENCE={AnnotationEvidenceFormat.Source(result)}"
+            + $"|TERMS={AnnotationEvidenceFormat.EmbeddedTerms(result)}";
     }
 
     public void SetIonPropertyProperties(IIonProperty ionProperty) {

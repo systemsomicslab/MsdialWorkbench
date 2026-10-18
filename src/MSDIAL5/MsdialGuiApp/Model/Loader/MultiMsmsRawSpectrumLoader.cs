@@ -50,11 +50,15 @@ namespace CompMs.App.Msdial.Model.Loader
 
             return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector.Where(item => item is not null).Select(item => item!.Id), (msSpectra, ms2Id) =>
             {
+                // No such scan, as when the raw data file is missing: the scan list above still comes from the peak list.
+                if (ms2Id < 0 || ms2Id >= msSpectra.Count) {
+                    return (IMSScanProperty?)null;
+                }
                 var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[ms2Id], _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
                 if (_parameter.RemoveAfterPrecursor) {
                     spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
                 }
-                return new MSScanProperty(target.MS2RawSpectrumId, target.Mass, target.InnerModel.ChromXs.GetRepresentativeXAxis(), target.InnerModel.IonMode)
+                return (IMSScanProperty?)new MSScanProperty(target.MS2RawSpectrumId, target.Mass, target.InnerModel.ChromXs.GetRepresentativeXAxis(), target.InnerModel.IonMode)
                 {
                     Spectrum = spectra,
                 };

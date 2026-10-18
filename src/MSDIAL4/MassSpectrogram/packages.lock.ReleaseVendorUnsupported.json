@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.7.2": {
+      "splash": {
+        "type": "Project"
+      }
+    }
+  }
+}

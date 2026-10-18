@@ -48,6 +48,11 @@ namespace CompMs.MsdialGcMsApi.Export
                 "S/N average",
                 "Spectrum reference file name",
                 "EI spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched",
             };
         }
 

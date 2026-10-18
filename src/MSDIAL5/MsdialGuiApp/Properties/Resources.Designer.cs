@@ -95,14 +95,5 @@ namespace CompMs.App.Msdial.Properties {
                 return ResourceManager.GetString("VDD_URI", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 5.5.260820.
-        /// </summary>
-        public static string VERSION {
-            get {
-                return ResourceManager.GetString("VERSION", resourceCulture);
-            }
-        }
     }
 }
