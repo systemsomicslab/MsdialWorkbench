@@ -1221,8 +1221,25 @@ namespace CompMs.MsdialCore.Parameter
         public bool TogetherWithAlignment { get; set; } = true;
         [Key(9)]
         public bool UseRefMatchedPeaksOnly { get; set; } = false;
+        /// <remarks>
+        /// Key 10 was added after projects with keys 0-9 were saved. Such a project has no element here, and MessagePack
+        /// then assigns null rather than the initializer, so the getter hands out the defaults instead of null: an older
+        /// project opens, exports its parameters and aligns with automatic RT correction off, as it was saved. The
+        /// defaults are put in place once, atomically, as for <see cref="ParameterBase.LipidRtCheckParam"/>.
+        /// </remarks>
         [Key(10)]
-        public AutomaticAlignmentRetentionTimeCorrectionParameter AutomaticRtCorrection { get; set; } = new AutomaticAlignmentRetentionTimeCorrectionParameter();
+        public AutomaticAlignmentRetentionTimeCorrectionParameter AutomaticRtCorrection {
+            get {
+                var parameter = _automaticRtCorrection;
+                if (parameter is null) {
+                    System.Threading.Interlocked.CompareExchange(ref _automaticRtCorrection, new AutomaticAlignmentRetentionTimeCorrectionParameter(), null);
+                    parameter = _automaticRtCorrection;
+                }
+                return parameter;
+            }
+            set => _automaticRtCorrection = value;
+        }
+        private AutomaticAlignmentRetentionTimeCorrectionParameter _automaticRtCorrection = new AutomaticAlignmentRetentionTimeCorrectionParameter();
     }
 
     /// <summary>
