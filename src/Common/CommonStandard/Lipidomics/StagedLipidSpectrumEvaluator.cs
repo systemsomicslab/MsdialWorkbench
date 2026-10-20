@@ -37,6 +37,10 @@ namespace CompMs.Common.Lipidomics
         ChainsNotDetermined,
         /// <summary>A diagnostic chain ion was not observed above its threshold.</summary>
         ChainDiagnosticIonMissing,
+        /// <summary>The rule set has no class-diagnostic ion and the chains could not stand in for it.</summary>
+        NoClassDiagnosticIon,
+        /// <summary>The rule set has no chain-diagnostic ion, so chains cannot be confirmed.</summary>
+        NoChainDiagnosticIon,
         /// <summary>The rule set has no position-diagnostic ion.</summary>
         NoPositionDiagnosticIon,
         /// <summary>A position-diagnostic ion was not observed above its threshold.</summary>
@@ -102,8 +106,9 @@ namespace CompMs.Common.Lipidomics
     /// Decides how far an observed MS/MS spectrum supports a lipid candidate, stage by stage, using
     /// the candidate's generated fragments (<see cref="ILipidSpectrumModel.GenerateFragments"/>):
     /// <list type="number">
-    /// <item>Class: every diagnostic Precursor/ClassIon is observed and no prohibited ion is.</item>
-    /// <item>Molecular species: the rule set is MSL and every diagnostic ChainIon is observed.</item>
+    /// <item>Class: every diagnostic Precursor/ClassIon is observed and no prohibited ion is. A rule set
+    /// with no class-diagnostic ion confirms its class only by reaching molecular species.</item>
+    /// <item>Molecular species: the rule set is MSL, has diagnostic ChainIons and every one is observed.</item>
     /// <item>Position: every position-diagnostic ion is observed.</item>
     /// </list>
     /// For now every diagnostic ion is required; DiagnosticIonGroup/Count and InvisibleIons are not used.
@@ -141,14 +146,20 @@ namespace CompMs.Common.Lipidomics
             if (!AllObserved(matches, IsClassDiagnostic)) {
                 return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ClassDiagnosticIonMissing, matches, similarity);
             }
+            // A rule set without class-diagnostic ions gives no class evidence of its own; its class is
+            // confirmed only together with the chains (as TG [M+NH4]+ is), never by default.
+            var classLevel = matches.Any(m => IsClassDiagnostic(m.Fragment.Rule)) ? StagedLipidLevel.Class : StagedLipidLevel.None;
             if (resolution != LipidSpectrumResolution.MolecularSpeciesLevel) {
-                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ResolutionLimitedToSpecies, matches, similarity);
+                return new StagedLipidEvaluation(classLevel, classLevel == StagedLipidLevel.Class ? StagedLipidStopReason.ResolutionLimitedToSpecies : StagedLipidStopReason.NoClassDiagnosticIon, matches, similarity);
             }
             if (!hasDeterminedChains) {
-                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ChainsNotDetermined, matches, similarity);
+                return new StagedLipidEvaluation(classLevel, classLevel == StagedLipidLevel.Class ? StagedLipidStopReason.ChainsNotDetermined : StagedLipidStopReason.NoClassDiagnosticIon, matches, similarity);
+            }
+            if (!matches.Any(m => IsChainDiagnostic(m.Fragment.Rule))) {
+                return new StagedLipidEvaluation(classLevel, StagedLipidStopReason.NoChainDiagnosticIon, matches, similarity);
             }
             if (!AllObserved(matches, IsChainDiagnostic)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.Class, StagedLipidStopReason.ChainDiagnosticIonMissing, matches, similarity);
+                return new StagedLipidEvaluation(classLevel, StagedLipidStopReason.ChainDiagnosticIonMissing, matches, similarity);
             }
             if (!matches.Any(m => IsPositionDiagnostic(m.Fragment.Rule))) {
                 return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.NoPositionDiagnosticIon, matches, similarity);

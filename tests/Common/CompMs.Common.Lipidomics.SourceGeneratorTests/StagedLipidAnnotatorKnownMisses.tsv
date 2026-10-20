@@ -10,7 +10,6 @@ HBMP	[M+NH4]+	Chains carrying further esters/amides (FA on a chain, N-acyl) cann
 LNAPE	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
 LNAPS	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
 MLCL	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
-LipidA	[M-H]-	Chains carrying further esters/amides (FA on a chain, N-acyl) cannot be expanded from a total-chain seed by TotalChainVariationGenerator.
 CL	[M+NH4]+	The fixture names CL as two chain pairs (26:0_34:2); expanding the 4-chain seed never reproduces that shape.
 WE	[M+NH4]+	The wax ester alcohol/acid pair (20:4/16:0) is not reproduced from the total-chain seed.
 SL	[M-H]-	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.

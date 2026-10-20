@@ -54,9 +54,15 @@ public class StagedLipidAnnotatorTests
 
             var seed = ToSeed(lipid);
             var result = annotator.Annotate(seed, reference.AdductType, spectrum);
-            var (passed, actual) = ruleSet.Resolution == LipidSpectrumResolution.MolecularSpeciesLevel
-                ? (result.Level >= StagedLipidLevel.MolecularSpecies && SameChains(result.Lipid, lipid), $"{result.Lipid?.Name ?? "null"} ({result.Level}, {result.StopReason})")
-                : (result.Level == StagedLipidLevel.Class && result.Lipid == seed, $"{result.Lipid?.Name ?? "null"} ({result.Level}, {result.StopReason})");
+            // What the rule set's own spectrum can confirm (diagnostic ions decide it, see the self-consistency test).
+            var expected = StagedLipidSelfConsistencyTests.ExpectedLevel(ruleSet.Resolution, hasChains: true, ruleSet.Rules.Select(r => new LipidFragment(r, 0d)).ToList());
+            var actual = $"{result.Lipid?.Name ?? "null"} ({result.Level}, {result.StopReason}), expected {expected}";
+            var passed = expected switch
+            {
+                StagedLipidLevel.None => result.Level == StagedLipidLevel.None,
+                StagedLipidLevel.Class => result.Level == StagedLipidLevel.Class && result.Lipid == seed,
+                _ => result.Level >= StagedLipidLevel.MolecularSpecies && SameChains(result.Lipid, lipid),
+            };
 
             var key = (model.LipidClassName, ruleSet.AdductIonName);
             var (total, failed, example) = outcomes.TryGetValue(key, out var o) ? o : (0, 0, null);

@@ -118,6 +118,40 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
+        public void RuleSetWithoutClassDiagnosticIonsConfirmsNothingByDefault() {
+            // As CL [M-2H]2- / FAHFA [M-H]-: no diagnostic Precursor/ClassIon, only diagnostic chain ions.
+            // An unrelated spectrum must not pass as the class.
+            var result = Evaluate(Spectrum((500, 100), (391, 80)), LipidSpectrumResolution.MolecularSpeciesLevel, Precursor, NonDiagnosticClassIon, ChainIon1, ChainIon2);
+
+            Assert.AreEqual(StagedLipidLevel.None, result.Level);
+            Assert.AreEqual(StagedLipidStopReason.ChainDiagnosticIonMissing, result.StopReason);
+        }
+
+        [TestMethod()]
+        public void RuleSetWithoutClassDiagnosticIonsIsConfirmedThroughItsChains() {
+            var result = Evaluate(Spectrum((500, 100), (300, 50), (320, 50)), LipidSpectrumResolution.MolecularSpeciesLevel, Precursor, NonDiagnosticClassIon, ChainIon1, ChainIon2);
+
+            Assert.AreEqual(StagedLipidLevel.MolecularSpecies, result.Level);
+        }
+
+        [TestMethod()]
+        public void SpeciesLevelRuleSetWithoutClassDiagnosticIonsConfirmsNothing() {
+            var result = Evaluate(Spectrum((500, 100)), LipidSpectrumResolution.SpeciesLevel, Precursor, NonDiagnosticClassIon);
+
+            Assert.AreEqual(StagedLipidLevel.None, result.Level);
+            Assert.AreEqual(StagedLipidStopReason.NoClassDiagnosticIon, result.StopReason);
+        }
+
+        [TestMethod()]
+        public void RuleSetWithoutChainDiagnosticIonsStopsAtClass() {
+            var nonDiagnosticChainIon = Fragment(LipidFragmentKind.ChainIon, 300d, isDiagnostic: false, threshold: null);
+            var result = Evaluate(Spectrum((184, 100), (300, 50)), LipidSpectrumResolution.MolecularSpeciesLevel, ClassIon, nonDiagnosticChainIon);
+
+            Assert.AreEqual(StagedLipidLevel.Class, result.Level);
+            Assert.AreEqual(StagedLipidStopReason.NoChainDiagnosticIon, result.StopReason);
+        }
+
+        [TestMethod()]
         public void NoneResolutionIsNotEvaluated() {
             var result = Evaluate(Spectrum((184, 100)), LipidSpectrumResolution.None, ClassIon);
 
