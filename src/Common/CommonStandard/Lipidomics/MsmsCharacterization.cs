@@ -3288,7 +3288,7 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN1_H2O = nl_SN1 - H2O;
 
                             var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1, threshold);
-                            if (!isClassIon3Found) return null; // sn1 must (2019/10/24)
+                            if (!isClassIon3Found) continue; // sn1 must (2019/10/24)
 
 
                             //Console.WriteLine(sn1Carbon + ":" + sn1Double + "/n-" + sn2Carbon + ":" + sn2Double +
@@ -4660,7 +4660,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon >= 24 && sn1Double >= 5) return null;
+                            if (sn1Carbon >= 24 && sn1Double >= 5) continue;
 
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
                             var NL_sn2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
@@ -5989,7 +5989,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             // if (sn2Carbon < minSnCarbon) { break; }
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon <= 10 || sn2Carbon <= 10) return null;
+                            if (sn1Carbon <= 10 || sn2Carbon <= 10) continue;
                             // 2 x Hex loss
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - 341.108935 - 17.026549;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - 341.108935 - 17.026549;
@@ -6137,7 +6137,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                             if (sn1Double >= 5) continue;
 
 
@@ -6182,7 +6182,7 @@ namespace CompMs.Common.Lipidomics
                     {
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
@@ -6229,7 +6229,7 @@ namespace CompMs.Common.Lipidomics
                     {
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                             if (sn1Double >= 5) continue;
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
@@ -14565,7 +14565,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon >= 24 && sn1Double >= 5) return null;
+                            if (sn1Carbon >= 24 && sn1Double >= 5) continue;
 
                             var sn1_gly = (sn1Carbon + 3) * 12 + (((sn1Carbon + 3) * 2) - (sn1Double * 2) + 1) * MassDiffDictionary.HydrogenMass + 5 * MassDiffDictionary.OxygenMass + MassDiffDictionary.PhosphorusMass - Proton;
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -16657,7 +16657,7 @@ AdductIon adduct)
                     {
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
 
@@ -16699,7 +16699,7 @@ AdductIon adduct)
                 {
                     for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                     {
-                        if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                        if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                         var sn2Carbon = totalCarbon - sn1Carbon;
                         var sn2Double = totalDoubleBond - sn1Double;
 
