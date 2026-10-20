@@ -8322,7 +8322,9 @@ AdductIon adduct)
 
                     // maybe fatty acid product ion is not found in positive mode
 
-                    for (int sn1_2Carbon = minSnCarbon1_2; sn1_2Carbon <= Math.Floor((double)totalCarbon / 2); sn1_2Carbon++)
+                    for (int sn1_2Carbon = minSnCarbon1_2;
+                         sn1_2Carbon <= maxSnCarbon1_2;
+                         sn1_2Carbon++)
                     {
                         for (int sn1_2Double = minSnDoubleBond1_2; sn1_2Double <= maxSnDoubleBond1_2; sn1_2Double++)
                         {
@@ -8372,7 +8374,9 @@ AdductIon adduct)
 
                 // from here, acyl level annotation is executed.
                 var candidates = new List<LipidMolecule>();
-                for (int sn1_2Carbon = minSnCarbon1_2; sn1_2Carbon <= Math.Floor((double)totalCarbon / 2); sn1_2Carbon++)
+                for (int sn1_2Carbon = minSnCarbon1_2;
+                     sn1_2Carbon <= maxSnCarbon1_2;
+                     sn1_2Carbon++)
                 {
                     for (int sn1_2Double = minSnDoubleBond1_2; sn1_2Double <= maxSnDoubleBond1_2; sn1_2Double++)
                     {
@@ -8406,6 +8410,10 @@ AdductIon adduct)
 
                                     var sn4Carbon = sn3_4Carbon - sn3Carbon;
                                     var sn4Double = sn3_4Double - sn3Double;
+                                    if (sn4Carbon <= 0 || sn4Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var carbonLimit2 = Math.Min(sn1_2Carbon, maxSn1Carbon);
                                     var doubleLimit2 = Math.Min(sn1_2Double, maxSn1DoubleBond);
 
@@ -8495,7 +8503,9 @@ AdductIon adduct)
 
                 // from here, acyl level annotation is executed.
                 var candidates = new List<LipidMolecule>();
-                for (int sn1_2Carbon = minSnCarbon1_2; sn1_2Carbon <= Math.Floor((double)totalCarbon / 2); sn1_2Carbon++)
+                for (int sn1_2Carbon = minSnCarbon1_2;
+                     sn1_2Carbon <= maxSnCarbon1_2;
+                     sn1_2Carbon++)
                 {
                     for (int sn1_2Double = minSnDoubleBond1_2; sn1_2Double <= maxSnDoubleBond1_2; sn1_2Double++)
                     {
@@ -8513,6 +8523,10 @@ AdductIon adduct)
 
                                 var sn4Carbon = sn3_4Carbon - sn3Carbon;
                                 var sn4Double = sn3_4Double - sn3Double;
+                                if (sn4Carbon <=0 || sn4Double < 0)
+                                {
+                                    continue;
+                                }
                                 var carbonLimit2 = Math.Min(sn1_2Carbon, maxSn1Carbon);
                                 var doubleLimit2 = Math.Min(sn1_2Double, maxSn1DoubleBond);
 
