@@ -405,9 +405,11 @@ namespace CompMs.Common.Lipidomics
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
+                Sn1Oxidizedount = sn1OxydizedCount,
                 Sn1AcylChainString = sn1ChainString,
                 Sn2CarbonCount = sn2CarbonCount,
                 Sn2DoubleBondCount = sn2DbCount,
+                Sn2Oxidizedount = sn2OxydizedCount,
                 Sn2AcylChainString = sn2ChainString
             };
         }
@@ -454,9 +456,11 @@ namespace CompMs.Common.Lipidomics
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
+                Sn1Oxidizedount = sn1OxydizedCount,
                 Sn1AcylChainString = sn1ChainString,
                 Sn2CarbonCount = sn2CarbonCount,
                 Sn2DoubleBondCount = sn2DbCount,
+                Sn2Oxidizedount = sn2OxydizedCount,
                 Sn2AcylChainString = sn2ChainString
             };
         }
@@ -510,9 +514,11 @@ namespace CompMs.Common.Lipidomics
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
+                Sn1Oxidizedount = sn1OxydizedCount,
                 Sn1AcylChainString = sn1ChainString,
                 Sn2CarbonCount = sn2CarbonCount,
                 Sn2DoubleBondCount = sn2DbCount,
+                Sn2Oxidizedount = sn2OxydizedCount,
                 Sn2AcylChainString = sn2ChainString
             };
         }
@@ -1788,6 +1794,7 @@ namespace CompMs.Common.Lipidomics
                 Sn1AcylChainString = sphChainString,
                 Sn2CarbonCount = acylCarbon,
                 Sn2DoubleBondCount = acylDouble,
+                Sn2Oxidizedount = acylOxidized,
                 Sn2AcylChainString = acylChainString
             };
         }
@@ -3697,7 +3704,10 @@ namespace CompMs.Common.Lipidomics
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -6912,7 +6922,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether chain (not containing oxygen))
                                     var nl_SN1 = diagnosticMz - sn1alkyl - H2O + Proton;
@@ -6981,7 +6994,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     //var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -7009,7 +7025,7 @@ AdductIon adduct)
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount2, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 2)
@@ -7575,6 +7591,11 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
+                                    
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
 
                                     var sn1 = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                             + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2))) + MassDiffDictionary.OxygenMass;
@@ -7638,6 +7659,11 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
+                                    
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
 
                                     var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                                     var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -8130,7 +8156,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var sn1 = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                             + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2))) + MassDiffDictionary.OxygenMass;
                                     var sn2 = (MassDiffDictionary.CarbonMass * sn2Carbon)
@@ -8205,7 +8234,10 @@ AdductIon adduct)
                                     //if (sn3Carbon > maxSn1Carbon) break;
 
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                                     var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
                                     var sn3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn3Carbon, sn3Double);
@@ -17187,7 +17219,10 @@ AdductIon adduct)
                                         {
                                             var sn4Carbon = totalCarbon - sn1Carbon - sn2Carbon - sn3Carbon;
                                             var sn4Double = totalDoubleBond - sn1Double - sn2Double - sn3Double;
-
+                                            if (sn4Carbon <= 0 || sn4Double < 0)
+                                            {
+                                                continue;
+                                            }
                                             if ((sn1Carbon == 18 && sn1Double == 5) || (sn2Carbon == 18 && sn2Double == 5) || (sn3Carbon == 18 && sn3Double == 5)) continue;
 
                                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -18908,7 +18943,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     if ((sn1Carbon == 18 && sn1Double == 5) || (sn2Carbon == 18 && sn2Double == 5) || (sn3Carbon == 18 && sn3Double == 5)) continue;
 
                                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -18959,7 +18997,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -18987,7 +19028,7 @@ AdductIon adduct)
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount2, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 3)
