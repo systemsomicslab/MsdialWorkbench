@@ -86,7 +86,7 @@ namespace CompMs.Common.Lipidomics
             if (oxidize == 1) {
                 return ";O";
             }
-            return $";{oxidize}O";
+            return $";O{oxidize}";
         }
 
         public bool Equals(ITotalChain other) {
