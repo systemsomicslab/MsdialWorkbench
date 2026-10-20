@@ -600,6 +600,7 @@ namespace CompMs.Common.Lipidomics
                 Score = score,
                 Sn1CarbonCount = sn1Carbon,
                 Sn1DoubleBondCount = sn1Double,
+                Sn1Oxidizedount = totalOxidized,
                 Sn1AcylChainString = totalString,
                 TotalOxidizedCount = totalOxidized
             };
@@ -1871,6 +1872,7 @@ namespace CompMs.Common.Lipidomics
                 Sn2AcylChainString = sn2ChainString,
                 Sn3CarbonCount = sn3CarbonCount,
                 Sn3DoubleBondCount = sn3DbCount,
+                Sn3Oxidizedount = totalOxidized,
                 Sn3AcylChainString = sn3ChainString
             };
         }
@@ -2249,6 +2251,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if(sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
