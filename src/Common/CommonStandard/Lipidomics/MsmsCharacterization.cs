@@ -15332,7 +15332,7 @@ AdductIon adduct)
 
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                             var sn2CO2Loss = sn2Loss - 12 - MassDiffDictionary.OxygenMass * 2;
-                            var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
+                            var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
                                     new SpectrumPeak() { Mass = sn2Loss, Intensity = 10.0 },
@@ -15449,7 +15449,7 @@ AdductIon adduct)
                                 var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                                 var sn2CH2OLoss = sn2Loss - 12 - MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass * 2;
                                 var sn2CH2O3Loss = sn2Loss - 12 - MassDiffDictionary.OxygenMass * 3 - MassDiffDictionary.HydrogenMass * 2;
-                                var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
+                                var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
                                 var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = sn2Loss, Intensity = 10.0 },
