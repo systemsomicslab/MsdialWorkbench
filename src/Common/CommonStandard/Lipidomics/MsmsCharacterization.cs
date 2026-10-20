@@ -339,7 +339,7 @@ namespace CompMs.Common.Lipidomics
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 2,
+                AnnotationLevel = 1,
                 SublevelLipidName = totalName,
                 LipidName = totalName,
                 TotalCarbonCount = totalCarbon,
