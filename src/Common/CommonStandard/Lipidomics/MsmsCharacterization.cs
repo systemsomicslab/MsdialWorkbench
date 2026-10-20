@@ -6407,7 +6407,7 @@ AdductIon adduct)
                             if (sn2Double >= 7) continue;
                             if (sn2Carbon <= 10) continue;
                             if (sn1Carbon <= 10) continue;
-                            if (sn1Double == 19 && sn1Double == 2) continue;
+                            if (sn1Carbon == 19 && sn1Double == 2) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - H2O - 4.0 * MassDiffDictionary.HydrogenMass;
 
