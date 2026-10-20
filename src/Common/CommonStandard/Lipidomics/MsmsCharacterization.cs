@@ -15878,7 +15878,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+Na]+")
                 {
                     // calc [M+H]+
-                    var diagnosticMz = adduct.AdductIonName == "[M+H]+" ? theoreticalMz : theoreticalMz - 22.9892207;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H]+" ? theoreticalMz : theoreticalMz - 22.9892207 + Proton;
                     // vitamin D
                     var vitamindMz = 401.3414071;
                     var threshold = 0.01;
@@ -15892,7 +15892,7 @@ AdductIon adduct)
 
                         var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold1);
-                        if (isClassIon1Found != true && isClassIon1Found != true) return null;
+                        if (isClassIon1Found != true && isClassIon2Found != true) return null;
 
                         //
                         var candidates = new List<LipidMolecule>();
