@@ -7014,7 +7014,7 @@ AdductIon adduct)
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 2)
@@ -8499,11 +8499,15 @@ AdductIon adduct)
                                         }
 
                                         var sn2Carbon = sn1_2Carbon - sn1Carbon;
-
-                                        //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
-                                        if (sn2Carbon < minSn2Carbon) { break; }
-
                                         var sn2Double = sn1_2Double - sn1Double;
+
+                                        if (sn2Carbon < minSn2Carbon || sn2Carbon > maxSn2Carbon ||
+                                            sn2Double < minSn2DoubleBond || sn2Double > maxSn2DoubleBond)
+                                        {
+                                            continue;
+                                        }
+                                        //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
+
                                         if (sn2Double > 0)
                                         {
                                             if ((double)(sn2Carbon / sn2Double) < 3) continue;
@@ -18988,7 +18992,7 @@ AdductIon adduct)
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 3)
@@ -19730,7 +19734,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double - 1;
-
+                            if (sn2Double < 0) continue;
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + H2O - MassDiffDictionary.HydrogenMass;
                             var sn2Fragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
