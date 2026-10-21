@@ -103,6 +103,7 @@ public static class MethodFileTemplate
         Threads(w, p);
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: true);
         w.Section("Deconvolution");
         w.Value("Sigma window value", F(p.SigmaWindowValue));
         w.Value("Amplitude cut off", F(p.ChromDecBaseParam.AmplitudeCutoff));
@@ -157,6 +158,7 @@ public static class MethodFileTemplate
         Threads(w, p);
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: false);
         w.Value("Max charge number", I(p.MaxChargeNumber));
         Adducts(w, p);
         w.Section("Deconvolution");
@@ -219,6 +221,7 @@ public static class MethodFileTemplate
         IonMobility(w, p.IonMobilityType, p.DriftTimeBegin, p.DriftTimeEnd, p.DriftTimeAlignmentTolerance, p.DriftTimeAlignmentFactor);
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: false);
         w.Value("Max charge number", I(p.MaxChargeNumber));
         Adducts(w, p);
         w.Section("Deconvolution");
@@ -243,6 +246,7 @@ public static class MethodFileTemplate
         w.Value("Accumulate MS2 spectra", B(p.IsAccumulateMS2Spectra));
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: false);
         w.Value("Max charge number", I(p.MaxChargeNumber));
         Adducts(w, p);
         w.Section("Deconvolution");
@@ -293,6 +297,18 @@ public static class MethodFileTemplate
         w.Value("Minimum peak height", D(p.MinimumAmplitude));
         w.Value("Average peak width", F(p.AveragePeakWidth));
         w.Value("Mass slice width", F(p.MassSliceWidth));
+    }
+
+    /// <summary>
+    /// The exclusion mass list, blank: the built-in list is empty. DIMS processing does not read it,
+    /// so its template leaves it out.
+    /// </summary>
+    private static void ExcludedMasses(Writer w, bool gcms) {
+        w.Comment("Peaks whose m/z lies within the tolerance of one of these masses are removed, as the GUI's exclusion mass list does.");
+        if (gcms) {
+            w.Comment("In GC-MS those ions are also left out of every deconvoluted spectrum.");
+        }
+        w.Blank("Exclude mass list", "m/z and tolerance pairs separated by semicolons, e.g. 149:0.5; 207:0.5; 281:0.5. Leave blank to keep every peak.");
     }
 
     private static void Adducts(Writer w, ParameterBase p) {
