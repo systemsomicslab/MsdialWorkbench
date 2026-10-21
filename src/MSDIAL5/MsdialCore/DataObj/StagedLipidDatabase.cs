@@ -1,6 +1,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -46,6 +47,24 @@ namespace CompMs.MsdialCore.DataObj
         [Key(nameof(Category))]
         public string Category { get; }
 
+        /// <summary>
+        /// The mobile-phase solvent, which decides the negative-mode solvent adducts seeds are expanded to;
+        /// null keeps them all. Changing it rebuilds the seed index.
+        /// </summary>
+        [Key(nameof(SolventType))]
+        public SolventType? SolventType {
+            get => _solventType;
+            set {
+                lock (_syncObject) {
+                    if (_solventType != value) {
+                        _solventType = value;
+                        _library = null;
+                    }
+                }
+            }
+        }
+        private SolventType? _solventType;
+
         [IgnoreMember]
         public IReadOnlyList<LipidSeed> Seeds => _seeds;
 
@@ -65,7 +84,7 @@ namespace CompMs.MsdialCore.DataObj
         public LipidSeedLibrary Library {
             get {
                 lock (_syncObject) {
-                    return _library ?? (_library = new LipidSeedLibrary(_seeds, Models));
+                    return _library ?? (_library = new LipidSeedLibrary(_seeds, Models, _solventType));
                 }
             }
         }

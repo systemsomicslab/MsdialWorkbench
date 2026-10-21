@@ -113,6 +113,28 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
+        public void SolventKeepsOnlyItsOwnNegativeSolventAdducts() {
+            var model = new FakeModel("PC", "[M+H]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-");
+            string[] Adducts(SolventType? solvent) => new LipidSeedLibrary(new[] { Seed("PC 34:1", rt: 5.0) }, new[] { model }, solvent)
+                .Entries.Select(e => e.Adduct.AdductIonName).OrderBy(a => a).ToArray();
+
+            CollectionAssert.AreEqual(new[] { "[M+H]+", "[M+HCOO]-", "[M-H]-" }, Adducts(SolventType.HCOONH4));
+            CollectionAssert.AreEqual(new[] { "[M+CH3COO]-", "[M+H]+", "[M-H]-" }, Adducts(SolventType.CH3COONH4));
+            CollectionAssert.AreEqual(new[] { "[M+H]+", "[M+HCO3]-", "[M-H]-" }, Adducts(SolventType.NH4HCO3));
+            Assert.AreEqual(5, Adducts(null).Length);
+        }
+
+        [TestMethod()]
+        public void AdductWrittenInTheSeedIsKeptWhateverTheSolvent() {
+            var lipid = FacadeLipidParser.Default.Parse("PC 34:1");
+            var seed = new LipidSeed("PC 34:1", lipid, 5.0, AdductIon.GetAdductIon("[M+CH3COO]-"));
+
+            var library = new LipidSeedLibrary(new[] { seed }, new[] { new FakeModel("PC", "[M+CH3COO]-") }, SolventType.HCOONH4);
+
+            Assert.AreEqual("[M+CH3COO]-", library.Entries.Single().Adduct.AdductIonName);
+        }
+
+        [TestMethod()]
         public void ClassWithoutRuleSetHasNoEntries() {
             var library = new LipidSeedLibrary(new[] { Seed("PE 36:2", rt: 5.0) }, new[] { new FakeModel("PC", "[M+H]+") });
 

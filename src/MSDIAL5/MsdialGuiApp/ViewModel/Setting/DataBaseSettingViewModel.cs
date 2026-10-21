@@ -139,6 +139,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
+            IsStagedLipidDataBase = DBSource
+                .Select(src => src == DataBaseSource.StagedLipid)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            SolventType = new ReactivePropertySlim<CompMs.Common.Enum.SolventType>(model.LipidQueryContainer.SolventType).AddTo(Disposables);
+            SolventType.Subscribe(solvent => model.LipidQueryContainer.SolventType = solvent).AddTo(Disposables);
+
             IsEditable = isEditableModel.Where(m => m == Model).ToConstant(true)
                 .Merge(notEditableModel.Where(m => m == Model).ToConstant(false))
                 .ToReadOnlyReactivePropertySlim()
@@ -255,6 +262,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public ReadOnlyReactivePropertySlim<bool> IsProteomicsDataBase { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsStagedLipidDataBase { get; }
+
+        /// <summary>The project's lipid solvent (shared with the LBM setting); picks the negative-mode solvent adducts.</summary>
+        public ReactivePropertySlim<CompMs.Common.Enum.SolventType> SolventType { get; }
+
+        public ReadOnlyCollection<CompMs.Common.Enum.SolventType> SolventTypes { get; } = new ReadOnlyCollection<CompMs.Common.Enum.SolventType>((CompMs.Common.Enum.SolventType[])System.Enum.GetValues(typeof(CompMs.Common.Enum.SolventType)));
 
         // IDataBaseSettingViewModel interface
         IReadOnlyReactiveProperty<string> IDataBaseSettingViewModel.DataBaseID => DataBaseID;

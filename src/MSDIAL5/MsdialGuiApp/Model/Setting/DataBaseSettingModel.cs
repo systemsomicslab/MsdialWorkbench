@@ -180,7 +180,10 @@ namespace CompMs.App.Msdial.Model.Setting
         public StagedLipidDatabase? CreateStagedLipidDatabase() {
             switch (DBSource) {
                 case DataBaseSource.StagedLipid:
-                    return _stagedLipidDatabase ?? LoadStagedLipidDatabase();
+                    var db = _stagedLipidDatabase ?? LoadStagedLipidDatabase();
+                    // The project's lipid solvent setting, shared with the LBM library, picks the solvent adducts.
+                    db.SolventType = LipidQueryContainer.SolventType;
+                    return db;
                 default:
                     return null;
             }

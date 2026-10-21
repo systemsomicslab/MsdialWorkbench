@@ -160,6 +160,13 @@
                         VerticalAlignment="Center"
                         Width="128"/>
             </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Solvent type:" Visibility="{Binding IsStagedLipidDataBase.Value, Converter={StaticResource BooleanToVisibility}}"
+                               ToolTip="Negative-mode solvent adducts follow the mobile-phase solvent (shared with the lipid database setting).">
+                <ComboBox ItemsSource="{Binding SolventTypes, Mode=OneTime}"
+                          SelectedItem="{Binding SolventType.Value}"
+                          HorizontalAlignment="Left"
+                          Width="128"/>
+            </ui:LabeledContent>
             <GroupBox Header="Peptide database setting"
                       BorderThickness="0"
                       Visibility="{Binding IsProteomicsDataBase.Value, Converter={StaticResource BooleanToVisibility}}">

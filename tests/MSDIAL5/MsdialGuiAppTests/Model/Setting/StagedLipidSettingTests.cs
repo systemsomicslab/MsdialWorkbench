@@ -38,6 +38,21 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
         }
 
         [TestMethod()]
+        public void DatabaseTakesTheProjectLipidSolvent() {
+            var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics };
+            var database = new StagedLipidDatabase("Seeds", new CompMs.Common.Lipidomics.LipidSeed[0]);
+            var model = new DataBaseSettingModel(parameter, database);
+
+            model.LipidQueryContainer.SolventType = SolventType.NH4HCO3;
+            model.CreateStagedLipidDatabase();
+            Assert.AreEqual(SolventType.NH4HCO3, database.SolventType);
+
+            model.LipidQueryContainer.SolventType = SolventType.HCOONH4;
+            model.CreateStagedLipidDatabase();
+            Assert.AreEqual(SolventType.HCOONH4, database.SolventType);
+        }
+
+        [TestMethod()]
         public void RestoredDataBaseSettingModelKeepsTheDatabase() {
             var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics };
             var database = new StagedLipidDatabase("Seeds", new CompMs.Common.Lipidomics.LipidSeed[0]);

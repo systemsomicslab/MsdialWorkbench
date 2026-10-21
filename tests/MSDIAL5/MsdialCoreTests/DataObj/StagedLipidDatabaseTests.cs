@@ -51,6 +51,36 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
+        public void SolventTypeIsSavedAndFiltersTheSeedIndex() {
+            var storage = DataBaseStorage.CreateEmpty();
+            var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics, };
+            var searchParameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, };
+            var database = new StagedLipidDatabase("DB", new[] { new LipidSeed("PC 34:1", FacadeLipidParser.Default.Parse("PC 34:1"), 5.0) })
+            {
+                SolventType = SolventType.HCOONH4,
+            };
+            Assert.IsTrue(database.Library.Entries.All(e => !e.Adduct.IsHac && !e.Adduct.IsHco3));
+            Assert.IsTrue(database.Library.Entries.Any(e => e.Adduct.IsFA));
+
+            var annotator = new StagedLipidDatabaseAnnotator(database, "StagedLipid", 2, searchParameter);
+            storage.AddStagedLipidDataBase(database, new List<IAnnotatorParameterPair<StagedLipidDatabase>> {
+                new StagedLipidAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, parameter.PeakPickBaseParam, searchParameter, ignoreIsotopicPeak: true)),
+            });
+            var memory = new MemoryStream();
+            storage.Save(memory);
+            memory.Seek(0, SeekOrigin.Begin);
+            var loaded = DataBaseStorage.Load(memory, new StandardLoadAnnotatorVisitor(parameter), new StandardAnnotationQueryFactoryGenerationVisitor(parameter.PeakPickBaseParam, parameter.RefSpecMatchBaseParam), null)
+                .StagedLipidDatabases.Single().DataBase;
+
+            Assert.AreEqual(SolventType.HCOONH4, loaded.SolventType);
+            Assert.IsTrue(loaded.Library.Entries.All(e => !e.Adduct.IsHac && !e.Adduct.IsHco3));
+
+            loaded.SolventType = SolventType.CH3COONH4; // the index follows a changed setting
+            Assert.IsTrue(loaded.Library.Entries.Any(e => e.Adduct.IsHac));
+            Assert.IsTrue(loaded.Library.Entries.All(e => !e.Adduct.IsFA));
+        }
+
+        [TestMethod()]
         public void DataBaseStorageRestoresTheAnnotator() {
             var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics, };
             var searchParameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, };

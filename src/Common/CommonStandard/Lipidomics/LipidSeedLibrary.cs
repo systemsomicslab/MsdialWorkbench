@@ -58,22 +58,27 @@ namespace CompMs.Common.Lipidomics
 
     /// <summary>
     /// Looks seeds up by precursor m/z and retention time. A seed without an adduct is expanded to every
-    /// adduct its class has a rule set for in the given spectrum models.
+    /// adduct its class has a rule set for in the given spectrum models, minus, in negative mode, the
+    /// solvent adducts of the solvents not used (as the LBM library is filtered).
     /// </summary>
     public sealed class LipidSeedLibrary
     {
         private readonly LipidSeedMatch[] _entries; // sorted by PrecursorMz
 
-        public LipidSeedLibrary(IEnumerable<LipidSeed> seeds, IEnumerable<ILipidSpectrumModel> models) {
+        /// <param name="solventType">The mobile-phase solvent; null keeps every solvent adduct.</param>
+        public LipidSeedLibrary(IEnumerable<LipidSeed> seeds, IEnumerable<ILipidSpectrumModel> models, SolventType? solventType = null) {
             if (seeds is null) {
                 throw new ArgumentNullException(nameof(seeds));
             }
             var adductsByClass = AdductsByClass(models ?? throw new ArgumentNullException(nameof(models)));
             Seeds = seeds.ToArray();
-            _entries = Seeds.SelectMany(seed => Expand(seed, adductsByClass)).OrderBy(e => e.PrecursorMz).ToArray();
+            SolventType = solventType;
+            _entries = Seeds.SelectMany(seed => Expand(seed, adductsByClass, solventType)).OrderBy(e => e.PrecursorMz).ToArray();
         }
 
         public IReadOnlyList<LipidSeed> Seeds { get; }
+
+        public SolventType? SolventType { get; }
 
         /// <summary>Every (seed, adduct) pair, sorted by precursor m/z.</summary>
         public IReadOnlyList<LipidSeedMatch> Entries => _entries;
@@ -109,7 +114,24 @@ namespace CompMs.Common.Lipidomics
             return lo;
         }
 
-        private static IEnumerable<LipidSeedMatch> Expand(LipidSeed seed, Dictionary<LbmClass, AdductIon[]> adductsByClass) {
+        /// <summary>
+        /// Whether a negative-mode adduct can come from the solvent: formate and acetate adducts need their
+        /// ammonium salt, bicarbonate ones ammonium bicarbonate. Same rule as the LBM query check.
+        /// </summary>
+        public static bool IsAdductAllowed(AdductIon adduct, SolventType solventType) {
+            if (adduct.IonMode != IonMode.Negative) {
+                return true;
+            }
+            switch (solventType) {
+                case Enum.SolventType.CH3COONH4: return !adduct.IsFA && !adduct.IsHco3;
+                case Enum.SolventType.HCOONH4: return !adduct.IsHac && !adduct.IsHco3;
+                case Enum.SolventType.NH4HCO3: return !adduct.IsFA && !adduct.IsHac;
+                default: return true;
+            }
+        }
+
+        // An adduct written in the seed is the library's own choice and is kept regardless of the solvent.
+        private static IEnumerable<LipidSeedMatch> Expand(LipidSeed seed, Dictionary<LbmClass, AdductIon[]> adductsByClass, SolventType? solventType) {
             if (seed.Adduct != null) {
                 yield return new LipidSeedMatch(seed, seed.Adduct, seed.PrecursorMz ?? seed.Adduct.ConvertToMz(seed.Lipid.Mass));
                 yield break;
@@ -118,6 +140,9 @@ namespace CompMs.Common.Lipidomics
                 yield break;
             }
             foreach (var adduct in adducts) {
+                if (solventType.HasValue && !IsAdductAllowed(adduct, solventType.Value)) {
+                    continue;
+                }
                 yield return new LipidSeedMatch(seed, adduct, adduct.ConvertToMz(seed.Lipid.Mass));
             }
         }
