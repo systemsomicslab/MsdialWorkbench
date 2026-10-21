@@ -64,6 +64,32 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         [TestMethod()]
+        public void RetentionTimeIsOptionalAsForTheOtherAnnotators() {
+            var (annotator, _) = CreateAnnotator(Seed("PC 34:1", 9.0));
+
+            // RT filtering off: the seed 4 min away is still searched; RT scoring off: RT neither counts nor blocks.
+            var result = annotator.FindCandidates(Query("PC 16:0_18:1", rt: 5.0, spectrumOf: "PC 16:0_18:1", Parameter(rtFiltering: false, rtScoring: false))).Single();
+            Assert.IsTrue(result.IsReferenceMatched);
+            Assert.IsFalse(result.IsRtMatch);
+            Assert.AreEqual(0f, result.RtSimilarity);
+
+            // RT scoring on: the same seed is found but its RT now keeps it from a reference match.
+            var scored = annotator.FindCandidates(Query("PC 16:0_18:1", rt: 5.0, spectrumOf: "PC 16:0_18:1", Parameter(rtFiltering: false, rtScoring: true))).Single();
+            Assert.IsFalse(scored.IsRtMatch);
+            Assert.IsFalse(scored.IsReferenceMatched);
+        }
+
+        [TestMethod()]
+        public void SeedWithoutRetentionTimeIsNotBlockedByRtScoring() {
+            var (annotator, _) = CreateAnnotator(new LipidSeed("PC 34:1", FacadeLipidParser.Default.Parse("PC 34:1")));
+
+            var result = annotator.FindCandidates(Query("PC 16:0_18:1", rt: 5.0, spectrumOf: "PC 16:0_18:1")).Single();
+
+            Assert.IsTrue(result.IsReferenceMatched);
+            Assert.IsFalse(result.IsRtMatch);
+        }
+
+        [TestMethod()]
         public void SameStructureReusesItsReference() {
             var (annotator, _) = CreateAnnotator(Seed("PC 34:1", 5.0));
             var query = Query("PC 16:0_18:1", rt: 5.0, spectrumOf: "PC 16:0_18:1");
@@ -90,14 +116,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             return (new StagedLipidDatabaseAnnotator(database, "StagedLipid", 1, Parameter()), database);
         }
 
-        private static MsRefSearchParameterBase Parameter() {
+        private static MsRefSearchParameterBase Parameter(bool rtFiltering = true, bool rtScoring = true) {
             return new MsRefSearchParameterBase
             {
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.025f,
                 RtTolerance = 0.5f,
-                IsUseTimeForAnnotationFiltering = true,
-                IsUseTimeForAnnotationScoring = true,
+                IsUseTimeForAnnotationFiltering = rtFiltering,
+                IsUseTimeForAnnotationScoring = rtScoring,
                 MassRangeBegin = 0,
                 MassRangeEnd = 2000,
             };
@@ -107,17 +133,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             return new LipidSeed(name, FacadeLipidParser.Default.Parse(name), rt);
         }
 
-        private static IAnnotationQuery<MsScanMatchResult> Query(string precursorOf, double rt, string spectrumOf) {
+        private static IAnnotationQuery<MsScanMatchResult> Query(string precursorOf, double rt, string spectrumOf, MsRefSearchParameterBase parameter = null) {
             var precursor = (Lipid)FacadeLipidParser.Default.Parse(precursorOf);
             var generating = (Lipid)FacadeLipidParser.Default.Parse(spectrumOf);
             var spectrum = CidLipidSpectrumModels.Find("PC").Generate(generating, ProtonAdduct);
-            return Query(ProtonAdduct.ConvertToMz(precursor.Mass), rt, spectrum);
+            return Query(ProtonAdduct.ConvertToMz(precursor.Mass), rt, spectrum, parameter);
         }
 
-        private static IAnnotationQuery<MsScanMatchResult> Query(double mz, double rt, List<SpectrumPeak> spectrum) {
+        private static IAnnotationQuery<MsScanMatchResult> Query(double mz, double rt, List<SpectrumPeak> spectrum, MsRefSearchParameterBase parameter = null) {
             var property = new MSIonProperty(mz, new ChromXs(rt), IonMode.Positive, ProtonAdduct, 0d);
             var scan = new MSScanProperty { PrecursorMz = mz, IonMode = IonMode.Positive, Spectrum = spectrum };
-            return new FakeQuery(property, scan, Parameter());
+            return new FakeQuery(property, scan, parameter ?? Parameter());
         }
 
         private sealed class FakeQuery : IAnnotationQuery<MsScanMatchResult>

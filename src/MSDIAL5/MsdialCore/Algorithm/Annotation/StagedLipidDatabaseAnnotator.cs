@@ -91,17 +91,18 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             var scores = new List<double> { result.AcurateMassSimilarity, annotation.Best?.Evaluation.Similarity ?? 0d };
-            var isRtMatch = true;
+            // As MsReferenceScorer: RT counts only when the settings use it for scoring, and IsRtMatch stays
+            // false otherwise. A seed without RT has nothing to compare, so it neither matches nor blocks.
+            var isRtAccepted = true;
             if (parameter.IsUseTimeForAnnotationScoring && match.Seed.RetentionTime is double seedRt) {
                 result.RtSimilarity = (float)MsScanMatching.GetGaussianSimilarity(property.ChromXs.RT.Value, seedRt, parameter.RtTolerance);
-                isRtMatch = Math.Abs(property.ChromXs.RT.Value - seedRt) <= parameter.RtTolerance;
+                result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - seedRt) <= parameter.RtTolerance;
+                isRtAccepted = result.IsRtMatch;
                 scores.Add(result.RtSimilarity);
             }
-            result.IsRtMatch = isRtMatch;
             // Provisional: the mean of the m/z, RT (when used) and staged spectral similarities.
             result.TotalScore = (float)scores.Average();
 
-            var isRtAccepted = !parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch;
             result.IsReferenceMatched = result.IsPrecursorMzMatch && isRtAccepted && result.IsSpectrumMatch;
             result.IsAnnotationSuggested = result.IsPrecursorMzMatch && isRtAccepted && !result.IsReferenceMatched;
             return result;
