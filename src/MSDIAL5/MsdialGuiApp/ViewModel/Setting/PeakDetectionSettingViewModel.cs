@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             MinimumAmplitude = Model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumAmplitude,
                 m => m.ToString(CultureInfo.InvariantCulture),
-                vm => float.Parse(vm, CultureInfo.InvariantCulture),
+                vm => double.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumAmplitude).AddTo(Disposables);
 
@@ -78,11 +78,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 MassSliceWidth.ObserveHasErrors,
                 SmoothingLevel.ObserveHasErrors,
                 MinimumDatapoints.ObserveHasErrors,
+                // CombineLatest waits for every source, and the list says nothing until it changes.
                 new[]
                 {
                     ExcludedMassList.ObserveElementPropertyChanged().ToUnit(),
                     ExcludedMassList.CollectionChangedAsObservable().ToUnit(),
                 }.Merge()
+                .StartWith(Unit.Default)
                 .Select(_ => ExcludedMassList.Any(vm => vm.HasValidationErrors)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
@@ -113,9 +115,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public bool IsReadOnly { get; }
 
+        // A peak height and a peak width are whole numbers (Hiroshi Tsugawa, 2026-10-21), as the console reads them.
+        // The ranges compare doubles: an int range throws OverflowException for a number past int.MaxValue.
         [Required(ErrorMessage = "Minimum amplitude is required.")]
-        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Amplitude should be positive value.")]
+        [RegularExpression(@"\d+", ErrorMessage = "Amplitude should be zero or a positive whole number.")]
+        [Range(0d, int.MaxValue, ErrorMessage = "Amplitude should be between 0 and 2147483647.")]
         public ReactiveProperty<string> MinimumAmplitude { get; }
 
         [Required(ErrorMessage = "Mass slice width is required.")]
@@ -127,12 +131,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         [Required(ErrorMessage = "Smoothing level is required.")]
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Amplitude should be positive value.")]
+        [Range(0d, int.MaxValue, ErrorMessage = "Smoothing level should be between 0 and 2147483647.")]
         public ReactiveProperty<string> SmoothingLevel { get; }
 
         [Required(ErrorMessage = "Minimum datapoint is required.")]
-        [RegularExpression(@"\d\.?\d*", ErrorMessage = "Invalid character entered.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Data points should be positive value.")]
+        [RegularExpression(@"\d+", ErrorMessage = "Data points should be a positive whole number.")]
+        [Range(1d, int.MaxValue, ErrorMessage = "Data points should be between 1 and 2147483647.")]
         public ReactiveProperty<string> MinimumDatapoints { get; }
 
         public ReadOnlyReactiveCollection<MzSearchQueryViewModel> ExcludedMassList { get; }

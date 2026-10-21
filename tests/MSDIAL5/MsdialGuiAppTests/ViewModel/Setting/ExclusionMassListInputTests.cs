@@ -15,15 +15,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
     /// The exclusion mass list of a peak detection page: the mass and tolerance typed to add an entry, and the grid of
     /// entries, whose edits must reach the parameter the run reads. The LC-MS and GC-MS pages each have one.
     /// </summary>
-    public abstract class ExclusionMassListInputTests<TViewModel> where TViewModel : ViewModelBase, ISettingViewModel
+    public abstract class ExclusionMassListInputTests<TViewModel> : PeakDetectionPageTests<TViewModel> where TViewModel : ViewModelBase, ISettingViewModel
     {
-        protected abstract TViewModel CreateViewModel(PeakPickBaseParameter parameter, out IPeakDetectionSettingModel model);
         protected abstract void SetNewMass(TViewModel viewModel, double mass);
         protected abstract void SetNewTolerance(TViewModel viewModel, double tolerance);
         protected abstract ReactiveCommand GetAddCommand(TViewModel viewModel);
         protected abstract IReadOnlyList<MzSearchQueryViewModel> GetExcludedMassList(TViewModel viewModel);
-        protected abstract bool HasErrors(TViewModel viewModel);
-        protected abstract ReactiveProperty<string> GetMassSliceWidth(TViewModel viewModel);
 
         [DataTestMethod]
         [DataRow(149.0233)] // phthalate C8H5O3+; the old pattern \d\.?\d* matched "149" and refused the rest

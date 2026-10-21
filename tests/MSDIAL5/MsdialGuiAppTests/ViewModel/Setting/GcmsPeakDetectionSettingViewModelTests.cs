@@ -24,6 +24,24 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         protected override ReactiveCommand GetAddCommand(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.AddCommand;
         protected override IReadOnlyList<MzSearchQueryViewModel> GetExcludedMassList(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.ExcludedMassList;
         protected override bool HasErrors(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.ObserveHasErrors.Value;
+        protected override ReactiveProperty<string> GetMinimumAmplitude(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.MinimumAmplitude;
         protected override ReactiveProperty<string> GetMassSliceWidth(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.MassSliceWidth;
+        protected override ReactiveProperty<string> GetSmoothingLevel(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.SmoothingLevel;
+        protected override ReactiveProperty<string> GetPeakWidth(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.AveragePeakWidth;
+
+        // The mass slice width and the centroid tolerance count only for accurate masses; a nominal run sets both to 0.5.
+        [TestMethod]
+        public void ASavedMassWidthBelowTheMinimumBlocksOnlyAnAccurateRun() {
+            var parameter = new PeakPickBaseParameter { MassSliceWidth = 0.00005f, CentroidMs1Tolerance = 0.00005f, };
+            var chromDecParameter = new ChromDecBaseParameter { AccuracyType = AccuracyType.IsNominal, };
+            var settingModel = new GcmsPeakDetectionSettingModel(new PeakPickBaseParameterModel(parameter), chromDecParameter, ProcessOption.All);
+            var viewModel = new GcmsPeakDetectionSettingViewModel(settingModel, Observable.Return(true));
+            Assert.IsTrue(viewModel.MassSliceWidth.HasErrors);
+            Assert.IsTrue(viewModel.MassAccuracy.HasErrors);
+            Assert.IsFalse(viewModel.ObserveHasErrors.Value);
+
+            viewModel.IsAccurateMS.Value = true;
+            Assert.IsTrue(viewModel.ObserveHasErrors.Value);
+        }
     }
 }
