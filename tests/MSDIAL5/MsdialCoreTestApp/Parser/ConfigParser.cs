@@ -242,29 +242,37 @@ namespace CompMs.App.MsdialConsole.Parser
         /// The masses whose peaks a run removes, read as the GUI's exclusion mass list holds them.
         /// </summary>
         /// <remarks>
-        /// THE GUI'S LIST, NOW REACHABLE FROM A METHOD FILE. The peak-detection settings of an LC-MS,
-        /// GC-MS, IM-MS or LC-IM-MS project take a list of m/z values with a tolerance each, stored in
-        /// PeakPickBaseParameter.ExcludedMassList. Peak spotting drops every peak whose m/z lies within
-        /// a tolerance of one of them, and GC-MS deconvolution also leaves those ions out of each
-        /// deconvoluted spectrum. No method-file key set the list, so a Console run could not
-        /// reproduce a GUI run that used one: a GC-MS user removing the phthalate ion 149 and the
-        /// siloxane column-bleed ions 207 and 281 got other alignment results from the Console than
-        /// from the GUI, and reported it.
+        /// THE GUI'S LIST, NOW REACHABLE FROM A METHOD FILE. The peak-detection settings of every
+        /// project type take a list of m/z values with a tolerance each, stored in
+        /// PeakPickBaseParameter.ExcludedMassList. LC-MS, GC-MS, IM-MS and LC-IM-MS peak spotting
+        /// drops every peak whose m/z lies within a tolerance of one of them, and GC-MS deconvolution
+        /// also leaves those ions out of each deconvoluted spectrum. No method-file key set the list,
+        /// so a Console run could not reproduce a GUI run that used one: a GC-MS user removing the
+        /// phthalate ion 149 and the siloxane column-bleed ions 207 and 281 got other alignment
+        /// results from the Console than from the GUI, and reported it.
         ///
         /// TWO SPELLINGS OF A LIST ARE READ, because two writers exist. Entries are separated by
-        /// semicolons. Within an entry, the mass and its tolerance are separated by a colon, a comma or
+        /// semicolons. Within an entry, the mass and its tolerance are separated by a colon or by
         /// white space:
         ///     149:0.5; 207:0.5; 281:0.5     as a person types it
         ///     149 0.5;207 0.5;281 0.5       as ParameterBase.ParametersAsText exports the GUI's list
         /// The key is the name that export writes, "Exclude mass list", so a parameter text the GUI
-        /// exported is a method-file line the Console applies.
+        /// exported is a method-file line the Console applies. A comma is not a separator: it is the
+        /// list separator of the adduct key beside this one, and "149, 207" read as a mass and a
+        /// tolerance would exclude every peak below m/z 356.
+        ///
+        /// THE VALUES THE GUI ACCEPTS, AND NO OTHERS. Its settings take a mass of zero or more and a
+        /// tolerance below 1 (RegularExpression 0?\.\d+ on the tolerance box), so a tolerance of 1 or
+        /// more is refused here too: in a file it is far more often a second mass than a window.
+        /// A mass of zero is accepted because the GUI stores it and an exported list may hold it; like
+        /// a tolerance of zero, it removes nothing.
         ///
         /// A LIST IS READ WHOLE OR NOT AT ALL. Dropping the one entry that cannot be read, as the
         /// adduct reader does, would quietly keep the peaks that entry was meant to remove and change
-        /// the results without a word. So one entry that is not two numbers, or a mass or tolerance
-        /// that is not positive, makes the whole value unusable: the run keeps the built-in empty list
-        /// and the key report says the value had no effect. Numbers are read in the invariant culture;
-        /// "149,5 0,5", which the GUI export writes on a machine with a decimal comma, is refused.
+        /// the results without a word. So one entry that is not two numbers in those ranges makes the
+        /// whole value unusable: the run keeps the built-in empty list and the key report says the
+        /// value had no effect. Numbers are read in the invariant culture; "149 0,5", which the GUI
+        /// export writes on a machine with a decimal comma, is refused.
         ///
         /// The match is the GUI's: |m/z - mass| &lt; tolerance, strictly.
         /// </remarks>
@@ -275,12 +283,12 @@ namespace CompMs.App.MsdialConsole.Parser
                 if (trimmed.Length == 0) {
                     continue;
                 }
-                var parts = trimmed.Split(new[] { ':', ',', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = trimmed.Split(new[] { ':', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length != 2
                     || !double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double mass)
                     || !double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double tolerance)
-                    || !(mass > 0) || double.IsInfinity(mass)
-                    || !(tolerance > 0) || double.IsInfinity(tolerance)) {
+                    || !(mass >= 0) || double.IsInfinity(mass)
+                    || !(tolerance >= 0 && tolerance < 1)) {
                     return MethodKeyOutcome.UnusableValue;
                 }
                 queries.Add(new MzSearchQuery { Mass = mass, MassTolerance = tolerance });
@@ -297,8 +305,9 @@ namespace CompMs.App.MsdialConsole.Parser
         /// </summary>
         /// <remarks>
         /// Asked by the LC-MS, GC-MS, IM-MS and LC-IM-MS readers, the modes whose peak spotting
-        /// consults the list. DIMS processing never reads it, so in a DIMS method file the key really
-        /// has no effect and stays unrecognised rather than being recorded as applied.
+        /// consults the list. The DIMS GUI shows and exports the list too, but DIMS processing never
+        /// reads it, so in a DIMS method file the key really has no effect and stays unrecognised
+        /// rather than being recorded as applied.
         /// </remarks>
         private static MethodKeyOutcome ExcludedMassListLine(ParameterBase param, string method, string value) {
             switch (method.ToLowerInvariant()) {

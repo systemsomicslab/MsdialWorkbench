@@ -52,7 +52,8 @@ public sealed class ExcludedMassListMethodKeyTests
     [TestMethod]
     [DataRow("Exclude mass list: 149:0.5; 207:0.5; 281:0.5")]
     [DataRow("Exclude mass list: 149 0.5;207 0.5;281 0.5")]
-    [DataRow("Exclude mass list: 149,0.5;207,0.5;281,0.5;")]
+    [DataRow("Exclude mass list: 149:0.5;207:0.5;281:0.5;")]
+    [DataRow("Exclude mass list: 149\t0.5; 207\t0.5; 281\t0.5")]
     [DataRow("Excluded mass list: 149:0.5 ; 207:0.5 ; 281:0.5")]
     [DataRow("exclusion mass list = \"149:0.5; 207:0.5; 281:0.5\"")]
     public void ThePairsAreReadInEverySpellingOfTheList(string line)
@@ -101,14 +102,23 @@ public sealed class ExcludedMassListMethodKeyTests
     [TestMethod]
     [DataRow("149")]
     [DataRow("149:0.5; 207")]
-    [DataRow("149:0")]
     [DataRow("149:-0.5")]
-    [DataRow("0:0.5")]
+    [DataRow("-149:0.5")]
     [DataRow("abc:0.5")]
     [DataRow("149:0.5:1")]
-    [DataRow("149,5 0,5")]
     [DataRow("149:Infinity")]
+    [DataRow("149:NaN")]
     [DataRow(";")]
+    // Two masses without tolerances, or a decimal comma: read as a pair they would exclude every peak below m/z 356.
+    [DataRow("149, 207")]
+    [DataRow("149 207")]
+    [DataRow("149,5")]
+    [DataRow("149:0.5, 207:0.5")]
+    [DataRow("149 0,5")]
+    [DataRow("149,5 0,5")]
+    // The GUI takes a tolerance below 1 only.
+    [DataRow("149:1")]
+    [DataRow("149:2.5")]
     public void AListWithAnEntryThatCannotBeReadIsRefusedWhole(string value)
     {
         using var directory = new TemporaryDirectory();
@@ -119,6 +129,22 @@ public sealed class ExcludedMassListMethodKeyTests
         Assert.AreEqual(0, parameter.ExcludedMassList.Count, value);
         CollectionAssert.AreEqual(new[] { $"Exclude mass list: {value}" }, RecordedKeys(methodFile, "unusable"), value);
         Assert.AreEqual(0, RecordedKeys(methodFile, "applied").Count, value);
+    }
+
+    /// <summary>
+    /// The GUI stores a mass of zero, and a tolerance of zero removes nothing, so an exported list holding either is read.
+    /// </summary>
+    [TestMethod]
+    public void ZerosTheGuiCanStoreAreReadAndRemoveNothing()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", "Exclude mass list: 0 0.5;149 0.5;207 0");
+
+        var parameter = ConfigParser.ReadForGcms(methodFile);
+
+        CollectionAssert.AreEqual(new[] { (0d, 0.5d), (149d, 0.5d), (207d, 0d) }, Pairs(parameter.ExcludedMassList));
+        Assert.IsFalse(parameter.PeakPickBaseParam.ShouldExclude(207.0));
+        Assert.IsTrue(parameter.PeakPickBaseParam.ShouldExclude(149.0));
     }
 
     [TestMethod]
