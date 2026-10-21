@@ -58,8 +58,9 @@ namespace CompMs.Common.Lipidomics
 
     /// <summary>
     /// Looks seeds up by precursor m/z and retention time. A seed without an adduct is expanded to every
-    /// adduct its class has a rule set for in the given spectrum models, minus, in negative mode, the
-    /// solvent adducts of the solvents not used (as the LBM library is filtered).
+    /// adduct its class has a rule set for in the given spectrum models. In negative mode, the solvent
+    /// adducts of the solvents not used are left out, whether written in the seed or expanded (as the LBM
+    /// library is filtered).
     /// </summary>
     public sealed class LipidSeedLibrary
     {
@@ -130,9 +131,13 @@ namespace CompMs.Common.Lipidomics
             }
         }
 
-        // An adduct written in the seed is the library's own choice and is kept regardless of the solvent.
+        // The library may hold the same lipid under several adducts (one row per solvent adduct), so an
+        // adduct written in the seed is filtered by the solvent just as an expanded one is.
         private static IEnumerable<LipidSeedMatch> Expand(LipidSeed seed, Dictionary<LbmClass, AdductIon[]> adductsByClass, SolventType? solventType) {
             if (seed.Adduct != null) {
+                if (solventType.HasValue && !IsAdductAllowed(seed.Adduct, solventType.Value)) {
+                    yield break;
+                }
                 yield return new LipidSeedMatch(seed, seed.Adduct, seed.PrecursorMz ?? seed.Adduct.ConvertToMz(seed.Lipid.Mass));
                 yield break;
             }

@@ -125,13 +125,17 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
-        public void AdductWrittenInTheSeedIsKeptWhateverTheSolvent() {
+        public void AdductsWrittenInTheSeedsAreFilteredByTheSolventToo() {
+            // A library with one row per solvent adduct of the same lipid.
             var lipid = FacadeLipidParser.Default.Parse("PC 34:1");
-            var seed = new LipidSeed("PC 34:1", lipid, 5.0, AdductIon.GetAdductIon("[M+CH3COO]-"));
+            var seeds = new[] { "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-", "[M+H]+" }
+                .Select(a => new LipidSeed("PC 34:1", lipid, 5.0, AdductIon.GetAdductIon(a)))
+                .ToArray();
+            var model = new FakeModel("PC", "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-", "[M+H]+");
 
-            var library = new LipidSeedLibrary(new[] { seed }, new[] { new FakeModel("PC", "[M+CH3COO]-") }, SolventType.HCOONH4);
+            var library = new LipidSeedLibrary(seeds, new[] { model }, SolventType.HCOONH4);
 
-            Assert.AreEqual("[M+CH3COO]-", library.Entries.Single().Adduct.AdductIonName);
+            CollectionAssert.AreEquivalent(new[] { "[M+HCOO]-", "[M+H]+" }, library.Entries.Select(e => e.Adduct.AdductIonName).ToArray());
         }
 
         [TestMethod()]
