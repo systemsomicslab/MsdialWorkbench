@@ -200,8 +200,8 @@
                     Command="Open"/>
             <Button Content="&#xEB42; Lipid parser" FontFamily="Segoe MDL2 Assets" FontSize="32"
                     Command="{Binding AddLipidReferenceCollectionCommand, Mode=OneTime}"/>
-            <Button Content="&#xE70F; Edit spectrum generator" FontFamily="Segoe MDL2 Assets" FontSize="32"
-                    Command="{Binding NewGeneratorEditorCommand, Mode=OneTime}"/>
+            <Button Content="&#xE70F; Lipid spectrum XML editor" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                    Command="{Binding NewXmlEditorCommand, Mode=OneTime}"/>
         </StackPanel>
     </Grid>
 </Window>
