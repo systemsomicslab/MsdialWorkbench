@@ -24,5 +24,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         protected override ReactiveCommand GetAddCommand(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.AddCommand;
         protected override IReadOnlyList<MzSearchQueryViewModel> GetExcludedMassList(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.ExcludedMassList;
         protected override bool HasErrors(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.ObserveHasErrors.Value;
+        protected override ReactiveProperty<string> GetMassSliceWidth(GcmsPeakDetectionSettingViewModel viewModel) => viewModel.MassSliceWidth;
     }
 }

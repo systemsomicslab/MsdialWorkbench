@@ -23,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         protected abstract ReactiveCommand GetAddCommand(TViewModel viewModel);
         protected abstract IReadOnlyList<MzSearchQueryViewModel> GetExcludedMassList(TViewModel viewModel);
         protected abstract bool HasErrors(TViewModel viewModel);
+        protected abstract ReactiveProperty<string> GetMassSliceWidth(TViewModel viewModel);
 
         [DataTestMethod]
         [DataRow(149.0233)] // phthalate C8H5O3+; the old pattern \d\.?\d* matched "149" and refused the rest
@@ -131,6 +132,35 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
                 CollectionAssert.AreEqual(
                     new[] { (207.0329, 0.005), (149.0233, 0.01), },
                     parameter.ExcludedMassList.Select(q => (q.Mass, q.MassTolerance)).ToArray());
+            }
+            finally {
+                Thread.CurrentThread.CurrentCulture = original;
+            }
+        }
+
+        // Adding an entry makes the page report its errors, and the page's other numbers were formatted and parsed with
+        // the current culture: with a decimal comma the mass slice width "0,1" failed its pattern and blocked the run,
+        // and "0.05", typed to fix it, passed the pattern and was parsed as 5.
+        [DataTestMethod]
+        [DataRow("de-DE")]
+        [DataRow("en-US")]
+        public void AddingAnEntryLeavesThePageWithoutErrorsInAnyCulture(string culture) {
+            var original = Thread.CurrentThread.CurrentCulture;
+            try {
+                Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
+                var parameter = new PeakPickBaseParameter();
+                var viewModel = CreateViewModel(parameter, out var model);
+
+                SetNewMass(viewModel, 149.0233);
+                SetNewTolerance(viewModel, 0.01);
+                GetAddCommand(viewModel).Execute();
+                Assert.AreEqual("0.1", GetMassSliceWidth(viewModel).Value);
+                Assert.IsFalse(HasErrors(viewModel));
+
+                GetMassSliceWidth(viewModel).Value = "0.05";
+                Assert.IsFalse(HasErrors(viewModel));
+                model.Commit();
+                Assert.AreEqual(0.05f, parameter.MassSliceWidth);
             }
             finally {
                 Thread.CurrentThread.CurrentCulture = original;

@@ -6,6 +6,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -23,8 +24,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             MinimumAmplitude = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumAmplitude,
-                m => m.ToString(),
-                vm => float.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => float.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumAmplitude).AddTo(Disposables);
 
@@ -35,15 +36,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 
             MassSliceWidth = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MassSliceWidth,
-                m => m.ToString(),
-                vm => float.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => float.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassSliceWidth).AddTo(Disposables);
 
             MassAccuracy = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.CentroidMs1Tolerance,
-                m => m.ToString(),
-                vm => float.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => float.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassAccuracy).AddTo(Disposables);
 
@@ -52,15 +53,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             SmoothingLevel = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.SmoothingLevel,
-                m => m.ToString(),
-                vm => int.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => int.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => SmoothingLevel).AddTo(Disposables);
 
             AveragePeakWidth = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumDatapoints,
-                m => m.ToString(),
-                vm => double.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => double.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => AveragePeakWidth).AddTo(Disposables);
 
