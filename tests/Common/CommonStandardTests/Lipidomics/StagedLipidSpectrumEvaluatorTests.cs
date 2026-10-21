@@ -118,37 +118,43 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
-        public void RuleSetWithoutClassDiagnosticIonsConfirmsNothingByDefault() {
-            // As CL [M-2H]2- / FAHFA [M-H]-: no diagnostic Precursor/ClassIon, only diagnostic chain ions.
-            // An unrelated spectrum must not pass as the class.
-            var result = Evaluate(Spectrum((500, 100), (391, 80)), LipidSpectrumResolution.MolecularSpeciesLevel, Precursor, NonDiagnosticClassIon, ChainIon1, ChainIon2);
+        public void RuleSetWithoutDiagnosticIonsIsNotRuledOut() {
+            // As FA [M-H]-: only the precursor, nothing diagnostic. Nothing can rule the class out.
+            var result = Evaluate(Spectrum((500, 100)), LipidSpectrumResolution.SpeciesLevel, Precursor, NonDiagnosticClassIon);
 
-            Assert.AreEqual(StagedLipidLevel.None, result.Level);
+            Assert.AreEqual(StagedLipidLevel.Class, result.Level);
+        }
+
+        [TestMethod()]
+        public void RuleSetWithoutClassDiagnosticIonsKeepsTheClassWhenChainIonsAreMissing() {
+            // As CL [M-2H]2-: diagnostic ions only among the chain ions. Their absence rules the chains out,
+            // not the class.
+            var result = Evaluate(Spectrum((500, 100), (200, 30)), LipidSpectrumResolution.MolecularSpeciesLevel, Precursor, NonDiagnosticClassIon, ChainIon1, ChainIon2);
+
+            Assert.AreEqual(StagedLipidLevel.Class, result.Level);
             Assert.AreEqual(StagedLipidStopReason.ChainDiagnosticIonMissing, result.StopReason);
         }
 
         [TestMethod()]
-        public void RuleSetWithoutClassDiagnosticIonsIsConfirmedThroughItsChains() {
-            var result = Evaluate(Spectrum((500, 100), (300, 50), (320, 50)), LipidSpectrumResolution.MolecularSpeciesLevel, Precursor, NonDiagnosticClassIon, ChainIon1, ChainIon2);
+        public void RuleSetWithoutChainDiagnosticIonsIsNotRuledOutAtTheChains() {
+            var nonDiagnosticChainIon = Fragment(LipidFragmentKind.ChainIon, 300d, isDiagnostic: false, threshold: null);
+            var result = Evaluate(Spectrum((184, 100), (300, 50)), LipidSpectrumResolution.MolecularSpeciesLevel, ClassIon, nonDiagnosticChainIon);
 
             Assert.AreEqual(StagedLipidLevel.MolecularSpecies, result.Level);
         }
 
         [TestMethod()]
-        public void SpeciesLevelRuleSetWithoutClassDiagnosticIonsConfirmsNothing() {
-            var result = Evaluate(Spectrum((500, 100)), LipidSpectrumResolution.SpeciesLevel, Precursor, NonDiagnosticClassIon);
+        public void UnrelatedSpectrumIsStoppedByTheDotProductCutoffsNotByMissingDiagnosticIons() {
+            // The CL case seen on real data: nothing diagnostic at the class level, an unrelated spectrum.
+            // It is the spectral similarity that has to keep it out.
+            var cutoffs = new StagedLipidSpectrumCutoffs(0.15 * 0.15, 0.15 * 0.15, 0.3 * 0.3, 0, 2000);
+            var model = new[] { Precursor, NonDiagnosticClassIon, ChainIon1, ChainIon2 };
+            var unrelated = Spectrum((391, 100), (268, 30), (283, 25), (255, 20));
+
+            var result = new StagedLipidSpectrumEvaluator(Tolerance, cutoffs).Evaluate(unrelated, LipidSpectrumResolution.MolecularSpeciesLevel, model, hasDeterminedChains: true);
 
             Assert.AreEqual(StagedLipidLevel.None, result.Level);
-            Assert.AreEqual(StagedLipidStopReason.NoClassDiagnosticIon, result.StopReason);
-        }
-
-        [TestMethod()]
-        public void RuleSetWithoutChainDiagnosticIonsStopsAtClass() {
-            var nonDiagnosticChainIon = Fragment(LipidFragmentKind.ChainIon, 300d, isDiagnostic: false, threshold: null);
-            var result = Evaluate(Spectrum((184, 100), (300, 50)), LipidSpectrumResolution.MolecularSpeciesLevel, ClassIon, nonDiagnosticChainIon);
-
-            Assert.AreEqual(StagedLipidLevel.Class, result.Level);
-            Assert.AreEqual(StagedLipidStopReason.NoChainDiagnosticIon, result.StopReason);
+            Assert.AreEqual(StagedLipidStopReason.SpectrumNotSimilar, result.StopReason);
         }
 
         [TestMethod()]

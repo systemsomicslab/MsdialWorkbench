@@ -16,3 +16,4 @@ SL	[M-H]-	TotalChainVariationGenerator gives the sphingoid base at least 2 oxyge
 SL	[M+H]+	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
 SL	[M+NH4]+	TotalChainVariationGenerator gives the sphingoid base at least 2 oxygens; the 1-O sphingoid of SL is never generated.
 PI_Cer	[M-H]-	The XML rule set does not pass its own class check (see StagedLipidSelfConsistencyKnownDifferences.tsv).
+LipidA	[M-H]-	Six chains, several esterified/N-acyl: the seed expands past the candidate limit (TooManyCandidates), and those chains could not be expanded anyway.

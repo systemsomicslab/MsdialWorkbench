@@ -99,16 +99,14 @@ public class StagedLipidSelfConsistencyTests
         }
     }
 
-    // The level the rule set's own spectrum can reach: chains need diagnostic chain ions, and the class
-    // needs diagnostic class ions unless the chains confirm it.
+    // The level the rule set's own spectrum can reach. Diagnostic ions only rule levels out, and the
+    // spectrum has all of them, so it reaches what LSILevel allows (sn position only with
+    // position-diagnostic ions to show it).
     internal static StagedLipidLevel ExpectedLevel(LipidSpectrumResolution resolution, bool hasChains, IReadOnlyList<LipidFragment> fragments)
     {
-        var hasClassDiagnostic = fragments.Any(f => f.Rule.IsDiagnostic && f.Rule.Kind is LipidFragmentKind.Precursor or LipidFragmentKind.ClassIon);
-        var hasChainDiagnostic = fragments.Any(f => f.Rule.IsDiagnostic && f.Rule.Kind == LipidFragmentKind.ChainIon);
-        var classLevel = hasClassDiagnostic ? StagedLipidLevel.Class : StagedLipidLevel.None;
-        if (resolution != LipidSpectrumResolution.MolecularSpeciesLevel || !hasChains || !hasChainDiagnostic)
+        if (resolution != LipidSpectrumResolution.MolecularSpeciesLevel || !hasChains)
         {
-            return classLevel;
+            return StagedLipidLevel.Class;
         }
         return fragments.Any(f => f.Rule.IsPositionDiagnostic) ? StagedLipidLevel.Position : StagedLipidLevel.MolecularSpecies;
     }
