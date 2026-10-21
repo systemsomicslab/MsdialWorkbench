@@ -238,6 +238,96 @@ namespace CompMs.App.MsdialConsole.Parser
             return MethodKeyOutcome.Applied;
         }
 
+        /// <summary>
+        /// The masses whose peaks a run removes, read as the GUI's exclusion mass list holds them.
+        /// </summary>
+        /// <remarks>
+        /// THE GUI'S LIST, NOW REACHABLE FROM A METHOD FILE. The peak-detection settings of every
+        /// project type take a list of m/z values with a tolerance each, stored in
+        /// PeakPickBaseParameter.ExcludedMassList. LC-MS, GC-MS, IM-MS and LC-IM-MS peak spotting
+        /// drops every peak whose m/z lies within a tolerance of one of them, and GC-MS deconvolution
+        /// also leaves those ions out of each deconvoluted spectrum. No method-file key set the list,
+        /// so a Console run could not reproduce a GUI run that used one: a GC-MS user removing the
+        /// phthalate ion 149 and the siloxane column-bleed ions 207 and 281 got other alignment
+        /// results from the Console than from the GUI, and reported it.
+        ///
+        /// TWO SPELLINGS OF A LIST ARE READ, because two writers exist. Entries are separated by
+        /// semicolons. Within an entry, the mass and its tolerance are separated by a colon or by
+        /// white space:
+        ///     149:0.5; 207:0.5; 281:0.5     as a person types it
+        ///     149 0.5;207 0.5;281 0.5       as ParameterBase.ParametersAsText exports the GUI's list
+        /// The key is the name that export writes, "Exclude mass list", so a parameter text the GUI
+        /// exported is a method-file line the Console applies. A comma is not a separator: it is the
+        /// list separator of the adduct key beside this one, and the decimal separator of that export
+        /// on a machine with a decimal comma, where "149,5" read as two numbers would be the mass 149
+        /// with a tolerance of 5.
+        ///
+        /// EVERY ENTRY IS AN m/z AND ITS TOLERANCE, IN THAT ORDER, WHATEVER THEIR SIZE. The GUI takes a
+        /// mass of zero or more and a tolerance with no upper bound (Hiroshi Tsugawa, 2026-10-21: the
+        /// earlier cap below 1 came from the GUI's input pattern, MS-DIAL 4 had none, and peak spotting
+        /// only tests the distance). So "149 207" is the mass 149 with a tolerance of 207, which removes
+        /// every peak below m/z 356; it is not two masses. The author asked for every entry to be read
+        /// as such a pair rather than guessed at from the size of its numbers. Masses typed without
+        /// tolerances are refused only where an entry holds one number ("149; 207") or three.
+        ///
+        /// A TOLERANCE BELOW 0.0001 IS REFUSED, zero included, as the GUI refuses a typed one, although
+        /// the GUI still loads a zero it stored earlier: the author chose the typed rule (2026-10-21),
+        /// so an exported list holding a zero tolerance is refused whole. A mass of zero is read, as the
+        /// GUI takes it. Neither number may be infinite.
+        ///
+        /// A LIST IS READ WHOLE OR NOT AT ALL. Dropping the one entry that cannot be read, as the
+        /// adduct reader does, would quietly keep the peaks that entry was meant to remove and change
+        /// the results without a word. So one entry that is not two numbers in those ranges makes the
+        /// whole value unusable: the run keeps the built-in empty list and the key report says the
+        /// value had no effect. Numbers are read in the invariant culture; "149 0,5", which the GUI
+        /// export writes on a machine with a decimal comma, is refused.
+        ///
+        /// The match is the GUI's: |m/z - mass| &lt; tolerance, strictly.
+        /// </remarks>
+        private static MethodKeyOutcome ExcludedMasses(string text, Action<List<MzSearchQuery>> assign) {
+            var queries = new List<MzSearchQuery>();
+            foreach (var entry in text.Split(';')) {
+                var trimmed = entry.Trim();
+                if (trimmed.Length == 0) {
+                    continue;
+                }
+                var parts = trimmed.Split(new[] { ':', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2
+                    || !double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double mass)
+                    || !double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double tolerance)
+                    || !(mass >= 0) || double.IsInfinity(mass)
+                    || !(tolerance >= 0.0001) || double.IsInfinity(tolerance)) {
+                    return MethodKeyOutcome.UnusableValue;
+                }
+                queries.Add(new MzSearchQuery { Mass = mass, MassTolerance = tolerance });
+            }
+            if (queries.Count == 0) {
+                return MethodKeyOutcome.UnusableValue;
+            }
+            assign(queries);
+            return MethodKeyOutcome.Applied;
+        }
+
+        /// <summary>
+        /// Say what the exclusion mass list key does with one line.
+        /// </summary>
+        /// <remarks>
+        /// Asked by the LC-MS, GC-MS, IM-MS and LC-IM-MS readers, the modes whose peak spotting
+        /// consults the list. The DIMS GUI shows and exports the list too, but DIMS processing never
+        /// reads it, so in a DIMS method file the key really has no effect and stays unrecognised
+        /// rather than being recorded as applied.
+        /// </remarks>
+        private static MethodKeyOutcome ExcludedMassListLine(ParameterBase param, string method, string value) {
+            switch (method.ToLowerInvariant()) {
+                case "exclude mass list":
+                case "excluded mass list":
+                case "exclusion mass list":
+                    return ExcludedMasses(value, list => param.ExcludedMassList = list);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
         private sealed class MethodFileKeys
         {
             private readonly List<string> _applied = new List<string>();
@@ -446,7 +536,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
-                            () => ReadGcmsSpecificParameter(param, method, value)));
+                            () => Either(ExcludedMassListLine(param, method, value),
+                                () => ReadGcmsSpecificParameter(param, method, value))));
                     }
                 }
             }
@@ -469,7 +560,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
-                            () => ReadLcmsConsoleParameter(param, method, value)));
+                            () => Either(ExcludedMassListLine(param, method, value),
+                                () => ReadLcmsConsoleParameter(param, method, value))));
                     }
                 }
             }
@@ -1038,7 +1130,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
-                            () => ReadLcImMsSpecificParameter(param, method, value)));
+                            () => Either(ExcludedMassListLine(param, method, value),
+                                () => ReadLcImMsSpecificParameter(param, method, value))));
                     }
                 }
             }
@@ -1055,7 +1148,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
-                            () => ReadImmsSpecificParameter(param, method, value)));
+                            () => Either(ExcludedMassListLine(param, method, value),
+                                () => ReadImmsSpecificParameter(param, method, value))));
                     }
                 }
             }
