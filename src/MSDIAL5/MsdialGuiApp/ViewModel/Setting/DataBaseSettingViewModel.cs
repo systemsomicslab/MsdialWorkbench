@@ -283,9 +283,19 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DataBaseID = Observable.Return(model.DataBaseID).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             DBSource = Observable.Return(model.DBSource).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ObserveHasErrors = Observable.Return(false).ToReadOnlyReactivePropertySlim(false).AddTo(Disposables);
+            // The solvent is a project setting, not part of the stored database, so it stays editable.
+            IsStagedLipidDataBase = model.DBSource == DataBaseSource.StagedLipid;
+            SolventType = new ReactivePropertySlim<CompMs.Common.Enum.SolventType>(model.LipidQueryContainer.SolventType).AddTo(Disposables);
+            SolventType.Subscribe(solvent => model.LipidQueryContainer.SolventType = solvent).AddTo(Disposables);
         }
 
         public DataBaseSettingModel Model { get; }
+
+        public bool IsStagedLipidDataBase { get; }
+
+        public ReactivePropertySlim<CompMs.Common.Enum.SolventType> SolventType { get; }
+
+        public ReadOnlyCollection<CompMs.Common.Enum.SolventType> SolventTypes { get; } = new ReadOnlyCollection<CompMs.Common.Enum.SolventType>((CompMs.Common.Enum.SolventType[])System.Enum.GetValues(typeof(CompMs.Common.Enum.SolventType)));
 
         public ReadOnlyReactivePropertySlim<string?> DataBaseID { get; }
 

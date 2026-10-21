@@ -246,6 +246,13 @@
                                Content="{Binding DataBaseID.Value}"/>
             <ui:LabeledContent PrependLabel="Database type"
                                Content="{Binding DBSource.Value}"/>
+            <ui:LabeledContent PrependLabel="Solvent type:" Visibility="{Binding IsStagedLipidDataBase, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}"
+                               ToolTip="Negative-mode solvent adducts follow the mobile-phase solvent (shared with the lipid database setting).">
+                <ComboBox ItemsSource="{Binding SolventTypes, Mode=OneTime}"
+                          SelectedItem="{Binding SolventType.Value}"
+                          HorizontalAlignment="Left"
+                          Width="128"/>
+            </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
 
