@@ -26,7 +26,16 @@ namespace CompMs.App.Msdial.Model.Setting
             Func<IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>, IAnnotationQueryFactoryGenerationVisitor> createFactory) {
             DataBaseSettingModel = dataBaseSettingModel ?? throw new ArgumentNullException(nameof(dataBaseSettingModel));
             AnnotatorID = annotatorID;
-            SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
+            // The dot-product cutoffs compare against XML-generated spectra; start from the in silico LBM
+            // (CID) defaults.
+            SearchParameter = searchParameter ?? new MsRefSearchParameterBase
+            {
+                SimpleDotProductCutOff = 0.15F,
+                WeightedDotProductCutOff = 0.15F,
+                ReverseDotProductCutOff = 0.3F,
+                MatchedPeaksPercentageCutOff = 0.0F,
+                MinimumSpectrumMatch = 1,
+            };
             _annotatorVisitor = annotatorVisitor ?? throw new ArgumentNullException(nameof(annotatorVisitor));
             _createFactory = createFactory ?? throw new ArgumentNullException(nameof(createFactory));
         }

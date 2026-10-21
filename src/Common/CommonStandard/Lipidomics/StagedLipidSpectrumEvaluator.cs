@@ -1,3 +1,4 @@
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,8 @@ namespace CompMs.Common.Lipidomics
         ClassDiagnosticIonMissing,
         /// <summary>A prohibited ion was observed above its threshold.</summary>
         ProhibitedIonObserved,
+        /// <summary>No dot product between the observed and the theoretical spectrum reached its cutoff.</summary>
+        SpectrumNotSimilar,
         /// <summary>The rule set resolves species level only (LSILevel SL).</summary>
         ResolutionLimitedToSpecies,
         /// <summary>The candidate has no individual chains to confirm.</summary>
@@ -60,12 +63,16 @@ namespace CompMs.Common.Lipidomics
     /// </summary>
     public sealed class StagedLipidEvaluation
     {
-        public StagedLipidEvaluation(StagedLipidLevel level, StagedLipidStopReason stopReason, IReadOnlyList<LipidFragmentMatch> matches, double similarity) {
+        public StagedLipidEvaluation(StagedLipidLevel level, StagedLipidStopReason stopReason, IReadOnlyList<LipidFragmentMatch> matches, double similarity, StagedLipidDotProducts dotProducts) {
             Level = level;
             StopReason = stopReason;
             Matches = matches;
             Similarity = similarity;
+            DotProducts = dotProducts;
         }
+
+        /// <summary>The MS-DIAL dot products of the observed spectrum against the theoretical one.</summary>
+        public StagedLipidDotProducts DotProducts { get; }
 
         public StagedLipidLevel Level { get; }
         public StagedLipidStopReason StopReason { get; }
@@ -78,6 +85,49 @@ namespace CompMs.Common.Lipidomics
 
         /// <summary>Every evaluated fragment with the observed intensity at its m/z (0 when absent).</summary>
         public IReadOnlyList<LipidFragmentMatch> Matches { get; }
+    }
+
+    /// <summary>
+    /// Squared dot products as MsScanMatching computes them (-1 when a spectrum is empty).
+    /// </summary>
+    public readonly struct StagedLipidDotProducts
+    {
+        public StagedLipidDotProducts(double squaredWeighted, double squaredSimple, double squaredReverse) {
+            SquaredWeighted = squaredWeighted;
+            SquaredSimple = squaredSimple;
+            SquaredReverse = squaredReverse;
+        }
+
+        public double SquaredWeighted { get; }
+        public double SquaredSimple { get; }
+        public double SquaredReverse { get; }
+    }
+
+    /// <summary>
+    /// Spectral similarity a candidate needs before its diagnostic ions are looked at. As for lipids in the
+    /// MSP annotation, any one of the weighted, simple or reverse dot products reaching its cutoff is enough.
+    /// </summary>
+    public sealed class StagedLipidSpectrumCutoffs
+    {
+        public StagedLipidSpectrumCutoffs(double squaredWeightedDotProduct, double squaredSimpleDotProduct, double squaredReverseDotProduct, double massRangeBegin, double massRangeEnd) {
+            SquaredWeightedDotProduct = squaredWeightedDotProduct;
+            SquaredSimpleDotProduct = squaredSimpleDotProduct;
+            SquaredReverseDotProduct = squaredReverseDotProduct;
+            MassRangeBegin = massRangeBegin;
+            MassRangeEnd = massRangeEnd;
+        }
+
+        public double SquaredWeightedDotProduct { get; }
+        public double SquaredSimpleDotProduct { get; }
+        public double SquaredReverseDotProduct { get; }
+        public double MassRangeBegin { get; }
+        public double MassRangeEnd { get; }
+
+        public bool Passes(StagedLipidDotProducts dotProducts) {
+            return dotProducts.SquaredWeighted >= SquaredWeightedDotProduct
+                || dotProducts.SquaredSimple >= SquaredSimpleDotProduct
+                || dotProducts.SquaredReverse >= SquaredReverseDotProduct;
+        }
     }
 
     /// <summary>
@@ -106,6 +156,8 @@ namespace CompMs.Common.Lipidomics
     /// Decides how far an observed MS/MS spectrum supports a lipid candidate, stage by stage, using
     /// the candidate's generated fragments (<see cref="ILipidSpectrumModel.GenerateFragments"/>):
     /// <list type="number">
+    /// <item>Similarity (when cutoffs are given): the observed spectrum and the theoretical one must reach a
+    /// dot-product cutoff before any diagnostic ion counts.</item>
     /// <item>Class: every diagnostic Precursor/ClassIon is observed and no prohibited ion is. A rule set
     /// with no class-diagnostic ion confirms its class only by reaching molecular species.</item>
     /// <item>Molecular species: the rule set is MSL, has diagnostic ChainIons and every one is observed.</item>
@@ -120,12 +172,15 @@ namespace CompMs.Common.Lipidomics
         private const double RuleToNormalizedScale = 10d;
 
         private readonly double _ms2Tolerance;
+        private readonly StagedLipidSpectrumCutoffs? _cutoffs;
 
-        public StagedLipidSpectrumEvaluator(double ms2Tolerance) {
+        /// <param name="cutoffs">The dot-product cutoffs a candidate must pass first; null skips the check.</param>
+        public StagedLipidSpectrumEvaluator(double ms2Tolerance, StagedLipidSpectrumCutoffs? cutoffs = null) {
             if (ms2Tolerance <= 0) {
                 throw new ArgumentOutOfRangeException(nameof(ms2Tolerance));
             }
             _ms2Tolerance = ms2Tolerance;
+            _cutoffs = cutoffs;
         }
 
         /// <param name="spectrum">The observed spectrum; it is normalized to a maximum of 100 here.</param>
@@ -136,38 +191,55 @@ namespace CompMs.Common.Lipidomics
             var normalized = Normalize(spectrum);
             var matches = fragments.Select(f => Match(normalized, f)).ToList();
             var similarity = CalculateSimilarity(normalized, fragments.Where(f => f.Rule.IsVisible));
+            var dotProducts = CalculateDotProducts(spectrum, fragments);
 
             if (resolution == LipidSpectrumResolution.None) {
-                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.NotAnnotatable, matches, similarity);
+                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.NotAnnotatable, matches, similarity, dotProducts);
             }
             if (matches.Any(m => m.Fragment.Rule.Kind == LipidFragmentKind.ProhibitedIon && m.IsObserved)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ProhibitedIonObserved, matches, similarity);
+                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ProhibitedIonObserved, matches, similarity, dotProducts);
+            }
+            if (_cutoffs != null && !_cutoffs.Passes(dotProducts)) {
+                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.SpectrumNotSimilar, matches, similarity, dotProducts);
             }
             if (!AllObserved(matches, IsClassDiagnostic)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ClassDiagnosticIonMissing, matches, similarity);
+                return new StagedLipidEvaluation(StagedLipidLevel.None, StagedLipidStopReason.ClassDiagnosticIonMissing, matches, similarity, dotProducts);
             }
             // A rule set without class-diagnostic ions gives no class evidence of its own; its class is
             // confirmed only together with the chains (as TG [M+NH4]+ is), never by default.
             var classLevel = matches.Any(m => IsClassDiagnostic(m.Fragment.Rule)) ? StagedLipidLevel.Class : StagedLipidLevel.None;
             if (resolution != LipidSpectrumResolution.MolecularSpeciesLevel) {
-                return new StagedLipidEvaluation(classLevel, classLevel == StagedLipidLevel.Class ? StagedLipidStopReason.ResolutionLimitedToSpecies : StagedLipidStopReason.NoClassDiagnosticIon, matches, similarity);
+                return new StagedLipidEvaluation(classLevel, classLevel == StagedLipidLevel.Class ? StagedLipidStopReason.ResolutionLimitedToSpecies : StagedLipidStopReason.NoClassDiagnosticIon, matches, similarity, dotProducts);
             }
             if (!hasDeterminedChains) {
-                return new StagedLipidEvaluation(classLevel, classLevel == StagedLipidLevel.Class ? StagedLipidStopReason.ChainsNotDetermined : StagedLipidStopReason.NoClassDiagnosticIon, matches, similarity);
+                return new StagedLipidEvaluation(classLevel, classLevel == StagedLipidLevel.Class ? StagedLipidStopReason.ChainsNotDetermined : StagedLipidStopReason.NoClassDiagnosticIon, matches, similarity, dotProducts);
             }
             if (!matches.Any(m => IsChainDiagnostic(m.Fragment.Rule))) {
-                return new StagedLipidEvaluation(classLevel, StagedLipidStopReason.NoChainDiagnosticIon, matches, similarity);
+                return new StagedLipidEvaluation(classLevel, StagedLipidStopReason.NoChainDiagnosticIon, matches, similarity, dotProducts);
             }
             if (!AllObserved(matches, IsChainDiagnostic)) {
-                return new StagedLipidEvaluation(classLevel, StagedLipidStopReason.ChainDiagnosticIonMissing, matches, similarity);
+                return new StagedLipidEvaluation(classLevel, StagedLipidStopReason.ChainDiagnosticIonMissing, matches, similarity, dotProducts);
             }
             if (!matches.Any(m => IsPositionDiagnostic(m.Fragment.Rule))) {
-                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.NoPositionDiagnosticIon, matches, similarity);
+                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.NoPositionDiagnosticIon, matches, similarity, dotProducts);
             }
             if (!AllObserved(matches, IsPositionDiagnostic)) {
-                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.PositionDiagnosticIonMissing, matches, similarity);
+                return new StagedLipidEvaluation(StagedLipidLevel.MolecularSpecies, StagedLipidStopReason.PositionDiagnosticIonMissing, matches, similarity, dotProducts);
             }
-            return new StagedLipidEvaluation(StagedLipidLevel.Position, StagedLipidStopReason.Resolved, matches, similarity);
+            return new StagedLipidEvaluation(StagedLipidLevel.Position, StagedLipidStopReason.Resolved, matches, similarity, dotProducts);
+        }
+
+        // Observed spectrum first, theoretical (the visible fragments) second, as MsReferenceScorer passes
+        // query and reference; the reverse dot product follows the theoretical peaks.
+        private StagedLipidDotProducts CalculateDotProducts(IReadOnlyList<SpectrumPeak> spectrum, IReadOnlyList<LipidFragment> fragments) {
+            var observed = new MSScanProperty { Spectrum = spectrum.ToList() };
+            var theoretical = new MSScanProperty { Spectrum = fragments.Where(f => f.Rule.IsVisible).Select(f => new SpectrumPeak(f.Mz, f.Intensity)).OrderBy(p => p.Mass).ToList() };
+            var begin = _cutoffs?.MassRangeBegin ?? 0d;
+            var end = _cutoffs?.MassRangeEnd ?? double.MaxValue;
+            return new StagedLipidDotProducts(
+                MsScanMatching.GetWeightedDotProduct(observed, theoretical, _ms2Tolerance, begin, end),
+                MsScanMatching.GetSimpleDotProduct(observed, theoretical, _ms2Tolerance, begin, end),
+                MsScanMatching.GetReverseDotProduct(observed, theoretical, _ms2Tolerance, begin, end));
         }
 
         private static bool IsClassDiagnostic(LipidFragmentRule rule) {

@@ -152,6 +152,36 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
+        public void DissimilarSpectrumFailsTheDotProductCutoffsDespiteItsDiagnosticIons() {
+            // The diagnostic ions are there (weakly), but the model's dominant ion is missing and the spectrum
+            // is dominated by peaks the model doesn't have. (A spectrum that merely has extra peaks would pass:
+            // the reverse dot product only looks at the model's peaks, as in the MSP lipid annotation.)
+            var dominant = new LipidFragment(new LipidFragmentRule(LipidFragmentKind.ChainIon, "dominant", 999d, false, false, null, null, null), 450d);
+            var fragments = new[] { ClassIon, ChainIon1, ChainIon2, dominant };
+            var spectrum = Spectrum((184, 12), (300, 2), (320, 2), (391, 100), (268, 60), (255, 80), (227, 90));
+            // Squared dot products here: weighted 0.065, simple 0.026, reverse 0.12.
+            var evaluator = new StagedLipidSpectrumEvaluator(Tolerance, new StagedLipidSpectrumCutoffs(0.3 * 0.3, 0.3 * 0.3, 0.5 * 0.5, 0, 2000));
+
+            var gated = evaluator.Evaluate(spectrum, LipidSpectrumResolution.MolecularSpeciesLevel, fragments, hasDeterminedChains: true);
+            var ungated = new StagedLipidSpectrumEvaluator(Tolerance).Evaluate(spectrum, LipidSpectrumResolution.MolecularSpeciesLevel, fragments, hasDeterminedChains: true);
+
+            Assert.AreEqual(StagedLipidLevel.None, gated.Level);
+            Assert.AreEqual(StagedLipidStopReason.SpectrumNotSimilar, gated.StopReason);
+            Assert.AreEqual(StagedLipidLevel.MolecularSpecies, ungated.Level, "without cutoffs the diagnostic ions alone pass");
+        }
+
+        [TestMethod()]
+        public void SimilarSpectrumPassesTheDotProductCutoffs() {
+            var spectrum = Spectrum((184, 100), (300, 50), (320, 50));
+            var evaluator = new StagedLipidSpectrumEvaluator(Tolerance, new StagedLipidSpectrumCutoffs(0.6 * 0.6, 0.6 * 0.6, 0.8 * 0.8, 0, 2000));
+
+            var result = evaluator.Evaluate(spectrum, LipidSpectrumResolution.MolecularSpeciesLevel, new[] { ClassIon, ChainIon1, ChainIon2 }, hasDeterminedChains: true);
+
+            Assert.AreEqual(StagedLipidLevel.MolecularSpecies, result.Level);
+            Assert.IsTrue(result.DotProducts.SquaredSimple > 0.6 * 0.6);
+        }
+
+        [TestMethod()]
         public void NoneResolutionIsNotEvaluated() {
             var result = Evaluate(Spectrum((184, 100)), LipidSpectrumResolution.None, ClassIon);
 

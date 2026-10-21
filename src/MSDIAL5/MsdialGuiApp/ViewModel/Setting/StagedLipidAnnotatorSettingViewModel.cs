@@ -28,6 +28,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ParameterViewModel.AbsoluteAmpCutoff.ObserveHasErrors,
                 ParameterViewModel.MassRangeBegin.ObserveHasErrors,
                 ParameterViewModel.MassRangeEnd.ObserveHasErrors,
+                ParameterViewModel.SimpleDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.WeightedDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.ReverseDotProductCutOff.ObserveHasErrors,
                 ParameterViewModel.TotalScoreCutoff.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .Inverse()

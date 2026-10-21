@@ -29,8 +29,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Id = id ?? throw new ArgumentNullException(nameof(id));
             Priority = priority;
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            _annotator = new StagedLipidAnnotator(database.Models, StagedLipidAnnotator.CreateDefaultGenerator(), new StagedLipidSpectrumEvaluator(parameter.Ms2Tolerance));
+            _annotator = new StagedLipidAnnotator(database.Models, StagedLipidAnnotator.CreateDefaultGenerator(), new StagedLipidSpectrumEvaluator(parameter.Ms2Tolerance, Cutoffs(parameter)));
             _evaluator = new MsScanMatchResultEvaluator(parameter);
+        }
+
+        // The dot-product cutoffs of the annotator settings, applied against the XML-generated spectrum.
+        private static StagedLipidSpectrumCutoffs Cutoffs(MsRefSearchParameterBase parameter) {
+            return new StagedLipidSpectrumCutoffs(parameter.SquaredWeightedDotProductCutOff, parameter.SquaredSimpleDotProductCutOff, parameter.SquaredReverseDotProductCutOff, parameter.MassRangeBegin, parameter.MassRangeEnd);
         }
 
         public string Id { get; }
@@ -71,11 +76,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 IsLipidPositionMatch = level >= StagedLipidLevel.Position,
             };
 
+            // The dot products the cutoffs were applied to: against the best candidate's whole theoretical
+            // spectrum, chain ions included, even when only the class is reported.
+            if (annotation.Best is StagedLipidCandidate best) {
+                result.SquaredWeightedDotProduct = (float)best.Evaluation.DotProducts.SquaredWeighted;
+                result.SquaredSimpleDotProduct = (float)best.Evaluation.DotProducts.SquaredSimple;
+                result.SquaredReverseDotProduct = (float)best.Evaluation.DotProducts.SquaredReverse;
+            }
             var scan = query.NormalizedScan;
             if (scan?.Spectrum is { Count: > 0 } && reference.Spectrum.Count > 0) {
-                result.SquaredWeightedDotProduct = (float)MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-                result.SquaredSimpleDotProduct = (float)MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-                result.SquaredReverseDotProduct = (float)MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                 var matched = MsScanMatching.GetMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
                 result.MatchedPeaksPercentage = (float)matched[0];
                 result.MatchedPeaksCount = (float)matched[1];
