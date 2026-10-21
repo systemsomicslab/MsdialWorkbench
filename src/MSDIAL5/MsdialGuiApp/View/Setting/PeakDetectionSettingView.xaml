@@ -162,7 +162,7 @@
                                     <DataTemplate>
                                         <Grid FocusManager.FocusedElement="{Binding ElementName=TextBox_MassTolerance}">
                                             <TextBox Name="TextBox_MassTolerance" 
-                                                     Text="{Binding Tolerance, TargetNullValue=''}"
+                                                     Text="{Binding MassTolerance, TargetNullValue=''}"
                                                      IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                                         </Grid>
                                     </DataTemplate>
