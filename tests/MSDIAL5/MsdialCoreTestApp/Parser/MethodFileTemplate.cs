@@ -308,6 +308,7 @@ public static class MethodFileTemplate
         if (gcms) {
             w.Comment("In GC-MS those ions are also left out of every deconvoluted spectrum.");
         }
+        w.Comment("Every entry is an m/z and then its tolerance in Da, 0.0001 or more: 149 207 removes every peak within 207 of m/z 149.");
         w.Blank("Exclude mass list", "m/z and tolerance pairs separated by semicolons, e.g. 149:0.5; 207:0.5; 281:0.5. Leave blank to keep every peak.");
     }
 

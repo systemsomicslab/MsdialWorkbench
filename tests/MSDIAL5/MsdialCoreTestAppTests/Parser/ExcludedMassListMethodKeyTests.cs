@@ -97,6 +97,28 @@ public sealed class ExcludedMassListMethodKeyTests
     }
 
     /// <summary>
+    /// The GUI's tolerance has no upper bound, and two numbers are always an m/z and then its tolerance, whatever their
+    /// size: the author decided "149 207" is the mass 149 with a tolerance of 207, not two masses.
+    /// </summary>
+    [TestMethod]
+    [DataRow("149:1", 149d, 1d)]
+    [DataRow("149:2.5", 149d, 2.5d)]
+    [DataRow("149 207", 149d, 207d)]
+    [DataRow("207 149", 207d, 149d)]
+    public void AToleranceOfOneOrMoreIsReadAsTheWindowOfTheMassBeforeIt(string value, double mass, double tolerance)
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", $"Exclude mass list: {value}");
+
+        var parameter = ConfigParser.ReadForGcms(methodFile);
+
+        CollectionAssert.AreEqual(new[] { (mass, tolerance) }, Pairs(parameter.ExcludedMassList), value);
+        CollectionAssert.AreEqual(new[] { "Exclude mass list" }, RecordedKeys(methodFile, "applied"), value);
+        Assert.IsTrue(parameter.PeakPickBaseParam.ShouldExclude(mass + tolerance * 0.99), value);
+        Assert.IsFalse(parameter.PeakPickBaseParam.ShouldExclude(mass + tolerance), value);
+    }
+
+    /// <summary>
     /// Dropping one unreadable entry would quietly keep the peaks it was meant to remove.
     /// </summary>
     [TestMethod]
@@ -109,16 +131,19 @@ public sealed class ExcludedMassListMethodKeyTests
     [DataRow("149:Infinity")]
     [DataRow("149:NaN")]
     [DataRow(";")]
-    // Two masses without tolerances, or a decimal comma: read as a pair they would exclude every peak below m/z 356.
+    // Masses typed without tolerances, where an entry does not hold exactly two numbers.
+    [DataRow("149; 207")]
+    [DataRow("149 207 281")]
+    // A comma is not a separator: "149,5" read as two numbers would be the mass 149 with a tolerance of 5.
     [DataRow("149, 207")]
-    [DataRow("149 207")]
     [DataRow("149,5")]
     [DataRow("149:0.5, 207:0.5")]
     [DataRow("149 0,5")]
     [DataRow("149,5 0,5")]
-    // The GUI takes a tolerance below 1 only.
-    [DataRow("149:1")]
-    [DataRow("149:2.5")]
+    // The GUI refuses a typed tolerance below 0.0001, and so does a method file, even a zero the GUI stored and exported.
+    [DataRow("149:0")]
+    [DataRow("149:0.00009")]
+    [DataRow("0 0.5;149 0.5;207 0")]
     public void AListWithAnEntryThatCannotBeReadIsRefusedWhole(string value)
     {
         using var directory = new TemporaryDirectory();
@@ -132,19 +157,19 @@ public sealed class ExcludedMassListMethodKeyTests
     }
 
     /// <summary>
-    /// The GUI stores a mass of zero, and a tolerance of zero removes nothing, so an exported list holding either is read.
+    /// The GUI takes a mass of zero and a tolerance of 0.0001, so a list holding either is read.
     /// </summary>
     [TestMethod]
-    public void ZerosTheGuiCanStoreAreReadAndRemoveNothing()
+    public void AMassOfZeroAndTheSmallestToleranceTheGuiTakesAreRead()
     {
         using var directory = new TemporaryDirectory();
-        var methodFile = directory.CreateFile("method.txt", "Exclude mass list: 0 0.5;149 0.5;207 0");
+        var methodFile = directory.CreateFile("method.txt", "Exclude mass list: 0 0.5;149 0.0001");
 
         var parameter = ConfigParser.ReadForGcms(methodFile);
 
-        CollectionAssert.AreEqual(new[] { (0d, 0.5d), (149d, 0.5d), (207d, 0d) }, Pairs(parameter.ExcludedMassList));
-        Assert.IsFalse(parameter.PeakPickBaseParam.ShouldExclude(207.0));
-        Assert.IsTrue(parameter.PeakPickBaseParam.ShouldExclude(149.0));
+        CollectionAssert.AreEqual(new[] { (0d, 0.5d), (149d, 0.0001d) }, Pairs(parameter.ExcludedMassList));
+        Assert.IsTrue(parameter.PeakPickBaseParam.ShouldExclude(149.00005));
+        Assert.IsFalse(parameter.PeakPickBaseParam.ShouldExclude(149.0002));
     }
 
     [TestMethod]

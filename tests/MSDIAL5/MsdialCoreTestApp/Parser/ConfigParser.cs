@@ -258,14 +258,22 @@ namespace CompMs.App.MsdialConsole.Parser
         ///     149 0.5;207 0.5;281 0.5       as ParameterBase.ParametersAsText exports the GUI's list
         /// The key is the name that export writes, "Exclude mass list", so a parameter text the GUI
         /// exported is a method-file line the Console applies. A comma is not a separator: it is the
-        /// list separator of the adduct key beside this one, and "149, 207" read as a mass and a
-        /// tolerance would exclude every peak below m/z 356.
+        /// list separator of the adduct key beside this one, and the decimal separator of that export
+        /// on a machine with a decimal comma, where "149,5" read as two numbers would be the mass 149
+        /// with a tolerance of 5.
         ///
-        /// THE VALUES THE GUI ACCEPTS, AND NO OTHERS. Its settings take a mass of zero or more and a
-        /// tolerance below 1 (RegularExpression 0?\.\d+ on the tolerance box), so a tolerance of 1 or
-        /// more is refused here too: in a file it is far more often a second mass than a window.
-        /// A mass of zero is accepted because the GUI stores it and an exported list may hold it; like
-        /// a tolerance of zero, it removes nothing.
+        /// EVERY ENTRY IS AN m/z AND ITS TOLERANCE, IN THAT ORDER, WHATEVER THEIR SIZE. The GUI takes a
+        /// mass of zero or more and a tolerance with no upper bound (Hiroshi Tsugawa, 2026-10-21: the
+        /// earlier cap below 1 came from the GUI's input pattern, MS-DIAL 4 had none, and peak spotting
+        /// only tests the distance). So "149 207" is the mass 149 with a tolerance of 207, which removes
+        /// every peak below m/z 356; it is not two masses. The author asked for every entry to be read
+        /// as such a pair rather than guessed at from the size of its numbers. Masses typed without
+        /// tolerances are refused only where an entry holds one number ("149; 207") or three.
+        ///
+        /// A TOLERANCE BELOW 0.0001 IS REFUSED, zero included, as the GUI refuses a typed one, although
+        /// the GUI still loads a zero it stored earlier: the author chose the typed rule (2026-10-21),
+        /// so an exported list holding a zero tolerance is refused whole. A mass of zero is read, as the
+        /// GUI takes it. Neither number may be infinite.
         ///
         /// A LIST IS READ WHOLE OR NOT AT ALL. Dropping the one entry that cannot be read, as the
         /// adduct reader does, would quietly keep the peaks that entry was meant to remove and change
@@ -288,7 +296,7 @@ namespace CompMs.App.MsdialConsole.Parser
                     || !double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double mass)
                     || !double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double tolerance)
                     || !(mass >= 0) || double.IsInfinity(mass)
-                    || !(tolerance >= 0 && tolerance < 1)) {
+                    || !(tolerance >= 0.0001) || double.IsInfinity(tolerance)) {
                     return MethodKeyOutcome.UnusableValue;
                 }
                 queries.Add(new MzSearchQuery { Mass = mass, MassTolerance = tolerance });
