@@ -1,4 +1,5 @@
 using CompMs.Common.MessagePack;
+using CompMs.MsdialCore.DataObj;
 using MessagePack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
@@ -55,6 +56,62 @@ namespace CompMs.MsdialCore.Parameter.Tests
             Assert.AreEqual(1.5F, parameter.SerializedLocalSupportRtWindow);
         }
 
+        /// <summary>
+        /// Keys 16-19 (the anchor library, its mode and its peak selection) came after projects
+        /// with keys 0-15 were saved. Such a project opens as it ran: automatic anchors, no library.
+        /// </summary>
+        [TestMethod()]
+        public void AProjectSavedBeforeTheAnchorSettingsExistedLoadsAsAutomaticWithoutALibrary() {
+            var saved = new ParameterWithoutAnchorSettings { Execute = true, ReferenceFileId = 7, SerializedLocalSupportRtWindow = 2.5F, };
+
+            var loaded = SaveAndLoadAsProjectsDo<ParameterWithoutAnchorSettings, AutomaticAlignmentRetentionTimeCorrectionParameter>(saved);
+
+            Assert.AreEqual(AutomaticRtCorrectionAnchorMode.Automatic, loaded.AnchorMode);
+            Assert.AreEqual(string.Empty, loaded.AnchorLibraryFilePath, "an absent path is empty, not null");
+            Assert.AreEqual(RetentionTimeCorrectionPeakSelectionMode.HighestIntensity, loaded.AnchorPeakSelectionMode);
+            Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionParameter.DefaultAnchorPeakSelectionRtWeight, loaded.AnchorPeakSelectionRtWeight);
+            Assert.IsNull(loaded.SerializedAnchorPeakSelectionRtWeight, "the absent key is told apart from a stored value");
+            Assert.IsTrue(loaded.Execute);
+            Assert.AreEqual(7, loaded.ReferenceFileId);
+            Assert.AreEqual(2.5F, loaded.LocalSupportRtWindow);
+        }
+
+        [TestMethod()]
+        public void AProjectSavedWithAnchorSettingsKeepsThem() {
+            var saved = new AutomaticAlignmentRetentionTimeCorrectionParameter {
+                AnchorMode = AutomaticRtCorrectionAnchorMode.Hybrid,
+                AnchorLibraryFilePath = "anchors/Anchor Library.txt",
+                AnchorPeakSelectionMode = RetentionTimeCorrectionPeakSelectionMode.Weighted,
+                AnchorPeakSelectionRtWeight = 0F,
+            };
+
+            var loaded = SaveAndLoadAsProjectsDo<AutomaticAlignmentRetentionTimeCorrectionParameter, AutomaticAlignmentRetentionTimeCorrectionParameter>(saved);
+
+            Assert.AreEqual(AutomaticRtCorrectionAnchorMode.Hybrid, loaded.AnchorMode);
+            Assert.AreEqual("anchors/Anchor Library.txt", loaded.AnchorLibraryFilePath);
+            Assert.AreEqual(RetentionTimeCorrectionPeakSelectionMode.Weighted, loaded.AnchorPeakSelectionMode);
+            Assert.AreEqual(0F, loaded.AnchorPeakSelectionRtWeight, "a stored 0 is not read as the default");
+        }
+
+        [TestMethod()]
+        public void ANewProjectCanStillBeReadByTheTypeBeforeTheAnchorSettings() {
+            var saved = new AutomaticAlignmentRetentionTimeCorrectionParameter {
+                Execute = true,
+                AnchorMode = AutomaticRtCorrectionAnchorMode.UserOnly,
+                AnchorLibraryFilePath = "anchors.txt",
+            };
+
+            var loaded = SaveAndLoadAsProjectsDo<AutomaticAlignmentRetentionTimeCorrectionParameter, ParameterWithoutAnchorSettings>(saved);
+
+            Assert.IsTrue(loaded.Execute);
+        }
+
+        [TestMethod()]
+        public void ANullPathReadsAsEmpty() {
+            var parameter = new AutomaticAlignmentRetentionTimeCorrectionParameter { AnchorLibraryFilePath = null! };
+            Assert.AreEqual(string.Empty, parameter.AnchorLibraryFilePath);
+        }
+
         private static TLoad SaveAndLoadAsProjectsDo<TSave, TLoad>(TSave saved) {
             using var stream = new MemoryStream();
             MessagePackDefaultHandler.SaveToStream(saved, stream);
@@ -81,6 +138,28 @@ namespace CompMs.MsdialCore.Parameter.Tests
             [Key(12)] public float OutlierMadThreshold { get; set; } = 3.5F;
             [Key(13)] public float ReferenceCentralityWeight { get; set; } = 0.35F;
             [Key(14)] public bool InterpolateBlankByAnalyticalOrder { get; set; } = true;
+        }
+
+        /// <summary>The parameter as it was serialised before keys 16-19 (the anchor settings) existed.</summary>
+        [MessagePackObject]
+        public sealed class ParameterWithoutAnchorSettings
+        {
+            [Key(0)] public bool Execute { get; set; } = false;
+            [Key(1)] public int ReferenceFileId { get; set; } = -1;
+            [Key(2)] public float RtBinWidth { get; set; } = 0.5F;
+            [Key(3)] public float MatchRtTolerance { get; set; } = 0.5F;
+            [Key(4)] public int MinimumAnchorCount { get; set; } = 3;
+            [Key(5)] public int MaximumAnchorCount { get; set; } = 6;
+            [Key(6)] public float MinimumSampleCoverage { get; set; } = 0.5F;
+            [Key(7)] public float IntensityQuantile { get; set; } = 0.75F;
+            [Key(8)] public float MaximumPeakWidthQuantile { get; set; } = 0.5F;
+            [Key(9)] public float MinimumSignalToNoise { get; set; } = 3F;
+            [Key(10)] public float MinimumGaussianSimilarity { get; set; } = 0F;
+            [Key(11)] public float MinimumIdealSlope { get; set; } = 0F;
+            [Key(12)] public float OutlierMadThreshold { get; set; } = 3.5F;
+            [Key(13)] public float ReferenceCentralityWeight { get; set; } = 0.35F;
+            [Key(14)] public bool InterpolateBlankByAnalyticalOrder { get; set; } = true;
+            [Key(15)] public float? SerializedLocalSupportRtWindow { get; set; } = 1.5F;
         }
     }
 }
