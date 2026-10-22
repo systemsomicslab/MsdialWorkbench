@@ -47,23 +47,46 @@ namespace CompMs.MsdialCore.DataObj
         [Key(nameof(Category))]
         public string Category { get; }
 
+        /// <summary>The name of the adduct preset the selection came from; null when none was applied.</summary>
+        [Key(nameof(AdductPresetName))]
+        public string? AdductPresetName { get; set; }
+
         /// <summary>
-        /// The mobile-phase solvent, which decides the negative-mode solvent adducts seeds are expanded to;
-        /// null keeps them all. Changing it rebuilds the seed index.
+        /// The (class, adduct) pairs searched, as expanded from the preset when it was applied, so the project
+        /// keeps its adducts even if the preset file changes later; null searches every pair the models have.
         /// </summary>
-        [Key(nameof(SolventType))]
-        public SolventType? SolventType {
-            get => _solventType;
+        [Key(nameof(AllowedAdducts))]
+        public List<StagedLipidAdductRow>? AllowedAdducts {
+            get => _allowedAdducts;
             set {
                 lock (_syncObject) {
-                    if (_solventType != value) {
-                        _solventType = value;
-                        _library = null;
-                    }
+                    _allowedAdducts = value;
+                    _library = null;
                 }
             }
         }
-        private SolventType? _solventType;
+        private List<StagedLipidAdductRow>? _allowedAdducts;
+
+        /// <summary>Applies a preset: records its name and the pairs it picks out of these models.</summary>
+        public void ApplyAdductPreset(LipidAdductPreset preset) {
+            var selection = preset.Apply(Models);
+            AdductPresetName = preset.Name;
+            AllowedAdducts = selection.Allowed
+                .Select(p => new StagedLipidAdductRow(p.Class.ToString(), p.Adduct))
+                .OrderBy(r => r.LipidClass, StringComparer.Ordinal).ThenBy(r => r.Adduct, StringComparer.Ordinal)
+                .ToList();
+        }
+
+        [IgnoreMember]
+        public LipidAdductSelection? AdductSelection {
+            get {
+                var rows = _allowedAdducts;
+                return rows is null ? null : new LipidAdductSelection(rows
+                    .Select(r => (Ok: System.Enum.TryParse<LbmClass>(r.LipidClass, out var c), Class: c, r.Adduct))
+                    .Where(r => r.Ok)
+                    .Select(r => (r.Class, r.Adduct)));
+            }
+        }
 
         [IgnoreMember]
         public IReadOnlyList<LipidSeed> Seeds => _seeds;
@@ -84,7 +107,7 @@ namespace CompMs.MsdialCore.DataObj
         public LipidSeedLibrary Library {
             get {
                 lock (_syncObject) {
-                    return _library ?? (_library = new LipidSeedLibrary(_seeds, Models, _solventType));
+                    return _library ?? (_library = new LipidSeedLibrary(_seeds, Models, AdductSelection));
                 }
             }
         }
@@ -215,5 +238,24 @@ namespace CompMs.MsdialCore.DataObj
             var adduct = Adduct is null ? null : AdductIon.GetAdductIon(Adduct);
             return new LipidSeed(Name, lipid, RetentionTime, adduct, adduct is null ? null : PrecursorMz, Formula);
         }
+    }
+}
+
+namespace CompMs.MsdialCore.DataObj
+{
+    /// <summary>One allowed (LbmClass name, adduct) pair of a staged lipid database.</summary>
+    [MessagePackObject]
+    public sealed class StagedLipidAdductRow
+    {
+        public StagedLipidAdductRow(string lipidClass, string adduct) {
+            LipidClass = lipidClass;
+            Adduct = adduct;
+        }
+
+        [Key(nameof(LipidClass))]
+        public string LipidClass { get; }
+
+        [Key(nameof(Adduct))]
+        public string Adduct { get; }
     }
 }

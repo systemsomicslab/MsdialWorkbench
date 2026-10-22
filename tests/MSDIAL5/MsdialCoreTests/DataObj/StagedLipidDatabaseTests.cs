@@ -51,14 +51,12 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
-        public void SolventTypeIsSavedAndFiltersTheSeedIndex() {
+        public void AdductPresetIsSavedAsItsExpandedPairs() {
             var storage = DataBaseStorage.CreateEmpty();
             var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics, };
             var searchParameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, };
-            var database = new StagedLipidDatabase("DB", new[] { new LipidSeed("PC 34:1", FacadeLipidParser.Default.Parse("PC 34:1"), 5.0) })
-            {
-                SolventType = SolventType.HCOONH4,
-            };
+            var database = new StagedLipidDatabase("DB", new[] { new LipidSeed("PC 34:1", FacadeLipidParser.Default.Parse("PC 34:1"), 5.0) });
+            database.ApplyAdductPreset(LipidAdductPreset.BuiltIn.Single(p => p.Name == LipidAdductPreset.NegativeHcoohName));
             Assert.IsTrue(database.Library.Entries.All(e => !e.Adduct.IsHac && !e.Adduct.IsHco3));
             Assert.IsTrue(database.Library.Entries.Any(e => e.Adduct.IsFA));
 
@@ -72,10 +70,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var loaded = DataBaseStorage.Load(memory, new StandardLoadAnnotatorVisitor(parameter), new StandardAnnotationQueryFactoryGenerationVisitor(parameter.PeakPickBaseParam, parameter.RefSpecMatchBaseParam), null)
                 .StagedLipidDatabases.Single().DataBase;
 
-            Assert.AreEqual(SolventType.HCOONH4, loaded.SolventType);
+            Assert.AreEqual(LipidAdductPreset.NegativeHcoohName, loaded.AdductPresetName);
+            CollectionAssert.AreEqual(database.AllowedAdducts.Select(r => $"{r.LipidClass} {r.Adduct}").ToArray(), loaded.AllowedAdducts.Select(r => $"{r.LipidClass} {r.Adduct}").ToArray());
             Assert.IsTrue(loaded.Library.Entries.All(e => !e.Adduct.IsHac && !e.Adduct.IsHco3));
 
-            loaded.SolventType = SolventType.CH3COONH4; // the index follows a changed setting
+            loaded.ApplyAdductPreset(LipidAdductPreset.BuiltIn.Single(p => p.Name == LipidAdductPreset.NegativeCh3coohName)); // the index follows a changed preset
             Assert.IsTrue(loaded.Library.Entries.Any(e => e.Adduct.IsHac));
             Assert.IsTrue(loaded.Library.Entries.All(e => !e.Adduct.IsFA));
         }

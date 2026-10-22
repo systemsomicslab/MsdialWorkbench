@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -85,6 +86,35 @@ namespace CompMs.App.Msdial.Model.Setting
         private DataBaseSource _dBSource = DataBaseSource.None;
 
         public LipidQueryBean LipidQueryContainer { get; }
+
+        /// <summary>Where the lipid adduct presets come from (the user's folder and settings by default).</summary>
+        public LipidAdductPresetStore AdductPresetStore { get; set; } = LipidAdductPresetStore.Default;
+
+        public IonMode IonMode => _parameter.ProjectParam.IonMode;
+
+        public IReadOnlyList<LipidAdductPreset> GetAdductPresets() => AdductPresetStore.GetPresets(IonMode);
+
+        /// <summary>
+        /// The adduct preset of a staged lipid database. A new database starts from the store's default; a
+        /// restored one shows the preset it was built with and keeps its stored adducts unless this is changed.
+        /// </summary>
+        public LipidAdductPreset? AdductPreset {
+            get => _adductPreset ?? (_adductPreset = InitialAdductPreset());
+            set {
+                if (SetProperty(ref _adductPreset, value)) {
+                    _isAdductPresetChanged = true;
+                }
+            }
+        }
+        private LipidAdductPreset? _adductPreset;
+        private bool _isAdductPresetChanged;
+
+        private LipidAdductPreset? InitialAdductPreset() {
+            if (_stagedLipidDatabase is null) {
+                return AdductPresetStore.GetDefault(IonMode);
+            }
+            return GetAdductPresets().FirstOrDefault(p => p.Name == _stagedLipidDatabase.AdductPresetName);
+        }
 
         public ProteomicsParameter ProteomicsParameter { get; }
 
@@ -181,8 +211,11 @@ namespace CompMs.App.Msdial.Model.Setting
             switch (DBSource) {
                 case DataBaseSource.StagedLipid:
                     var db = _stagedLipidDatabase ?? LoadStagedLipidDatabase();
-                    // The project's lipid solvent setting, shared with the LBM library, picks the solvent adducts.
-                    db.SolventType = LipidQueryContainer.SolventType;
+                    // A restored database keeps the adducts it was built with unless the preset was changed.
+                    if ((_isAdductPresetChanged || db.AllowedAdducts is null) && AdductPreset is LipidAdductPreset preset) {
+                        db.ApplyAdductPreset(preset);
+                        AdductPresetStore.MarkUsed(preset, IonMode);
+                    }
                     return db;
                 default:
                     return null;

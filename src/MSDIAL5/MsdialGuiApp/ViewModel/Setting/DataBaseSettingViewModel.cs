@@ -143,8 +143,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Select(src => src == DataBaseSource.StagedLipid)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            SolventType = new ReactivePropertySlim<CompMs.Common.Enum.SolventType>(model.LipidQueryContainer.SolventType).AddTo(Disposables);
-            SolventType.Subscribe(solvent => model.LipidQueryContainer.SolventType = solvent).AddTo(Disposables);
+            AdductPresetSetting = new LipidAdductPresetSettingViewModel(model).AddTo(Disposables);
 
             IsEditable = isEditableModel.Where(m => m == Model).ToConstant(true)
                 .Merge(notEditableModel.Where(m => m == Model).ToConstant(false))
@@ -265,10 +264,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> IsStagedLipidDataBase { get; }
 
-        /// <summary>The project's lipid solvent (shared with the LBM setting); picks the negative-mode solvent adducts.</summary>
-        public ReactivePropertySlim<CompMs.Common.Enum.SolventType> SolventType { get; }
-
-        public ReadOnlyCollection<CompMs.Common.Enum.SolventType> SolventTypes { get; } = new ReadOnlyCollection<CompMs.Common.Enum.SolventType>((CompMs.Common.Enum.SolventType[])System.Enum.GetValues(typeof(CompMs.Common.Enum.SolventType)));
+        /// <summary>The adduct preset of a staged lipid database.</summary>
+        public LipidAdductPresetSettingViewModel AdductPresetSetting { get; }
 
         // IDataBaseSettingViewModel interface
         IReadOnlyReactiveProperty<string> IDataBaseSettingViewModel.DataBaseID => DataBaseID;
@@ -283,19 +280,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DataBaseID = Observable.Return(model.DataBaseID).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             DBSource = Observable.Return(model.DBSource).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ObserveHasErrors = Observable.Return(false).ToReadOnlyReactivePropertySlim(false).AddTo(Disposables);
-            // The solvent is a project setting, not part of the stored database, so it stays editable.
+            // The adduct preset stays editable: changing it re-applies the preset when the database is built.
             IsStagedLipidDataBase = model.DBSource == DataBaseSource.StagedLipid;
-            SolventType = new ReactivePropertySlim<CompMs.Common.Enum.SolventType>(model.LipidQueryContainer.SolventType).AddTo(Disposables);
-            SolventType.Subscribe(solvent => model.LipidQueryContainer.SolventType = solvent).AddTo(Disposables);
+            AdductPresetSetting = new LipidAdductPresetSettingViewModel(model).AddTo(Disposables);
         }
 
         public DataBaseSettingModel Model { get; }
 
         public bool IsStagedLipidDataBase { get; }
 
-        public ReactivePropertySlim<CompMs.Common.Enum.SolventType> SolventType { get; }
-
-        public ReadOnlyCollection<CompMs.Common.Enum.SolventType> SolventTypes { get; } = new ReadOnlyCollection<CompMs.Common.Enum.SolventType>((CompMs.Common.Enum.SolventType[])System.Enum.GetValues(typeof(CompMs.Common.Enum.SolventType)));
+        public LipidAdductPresetSettingViewModel AdductPresetSetting { get; }
 
         public ReadOnlyReactivePropertySlim<string?> DataBaseID { get; }
 

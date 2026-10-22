@@ -49,5 +49,29 @@ namespace CompMs.App.Msdial.Properties
                 this["RHome"] = value;
             }
         }
+
+        /// <summary>The lipid adduct preset last used for a positive-mode staged lipid database.</summary>
+        [System.Configuration.UserScopedSetting()]
+        [System.Configuration.DefaultSettingValue(null)]
+        public string RecentPositiveLipidAdductPreset {
+            get {
+                return (string)this["RecentPositiveLipidAdductPreset"];
+            }
+            set {
+                this["RecentPositiveLipidAdductPreset"] = value;
+            }
+        }
+
+        /// <summary>The lipid adduct preset last used for a negative-mode staged lipid database.</summary>
+        [System.Configuration.UserScopedSetting()]
+        [System.Configuration.DefaultSettingValue(null)]
+        public string RecentNegativeLipidAdductPreset {
+            get {
+                return (string)this["RecentNegativeLipidAdductPreset"];
+            }
+            set {
+                this["RecentNegativeLipidAdductPreset"] = value;
+            }
+        }
     }
 }

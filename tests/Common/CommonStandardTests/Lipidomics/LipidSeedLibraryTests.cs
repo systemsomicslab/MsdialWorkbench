@@ -113,29 +113,67 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
-        public void SolventKeepsOnlyItsOwnNegativeSolventAdducts() {
-            var model = new FakeModel("PC", "[M+H]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-");
-            string[] Adducts(SolventType? solvent) => new LipidSeedLibrary(new[] { Seed("PC 34:1", rt: 5.0) }, new[] { model }, solvent)
+        public void BuiltInPresetsKeepTheirSolventAdducts() {
+            var model = new FakeModel("PC", "[M+H]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-");
+            string[] Adducts(string preset) => new LipidSeedLibrary(new[] { Seed("PC 34:1", rt: 5.0) }, new[] { model }, LipidAdductPreset.BuiltIn.Single(p => p.Name == preset).Apply(new[] { model }))
                 .Entries.Select(e => e.Adduct.AdductIonName).OrderBy(a => a).ToArray();
 
-            CollectionAssert.AreEqual(new[] { "[M+H]+", "[M+HCOO]-", "[M-H]-" }, Adducts(SolventType.HCOONH4));
-            CollectionAssert.AreEqual(new[] { "[M+CH3COO]-", "[M+H]+", "[M-H]-" }, Adducts(SolventType.CH3COONH4));
-            CollectionAssert.AreEqual(new[] { "[M+H]+", "[M+HCO3]-", "[M-H]-" }, Adducts(SolventType.NH4HCO3));
-            Assert.AreEqual(5, Adducts(null).Length);
+            CollectionAssert.AreEqual(new[] { "[M+H]+", "[M+Na]+" }, Adducts(LipidAdductPreset.PositiveName));
+            CollectionAssert.AreEqual(new[] { "[M+HCOO]-", "[M-H]-" }, Adducts(LipidAdductPreset.NegativeHcoohName));
+            CollectionAssert.AreEqual(new[] { "[M+CH3COO]-", "[M-H]-" }, Adducts(LipidAdductPreset.NegativeCh3coohName));
+            CollectionAssert.AreEqual(new[] { "[M+HCO3]-", "[M-H]-" }, Adducts(LipidAdductPreset.NegativeNh4hco3Name));
+            Assert.AreEqual(6, new LipidSeedLibrary(new[] { Seed("PC 34:1", rt: 5.0) }, new[] { model }).Entries.Count, "no selection keeps every adduct");
         }
 
         [TestMethod()]
-        public void AdductsWrittenInTheSeedsAreFilteredByTheSolventToo() {
+        public void AdductsWrittenInTheSeedsAreFilteredByThePresetToo() {
             // A library with one row per solvent adduct of the same lipid.
             var lipid = FacadeLipidParser.Default.Parse("PC 34:1");
-            var seeds = new[] { "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-", "[M+H]+" }
+            var seeds = new[] { "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-", "[M-H]-" }
                 .Select(a => new LipidSeed("PC 34:1", lipid, 5.0, AdductIon.GetAdductIon(a)))
                 .ToArray();
-            var model = new FakeModel("PC", "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-", "[M+H]+");
+            var model = new FakeModel("PC", "[M+HCOO]-", "[M+CH3COO]-", "[M+HCO3]-", "[M-H]-");
+            var selection = LipidAdductPreset.BuiltIn.Single(p => p.Name == LipidAdductPreset.NegativeHcoohName).Apply(new[] { model });
 
-            var library = new LipidSeedLibrary(seeds, new[] { model }, SolventType.HCOONH4);
+            var library = new LipidSeedLibrary(seeds, new[] { model }, selection);
 
-            CollectionAssert.AreEquivalent(new[] { "[M+HCOO]-", "[M+H]+" }, library.Entries.Select(e => e.Adduct.AdductIonName).ToArray());
+            CollectionAssert.AreEquivalent(new[] { "[M+HCOO]-", "[M-H]-" }, library.Entries.Select(e => e.Adduct.AdductIonName).ToArray());
+        }
+
+        [TestMethod()]
+        public void UserPresetCanSetAdductsPerClass() {
+            var text = "# Name: Lab negative\nClass\tAdduct\n*\t[M-H]-\nPC\t[M+HCOO]-\n";
+            var preset = LipidAdductPreset.Parse(new StringReader(text), "file name", out var errors);
+            var models = new[] { new FakeModel("PC", "[M-H]-", "[M+HCOO]-"), new FakeModel("PE", "[M-H]-", "[M+HCOO]-") };
+
+            var library = new LipidSeedLibrary(new[] { Seed("PC 34:1", rt: 5.0), Seed("PE 36:2", rt: 6.0) }, models, preset.Apply(models));
+
+            Assert.AreEqual(0, errors.Count);
+            Assert.AreEqual("Lab negative", preset.Name);
+            Assert.AreEqual(IonMode.Negative, preset.IonMode);
+            CollectionAssert.AreEquivalent(
+                new[] { "PC [M-H]-", "PC [M+HCOO]-", "PE [M-H]-" },
+                library.Entries.Select(e => $"{e.Seed.Lipid.LipidClass} {e.Adduct.AdductIonName}").ToArray());
+        }
+
+        [TestMethod()]
+        public void PresetFileReportsBadLines() {
+            var text = "Class\tAdduct\nNoSuchClass\t[M-H]-\n*\tnot an adduct\njust one cell\n*\t[M-H]-\n";
+
+            var preset = LipidAdductPreset.Parse(new StringReader(text), "fallback", out var errors);
+
+            Assert.AreEqual("fallback", preset.Name, "the file name stands in when there is no '# Name:' line");
+            CollectionAssert.AreEqual(new[] { 2, 3, 4 }, errors.Select(e => int.Parse(e.Split(' ', ':')[1])).ToArray());
+            Assert.IsTrue(preset.Allows(LbmClass.PC, AdductIon.GetAdductIon("[M-H]-")));
+        }
+
+        [TestMethod()]
+        public void BuiltInPresetsHaveTheirPolarity() {
+            CollectionAssert.AreEqual(
+                new[] { "Positive:Positive", "Negative HCOOH:Negative", "Negative CH3COOH:Negative", "Negative NH4HCO3:Negative" },
+                LipidAdductPreset.BuiltIn.Select(p => $"{p.Name}:{p.IonMode}").ToArray());
+            Assert.AreEqual(LipidAdductPreset.PositiveName, LipidAdductPreset.DefaultFor(IonMode.Positive).Name);
+            Assert.AreEqual(LipidAdductPreset.NegativeHcoohName, LipidAdductPreset.DefaultFor(IonMode.Negative).Name);
         }
 
         [TestMethod()]
