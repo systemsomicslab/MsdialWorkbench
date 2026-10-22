@@ -18,6 +18,7 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
         <Grid.Resources>
+            <!-- Each panel's DataContext is its PanelLoadResult: null while loading, then a view model or an error message. -->
             <Style TargetType="StackPanel" x:Key="LoadingIfNull">
                 <Setter Property="Visibility" Value="Collapsed"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -28,32 +29,64 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <!-- Opaque, so that the empty chart of the failed panel does not show through the message. -->
+            <Style TargetType="DockPanel" x:Key="ErrorIfFailed">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsFailed}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <!-- A read-only TextBox rather than a TextBlock, so that the message can be selected and copied into a report. -->
+            <Style TargetType="TextBox" x:Key="ErrorMessage">
+                <Setter Property="Text" Value="{Binding ErrorMessage, Mode=OneWay}"/>
+                <Setter Property="IsReadOnly" Value="True"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Margin" Value="16,4,16,16"/>
+            </Style>
         </Grid.Resources>
-        <Grid DataContext="{Binding MsSpectrumIntensityCheckViewModel.Value}" Grid.Column="0" Grid.Row="0">
+        <Grid DataContext="{Binding MsSpectrumIntensityCheckPanel.Value}" Grid.Column="0" Grid.Row="0">
+            <local:MsSpectrumIntensityCheckView DataContext="{Binding Value, FallbackValue={x:Null}}"/>
             <StackPanel Style="{StaticResource LoadingIfNull}">
                 <TextBlock Text="Loading..."/>
                 <ProgressBar IsIndeterminate="True"
                              Height="24"/>
             </StackPanel>
-            <local:MsSpectrumIntensityCheckView/>
+            <DockPanel Style="{StaticResource ErrorIfFailed}">
+                <TextBlock Text="The spectrum intensity histograms could not be made:" DockPanel.Dock="Top" FontWeight="Bold" Margin="16,16,16,0"/>
+                <TextBox Style="{StaticResource ErrorMessage}"/>
+            </DockPanel>
         </Grid>
-        <Grid DataContext="{Binding MsPeakSpotsCheckViewModel.Value}"
+        <Grid DataContext="{Binding MsPeakSpotsCheckPanel.Value}"
               Grid.Column="1" Grid.Row="0">
-            <local:MsPeakSpotsCheckView/>
+            <local:MsPeakSpotsCheckView DataContext="{Binding Value, FallbackValue={x:Null}}"/>
             <StackPanel Style="{StaticResource LoadingIfNull}">
                 <TextBlock Text="Loading..."/>
                 <ProgressBar IsIndeterminate="True"
                              Height="24"/>
             </StackPanel>
+            <DockPanel Style="{StaticResource ErrorIfFailed}">
+                <TextBlock Text="The peak spots could not be detected:" DockPanel.Dock="Top" FontWeight="Bold" Margin="16,16,16,0"/>
+                <TextBox Style="{StaticResource ErrorMessage}"/>
+            </DockPanel>
         </Grid>
-        <Grid DataContext="{Binding RawMsSpectrumCheckViewModel.Value}"
+        <Grid DataContext="{Binding RawMsSpectrumCheckPanel.Value}"
               Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
-            <local:RawMsSpectrumCheckView/>
+            <local:RawMsSpectrumCheckView DataContext="{Binding Value, FallbackValue={x:Null}}"/>
             <StackPanel Style="{StaticResource LoadingIfNull}">
                 <TextBlock Text="Loading..."/>
                 <ProgressBar IsIndeterminate="True"
                              Height="24"/>
             </StackPanel>
+            <DockPanel Style="{StaticResource ErrorIfFailed}">
+                <TextBlock Text="The spectra could not be loaded:" DockPanel.Dock="Top" FontWeight="Bold" Margin="16,16,16,0"/>
+                <TextBox Style="{StaticResource ErrorMessage}"/>
+            </DockPanel>
         </Grid>
         <GridSplitter VerticalAlignment="Stretch"
                       HorizontalAlignment="Right"

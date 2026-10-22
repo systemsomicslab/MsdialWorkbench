@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 
 namespace CompMs.App.RawDataViewer.ViewModel
 {
@@ -18,21 +17,28 @@ namespace CompMs.App.RawDataViewer.ViewModel
 
             AnalysisDataModel = Model.AnalysisDataModel;
 
-            MsSpectrumIntensityCheckViewModel = Model.MsSpectrumIntensityCheckModelTask
-                .ToObservable()
-                .Select(m => new MsSpectrumIntensityCheckViewModel(m))
+            // Each panel is null while its model is being built, and then holds either its view model or why it has none.
+            MsSpectrumIntensityCheckPanel = PanelLoadResult.FromTask(Model.MsSpectrumIntensityCheckModelTask, m => new MsSpectrumIntensityCheckViewModel(m))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            MsSpectrumIntensityCheckViewModel = MsSpectrumIntensityCheckPanel
+                .Select(panel => panel?.Value)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            MsPeakSpotsCheckViewModel = Model.MsPeakSpotsCheckModelTask
-                .ToObservable()
-                .Select(m => new MsPeakSpotsCheckViewModel(m))
+            MsPeakSpotsCheckPanel = PanelLoadResult.FromTask(Model.MsPeakSpotsCheckModelTask, m => new MsPeakSpotsCheckViewModel(m))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            MsPeakSpotsCheckViewModel = MsPeakSpotsCheckPanel
+                .Select(panel => panel?.Value)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            RawMsSpectrumCheckViewModel = Model.RawMsSpectrumCheckModelTask
-                .ToObservable()
-                .Select(m => new RawMsSpectrumCheckViewModel(m))
+            RawMsSpectrumCheckPanel = PanelLoadResult.FromTask(Model.RawMsSpectrumCheckModelTask, m => new RawMsSpectrumCheckViewModel(m))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            RawMsSpectrumCheckViewModel = RawMsSpectrumCheckPanel
+                .Select(panel => panel?.Value)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -48,9 +54,15 @@ namespace CompMs.App.RawDataViewer.ViewModel
 
         public AnalysisDataModel AnalysisDataModel { get; }
 
+        public ReadOnlyReactivePropertySlim<PanelLoadResult<MsSpectrumIntensityCheckViewModel>> MsSpectrumIntensityCheckPanel { get; }
+
         public ReadOnlyReactivePropertySlim<MsSpectrumIntensityCheckViewModel> MsSpectrumIntensityCheckViewModel { get; }
 
+        public ReadOnlyReactivePropertySlim<PanelLoadResult<MsPeakSpotsCheckViewModel>> MsPeakSpotsCheckPanel { get; }
+
         public ReadOnlyReactivePropertySlim<MsPeakSpotsCheckViewModel> MsPeakSpotsCheckViewModel { get; }
+
+        public ReadOnlyReactivePropertySlim<PanelLoadResult<RawMsSpectrumCheckViewModel>> RawMsSpectrumCheckPanel { get; }
 
         public ReadOnlyReactivePropertySlim<RawMsSpectrumCheckViewModel> RawMsSpectrumCheckViewModel { get; }
     }
