@@ -78,8 +78,8 @@
                 <DataGridTextColumn Header="Scan start time" Binding="{Binding ScanStartTime, StringFormat=F6}"/>
                 <DataGridTextColumn Header="MS level" Binding="{Binding MsLevel}"/>
                 <DataGridTextColumn Header="Base peak m/z" Binding="{Binding BasePeakMz, StringFormat=F6}"/>
-                <DataGridTextColumn Header="Base peak intensity" Binding="{Binding BasePeakIntensity}"/>
-                <DataGridTextColumn Header="Precursor m/z" Binding="{Binding Precursor.SelectedIonMz}"/>
+                <DataGridTextColumn Header="Base peak intensity" Binding="{Binding BasePeakIntensity, StringFormat=F3}"/>
+                <DataGridTextColumn Header="Precursor m/z" Binding="{Binding Precursor.SelectedIonMz, StringFormat=F6}"/>
                 <DataGridTextColumn Header="Drift time" Binding="{Binding DriftTime}"/>
                 <DataGridTextColumn Header="Collision energy" Binding="{Binding CollisionEnergy}"/>
             </DataGrid.Columns>
