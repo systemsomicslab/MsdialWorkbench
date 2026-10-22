@@ -574,7 +574,7 @@ namespace CompMs.App.MsdialConsole.Parser
         /// Say what the settings only an LC-MS run uses would do with one line.
         /// </summary>
         /// <remarks>
-        /// LcmsProcess reads six settings with readers of their own, and calls them after
+        /// LcmsProcess reads seven settings with readers of their own, and calls them after
         /// ReadForLcmsParameter has already written the key record. The record knew only
         /// ReadCommonParameter, so it listed those keys as unrecognised with NO EFFECT while they
         /// governed the run. A repository run's record put "MSP annotator settings file path",
@@ -584,7 +584,7 @@ namespace CompMs.App.MsdialConsole.Parser
         /// This asks the same line readers the side readers use, so the record cannot disagree
         /// with the run: a value the side reader takes is applied, and a value it passes over --
         /// "yes" for a switch, "2.0" for a priority -- is unusable, because the run used the
-        /// default. For those six nothing is assigned here, so which keys take effect is
+        /// default. For those seven nothing is assigned here, so which keys take effect is
         /// unchanged. A new setting LcmsProcess reads for itself belongs in this list.
         ///
         /// The lipid RT check keys are here for the same reason, and are the exception to "nothing
@@ -614,6 +614,7 @@ namespace CompMs.App.MsdialConsole.Parser
             (param, method, value) => AlignmentLightModeLine(method, value, _ => { }),
             (param, method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
             (param, method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
+            (param, method, value) => AutomaticRtCorrectionPreviewOnlyLine(method, value, _ => { }),
             (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
         };
 
@@ -650,6 +651,14 @@ namespace CompMs.App.MsdialConsole.Parser
                 default:
                     return MethodKeyOutcome.UnknownKey;
             }
+        }
+
+        /// <summary>
+        /// Read the automatic RT correction's anchor mode: Automatic, UserOnly or Hybrid, in any
+        /// letter case, UserOnly also written user_only or "user only".
+        /// </summary>
+        private static MethodKeyOutcome AnchorMode(string text, Action<AutomaticRtCorrectionAnchorMode> assign) {
+            return Named(text.Replace("_", string.Empty).Replace(" ", string.Empty), assign);
         }
 
         /// <summary>
@@ -737,6 +746,43 @@ namespace CompMs.App.MsdialConsole.Parser
             return ReadLast(filepath, false, AnnotationCandidateExportLine);
         }
 
+        /// <summary>
+        /// Whether the run stops once the automatic alignment RT correction has chosen its anchors
+        /// and written its audit, for a person to review them before the run that aligns.
+        /// </summary>
+        public static bool ReadAutomaticRtCorrectionPreviewOnly(string filepath) {
+            return ReadAutomaticRtCorrectionPreviewOnly(filepath, out _);
+        }
+
+        /// <summary>
+        /// As <see cref="ReadAutomaticRtCorrectionPreviewOnly(string)"/>, and the value of the last
+        /// line that says neither True nor False, or null. LcmsProcess refuses such a line rather
+        /// than read it as False, as every other setting would be: this switch is what keeps a
+        /// preview from becoming a production run.
+        /// </summary>
+        public static bool ReadAutomaticRtCorrectionPreviewOnly(string filepath, out string? unusableValue) {
+            string? unusable = null;
+            var result = false;
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable || value.IsEmptyOrNull()) {
+                        continue;
+                    }
+                    var read = false;
+                    var outcome = AutomaticRtCorrectionPreviewOnlyLine(method, value, v => read = v);
+                    if (outcome.IsApplied) {
+                        result = read;
+                    }
+                    else if (outcome.IsUnusableValue) {
+                        unusable = value;
+                    }
+                }
+            }
+            unusableValue = unusable;
+            return result;
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             return ReadLast(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
         }
@@ -782,6 +828,15 @@ namespace CompMs.App.MsdialConsole.Parser
             switch (method.ToLower()) {
                 case "annotation candidates":
                 case "export annotation candidates":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome AutomaticRtCorrectionPreviewOnlyLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "automatic rt correction preview only":
                     return TrueOrFalse(value, assign);
                 default:
                     return MethodKeyOutcome.UnknownKey;
@@ -1207,6 +1262,7 @@ namespace CompMs.App.MsdialConsole.Parser
             param.CompoundListInTargetModePath = ResolvePathFromMethodFile(param.CompoundListInTargetModePath, methodFilePath, "Compounds library file path for target detection");
             param.CompoundListForRtCorrectionPath = ResolvePathFromMethodFile(param.CompoundListForRtCorrectionPath, methodFilePath, "Compounds library file path for RT correction");
             param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath = ResolvePathFromMethodFile(param.ReferenceFileParam.RtCorrectionPeakSelectionFilePath, methodFilePath, "RT correction peak selection file path");
+            param.AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath = ResolvePathFromMethodFile(param.AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath, methodFilePath, "Automatic RT correction anchor library file path");
         }
 
         private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
@@ -1706,6 +1762,14 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "automatic rt correction reference centrality weight": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight = (float)v);
                 case "automatic rt correction interpolate blanks by analytical order": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder = v);
                 case "automatic rt correction local support rt window": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow = (float)v);
+                case "automatic rt correction anchor mode": return AnchorMode(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorMode = v);
+                case "automatic rt correction anchor library file path": return Assign(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath = v);
+                case "automatic rt correction anchor peak selection mode": return Named<RetentionTimeCorrectionPeakSelectionMode>(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionMode = v);
+                case "automatic rt correction anchor peak selection rt weight":
+                    return Number(valueLower, v => {
+                        if (v < 0d || v > 1d) throw new FormatException($"Anchor peak selection RT weight must be between 0 and 1, not {v}.");
+                        param.AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionRtWeight = (float)v;
+                    });
 
                 //Filtering
                 case "peak count filter": return Number(valueLower, v => param.PeakCountFilter = (float)v);

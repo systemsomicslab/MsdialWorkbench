@@ -7,6 +7,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -418,6 +419,98 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    [DataRow("Automatic", AutomaticRtCorrectionAnchorMode.Automatic)]
+    [DataRow("UserOnly", AutomaticRtCorrectionAnchorMode.UserOnly)]
+    [DataRow("user_only", AutomaticRtCorrectionAnchorMode.UserOnly)]
+    [DataRow("User only", AutomaticRtCorrectionAnchorMode.UserOnly)]
+    [DataRow("hybrid", AutomaticRtCorrectionAnchorMode.Hybrid)]
+    public void ReadCommonParameter_ReadsTheAnchorModeOfTheAutomaticRtCorrection(string value, AutomaticRtCorrectionAnchorMode expected)
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "automatic rt correction anchor mode", value).IsApplied);
+
+        Assert.AreEqual(expected, parameter.AlignmentBaseParam.AutomaticRtCorrection.AnchorMode);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReadsTheAnchorLibraryAndPeakSelectionOfTheAutomaticRtCorrection()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var settings = new[] {
+            ("automatic rt correction anchor library file path", "anchors/Anchor Library.txt"),
+            ("automatic rt correction anchor peak selection mode", "closesttoreferencert"),
+            ("automatic rt correction anchor peak selection rt weight", "0.25"),
+        };
+
+        foreach (var (key, value) in settings) {
+            Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsApplied, key);
+        }
+
+        var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
+        Assert.AreEqual("anchors/Anchor Library.txt", actual.AnchorLibraryFilePath, "the path keeps its letter case");
+        Assert.AreEqual(RetentionTimeCorrectionPeakSelectionMode.ClosestToReferenceRt, actual.AnchorPeakSelectionMode);
+        Assert.AreEqual(0.25f, actual.AnchorPeakSelectionRtWeight, 1e-7f);
+    }
+
+    [TestMethod]
+    [DataRow("automatic rt correction anchor mode", "manual")]
+    [DataRow("automatic rt correction anchor mode", "1")]
+    [DataRow("automatic rt correction anchor peak selection mode", "closest")]
+    [DataRow("automatic rt correction anchor peak selection mode", "2")]
+    [DataRow("automatic rt correction anchor peak selection rt weight", "1.5")]
+    [DataRow("automatic rt correction anchor peak selection rt weight", "-0.1")]
+    [DataRow("automatic rt correction anchor peak selection rt weight", "half")]
+    public void ReadCommonParameter_RefusesAnAnchorSettingItCannotUse(string key, string value)
+    {
+        var parameter = new MsdialLcmsParameter();
+        var defaults = new AutomaticAlignmentRetentionTimeCorrectionParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsUnusableValue);
+
+        var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
+        Assert.AreEqual(defaults.AnchorMode, actual.AnchorMode);
+        Assert.AreEqual(defaults.AnchorPeakSelectionMode, actual.AnchorPeakSelectionMode);
+        Assert.AreEqual(defaults.AnchorPeakSelectionRtWeight, actual.AnchorPeakSelectionRtWeight);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_ReadsARelativeAnchorLibraryPathFromTheMethodFilesFolder()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            """);
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(Path.GetFullPath(library), parameter.AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath);
+        CollectionAssert.IsSubsetOf(
+            new[] { "Automatic RT correction anchor mode", "Automatic RT correction anchor library file path" },
+            RecordedKeys(methodFile, "applied"));
+    }
+
+    [TestMethod]
+    public void ReadAutomaticRtCorrectionPreviewOnly_IsOffUnlessTheMethodFileSaysTrue()
+    {
+        using var directory = new TemporaryDirectory();
+        var none = directory.CreateFile("none.txt", "Execute automatic RT correction for alignment: True\n");
+        var on = directory.CreateFile("on.txt", "Automatic RT correction preview only: True\n");
+        var unusable = directory.CreateFile("unusable.txt", "Automatic RT correction preview only: yes\n");
+
+        Assert.IsFalse(ConfigParser.ReadAutomaticRtCorrectionPreviewOnly(none));
+        Assert.IsTrue(ConfigParser.ReadAutomaticRtCorrectionPreviewOnly(on));
+        Assert.IsFalse(ConfigParser.ReadAutomaticRtCorrectionPreviewOnly(unusable));
+        ConfigParser.ReadForLcmsParameter(unusable);
+        CollectionAssert.AreEqual(new[] { "Automatic RT correction preview only: yes" }, RecordedKeys(unusable, "unusable"));
+    }
+
+    [TestMethod]
     public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
     {
         // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller
@@ -542,6 +635,7 @@ public sealed class ConfigParserTests
     [DataRow("Export detailed alignment provenance", "false")]
     [DataRow("Annotation candidates", "true")]
     [DataRow("Export annotation candidates", "false")]
+    [DataRow("Automatic RT correction preview only", "true")]
     public void ReadForLcms_KeyRecordAcceptsEverySpellingTheSideReadersAccept(string key, string value)
     {
         using var directory = new TemporaryDirectory();
@@ -852,6 +946,130 @@ public sealed class ConfigParserTests
         var (_, output, _) = RunLcms(directory, methodFile);
 
         Assert.IsFalse(output.Contains("Compounds library file path for RT correction"), output);
+    }
+
+    /// <summary>
+    /// The automatic RT correction's settings and anchor library are checked before the analysis
+    /// files are read: each of these stops the run at once, with the reason.
+    /// </summary>
+    [TestMethod]
+    [DataRow("Automatic RT correction preview only: yes\n", "neither True nor False")]
+    [DataRow("Execute automatic RT correction for alignment: False\nAutomatic RT correction preview only: True\n", "preview only requires Execute automatic RT correction")]
+    [DataRow("Automatic RT correction minimum anchors: 1\n", "minimum anchor count must be 2 or more")]
+    [DataRow("Automatic RT correction anchor mode: UserOnly\n", "anchor library file path is required")]
+    [DataRow("Automatic RT correction anchor mode: Hybrid\nAutomatic RT correction anchor library file path: no-such-anchors.txt\n", "was not found")]
+    [DataRow("Automatic RT correction anchor mode: UserOnly\nAutomatic RT correction anchor library file path: flagged.txt\n", "line 3")]
+    public void LcmsProcess_RefusesAnAutomaticRtCorrectionItCannotRunBeforeReadingAnything(string lines, string reason)
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile(
+            "flagged.txt",
+            "Name\tRT(min)\tRT tol.(min)\tm/z\tm/z tol.\tMinimum height\tT/F\n"
+            + "A\t1\t1\t100\t0.01\t1000\tTrue\n"
+            + "B\t2\t1\t200\t0.01\t1000\tyes\n"
+            + "C\t3\t1\t300\t0.01\t1000\tTrue\n");
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            "Execute automatic RT correction for alignment: True\nTogether with alignment: True\n" + lines);
+
+        var (result, output, error) = RunLcms(directory, methodFile);
+
+        Assert.AreEqual(-1, result);
+        StringAssert.Contains(error, reason);
+        Assert.IsFalse(output.Contains("Start processing"), output);
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysWhatTheAnchorLibraryHoldsAndWarnsAboutRowsTheRunWillNotFind()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B", "Anchor C"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Together with alignment: True
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            Excluded mass list: 200 0.01
+            RT correction peak selection mode: ClosestToReferenceRt
+            """);
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        StringAssert.Contains(output, "anchor mode UserOnly: 3 user anchor(s) and 0 exclusion(s)");
+        using (var sha = System.Security.Cryptography.SHA256.Create()) {
+            var checksum = string.Concat(sha.ComputeHash(File.ReadAllBytes(library)).Select(value => value.ToString("x2")));
+            StringAssert.Contains(output, $"(SHA-256 {checksum})");
+        }
+        StringAssert.Contains(output, "user anchor Anchor B (m/z 200) lies within the excluded mass 200");
+        StringAssert.Contains(output, "User anchors: Anchor A, Anchor B, Anchor C.");
+        StringAssert.Contains(output, "'RT correction peak selection mode' is ClosestToReferenceRt, but user anchors are chosen by 'Automatic RT correction anchor peak selection mode', which is HighestIntensity");
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysAnAnchorLibraryTheAnchorModeDoesNotReadIsNotUsed()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B", "Anchor C"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Together with alignment: True
+            Automatic RT correction anchor library file path: anchors.txt
+            """);
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        StringAssert.Contains(output, "but the anchor mode is Automatic, so the library is not used");
+
+        var off = directory.CreateFile(
+            "off.txt",
+            """
+            Execute automatic RT correction for alignment: False
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            """);
+        var (_, offOutput, _) = RunLcms(directory, off);
+        StringAssert.Contains(offOutput, "but 'Execute automatic RT correction for alignment' is False, so the library is not used");
+    }
+
+    [TestMethod]
+    public void LcmsProcess_ARunThatStopsAtTheImportLeavesAnEarlierAuditAlone()
+    {
+        using var directory = new TemporaryDirectory();
+        var output = System.IO.Path.Combine(directory.Path, "output");
+        Directory.CreateDirectory(output);
+        var audit = System.IO.Path.Combine(output, "automatic_alignment_rt_correction_summary.tsv");
+        File.WriteAllText(audit, "an earlier run's summary");
+        var methodFile = directory.CreateFile("method.txt", "Execute automatic RT correction for alignment: True\nTogether with alignment: True\n");
+
+        var (result, _, _) = RunLcms(directory, methodFile);
+
+        Assert.AreEqual(-1, result, "the input folder is empty");
+        Assert.IsTrue(File.Exists(audit), "a run that produces nothing removes nothing");
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysNothingAboutTheUserDefinedPeakSelectionKeysWhenTheMethodLeftThemAlone()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B", "Anchor C"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Together with alignment: True
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            Automatic RT correction anchor peak selection mode: Weighted
+            Automatic RT correction anchor peak selection rt weight: 0.3
+            """);
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        Assert.IsFalse(output.Contains("'RT correction peak selection mode' is"), output);
     }
 
     /// <summary>
