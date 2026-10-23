@@ -275,7 +275,7 @@ namespace CompMs.Graphics.Chart
 
         public static readonly DependencyProperty FormatProperty = DependencyProperty.Register(
             nameof(Format), typeof(string), typeof(Annotator),
-            new PropertyMetadata("N5")
+            new FrameworkPropertyMetadata("N5", FrameworkPropertyMetadataOptions.AffectsRender, OnLabelChanged)
             );
         public string Format {
             get => (string)GetValue(FormatProperty);
@@ -320,6 +320,33 @@ namespace CompMs.Graphics.Chart
             set => SetValue(OverlapProperty, value);
         }
 
+        public static readonly DependencyProperty MinimumRelativeOrderProperty = DependencyProperty.Register(
+            nameof(MinimumRelativeOrder), typeof(double), typeof(Annotator),
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender),
+            value => (double)value >= 0d && (double)value <= 1d);
+
+        /// <summary>
+        /// Minimum fraction of the maximum ordering value in the full source required for a label.
+        /// Spectrum views order by raw intensity, so this is independent of zoom and axis transforms.
+        /// </summary>
+        public double MinimumRelativeOrder {
+            get => (double)GetValue(MinimumRelativeOrderProperty);
+            set => SetValue(MinimumRelativeOrderProperty, value);
+        }
+
+        public static readonly DependencyProperty MinimumOrderProperty = DependencyProperty.Register(
+            nameof(MinimumOrder), typeof(double), typeof(Annotator),
+            new FrameworkPropertyMetadata(double.NegativeInfinity, FrameworkPropertyMetadataOptions.AffectsRender),
+            value => !double.IsNaN((double)value));
+
+        /// <summary>
+        /// Minimum ordering value required for a label.
+        /// </summary>
+        public double MinimumOrder {
+            get => (double)GetValue(MinimumOrderProperty);
+            set => SetValue(MinimumOrderProperty, value);
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
@@ -357,40 +384,99 @@ namespace CompMs.Graphics.Chart
                     break;
             }
 
-            var texts = new List<Tuple<FormattedText, Point, Rect>>();
+            var texts = new List<(FormattedText Text, Point Point, Rect Bounds, Rect Region, double Mass)>();
             var brush = Brush;
             var fontSize = FontSize;
             bool flippedX = FlippedX, flippedY = FlippedY;
             var overlap = Overlap;
             var ppd = VisualTreeHelper.GetDpi(this).PixelsPerDip;
+            var isSpectrum = overlap is SpectrumOverlap;
+            FormattedText CreateText(string label) => new FormattedText(label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd) {
+                TextAlignment = TextAlignment.Center,
+            };
             var repText = new FormattedText("1000.00000", culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd) { TextAlignment = TextAlignment.Center };
             var repWidth = repText.Width;
             var repHeight = repText.Height;
             var repVec = new Vector(repWidth / 2, repHeight / 2);
+            var minimumRelativeOrder = MinimumRelativeOrder;
+            var minimumOrder = minimumRelativeOrder > 0d
+                ? datas.Select(data => data.order).DefaultIfEmpty(0d).Max() * minimumRelativeOrder
+                : double.NegativeInfinity;
+            minimumOrder = Math.Max(minimumOrder, MinimumOrder);
             foreach(var data in datas.OrderByDescending(d => d.order)) {
                 if (TopN.HasValue && texts.Count >= TopN)
                     break;
+                if (data.order < minimumOrder || (minimumRelativeOrder > 0d && data.order <= 0d)) {
+                    break;
+                }
                 if (!string.IsNullOrEmpty(data.label) && hAxis.Range.Contains(data.X) && vAxis.Range.Contains(data.Y)) {
+                    var mass = isSpectrum ? data.HorizontalValue : double.NaN;
+                    // Accepted stronger peaks suppress neighbours using unrounded m/z, independently of zoom.
+                    if (isSpectrum && texts.Any(other => Math.Abs(mass - other.Mass) <= SpectrumOverlap.NeighbourMassTolerance)) {
+                        continue;
+                    }
 
                     double xx = hAxis.TranslateToRenderPoint(data.X, flippedX, actualWidth);
                     double yy = vAxis.TranslateToRenderPoint(data.Y, flippedY, actualHeight);
                     var p = new Point(xx + dx, yy + dy);
-                    var rect = new Rect(p - repVec, p + repVec);
-                    if (texts.Any(other => overlap.IsOverlap(rect, p, other.Item3, other.Item2))) {
+                    var text = isSpectrum ? CreateText(data.label) : null;
+                    // Exclude line leading from collision bounds, keeping the full text width.
+                    var rect = text is null
+                        ? new Rect(p - repVec, p + repVec)
+                        : new Rect(p.X - text.Width / 2d, p.Y + text.Height + text.OverhangAfter - text.Extent, text.Width, text.Extent);
+                    var region = text is null ? rect : new Rect(p.X - text.Width / 2d, p.Y, text.Width, text.Height);
+                    if (isSpectrum) {
+                        var relativeHeight = Math.Max(0d, Math.Min(1d, flippedY ? 1d - yy / actualHeight : yy / actualHeight));
+                        var anchorX = p.X;
+                        foreach (var other in texts.OrderBy(other => other.Bounds.Left)) {
+                            if (!overlap.IsOverlap(rect, p, other.Bounds, other.Point)) {
+                                continue;
+                            }
+                            var shift = other.Bounds.Right - rect.Left + 2d;
+                            // Limit movement so the label remains associated with its peak.
+                            if (p.X + shift - anchorX > text.Width / 2d || rect.Right + shift > actualWidth) {
+                                rect = Rect.Empty;
+                                break;
+                            }
+                            p.X += shift;
+                            rect.Offset(shift, 0d);
+                        }
+                        if (rect.IsEmpty) {
+                            continue;
+                        }
+                        region.Offset(p.X - anchorX, 0d);
+                        if (IsSpectrumRegionCrowded(region, texts.Select(other => other.Region), relativeHeight)) {
+                            continue;
+                        }
+                    }
+                    else if (texts.Any(other => overlap.IsOverlap(rect, p, other.Bounds, other.Point))) {
                         continue;
                     }
 
-                    var text = new FormattedText(data.label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd)
-                    {
-                        TextAlignment = TextAlignment.Center
-                    };
-                    texts.Add(Tuple.Create(text, p, rect));
+                    texts.Add((text ?? CreateText(data.label), p, rect, region, mass));
                 }
             }
 
-            foreach ((var text, var point, _) in texts) {
-                drawingContext.DrawText(text, point);
+            foreach (var label in texts) {
+                drawingContext.DrawText(label.Text, label.Point);
             }
+        }
+
+        private static bool IsSpectrumRegionCrowded(Rect candidate, IEnumerable<Rect> regions, double relativeHeight) {
+            // Weak peaks need horizontal space; prominent peaks can also use vertical clearance.
+            // Vertical clearance reaches full weight at half the plot height.
+            var verticalWeight = Math.Min(1d, relativeHeight / (1d - relativeHeight));
+            foreach (var region in regions) {
+                var dx = Math.Abs(candidate.Left + candidate.Width / 2d - region.Left - region.Width / 2d);
+                var dy = Math.Abs(candidate.Top - region.Top);
+                var horizontalSpacing = (candidate.Width + region.Width) / 2d;
+                var verticalSpacing = (candidate.Height + region.Height) / 2d;
+                var verticalClearance = dy / verticalSpacing * verticalWeight;
+                if (dx / horizontalSpacing + verticalClearance < 1d) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private ICollectionView collectionView;
@@ -437,10 +523,13 @@ namespace CompMs.Graphics.Chart
             internal string label;
             internal double order;
             internal Brush brush;
+            private readonly IPropertiesAccessor _horizontalAccessor;
+
+            internal double HorizontalValue => _horizontalAccessor.Apply(Item!) is double value ? value : double.NaN;
 
             public LabelData(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, IPropertiesAccessor xPropertiesAccessor, IPropertiesAccessor yPropertiesAccessor)
                 : base(data, xAxisManager, yAxisManager, xPropertiesAccessor, yPropertiesAccessor) {
-
+                _horizontalAccessor = xPropertiesAccessor;
             }
         }
 
@@ -616,6 +705,19 @@ namespace CompMs.Graphics.Chart
         }
     }
 
+    class SpectrumOverlap : IOverlapMethod
+    {
+        internal const double NeighbourMassTolerance = 5d;
+
+        public bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2) {
+            return rect1.IntersectsWith(rect2);
+        }
+
+        public static SpectrumOverlap Method { get; } = new SpectrumOverlap();
+
+        public override string ToString() => "Spectrum";
+    }
+
     class VerticalOverlap : IOverlapMethod
     {
         public bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2) {
@@ -694,6 +796,8 @@ namespace CompMs.Graphics.Chart
                     return HorizontalOverlap.Method;
                 case "Vertical":
                     return VerticalOverlap.Method;
+                case "Spectrum":
+                    return SpectrumOverlap.Method;
                 case "":
                 case "Ignore":
                 default:
@@ -701,7 +805,7 @@ namespace CompMs.Graphics.Chart
             }
         }
 
-        private static readonly string[] valids = ["", "Direct", "Horizontal", "Vertical", "Ignore"];
+        private static readonly string[] valids = ["", "Direct", "Horizontal", "Vertical", "Spectrum", "Ignore"];
         private static bool IsValidMethod(string method) {
             method = method.Trim();
             return valids.Contains(method);

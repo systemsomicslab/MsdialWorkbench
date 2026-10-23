@@ -4,6 +4,28 @@
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing">
 
+    <!-- Select labels from the full spectrum while peak lines are drawn in separate layers. -->
+    <ControlTemplate TargetType="ItemsControl" x:Key="SpectrumLayersWithAnnotations">
+        <ControlTemplate.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+        </ControlTemplate.Resources>
+        <Grid>
+            <ItemsPresenter/>
+            <chart:Annotator DataContext="{Binding UpperSpectrumViewModel}"
+                             ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                             HorizontalPropertyName="{Binding HorizontalProperty}"
+                             VerticalPropertyName="{Binding VerticalProperty}"
+                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                             MinimumOrder="{Binding MinimumAnnotationOrder.Value}"
+                             Brush="Black"
+                             Overlap="Spectrum"
+                             Format="F4"
+                             ClipToBounds="True"
+                             Visibility="{Binding IsAnnotationVisible.Value, Converter={StaticResource BooleanToVisibility}}"/>
+        </Grid>
+    </ControlTemplate>
+
     <Style TargetType="TextBlock" x:Key="GraphTitle">
         <Setter Property="FontFamily" Value="Calibri"/>
         <Setter Property="FontSize" Value="13"/>

@@ -23,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public SingleSpectrumViewModel(SingleSpectrumModel model, IMessageBroker? broker) {
             _model = model;
             MsSpectrum = model.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            MinimumAnnotationOrder = model.MinimumAnnotationOrder.ToReadOnlyReactivePropertySlim(double.PositiveInfinity).AddTo(Disposables);
             HorizontalAxis = model.HorizontalAxis.Cast<IAxisManager>().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             VerticalAxis = model.VerticalAxis.Cast<IAxisManager>().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Brush = Observable.Return(model.Brush).ToReadOnlyReactivePropertySlim<IBrushMapper>().AddTo(Disposables);
@@ -37,6 +38,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         }
 
         public ReadOnlyReactivePropertySlim<MsSpectrum?> MsSpectrum { get; }
+        public ReadOnlyReactivePropertySlim<double> MinimumAnnotationOrder { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager?> HorizontalAxis { get; }
         public GraphLabels Labels => _model.Labels;
         public string HorizontalProperty => _model.HorizontalProperty;
