@@ -114,7 +114,8 @@
                              OrderingPropertyName="Intensity"
                              Brush="Black"
                              Format="N4"
-                             Overlap="Horizontal,Direct"
+                             MinimumRelativeOrder="0.01"
+                             Overlap="Spectrum"
                              ClipToBounds="True"
                              IsHitTestVisible="False"/>
         </chart:MultiChart>

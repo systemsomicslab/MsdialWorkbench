@@ -200,7 +200,8 @@
                                      VerticalPropertyName="Intensity"
                                      LabelPropertyName="Mass"
                                      OrderingPropertyName="Intensity"
-                                     Overlap="Direct,Horizontal"/>
+                                     MinimumRelativeOrder="0.01"
+                                     Overlap="Spectrum"/>
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
@@ -245,7 +246,8 @@
                                      VerticalPropertyName="Intensity"
                                      LabelPropertyName="Mass"
                                      OrderingPropertyName="Intensity"
-                                     Overlap="Direct,Horizontal"/>
+                                     MinimumRelativeOrder="0.01"
+                                     Overlap="Spectrum"/>
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>

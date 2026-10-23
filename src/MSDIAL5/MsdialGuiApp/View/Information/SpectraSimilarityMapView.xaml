@@ -148,7 +148,8 @@
                                          LabelPropertyName="Mass"
                                          OrderingPropertyName="Intensity"
                                          Brush="Black"
-                                         Overlap="Horizontal,Direct"
+                                         MinimumRelativeOrder="0.01"
+                                         Overlap="Spectrum"
                                          Format="F4"
                                          ClipToBounds="True"/>
                     </Grid>
@@ -179,7 +180,8 @@
                                          OrderingPropertyName="Intensity"
                                          ContentAlignment="BottomCenter"
                                          Brush="Black"
-                                         Overlap="Horizontal,Direct"
+                                         MinimumRelativeOrder="0.01"
+                                         Overlap="Spectrum"
                                          Format="F4"
                                          ClipToBounds="True"/>
                     </Grid>

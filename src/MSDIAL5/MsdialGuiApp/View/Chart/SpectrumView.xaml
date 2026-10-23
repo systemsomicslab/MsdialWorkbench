@@ -51,7 +51,8 @@
                                  OrderingPropertyName="{Binding VerticalProperty, Mode=OneTime}"
                                  LabelPropertyName="{Binding HorizontalProperty, Mode=OneTime}"
                                  TopN="5"
-                                 Overlap="Direct,Horizontal"/>
+                                 MinimumRelativeOrder="0.01"
+                                 Overlap="Spectrum"/>
             </Grid>
         </chart:SimpleChartControl>
     </Grid>
