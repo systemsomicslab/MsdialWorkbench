@@ -1453,6 +1453,95 @@ public sealed class ConfigParserTests
     }
 
     /// <summary>
+    /// A settings file without the suggestions column, or with it left blank, suggests as before.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_SuggestsWhenTheColumnIsAbsentOrBlank()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var without = directory.CreateFile(
+            "without.tsv",
+            $"annotator_id\tmsp_file_path\n" +
+            $"strict\t{msp}\n");
+        var blank = directory.CreateFile(
+            "blank.tsv",
+            $"annotator_id\tmsp_file_path\tsuggestions\n" +
+            $"strict\t{msp}\t\n");
+
+        var parsedWithout = ConfigParser.ReadMspAnnotatorSettings(
+            directory.CreateFile("without.txt", $"Msp annotator settings file path: {without}\n"), new MsdialLcmsParameter());
+        var parsedBlank = ConfigParser.ReadMspAnnotatorSettings(
+            directory.CreateFile("blank.txt", $"Msp annotator settings file path: {blank}\n"), new MsdialLcmsParameter());
+
+        Assert.IsTrue(parsedWithout.Single().AllowsSuggestions);
+        Assert.IsTrue(parsedBlank.Single().AllowsSuggestions);
+    }
+
+    /// <summary>
+    /// The switch is read per annotator, in any letter case, and the run log states it beside the library kind.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_ReadsTheSuggestionsSwitchAndStatesIt()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tlibrary_kind\tsuggestions\n" +
+            $"strict\t{msp}\tacquired\tTrue\n" +
+            $"glacier\t{msp}\tpredicted\tFALSE\n" +
+            $"broad\t{msp}\tacquired\ttrue\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var original = Console.Out;
+        var captured = new StringWriter();
+        List<MspAnnotatorSetting> parsed;
+        try {
+            Console.SetOut(captured);
+            parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+        }
+        finally {
+            Console.SetOut(original);
+        }
+
+        CollectionAssert.AreEqual(new[] { true, false, true }, parsed.Select(setting => setting.AllowsSuggestions).ToArray());
+        var log = captured.ToString();
+        StringAssert.Contains(log, "MSP annotator strict: annotation suggestions enabled");
+        StringAssert.Contains(log, "MSP annotator glacier: annotation suggestions disabled");
+        StringAssert.Contains(log, "MSP annotator broad: annotation suggestions enabled");
+    }
+
+    /// <summary>
+    /// Anything other than true, false or blank refuses the run, and the message names the value and the annotator.
+    /// </summary>
+    /// <remarks>
+    /// Unlike library_kind, a typo is not read as the old meaning: here the old meaning is the behaviour the column exists
+    /// to switch off.
+    /// </remarks>
+    [DataTestMethod]
+    [DataRow("flase")]
+    [DataRow("no")]
+    [DataRow("0")]
+    [DataRow("off")]
+    public void ReadMspAnnotatorSettings_RefusesASuggestionsValueThatIsNeitherTrueNorFalse(string value)
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tsuggestions\n" +
+            $"glacier\t{msp}\t{value}\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var error = Assert.ThrowsException<FormatException>(() => ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter()));
+
+        StringAssert.Contains(error.Message, $"suggestions '{value}'");
+        StringAssert.Contains(error.Message, "'glacier'");
+        StringAssert.Contains(error.Message, "msp_annotator_settings.tsv");
+    }
+
+    /// <summary>
     /// A METHOD-FILE KEY THAT HAD NO EFFECT SAYS SO.
     /// </summary>
     /// <remarks>

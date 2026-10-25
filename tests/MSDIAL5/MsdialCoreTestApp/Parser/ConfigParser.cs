@@ -937,11 +937,51 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
                 var dataBaseSource = ReadLibraryKind(GetField(fields, headers, "librarykind", "librarytype", "spectrasource", "mspkind"), annotatorId);
-                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics, dataBaseSource));
+                var allowsSuggestions = ReadSuggestions(GetField(fields, headers, "suggestions", "annotationsuggestions"), annotatorId, filepath);
+                settings.Add(new MspAnnotatorSetting(annotatorId, mspFilePath, priority, searchParameter, targetOmics, dataBaseSource, allowsSuggestions));
                 ReportEffectiveAnnotatorSettings("MSP", annotatorId, mspFilePath, priority, searchParameter);
                 Console.WriteLine($"MSP annotator {annotatorId}: library kind {dataBaseSource}");
+                Console.WriteLine($"MSP annotator {annotatorId}: {SuggestionsText(allowsSuggestions)}");
             }
             return settings;
+        }
+
+        /// <summary>
+        /// Whether an MSP annotator may keep the candidates it did not accept, as suggestions.
+        /// </summary>
+        /// <remarks>
+        /// Silence means yes, which is what every annotator did before the column existed, so an
+        /// existing settings file runs unchanged. Anything other than true or false REFUSES THE RUN,
+        /// unlike library_kind, where a typo falls back to the old meaning. The two failures are not
+        /// alike: here the fallback is the very behaviour the column exists to switch off, so a
+        /// misspelt "flase" would publish a suggestion from every record in the library's mass window
+        /// while the settings file says there are none.
+        /// </remarks>
+        private static bool ReadSuggestions(string text, string annotatorId, string filepath) {
+            if (text.IsEmptyOrNull()) {
+                return true;
+            }
+            if (string.Equals(text, "true", StringComparison.OrdinalIgnoreCase)) {
+                return true;
+            }
+            if (string.Equals(text, "false", StringComparison.OrdinalIgnoreCase)) {
+                return false;
+            }
+            throw new FormatException(
+                $"MSP annotator settings '{Path.GetFileName(filepath)}': suggestions '{text}' for MSP annotator '{annotatorId}' "
+                + "is neither true nor false. Write true, false, or leave it blank for true.");
+        }
+
+        /// <summary>
+        /// The run log's statement of an annotator's suggestion switch.
+        /// </summary>
+        /// <remarks>
+        /// TWO WHOLE LITERALS ON PURPOSE. MS-DIAL Interactive learns whether a Console build can switch
+        /// suggestions off by finding the text "annotation suggestions disabled" in the binary, so the
+        /// phrase must reach the assembly as one string and not be assembled from parts.
+        /// </remarks>
+        private static string SuggestionsText(bool allowsSuggestions) {
+            return allowsSuggestions ? "annotation suggestions enabled" : "annotation suggestions disabled";
         }
 
         private static List<TextAnnotatorSetting> ReadTextAnnotatorSettingsTable(string filepath, ParameterBase param) {

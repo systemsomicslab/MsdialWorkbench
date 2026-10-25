@@ -317,6 +317,17 @@ namespace CompMs.MsdialCore.Export
         /// than a substring, and it covers "w/o MS2" as well, because that spelling says the same
         /// thing. "low score" still passes there, as it always has, because for those projects
         /// there is no record that could tell a weak comparison from a failed one.
+        ///
+        /// A spectrum predicted from a structure or a sequence is citable only when the match was
+        /// accepted. The measured spectrum was compared against it as against an acquired one, so an
+        /// accepted match has the same thing to cite, and the row says where the reference came from:
+        /// database_identifier carries the prefix of the database[n] that declares the library -- an
+        /// in-silico MSP library for DataBaseSource.PredictedMsp -- and nothing in the row claims an
+        /// acquired reference spectrum. A comparison that was not accepted stays uncited, because
+        /// RecordSpectrumVerdict does not grade a predicted comparison: one that fell short and one
+        /// that explained nothing both still read BySpectrumPredictionTool, so the acceptance is the
+        /// only line the record can draw. A structure predicted from the spectrum -- MS-FINDER,
+        /// SIRIUS -- was compared by nothing in MS-DIAL and stays uncited.
         /// </remarks>
         private static bool HasCitableSpectralEvidence(AlignmentSpotProperty spot) {
             var result = spot.MatchResults.Representative;
@@ -326,6 +337,8 @@ namespace CompMs.MsdialCore.Export
                 case AnnotationEvidenceSource.RuleBased:
                 case AnnotationEvidenceSource.WeakSpectrumMatch:
                     return true;
+                case AnnotationEvidenceSource.BySpectrumPredictionTool:
+                    return result.IsReferenceMatched;
                 case AnnotationEvidenceSource.Unspecified:
                     return !AnnotationName.IsPrecursorOnlySuggestion(spot.Name);
                 default:

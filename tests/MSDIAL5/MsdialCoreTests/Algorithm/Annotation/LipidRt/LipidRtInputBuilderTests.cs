@@ -136,5 +136,70 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             var result = new LipidRtCheck(new LipidRtCheckParameter()).Evaluate(input);
             Assert.IsTrue(result.Results.All(r => r.Reason == LipidRtReason.Ineligible && r.Score is null));
         }
+
+        /// <summary>
+        /// A match against a computed spectrum is not evaluated: retention-time rules agreeing with it would confirm a name
+        /// that no acquired spectrum supports. The evidence record says so for a metabolomics-scored annotator; for one
+        /// scored as lipidomics, which records RuleBased as the LBM does, the library does.
+        /// </summary>
+        [TestMethod]
+        public void InSilicoMatchesAreNotEvaluated() {
+            var spectrumPredicted = LbmMatch("PC 34:1|PC 16:0_18:1");
+            spectrumPredicted.AnnotatorID = "glacier";
+            spectrumPredicted.EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool;
+            var structurePredicted = LbmMatch("PC 34:2|PC 16:0_18:2");
+            structurePredicted.AnnotatorID = "msfinder";
+            structurePredicted.EvidenceSource = AnnotationEvidenceSource.ByStructurePredictionTool;
+            var ruleBasedFromAPredictedLibrary = LbmMatch("PC 36:1|PC 18:0_18:1");
+            ruleBasedFromAPredictedLibrary.AnnotatorID = "glacier_lipid";
+            ruleBasedFromAPredictedLibrary.EvidenceSource = AnnotationEvidenceSource.RuleBased;
+            var lbm = LbmMatch("PC 36:2|PC 18:1_18:1");
+            lbm.EvidenceSource = AnnotationEvidenceSource.RuleBased;
+            var peaks = new List<ChromatogramPeakFeature>
+            {
+                Peak(0, 10.5, 760.5851, 1e6, "[M+H]+", "PC", spectrumPredicted),
+                Peak(1, 10.1, 758.5694, 1e6, "[M+H]+", "PC", structurePredicted),
+                Peak(2, 11.5, 788.6164, 1e6, "[M+H]+", "PC", ruleBasedFromAPredictedLibrary),
+                Peak(3, 11.1, 786.6007, 1e6, "[M+H]+", "PC", lbm),
+            };
+            var input = LipidRtInputBuilder.FromPeaks(peaks, IonMode.Positive, new HashSet<string> { "glacier_lipid" });
+            LipidRtCandidate Candidate(int id) => input.Candidates.Single(c => c.Id == id);
+
+            foreach (var id in new[] { 0, 1, 2 }) {
+                Assert.IsFalse(Candidate(id).IsEligible, peaks[id].Name);
+                Assert.AreEqual("in_silico", Candidate(id).IneligibleReason, peaks[id].Name);
+            }
+            Assert.IsTrue(Candidate(3).IsEligible, "the LBM's rule-based match is what the check evaluates: " + Candidate(3).IneligibleReason);
+            Assert.IsTrue(LipidRtInputBuilder.FromPeaks(peaks, IonMode.Positive).Candidates.Single(c => c.Id == 2).IsEligible,
+                "without the library, a rule-based record cannot be told apart from the LBM's");
+            var result = new LipidRtCheck(new LipidRtCheckParameter()).Evaluate(input);
+            Assert.IsTrue(result.Results.Where(r => r.Id != 3).All(r => r.Outcome == LipidRtOutcome.NotEvaluable && r.Reason == LipidRtReason.Ineligible));
+        }
+
+        /// <summary>
+        /// The annotators of an MSP library declared in silico, and no others: the LBM is generated too, but its matches are
+        /// the lipid rule set's.
+        /// </summary>
+        [TestMethod]
+        public void ThePredictedLibraryAnnotatorsAreThoseOfAPredictedMspLibrary() {
+            var databases = DataBaseStorage.CreateEmpty();
+            AddLibrary(databases, "strict_db", DataBaseSource.Msp, "strict", "broad");
+            AddLibrary(databases, "glacier_db", DataBaseSource.PredictedMsp, "glacier");
+            AddLibrary(databases, "lbm_db", DataBaseSource.Lbm, "lbm");
+
+            CollectionAssert.AreEquivalent(new[] { "glacier" }, LipidRtInputBuilder.PredictedLibraryAnnotators(databases).ToArray());
+            Assert.AreEqual(0, LipidRtInputBuilder.PredictedLibraryAnnotators(null).Count);
+        }
+
+        private static void AddLibrary(DataBaseStorage databases, string id, DataBaseSource kind, params string[] annotatorIds) {
+            var database = new MoleculeDataBase(new List<MoleculeMsReference>(), id, kind, SourceType.MspDB, id + ".msp");
+            var parameter = new ParameterBase { TargetOmics = TargetOmics.Metabolomics, };
+            var pairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
+            foreach (var annotatorId in annotatorIds) {
+                var annotator = new MassAnnotator(database, parameter.MspSearchParam, TargetOmics.Metabolomics, SourceType.MspDB, annotatorId, 1);
+                pairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, parameter.PeakPickBaseParam, parameter.MspSearchParam, ignoreIsotopicPeak: true)));
+            }
+            databases.AddMoleculeDataBase(database, pairs);
+        }
     }
 }

@@ -21,6 +21,8 @@ public sealed class FileProcess : IFileProcessor {
     private readonly SpectrumDeconvolutionProcess _spectrumDeconvolutionProcess;
     private readonly PeakAnnotationProcess _peakAnnotationProcess;
     private readonly MsdialLcmsParameter _parameter;
+    // Read once, here, and only read afterwards, so the per-file parallel loop can share it.
+    private readonly ISet<string> _predictedLibraryAnnotators;
     private readonly ConcurrentQueue<(string File, LipidRtUnitRun Run)> _lipidRtFailures = new ConcurrentQueue<(string, LipidRtUnitRun)>();
 
     public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
@@ -38,6 +40,7 @@ public sealed class FileProcess : IFileProcessor {
 
         _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         _parameter = storage.Parameter;
+        _predictedLibraryAnnotators = LipidRtInputBuilder.PredictedLibraryAnnotators(storage.DataBases);
         _peakPickProcess = new PeakPickProcess(storage);
         _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
         _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
@@ -70,7 +73,7 @@ public sealed class FileProcess : IFileProcessor {
             // annotation and before the save, so the Console and the GUI both get it. It reads only this file's peaks and
             // the shared parameter, and writes only this file's peaks, so it is safe inside the per-file parallel loop.
             token.ThrowIfCancellationRequested();
-            var lipidRt = LipidRtCheckHooks.RunOnPeaks(chromPeakFeatures.Items, _parameter);
+            var lipidRt = LipidRtCheckHooks.RunOnPeaks(chromPeakFeatures.Items, _parameter, _predictedLibraryAnnotators);
             if (lipidRt.Ran || lipidRt.Error != null || lipidRt.Tags.Withdrawn > 0) {
                 Console.WriteLine($"Lipid RT check ({analysisFile.AnalysisFileName}): {lipidRt.Describe()}");
             }

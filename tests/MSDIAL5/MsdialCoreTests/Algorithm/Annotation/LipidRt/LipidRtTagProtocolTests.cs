@@ -144,6 +144,32 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             StringAssert.Contains(run.Describe(), $"{confirmed.Count} Confirmed");
         }
 
+        /// <summary>
+        /// A lipid named from a computed spectrum is never tagged Confirmed, whether its evidence record says in silico or
+        /// only its library does; the verdict says why. Its neighbours, named by the LBM, are confirmed as before.
+        /// </summary>
+        [TestMethod]
+        public void AnInSilicoLipidMatchIsNeverTaggedConfirmed() {
+            var spots = Spots();
+            var spectrumPredicted = Find(spots, 52, 1).MatchResults.Representative;
+            spectrumPredicted.AnnotatorID = "glacier";
+            spectrumPredicted.EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool;
+            var fromPredictedLibrary = Find(spots, 54, 1).MatchResults.Representative;
+            fromPredictedLibrary.AnnotatorID = "glacier_lipid";
+            fromPredictedLibrary.EvidenceSource = AnnotationEvidenceSource.RuleBased;
+
+            var run = LipidRtCheckHooks.RunOnSpots(spots, Lipidomics(), new HashSet<string> { "glacier_lipid" });
+
+            Assert.IsTrue(run.Ran, run.Describe());
+            foreach (var spot in new[] { Find(spots, 52, 1), Find(spots, 54, 1) }) {
+                Assert.IsFalse(spot.TagCollection.IsSelected(PeakSpotTag.CONFIRMED), spot.Name);
+                Assert.AreEqual(LipidRtOutcome.NotEvaluable, spot.LipidRtVerdict.Outcome, spot.Name);
+                Assert.AreEqual(LipidRtReason.Ineligible, spot.LipidRtVerdict.Reason, spot.Name);
+                StringAssert.Contains(spot.LipidRtVerdict.Evidence, "in silico", spot.Name);
+            }
+            Assert.IsTrue(Find(spots, 52, 2).TagCollection.IsSelected(PeakSpotTag.CONFIRMED), "the LBM-named neighbour is still confirmed");
+        }
+
         [TestMethod]
         public void APersonsTagsAndAnotherToolsTagAreNeverTouched() {
             var spots = Spots();

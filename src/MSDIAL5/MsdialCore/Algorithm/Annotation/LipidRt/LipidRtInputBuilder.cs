@@ -18,20 +18,54 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
     public static class LipidRtInputBuilder
     {
         /// <summary>The peaks of one analysis file, with RT on that file's own axis.</summary>
-        public static LipidRtRunInput FromPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, IonMode polarity) {
+        /// <param name="predictedLibraryAnnotators">The annotators that search a library of predicted spectra, from
+        /// <see cref="PredictedLibraryAnnotators"/>; their matches are not evaluated. Null when none is known.</param>
+        public static LipidRtRunInput FromPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, IonMode polarity, ISet<string> predictedLibraryAnnotators = null) {
             if (peaks is null) throw new ArgumentNullException(nameof(peaks));
             return Build(peaks.Select(p => (p.MasterPeakID, p.PeakFeature.ChromXsTop?.RT?.Value ?? double.NaN, p.PeakFeature.Mass, p.PeakFeature.PeakHeightTop,
-                p.AdductType?.AdductIonName, p.MatchResults?.Representative, p.Ontology, p.Name)), polarity);
+                p.AdductType?.AdductIonName, p.MatchResults?.Representative, p.Ontology, p.Name)), polarity, predictedLibraryAnnotators);
         }
 
         /// <summary>The spots of one alignment, with RT on the aligned axis and the average height.</summary>
-        public static LipidRtRunInput FromSpots(IReadOnlyList<AlignmentSpotProperty> spots, IonMode polarity) {
+        /// <param name="predictedLibraryAnnotators">As for <see cref="FromPeaks"/>.</param>
+        public static LipidRtRunInput FromSpots(IReadOnlyList<AlignmentSpotProperty> spots, IonMode polarity, ISet<string> predictedLibraryAnnotators = null) {
             if (spots is null) throw new ArgumentNullException(nameof(spots));
             return Build(spots.Select(s => (s.MasterAlignmentID, s.TimesCenter?.RT?.Value ?? double.NaN, s.MassCenter, (double)s.HeightAverage,
-                s.AdductType?.AdductIonName, s.MatchResults?.Representative, s.Ontology, s.Name)), polarity);
+                s.AdductType?.AdductIonName, s.MatchResults?.Representative, s.Ontology, s.Name)), polarity, predictedLibraryAnnotators);
         }
 
-        private static LipidRtRunInput Build(IEnumerable<(int Id, double Rt, double Mz, double Height, string Adduct, MsScanMatchResult Representative, string Ontology, string Name)> objects, IonMode polarity) {
+        /// <summary>
+        /// The annotators in <paramref name="dataBases"/> that search an MSP library declared in silico
+        /// (<see cref="DataBaseSource.PredictedMsp"/>), for <see cref="FromPeaks"/> and <see cref="FromSpots"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Needed beside the evidence record, which says in silico only when the annotator scored as metabolomics: a
+        /// predicted library searched under lipidomics records RuleBased, as the LBM does, and then only the library tells
+        /// the two apart. The match result does not name its library, so the annotator does.
+        /// </para>
+        /// <para>
+        /// Only PredictedMsp. The LBM and the EAD lipid databases are generated too, but a match against them is the lipid
+        /// rule set's, which is what this check exists to evaluate.
+        /// </para>
+        /// </remarks>
+        public static ISet<string> PredictedLibraryAnnotators(DataBaseStorage dataBases) {
+            var annotators = new HashSet<string>(StringComparer.Ordinal);
+            if (dataBases is null) {
+                return annotators;
+            }
+            foreach (var item in dataBases.MetabolomicsDataBases) {
+                if (item.DataBase?.DataBaseSource != DataBaseSource.PredictedMsp) {
+                    continue;
+                }
+                foreach (var pair in item.Pairs) {
+                    annotators.Add(pair.AnnotatorID);
+                }
+            }
+            return annotators;
+        }
+
+        private static LipidRtRunInput Build(IEnumerable<(int Id, double Rt, double Mz, double Height, string Adduct, MsScanMatchResult Representative, string Ontology, string Name)> objects, IonMode polarity, ISet<string> predictedLibraryAnnotators) {
             var candidates = new List<LipidRtCandidate>();
             var context = new List<LipidRtContextPeak>();
             var rtMin = double.PositiveInfinity;
@@ -46,7 +80,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
                     Id = o.Id, Rt = o.Rt, Mz = o.Mz, Height = o.Height, Adduct = o.Adduct ?? string.Empty,
                     IsMsmsAnnotated = IsAnnotated(o.Representative) && o.Representative.IsSpectrumMatch,
                 });
-                var candidate = CreateCandidate(o.Id, o.Rt, o.Mz, o.Height, o.Adduct, o.Representative, o.Ontology, o.Name);
+                var fromPredictedLibrary = o.Representative?.AnnotatorID != null
+                    && predictedLibraryAnnotators != null
+                    && predictedLibraryAnnotators.Contains(o.Representative.AnnotatorID);
+                var candidate = CreateCandidate(o.Id, o.Rt, o.Mz, o.Height, o.Adduct, o.Representative, o.Ontology, o.Name, fromPredictedLibrary);
                 if (candidate != null) {
                     candidates.Add(candidate);
                 }
@@ -74,8 +111,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         /// library the evaluator would have no entry for the annotator and would call every match unmatched.</param>
         /// <param name="ontology">The object's Ontology (LbmClass name).</param>
         /// <param name="featureName">The object's own name, which carries the "Unsettled:" prefix a person may have set.</param>
+        /// <param name="fromPredictedLibrary">True when the representative's annotator searches a library of predicted
+        /// spectra (<see cref="PredictedLibraryAnnotators"/>), whatever its evidence record says.</param>
         public static LipidRtCandidate CreateCandidate(int id, double rt, double mz, double height, string adduct,
-            MsScanMatchResult representative, string ontology, string featureName) {
+            MsScanMatchResult representative, string ontology, string featureName, bool fromPredictedLibrary = false) {
             var r = representative;
             if (!IsAnnotated(r)) {
                 return null;
@@ -103,6 +142,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
             }
             if ((r.Source & SourceType.TextDB) != 0 || (r.Source & (SourceType.MspDB | SourceType.GeneratedLipid)) == 0) {
                 reasons.Add("not_spectral_library");
+            }
+            if (IsInSilico(r) || fromPredictedLibrary) {
+                reasons.Add("in_silico"); // a computed spectrum is a hypothesis: RT agreeing with it would confirm a name no acquired spectrum supports
             }
             if (!isLipid) {
                 reasons.Add("nonlipid");
@@ -142,6 +184,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
                 IsEligible = reasons.Count == 0 && hasComposition,
                 IneligibleReason = string.Join(",", reasons),
             };
+        }
+
+        /// <summary>
+        /// True when the evidence record says in silico, in either direction: the two members the exports publish as one
+        /// "InSilico" tag.
+        /// </summary>
+        private static bool IsInSilico(MsScanMatchResult r) {
+            return r.EvidenceSource == AnnotationEvidenceSource.BySpectrumPredictionTool
+                || r.EvidenceSource == AnnotationEvidenceSource.ByStructurePredictionTool;
         }
 
         private static bool IsUnsettledName(string name) {
