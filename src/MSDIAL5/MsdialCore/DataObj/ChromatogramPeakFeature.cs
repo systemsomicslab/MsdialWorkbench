@@ -504,9 +504,19 @@ namespace CompMs.MsdialCore.DataObj
             SetMatchResultProperty(refer.Refer(representative), representative, evaluator);
         }
 
+        /// <summary>
+        /// Brings the peak back to the state peak spotting left, so that identification and adduct estimation can run again.
+        /// The adduct is reset as well: <see cref="Algorithm.PeakCharacterEstimator"/> only estimates the adduct of peaks that have none,
+        /// so an adduct kept from an earlier annotation would otherwise survive a run that gives no annotation.
+        /// </summary>
         public void ClearMatchResultProperty() {
             DataAccess.ClearMoleculePropertyInfomation(this);
             MatchResults.ClearResults();
+            AdductType = AdductIon.Default;
+            PeakCharacter?.ClearAdductEstimation();
+            foreach (var driftFeature in DriftChromFeatures.OrEmptyIfNull()) {
+                driftFeature.ClearMatchResultProperty();
+            }
         }
 
         public void SetMs2SpectrumId(PeakMs2Spectra spectra) {

@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using MessagePack;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,5 +63,21 @@ namespace CompMs.MsdialCore.DataObj {
 
         [IgnoreMember]
         public bool IsMonoIsotopicIon => IsotopeWeightNumber == 0;
+
+        /// <summary>
+        /// Forgets what the adduct estimation of an earlier run assigned (adduct type, adduct parent, peak group and non-isotope links),
+        /// so that the estimation can run again from the state peak spotting left.
+        /// The isotope information and the charge come from peak spotting and are kept.
+        /// </summary>
+        public void ClearAdductEstimation() {
+            AdductType = AdductIon.Default;
+            if (PeakLinks is null) {
+                PeakLinks = new List<LinkedPeakFeature>();
+            }
+            PeakLinks.RemoveAll(link => link.Character != PeakLinkFeatureEnum.Isotope);
+            IsLinked = PeakLinks.Count > 0;
+            AdductParent = -1;
+            PeakGroupID = -1;
+        }
     }
 }
