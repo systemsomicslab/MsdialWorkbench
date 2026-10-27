@@ -8,7 +8,8 @@ namespace CompMs.App.Msdial.Model.Table
 {
     /// <summary>
     /// "Mark all as confirmed" and "Mark all as unconfirmed" of the peak tables: a person's decision on Confirmed for every
-    /// peak or spot of the table.
+    /// peak or spot the table shows. While the table is filtered, only the rows left by the filters are marked; the rows
+    /// the filters hide keep their tags.
     /// </summary>
     /// <remarks>
     /// <para>

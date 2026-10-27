@@ -9,6 +9,7 @@ using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Table
@@ -53,14 +54,14 @@ namespace CompMs.App.Msdial.Model.Table
             }
         }
 
-        public override void MarkAllAsConfirmed() {
-            IDoCommand command = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(PeakSpots, true);
+        public override void MarkAllAsConfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(peakSpots.OfType<AlignmentSpotPropertyModel>().ToList(), true);
             command.Do();
             _undoManager.Add(command);
         }
 
-        public override void MarkAllAsUnconfirmed() {
-            IDoCommand command = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(PeakSpots, false);
+        public override void MarkAllAsUnconfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<AlignmentSpotPropertyModel>(peakSpots.OfType<AlignmentSpotPropertyModel>().ToList(), false);
             command.Do();
             _undoManager.Add(command);
         }

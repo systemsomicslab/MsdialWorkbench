@@ -7,6 +7,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -22,8 +23,9 @@ namespace CompMs.App.Msdial.ViewModel.Table
             SetUnknownCommand = setUnknownCommand ?? throw new ArgumentNullException(nameof(setUnknownCommand));
             UndoManagerViewModel = undoManagerViewModel ?? throw new ArgumentNullException(nameof(undoManagerViewModel));
             PeakSpotsView = CollectionViewSource.GetDefaultView(model.PeakSpots);
-            MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsConfirmed).AddTo(Disposables);
-            MarkAllAsUnconfirmedCommand = new ReactiveCommand().WithSubscribe(model.MarkAllAsUnconfirmed).AddTo(Disposables);
+            // Only the rows the filters leave in the table are marked; with no filter set, that is every row.
+            MarkAllAsConfirmedCommand = new ReactiveCommand().WithSubscribe(() => model.MarkAllAsConfirmed(PeakSpotsView.Cast<object>())).AddTo(Disposables);
+            MarkAllAsUnconfirmedCommand = new ReactiveCommand().WithSubscribe(() => model.MarkAllAsUnconfirmed(PeakSpotsView.Cast<object>())).AddTo(Disposables);
             SwitchTagCommand = new ReactiveCommand<PeakSpotTag>().WithSubscribe(model.SwitchTag).AddTo(Disposables);
         }
 
