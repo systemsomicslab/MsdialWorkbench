@@ -132,7 +132,19 @@ namespace CompMs.MsdialCore.Parameter
     public sealed class LipidRtCheckParameter
     {
         /// <summary>The version of the rules. Part of every verdict and of the tag source string.</summary>
-        public const string RuleVersion = "1.0";
+        /// <remarks>
+        /// Raised whenever the check can conclude differently from the same objects and the same values, including a change
+        /// in which objects it evaluates. The parameter hash covers the values and this version, not the rules themselves,
+        /// so without the raise two records of the same settings would carry the same version and hash whichever rules
+        /// produced them.
+        /// <list type="bullet">
+        /// <item>1.0: the specification as released.</item>
+        /// <item>1.1: a match whose evidence is in silico, or whose annotator searches a library of predicted spectra, is
+        /// not evaluated (reason "in_silico") and is no longer a neighbour of the matches that are, so their verdicts can
+        /// differ from 1.0's too.</item>
+        /// </list>
+        /// </remarks>
+        public const string RuleVersion = "1.1";
 
         /// <summary>The source written on a tag this check sets, without the version.</summary>
         public const string TagSourcePrefix = "MsdialLipidRtCheck/";

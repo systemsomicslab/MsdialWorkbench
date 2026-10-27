@@ -21,7 +21,7 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
     [TestClass]
     public class LipidRtCheckSettingModelTests
     {
-        private const string CheckSource = "MsdialLipidRtCheck/1.0";
+        private const string CheckSource = "MsdialLipidRtCheck/1.1";
 
         private sealed class Fixture
         {
@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
 
             // The same as hook B on the same spots: one routine for processing and the GUI.
             var reference = LipidRtTestSpots.Spots();
-            LipidRtCheckHooks.RunOnSpots(reference, LipidRtTestSpots.Lipidomics());
+            LipidRtCheckHooks.RunOnSpots(reference, LipidRtTestSpots.Lipidomics(), null);
             CollectionAssert.AreEqual(
                 reference.Select(s => s.TagCollection.IsSelected(PeakSpotTag.CONFIRMED)).ToList(),
                 fixture.Spots.Select(s => s.TagCollection.IsSelected(PeakSpotTag.CONFIRMED)).ToList());

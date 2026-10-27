@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Table.Tests
     [TestClass]
     public class MarkAllAsConfirmedCommandTests
     {
-        private const string CheckSource = "MsdialLipidRtCheck/1.0";
+        private const string CheckSource = "MsdialLipidRtCheck/1.1";
 
         [TestMethod]
         public void MarkAllAsUnconfirmedSuppressesTheChecksTagsAndUndoGivesThemBackToTheCheck() {

@@ -25,12 +25,15 @@ public class AlignmentCandidateExporterTests
         "annotation_tag_vs1\tis_reference_matched\tis_annotation_suggested\tis_precursor_mz_match\t" +
         "is_spectrum_match\tis_spectrum_comparison_performed\ttotal_score\tmz_similarity\t" +
         "rt_similarity\tri_similarity\tccs_similarity\tisotope_similarity\tsimple_dot_product\t" +
-        "weighted_dot_product\treverse_dot_product\tmatched_peaks_count\tmatched_peaks_percentage";
+        "weighted_dot_product\treverse_dot_product\tmatched_peaks_count\tmatched_peaks_percentage\t" +
+        "measured_terms\tevidence_source";
 
     [TestMethod]
     public void EveryCandidateIsExportedOnceInRankOrder()
     {
         var best = ReferenceMatch("Quercetin", libraryId: 7, totalScore: 0.75f);
+        best.MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass;
+        best.EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum;
         var alternative = ReferenceMatch("Morin", libraryId: 8, totalScore: 0.5f);
         var spot = SpotWith(best, alternative);
 
@@ -43,12 +46,44 @@ public class AlignmentCandidateExporterTests
             // rt, ri and ccs are empty: this run never enabled those terms, so the 0 sitting in the field
             // is the unset default rather than a measurement. The isotope 0 is written, because only
             // exactly -1 is that term's sentinel and 0 there is a real ratio agreement.
-            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.75\t0.5\t\t\t\t0\t0.5\t0.25\t0.75\t12\t0.5",
+            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.75\t0.5\t\t\t\t0\t0.5\t0.25\t0.75\t12\t0.5\t" +
+            "Spectrum|AccurateMass\tReferenceSpectrum",
             lines[1]);
         Assert.AreEqual(
             "12\t10\t-1\t2\t2\tfalse\tmsp\t\tMspDB\t1\t8\tMorin\tC15H10O7\tflavonoid\tMORIN-KEY\tc1cc(O)ccc1\t" +
-            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.5\t0.5\t\t\t\t0\t0.5\t0.25\t0.75\t12\t0.5",
+            // The evidence record was never written on this one, as on a project saved before it existed:
+            // empty, not "None" or "Unspecified".
+            "300.125\t2.5\t[M+H]+\t430\ttrue\tfalse\ttrue\ttrue\ttrue\t0.5\t0.5\t\t\t\t0\t0.5\t0.25\t0.75\t12\t0.5\t\t",
             lines[2]);
+    }
+
+    /// <summary>
+    /// A match against a library of predicted spectra, such as GLACIER, is accepted on the same
+    /// thresholds and stored under the same source type as an acquired one, so every other column can
+    /// read alike. The evidence source is the column that tells them apart, as it does in .mdalign.
+    /// </summary>
+    [TestMethod]
+    public void AnInSilicoMatchIsToldApartFromAnAcquiredOne()
+    {
+        var acquired = ReferenceMatch("Quercetin", libraryId: 7, totalScore: 0.75f);
+        acquired.MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass;
+        acquired.EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum;
+        var predicted = ReferenceMatch("Morin", libraryId: 8, totalScore: 0.5f);
+        predicted.AnnotatorID = "glacier";
+        predicted.MeasuredTerms = MeasuredTerms.Spectrum | MeasuredTerms.AccurateMass;
+        predicted.EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool;
+        var structurePredicted = ReferenceMatch("Kaempferol", libraryId: 9, totalScore: 0.25f);
+        structurePredicted.EvidenceSource = AnnotationEvidenceSource.ByStructurePredictionTool;
+
+        var rows = ExportLines(SpotWith(acquired, predicted, structurePredicted), Refer()).Skip(1).Select(line => line.Split('\t')).ToArray();
+
+        Assert.AreEqual(3, rows.Length);
+        Assert.IsTrue(rows.All(row => row.Length == ExpectedHeader.Split('\t').Length));
+        CollectionAssert.AreEqual(new[] { "MspDB", "MspDB", "MspDB" }, rows.Select(row => row[8]).ToArray(), "source");
+        CollectionAssert.AreEqual(new[] { "true", "true", "true" }, rows.Select(row => row[20]).ToArray(), "is_reference_matched");
+        CollectionAssert.AreEqual(new[] { "Quercetin", "Morin", "Kaempferol" }, rows.Select(row => row[11]).ToArray());
+        CollectionAssert.AreEqual(new[] { "ReferenceSpectrum", "InSilico", "InSilico" }, rows.Select(row => row[37]).ToArray(), "evidence_source");
+        CollectionAssert.AreEqual(new[] { "Spectrum|AccurateMass", "Spectrum|AccurateMass", "" }, rows.Select(row => row[36]).ToArray(), "measured_terms");
     }
 
     /// <summary>

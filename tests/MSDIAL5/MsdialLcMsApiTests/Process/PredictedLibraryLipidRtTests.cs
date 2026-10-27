@@ -15,6 +15,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,9 +25,10 @@ namespace CompMs.MsdialLcMsApi.Process.Tests;
 /// <summary>
 /// LC-MS processing hands the lipid RT check the annotators of the project's libraries of predicted spectra, so that a
 /// match from such a library is never tagged Confirmed (Q5). Searched under lipidomics, that match records RuleBased, as
-/// the LBM's does, and the library is the only thing that tells the two apart; the check's own parameter for it is
-/// optional, so a caller that stops passing it still compiles. These tests pin hook A in <see cref="FileProcess"/> and
-/// the aligner <see cref="LcmsAlignmentProcessFactory"/> makes for hook B.
+/// the LBM's does, and the library is the only thing that tells the two apart. The hooks' parameter for it is required,
+/// so a caller that passes nothing does not compile, but a caller that passes null, or a processing step that stops
+/// calling the method that reads the set, still does. These tests pin hook A in <see cref="FileProcess"/>, the call to it
+/// in <see cref="FileProcess.RunAsync"/>, and the aligner <see cref="LcmsAlignmentProcessFactory"/> makes for hook B.
 /// </summary>
 /// <remarks>
 /// The peaks are the TG grid of the core tests (C 48-56 even, DB 0-3, RT = 2 + 0.15 C - 0.25 DB, [M+NH4]+, chain-level
@@ -58,6 +61,22 @@ public sealed class PredictedLibraryLipidRtTests
             .RunLipidRtCheck(new AnalysisFileBean { AnalysisFileName = "s1" }, control);
         Assert.IsTrue(Find(control, 52, 1).TagCollection.IsSelected(PeakSpotTag.CONFIRMED),
             "the control: without the library, the RuleBased record alone does not keep the match out");
+    }
+
+    /// <summary>
+    /// The test above calls the method that reads the set; this one pins that processing does too. RunAsync needs raw data
+    /// and saved peaks to run, so its compiled body is read instead: it must call <see cref="FileProcess.RunLipidRtCheck"/>
+    /// and must not run the hook itself, as it did before the set existed.
+    /// </summary>
+    [TestMethod]
+    public void RunAsyncRunsHookAThroughTheMethodThatPassesTheSet() {
+        var called = CalledMethods(typeof(FileProcess).GetMethod(nameof(FileProcess.RunAsync))!);
+
+        var hookA = typeof(FileProcess).GetMethod(nameof(FileProcess.RunLipidRtCheck), BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        Assert.IsNotNull(hookA);
+        Assert.IsTrue(called.Contains(hookA), "RunAsync calls RunLipidRtCheck");
+        Assert.IsFalse(called.Contains(typeof(LipidRtCheckHooks).GetMethod(nameof(LipidRtCheckHooks.RunOnPeaks))!), "RunAsync does not run hook A itself");
+        Assert.IsTrue(CalledMethods(hookA).Contains(typeof(LipidRtCheckHooks).GetMethod(nameof(LipidRtCheckHooks.RunOnPeaks))!), "the control: the reading sees a call");
     }
 
     [TestMethod]
@@ -134,6 +153,34 @@ public sealed class PredictedLibraryLipidRtTests
             peaks.Add(peak);
         }
         return peaks;
+    }
+
+    /// <summary>
+    /// The methods a method's compiled body calls, the body of an async method being its state machine's MoveNext. Each
+    /// call or callvirt opcode (0x28, 0x6F) is followed by a method token; the same byte inside another operand reads as a
+    /// token that resolves to nothing or to some other member, which can only add to the set, so a call that is there is
+    /// never missed.
+    /// </summary>
+    private static HashSet<MethodBase> CalledMethods(MethodInfo method) {
+        var body = method.GetCustomAttribute<AsyncStateMachineAttribute>() is { } stateMachine
+            ? stateMachine.StateMachineType.GetMethod("MoveNext", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)!
+            : method;
+        var il = body.GetMethodBody()!.GetILAsByteArray()!;
+        var called = new HashSet<MethodBase>();
+        for (var i = 0; i + 4 < il.Length; i++) {
+            if (il[i] != 0x28 && il[i] != 0x6F) {
+                continue;
+            }
+            try {
+                if (body.Module.ResolveMethod(BitConverter.ToInt32(il, i + 1)) is { } callee) {
+                    called.Add(callee);
+                }
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is BadImageFormatException) {
+                // not a method token
+            }
+        }
+        return called;
     }
 
     private static ChromatogramPeakFeature Find(IEnumerable<ChromatogramPeakFeature> peaks, int c, int db) {

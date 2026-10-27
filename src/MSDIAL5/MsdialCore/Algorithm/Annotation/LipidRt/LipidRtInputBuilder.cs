@@ -45,8 +45,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         /// the two apart. The match result does not name its library, so the annotator does.
         /// </para>
         /// <para>
-        /// Only PredictedMsp. The LBM and the EAD lipid databases are generated too, but a match against them is the lipid
-        /// rule set's, which is what this check exists to evaluate.
+        /// Only PredictedMsp. The LBM and the EAD lipid databases are generated too, but a match against them scored as
+        /// lipidomics is the lipid rule set's, which is what this check exists to evaluate. Scored as metabolomics, an EAD
+        /// lipid database's match records in silico (<see cref="AnnotationEvidence.SpectraArePredicted"/>) and is kept out
+        /// by its evidence record alone.
         /// </para>
         /// </remarks>
         public static ISet<string> PredictedLibraryAnnotators(DataBaseStorage dataBases) {

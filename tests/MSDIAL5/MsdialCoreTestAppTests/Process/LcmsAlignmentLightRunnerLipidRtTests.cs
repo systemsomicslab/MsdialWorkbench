@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace MsdialCoreTestAppTests.Process;
 
@@ -50,6 +51,24 @@ public sealed class LcmsAlignmentLightRunnerLipidRtTests
             "the control: without the library, the RuleBased record alone does not keep the match out");
     }
 
+    /// <summary>
+    /// The test above calls the method that reads the set; this one pins that the light-mode alignment does too. Run needs
+    /// saved peaks and raw data, so its compiled body is read instead: it must call
+    /// <see cref="LcmsAlignmentLightRunner.RunLipidRtCheck"/> and must not run the hook itself, as it did before the set
+    /// existed.
+    /// </summary>
+    [TestMethod]
+    public void RunRunsHookBThroughTheMethodThatPassesTheSet() {
+        var called = CalledMethods(typeof(LcmsAlignmentLightRunner).GetMethod(nameof(LcmsAlignmentLightRunner.Run))!);
+
+        var hookB = typeof(LcmsAlignmentLightRunner).GetMethod(nameof(LcmsAlignmentLightRunner.RunLipidRtCheck), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+        Assert.IsNotNull(hookB);
+        Assert.IsTrue(called.Contains(hookB), "Run calls RunLipidRtCheck");
+        var runOnSpots = typeof(LipidRtCheckHooks).GetMethod(nameof(LipidRtCheckHooks.RunOnSpots))!;
+        Assert.IsFalse(called.Contains(runOnSpots), "Run does not run hook B itself");
+        Assert.IsTrue(CalledMethods(hookB).Contains(runOnSpots), "the control: the reading sees a call");
+    }
+
     private static MsdialLcmsDataStorage Storage(bool withPredictedLibrary) {
         var parameter = new MsdialLcmsParameter { TargetOmics = TargetOmics.Lipidomics, IonMode = IonMode.Positive };
         var databases = DataBaseStorage.CreateEmpty();
@@ -62,6 +81,30 @@ public sealed class LcmsAlignmentLightRunnerLipidRtTests
             ]);
         }
         return new MsdialLcmsDataStorage { MsdialLcmsParameter = parameter, DataBases = databases };
+    }
+
+    /// <summary>
+    /// The methods a method's compiled body calls. Each call or callvirt opcode (0x28, 0x6F) is followed by a method token;
+    /// the same byte inside another operand reads as a token that resolves to nothing or to some other member, which can
+    /// only add to the set, so a call that is there is never missed.
+    /// </summary>
+    private static HashSet<MethodBase> CalledMethods(MethodInfo method) {
+        var il = method.GetMethodBody()!.GetILAsByteArray()!;
+        var called = new HashSet<MethodBase>();
+        for (var i = 0; i + 4 < il.Length; i++) {
+            if (il[i] != 0x28 && il[i] != 0x6F) {
+                continue;
+            }
+            try {
+                if (method.Module.ResolveMethod(BitConverter.ToInt32(il, i + 1)) is { } callee) {
+                    called.Add(callee);
+                }
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is BadImageFormatException) {
+                // not a method token
+            }
+        }
+        return called;
     }
 
     private static AlignmentSpotProperty Find(IEnumerable<AlignmentSpotProperty> spots, int c, int db) {

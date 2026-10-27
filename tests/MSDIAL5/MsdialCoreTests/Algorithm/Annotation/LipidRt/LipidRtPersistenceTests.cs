@@ -185,7 +185,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             CollectionAssert.Contains(lines, "Lipid RT check minor duplicates: Allow");
             CollectionAssert.Contains(lines, "Lipid RT check secondary-only features: Evaluate");
             CollectionAssert.Contains(lines, "Lipid RT check runs for this project: True");
-            CollectionAssert.Contains(lines, "Lipid RT check rule version: 1.0");
+            CollectionAssert.Contains(lines, "Lipid RT check rule version: 1.1");
             CollectionAssert.Contains(lines, "Lipid RT check parameter hash: " + new LipidRtCheckParameter().ComputeHash());
             CollectionAssert.Contains(new LipidRtCheckParameter { IsEnabled = false }.ParametersAsText(TargetOmics.Lipidomics), "Lipid RT check: False");
         }

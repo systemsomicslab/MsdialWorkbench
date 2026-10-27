@@ -20,12 +20,12 @@ namespace CompMs.App.Msdial.Model.Information.Tests
     [TestClass]
     public class SetAnnotationUsecaseLipidRtTests
     {
-        private const string CheckSource = "MsdialLipidRtCheck/1.0";
+        private const string CheckSource = "MsdialLipidRtCheck/1.1";
 
         /// <summary>The TG grid after hook B, and TG 52:1, which the check confirmed, as a model.</summary>
         private static (AlignmentSpotProperty Spot, AlignmentSpotPropertyModel Model) Confirmed() {
             var spots = LipidRtTestSpots.Spots();
-            LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics());
+            LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics(), null);
             var spot = LipidRtTestSpots.Find(spots, 52, 1);
             Assert.AreEqual(CheckSource, spot.TagCollection.GetSource(PeakSpotTag.CONFIRMED));
             Assert.AreEqual(LipidRtOutcome.Confirmed, spot.LipidRtVerdict.Outcome);
@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
             var spots = LipidRtTestSpots.Spots();
             var spot = LipidRtTestSpots.Find(spots, 52, 1);
             spot.TagCollection.Select(PeakSpotTag.CONFIRMED);
-            LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics());
+            LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics(), null);
             Assert.IsNotNull(spot.LipidRtVerdict);
             var model = new AlignmentSpotPropertyModel(spot);
 
@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
                 }
                 return peak;
             }).ToList();
-            LipidRtCheckHooks.RunOnPeaks(peaks, LipidRtTestSpots.Lipidomics());
+            LipidRtCheckHooks.RunOnPeaks(peaks, LipidRtTestSpots.Lipidomics(), null);
             var peak521 = peaks.Single(p => p.Name.StartsWith("TG 52:1|"));
             Assert.AreEqual(CheckSource, peak521.TagCollection.GetSource(PeakSpotTag.CONFIRMED));
             var model = new ChromatogramPeakFeatureModel(peak521);

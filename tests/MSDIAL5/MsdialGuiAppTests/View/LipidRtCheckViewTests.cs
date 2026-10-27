@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.View.Tests
         public void ThePeakInformationPanelShowsTheVerdictRowOnlyWhereThereIsAVerdict() {
             OnUiThread(() => {
                 var spots = LipidRtTestSpots.Spots();
-                LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics());
+                LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics(), null);
                 var target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>(new AlignmentSpotPropertyModel(LipidRtTestSpots.Find(spots, 52, 1)));
                 using var information = new PeakInformationAlignmentModel(target);
                 using var viewModel = new PeakInformationViewModel(information);

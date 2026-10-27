@@ -16,10 +16,10 @@ namespace CompMs.App.Msdial.Model.DataObj.Tests
     {
         [TestMethod]
         public void NothingIsSaidWhenTheCheckFailedNowhere() {
-            var ran = LipidRtCheckHooks.RunOnSpots(LipidRtTestSpots.Spots(), LipidRtTestSpots.Lipidomics());
+            var ran = LipidRtCheckHooks.RunOnSpots(LipidRtTestSpots.Spots(), LipidRtTestSpots.Lipidomics(), null);
             var parameter = LipidRtTestSpots.Lipidomics();
             parameter.TargetOmics = TargetOmics.Metabolomics;
-            var notRun = LipidRtCheckHooks.RunOnSpots(LipidRtTestSpots.Spots(), parameter);
+            var notRun = LipidRtCheckHooks.RunOnSpots(LipidRtTestSpots.Spots(), parameter, null);
 
             Assert.IsNull(LipidRtCheckDescription.ProcessingFailures(new List<(string, LipidRtUnitRun?)>
             {
@@ -32,9 +32,9 @@ namespace CompMs.App.Msdial.Model.DataObj.Tests
         public void AFailureIsNamedWithItsUnitAndWhatTheCheckReported() {
             var spots = LipidRtTestSpots.Spots();
             spots[3].MasterAlignmentID = spots[2].MasterAlignmentID; // the check refuses repeated Ids
-            var failed = LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics());
+            var failed = LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics(), null);
             Assert.IsNotNull(failed.Error);
-            var ran = LipidRtCheckHooks.RunOnSpots(LipidRtTestSpots.Spots(), LipidRtTestSpots.Lipidomics());
+            var ran = LipidRtCheckHooks.RunOnSpots(LipidRtTestSpots.Spots(), LipidRtTestSpots.Lipidomics(), null);
 
             var notice = LipidRtCheckDescription.ProcessingFailures(new List<(string, LipidRtUnitRun?)>
             {

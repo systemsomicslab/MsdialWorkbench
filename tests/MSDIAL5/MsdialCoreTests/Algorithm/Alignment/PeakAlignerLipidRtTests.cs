@@ -28,7 +28,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
     [TestClass]
     public class PeakAlignerLipidRtTests
     {
-        private const string CheckSource = "MsdialLipidRtCheck/1.0";
+        private const string CheckSource = "MsdialLipidRtCheck/1.1";
 
         [TestMethod]
         public void HookBConfirmsTheGridWithoutIsotopeTracking() {
