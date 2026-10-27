@@ -1,4 +1,7 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.MessagePack;
 using MessagePack;
@@ -59,6 +62,73 @@ namespace CompMs.MsdialCore.DataObj.Tests
             Assert.AreEqual(peak.PeakAreaAboveZero, actual.PeakAreaAboveZero);
             Assert.AreEqual(peak.PeakAreaAboveBaseline, actual.PeakAreaAboveBaseline);
             Assert.AreEqual(peak.Mass, actual.Mass);
+        }
+
+        [TestMethod]
+        public void ClearMatchResultPropertyResetsAdductEstimationAndKeepsIsotopeInformation() {
+            var formate = AdductIon.GetAdductIon("[M+HCOO]-");
+            var peak = new ChromatogramPeakFeature
+            {
+                PeakID = 3,
+                Name = "low score: Cer_d7 20:2;O2",
+                PeakCharacter = new IonFeatureCharacter
+                {
+                    IsotopeWeightNumber = 0,
+                    IsotopeParentPeakID = 3,
+                    Charge = 2,
+                    AdductParent = 1,
+                    PeakGroupID = 5,
+                    IsLinked = true,
+                    PeakLinks = [
+                        new LinkedPeakFeature { LinkedPeakID = 4, Character = PeakLinkFeatureEnum.Isotope, },
+                        new LinkedPeakFeature { LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Adduct, },
+                        new LinkedPeakFeature { LinkedPeakID = 7, Character = PeakLinkFeatureEnum.ChromSimilar, },
+                    ],
+                },
+            };
+            peak.AdductType = formate;
+            peak.PeakCharacter.AdductType = formate;
+            peak.MatchResults.AddResult(new MsScanMatchResult { Name = "Cer_d7 20:2;O2", Source = SourceType.MspDB, });
+
+            peak.ClearMatchResultProperty();
+
+            Assert.AreEqual(string.Empty, peak.Name);
+            Assert.AreSame(MsScanMatchResultContainer.UnknownResult, peak.MatchResults.Representative);
+            Assert.IsFalse(peak.IsAdductTypeFormatted);
+            Assert.AreSame(AdductIon.Default, peak.AdductType);
+            Assert.AreSame(AdductIon.Default, peak.PeakCharacter.AdductType);
+            Assert.AreEqual(-1, peak.PeakCharacter.AdductParent);
+            Assert.AreEqual(-1, peak.PeakCharacter.PeakGroupID);
+            Assert.AreEqual(1, peak.PeakCharacter.PeakLinks.Count);
+            Assert.AreEqual(PeakLinkFeatureEnum.Isotope, peak.PeakCharacter.PeakLinks[0].Character);
+            Assert.AreEqual(4, peak.PeakCharacter.PeakLinks[0].LinkedPeakID);
+            Assert.IsTrue(peak.PeakCharacter.IsLinked);
+            // isotope information and charge come from peak spotting
+            Assert.AreEqual(0, peak.PeakCharacter.IsotopeWeightNumber);
+            Assert.AreEqual(3, peak.PeakCharacter.IsotopeParentPeakID);
+            Assert.AreEqual(2, peak.PeakCharacter.Charge);
+        }
+
+        [TestMethod]
+        public void ClearMatchResultPropertyClearsDriftFeatures() {
+            var formate = AdductIon.GetAdductIon("[M+HCOO]-");
+            var drift = new ChromatogramPeakFeature
+            {
+                Name = "Cer_d7 20:2;O2",
+                PeakCharacter = new IonFeatureCharacter { IsotopeWeightNumber = 0, Charge = 1, },
+            };
+            drift.SetAdductType(formate);
+            drift.MatchResults.AddResult(new MsScanMatchResult { Name = "Cer_d7 20:2;O2", Source = SourceType.MspDB, });
+            var peak = new ChromatogramPeakFeature { DriftChromFeatures = [drift], };
+            peak.SetAdductType(formate);
+
+            peak.ClearMatchResultProperty();
+
+            Assert.AreEqual(string.Empty, drift.Name);
+            Assert.AreSame(MsScanMatchResultContainer.UnknownResult, drift.MatchResults.Representative);
+            Assert.IsFalse(drift.IsAdductTypeFormatted);
+            Assert.AreSame(AdductIon.Default, drift.PeakCharacter.AdductType);
+            Assert.AreEqual(1, drift.PeakCharacter.Charge);
         }
     }
 
