@@ -77,14 +77,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
                     rtMin = Math.Min(rtMin, o.Rt);
                     rtMax = Math.Max(rtMax, o.Rt);
                 }
-                context.Add(new LipidRtContextPeak
-                {
-                    Id = o.Id, Rt = o.Rt, Mz = o.Mz, Height = o.Height, Adduct = o.Adduct ?? string.Empty,
-                    IsMsmsAnnotated = IsAnnotated(o.Representative) && o.Representative.IsSpectrumMatch,
-                });
                 var fromPredictedLibrary = o.Representative?.AnnotatorID != null
                     && predictedLibraryAnnotators != null
                     && predictedLibraryAnnotators.Contains(o.Representative.AnnotatorID);
+                context.Add(new LipidRtContextPeak
+                {
+                    Id = o.Id, Rt = o.Rt, Mz = o.Mz, Height = o.Height, Adduct = o.Adduct ?? string.Empty,
+                    IsMsmsAnnotated = IsAnnotated(o.Representative) && o.Representative.IsSpectrumMatch
+                        && !IsInSilico(o.Representative) && !fromPredictedLibrary,
+                });
                 var candidate = CreateCandidate(o.Id, o.Rt, o.Mz, o.Height, o.Adduct, o.Representative, o.Ontology, o.Name, fromPredictedLibrary);
                 if (candidate != null) {
                     candidates.Add(candidate);
@@ -145,7 +146,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
             if ((r.Source & SourceType.TextDB) != 0 || (r.Source & (SourceType.MspDB | SourceType.GeneratedLipid)) == 0) {
                 reasons.Add("not_spectral_library");
             }
-            if (IsInSilico(r) || fromPredictedLibrary) {
+            var inSilico = IsInSilico(r) || fromPredictedLibrary;
+            if (inSilico) {
                 reasons.Add("in_silico"); // a computed spectrum is a hypothesis: RT agreeing with it would confirm a name no acquired spectrum supports
             }
             if (!isLipid) {
@@ -184,6 +186,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
                 WeightedDot = r.WeightedDotProduct,
                 Chains = parsed.Chains,
                 IsEligible = reasons.Count == 0 && hasComposition,
+                IsInSilico = inSilico,
                 IneligibleReason = string.Join(",", reasons),
             };
         }

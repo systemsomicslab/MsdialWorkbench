@@ -1542,6 +1542,38 @@ public sealed class ConfigParserTests
     }
 
     /// <summary>
+    /// The phrase MS-DIAL Interactive looks for is in the compiled Console as one string.
+    /// </summary>
+    /// <remarks>
+    /// Interactive reports that a Console can switch an annotator's suggestions off only when it finds the text
+    /// "annotation suggestions disabled" in the Console's assembly, as UTF-8 or UTF-16 (msp_suggestions). The run log is
+    /// the same whether the phrase is one literal or built at run time from "annotation suggestions " and the state, so
+    /// the log tests above cannot see the difference; the assembly can. The search is Interactive's own.
+    /// </remarks>
+    [TestMethod]
+    public void TheConsoleAssemblyHoldsTheSuggestionsSwitchMarkerAsOneString()
+    {
+        var assembly = File.ReadAllBytes(typeof(ConfigParser).Assembly.Location);
+
+        Assert.IsTrue(Contains(assembly, Encoding.Unicode.GetBytes("annotation suggestions disabled")) || Contains(assembly, Encoding.UTF8.GetBytes("annotation suggestions disabled")),
+            "MS-DIAL Interactive would report that this Console has no per-annotator suggestions switch");
+        Assert.IsTrue(Contains(assembly, Encoding.Unicode.GetBytes("MSP annotator settings TSV requires a 'msp_file_path' column.")),
+            "the control: the search finds another literal of the same assembly");
+        Assert.IsFalse(Contains(assembly, Encoding.Unicode.GetBytes("annotation suggestions withheld")),
+            "the control: the search does not find a phrase the Console does not hold");
+
+        static bool Contains(byte[] haystack, byte[] needle)
+        {
+            for (var i = 0; i + needle.Length <= haystack.Length; i++) {
+                if (haystack.AsSpan(i, needle.Length).SequenceEqual(needle)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
     /// A METHOD-FILE KEY THAT HAD NO EFFECT SAYS SO.
     /// </summary>
     /// <remarks>

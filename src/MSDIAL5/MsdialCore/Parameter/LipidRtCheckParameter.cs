@@ -141,7 +141,9 @@ namespace CompMs.MsdialCore.Parameter
         /// <item>1.0: the specification as released.</item>
         /// <item>1.1: a match whose evidence is in silico, or whose annotator searches a library of predicted spectra, is
         /// not evaluated (reason "in_silico") and is no longer a neighbour of the matches that are, so their verdicts can
-        /// differ from 1.0's too.</item>
+        /// differ from 1.0's too. Nor is it evidence in their MS1 artefact screen: there it is the unannotated peak it
+        /// would be without that library, so its adduct no longer clears a relation and its composition no longer makes it
+        /// an in-source parent.</item>
         /// </list>
         /// </remarks>
         public const string RuleVersion = "1.1";

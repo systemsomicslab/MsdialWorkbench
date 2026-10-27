@@ -5,6 +5,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -174,6 +175,139 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
                 "without the library, a rule-based record cannot be told apart from the LBM's");
             var result = new LipidRtCheck(new LipidRtCheckParameter()).Evaluate(input);
             Assert.IsTrue(result.Results.Where(r => r.Id != 3).All(r => r.Outcome == LipidRtOutcome.NotEvaluable && r.Reason == LipidRtReason.Ineligible));
+        }
+
+        /// <summary>
+        /// An in-silico match is no evidence about the matches the check evaluates: in their MS1 artefact screen it is the
+        /// unannotated peak it would be without the library. Here a brighter co-eluting peak sits where a [M+NH4]+ would
+        /// make PC 36:2 [M+H]+ its [M+Na]+ (naNH4). An acquired [M+H]+ match on that peak says it is not a [M+NH4]+ and
+        /// clears the relation; a computed one, recorded in silico or found in a library of predicted spectra, must not.
+        /// </summary>
+        [TestMethod]
+        public void AnInSilicoMatchOnAPartnerDoesNotClearAnArtefactRelation() {
+            var acquired = PartnerMatch("strict", AnnotationEvidenceSource.ReferenceSpectrum);
+            var bySpectrumPrediction = PartnerMatch("glacier", AnnotationEvidenceSource.BySpectrumPredictionTool);
+            var fromAPredictedLibrary = PartnerMatch("glacier_lipid", AnnotationEvidenceSource.RuleBased);
+            var predicted = new HashSet<string> { "glacier_lipid" };
+
+            var unannotated = RunWithPartner(null, predicted);
+            var target = unannotated.Target;
+            Assert.AreNotEqual(LipidRtOutcome.Confirmed, unannotated.Result[target].Outcome);
+            CollectionAssert.Contains(unannotated.Result[target].Evidence.Artefacts.Select(a => a.Kind).ToList(), "naNH4");
+
+            var cleared = RunWithPartner(acquired, predicted);
+            Assert.AreEqual(LipidRtOutcome.Confirmed, cleared.Result[target].Outcome, "the control: an acquired [M+H]+ partner clears the relation");
+
+            foreach (var (partner, label) in new[] { (bySpectrumPrediction, "recorded in silico"), (fromAPredictedLibrary, "from a predicted library") }) {
+                var run = RunWithPartner(partner, predicted);
+                Assert.AreEqual(LipidRtOutcome.NotEvaluable, run.Result[run.Partner].Outcome, label);
+                StringAssert.Contains(run.Input.Candidates.Single(c => c.Id == run.Partner).IneligibleReason, "in_silico", label);
+                AssertSameVerdicts(unannotated.Result, run.Result, label);
+            }
+        }
+
+        /// <summary>
+        /// Nor is an in-silico lipid an in-source parent: LPC 18:1 beside a brighter co-eluting PC 42:1 is a chain-loss
+        /// fragment only when an acquired spectrum names the PC.
+        /// </summary>
+        [TestMethod]
+        public void AnInSilicoLipidIsNotAnInSourceParent() {
+            var acquired = LbmMatch("PC 42:1|PC 18:0_24:1", referenceMatched: false);
+            var bySpectrumPrediction = LbmMatch("PC 42:1|PC 18:0_24:1");
+            bySpectrumPrediction.AnnotatorID = "glacier";
+            bySpectrumPrediction.EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool;
+            var fromAPredictedLibrary = LbmMatch("PC 42:1|PC 18:0_24:1");
+            fromAPredictedLibrary.AnnotatorID = "glacier_lipid";
+            fromAPredictedLibrary.EvidenceSource = AnnotationEvidenceSource.RuleBased;
+            var predicted = new HashSet<string> { "glacier_lipid" };
+
+            var unannotated = RunWithParent(null, predicted);
+            var lpc = unannotated.Target;
+            Assert.AreEqual(0, unannotated.Result[lpc].Evidence.Artefacts.Count, "the run has a verdict for the LPC with its evidence");
+
+            var flagged = RunWithParent(acquired, predicted);
+            CollectionAssert.Contains(flagged.Result[lpc].Evidence.Artefacts.Select(a => a.Kind).ToList(), "isf_chain",
+                "the control: an acquired PC 42:1 makes the LPC its chain-loss fragment");
+
+            foreach (var (parent, label) in new[] { (bySpectrumPrediction, "recorded in silico"), (fromAPredictedLibrary, "from a predicted library") }) {
+                var run = RunWithParent(parent, predicted);
+                StringAssert.Contains(run.Input.Candidates.Single(c => c.Id == run.Partner).IneligibleReason, "in_silico", label);
+                AssertSameVerdicts(unannotated.Result, run.Result, label);
+            }
+        }
+
+        private static MsScanMatchResult PartnerMatch(string annotatorId, AnnotationEvidenceSource evidence) {
+            return new MsScanMatchResult
+            {
+                Name = "Synthetic compound", IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsReferenceMatched = true,
+                Source = SourceType.MspDB, AnnotatorID = annotatorId, EvidenceSource = evidence, WeightedDotProduct = 0.8f,
+            };
+        }
+
+        private sealed class GridRun
+        {
+            public LipidRtRunInput Input;
+            public LipidRtRunResult Result;
+            public int Target;
+            public int Partner;
+        }
+
+        /// <summary>
+        /// The PC grid of the synthetic tests (C 32-40 even, DB 0-4, RT = 2 + 0.30 C - 0.45 DB, [M+H]+, LBM chain-level
+        /// matches) with unannotated peaks at 0.5 and 19.5 min, and the peaks <paramref name="extra"/> adds.
+        /// </summary>
+        private static GridRun RunGrid(Func<List<ChromatogramPeakFeature>, (int Target, int Partner)> extra, ISet<string> predicted) {
+            var peaks = new List<ChromatogramPeakFeature>
+            {
+                Peak(0, 0.5, 300.1, 1e5, "[M+H]+", null, null),
+                Peak(1, 19.5, 301.1, 1e5, "[M+H]+", null, null),
+            };
+            foreach (var c in new[] { 32, 34, 36, 38, 40 }) {
+                foreach (var db in new[] { 0, 1, 2, 3, 4 }) {
+                    var mz = LipidRtSyntheticRun.Mass("PC", c, db) + LipidRtSyntheticRun.AdductOf("[M+H]+");
+                    var name = $"PC {c}:{db}|PC {c / 2}:{db / 2}_{c - c / 2}:{db - db / 2}";
+                    peaks.Add(Peak(peaks.Count, 2.0 + 0.30 * c - 0.45 * db, mz, 1e5, "[M+H]+", "PC", LbmMatch(name)));
+                }
+            }
+            var (target, partner) = extra(peaks);
+            var input = LipidRtInputBuilder.FromPeaks(peaks, IonMode.Positive, predicted);
+            var result = new LipidRtCheck(new LipidRtCheckParameter { ClassLevelPolicy = LipidRtClassLevelPolicy.Consistent }).Evaluate(input);
+            return new GridRun { Input = input, Result = result, Target = target, Partner = partner };
+        }
+
+        /// <summary>The grid with a 10x brighter peak co-eluting with PC 36:2 at its m/z - 4.95539, annotated by <paramref name="partner"/>.</summary>
+        private static GridRun RunWithPartner(MsScanMatchResult partner, ISet<string> predicted) {
+            return RunGrid(peaks => {
+                var target = peaks.Single(p => p.Name.StartsWith("PC 36:2|", StringComparison.Ordinal));
+                var id = peaks.Count;
+                peaks.Add(Peak(id, target.PeakFeature.ChromXsTop.RT.Value, target.PeakFeature.Mass - 4.95539, 1e6, "[M+H]+", partner is null ? null : "Others", partner));
+                return (target.MasterPeakID, id);
+            }, predicted);
+        }
+
+        /// <summary>The grid with LPC 18:1 at 6.0 min and a 10x brighter co-eluting PC 42:1, annotated by <paramref name="parent"/>.</summary>
+        private static GridRun RunWithParent(MsScanMatchResult parent, ISet<string> predicted) {
+            return RunGrid(peaks => {
+                var lpc = peaks.Count;
+                peaks.Add(Peak(lpc, 6.0, 522.3554, 1e5, "[M+H]+", "LPC", LbmMatch("LPC 18:1", chains: false)));
+                var id = peaks.Count;
+                var mz = LipidRtSyntheticRun.Mass("PC", 42, 1) + LipidRtSyntheticRun.AdductOf("[M+H]+");
+                peaks.Add(Peak(id, 6.0, mz, 1e6, "[M+H]+", parent is null ? null : "PC", parent));
+                return (lpc, id);
+            }, predicted);
+        }
+
+        /// <summary>Every object the check evaluates in <paramref name="expected"/> has the same verdict in <paramref name="actual"/>.</summary>
+        private static void AssertSameVerdicts(LipidRtRunResult expected, LipidRtRunResult actual, string label) {
+            foreach (var e in expected.Results) {
+                var a = actual[e.Id];
+                Assert.AreEqual(e.Outcome, a.Outcome, $"{label}: {e.Candidate.Name}");
+                Assert.AreEqual(e.Reason, a.Reason, $"{label}: {e.Candidate.Name}");
+                Assert.AreEqual(e.Score, a.Score, $"{label}: {e.Candidate.Name}");
+                CollectionAssert.AreEqual(
+                    (e.Evidence?.Artefacts ?? new List<LipidRtArtefact>()).Select(x => x.Kind).ToList(),
+                    (a.Evidence?.Artefacts ?? new List<LipidRtArtefact>()).Select(x => x.Kind).ToList(), $"{label}: {e.Candidate.Name}");
+            }
         }
 
         /// <summary>

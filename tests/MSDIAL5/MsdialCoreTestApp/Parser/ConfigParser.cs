@@ -979,6 +979,7 @@ namespace CompMs.App.MsdialConsole.Parser
         /// TWO WHOLE LITERALS ON PURPOSE. MS-DIAL Interactive learns whether a Console build can switch
         /// suggestions off by finding the text "annotation suggestions disabled" in the binary, so the
         /// phrase must reach the assembly as one string and not be assembled from parts.
+        /// ConfigParserTests.TheConsoleAssemblyHoldsTheSuggestionsSwitchMarkerAsOneString reads the assembly for it.
         /// </remarks>
         private static string SuggestionsText(bool allowsSuggestions) {
             return allowsSuggestions ? "annotation suggestions enabled" : "annotation suggestions disabled";
