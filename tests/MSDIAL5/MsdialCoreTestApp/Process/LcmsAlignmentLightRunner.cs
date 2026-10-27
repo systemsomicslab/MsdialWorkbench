@@ -130,8 +130,16 @@ internal sealed class LcmsAlignmentLightRunner {
         // Hook B of the lipid RT check, as PeakAligner runs it after packing the spots. In light mode the alignment
         // objects are not saved, so the verdicts and the Confirmed tags reach only this run's exports (the Comment
         // column, the mzTab-M columns and the review list) and are not persisted.
-        var lipidRt = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, _parameter);
+        var lipidRt = RunLipidRtCheck(container.AlignmentSpotProperties, _storage);
         return new LcmsAlignmentLightResult(container, msdecResults, lipidRt);
+    }
+
+    /// <summary>
+    /// Hook B in light mode: the check on the spots, with the annotators of the project's libraries of predicted spectra,
+    /// whose matches it does not evaluate, as PeakAligner is given them.
+    /// </summary>
+    internal static LipidRtUnitRun RunLipidRtCheck(IReadOnlyList<AlignmentSpotProperty> spots, IMsdialDataStorage<MsdialLcmsParameter> storage) {
+        return LipidRtCheckHooks.RunOnSpots(spots, storage.Parameter, LipidRtInputBuilder.PredictedLibraryAnnotators(storage.DataBases));
     }
 
     private List<AlignmentSpotProperty> InitializeSpots(IReadOnlyList<ChromatogramPeakFeature> master) {

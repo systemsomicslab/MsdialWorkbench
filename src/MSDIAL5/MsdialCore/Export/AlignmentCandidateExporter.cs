@@ -29,6 +29,12 @@ namespace CompMs.MsdialCore.Export;
 /// empty cell wherever the run established nothing, and full round-trip precision instead of the display
 /// rounding of a spreadsheet column. A score that reads 0.977 in .mdalign therefore reads 0.977049112
 /// here; they are the same measurement.
+///
+/// The last two columns are the evidence record the .mdalign "Measured terms" and "Evidence source"
+/// columns carry, rendered by the same <see cref="AnnotationEvidenceFormat"/> decisions. Without them a
+/// match against a library of predicted spectra reads exactly like an acquired one here: the source
+/// column says MspDB for both, and is_reference_matched is true for both. They are appended rather than
+/// inserted so that a reader that addresses the earlier columns by position keeps working.
 /// </remarks>
 public sealed class AlignmentCandidateExporter
 {
@@ -72,6 +78,8 @@ public sealed class AlignmentCandidateExporter
         "reverse_dot_product",
         "matched_peaks_count",
         "matched_peaks_percentage",
+        "measured_terms",
+        "evidence_source",
     ];
 
     private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? _refer;
@@ -172,6 +180,10 @@ public sealed class AlignmentCandidateExporter
             Score(spectrumScored, candidate.ReverseDotProduct),
             Score(spectrumScored, candidate.MatchedPeaksCount),
             Score(spectrumScored, candidate.MatchedPeaksPercentage),
+            // Empty, as every other cell here, where the run did not record the fact; .mdalign writes
+            // "null" for the same state.
+            AnnotationEvidenceFormat.IsTermsRecorded(candidate) ? AnnotationEvidenceFormat.TermList(candidate.MeasuredTerms) : NotApplicable,
+            AnnotationEvidenceFormat.IsSourceRecorded(candidate) ? AnnotationEvidenceFormat.Source(candidate) : NotApplicable,
         ]);
     }
 

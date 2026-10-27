@@ -21,19 +21,21 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
     [TestClass]
     public class LipidRtCheckSettingModelTests
     {
-        private const string CheckSource = "MsdialLipidRtCheck/1.0";
+        private const string CheckSource = "MsdialLipidRtCheck/1.1";
 
         private sealed class Fixture
         {
-            public Fixture(ParameterBase? parameter = null, Func<Task>? save = null) {
+            public Fixture(ParameterBase? parameter = null, Func<Task>? save = null, DataBaseStorage? dataBases = null) {
                 Parameter = parameter ?? LipidRtTestSpots.Lipidomics();
+                DataBases = dataBases ?? DataBaseStorage.CreateEmpty();
                 Spots = LipidRtTestSpots.Spots();
                 Models = Spots.Select(s => new AlignmentSpotPropertyModel(s)).ToList();
                 UndoManager = new UndoManager();
-                Model = new LipidRtCheckSettingModel(Parameter, Models, save ?? (() => { Saves++; return Task.CompletedTask; }), UndoManager);
+                Model = new LipidRtCheckSettingModel(Parameter, Models, DataBases, save ?? (() => { Saves++; return Task.CompletedTask; }), UndoManager);
             }
 
             public ParameterBase Parameter { get; }
+            public DataBaseStorage DataBases { get; }
             public List<AlignmentSpotProperty> Spots { get; }
             public List<AlignmentSpotPropertyModel> Models { get; }
             public LipidRtCheckSettingModel Model { get; }
@@ -86,7 +88,7 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
 
             // The same as hook B on the same spots: one routine for processing and the GUI.
             var reference = LipidRtTestSpots.Spots();
-            LipidRtCheckHooks.RunOnSpots(reference, LipidRtTestSpots.Lipidomics());
+            LipidRtCheckHooks.RunOnSpots(reference, LipidRtTestSpots.Lipidomics(), null);
             CollectionAssert.AreEqual(
                 reference.Select(s => s.TagCollection.IsSelected(PeakSpotTag.CONFIRMED)).ToList(),
                 fixture.Spots.Select(s => s.TagCollection.IsSelected(PeakSpotTag.CONFIRMED)).ToList());
@@ -97,6 +99,34 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
             StringAssert.Contains(fixture.Model.Summary, "Confirmed tags set");
             StringAssert.Contains(fixture.Model.Summary, "The alignment result was saved.");
             Assert.AreSame(run, fixture.Model.LastRun);
+        }
+
+        /// <summary>
+        /// A lipid named from a library of predicted spectra is not evaluated by a run from here, as it is not in processing
+        /// (Q5: an in-silico match is never Confirmed). Searched under lipidomics, its record says RuleBased, as the LBM's
+        /// does, so only the project's databases tell it apart; without them the same spot would be confirmed.
+        /// </summary>
+        [TestMethod]
+        public async Task RunDoesNotEvaluateAMatchFromALibraryOfPredictedSpectra() {
+            var fixture = new Fixture(dataBases: LipidRtTestSpots.WithPredictedLibrary("glacier_lipid"));
+            var tg521 = fixture.Find(52, 1);
+            LipidRtTestSpots.MatchFromLibrary(tg521, "glacier_lipid");
+
+            var run = await fixture.Model.RunAsync();
+
+            Assert.IsNotNull(run);
+            Assert.IsTrue(run.Ran, run.Describe());
+            Assert.IsFalse(tg521.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
+            Assert.AreEqual(LipidRtOutcome.NotEvaluable, tg521.LipidRtVerdict.Outcome);
+            Assert.AreEqual(LipidRtReason.Ineligible, tg521.LipidRtVerdict.Reason);
+            StringAssert.Contains(tg521.LipidRtVerdict.Evidence, "in silico");
+            Assert.IsTrue(fixture.Find(52, 2).TagCollection.IsSelected(PeakSpotTag.CONFIRMED), "the LBM-named neighbour is still confirmed");
+
+            var withoutTheLibrary = new Fixture();
+            LipidRtTestSpots.MatchFromLibrary(withoutTheLibrary.Find(52, 1), "glacier_lipid");
+            await withoutTheLibrary.Model.RunAsync();
+            Assert.IsTrue(withoutTheLibrary.Find(52, 1).TagCollection.IsSelected(PeakSpotTag.CONFIRMED),
+                "the control: the record alone does not keep the match out");
         }
 
         [TestMethod]

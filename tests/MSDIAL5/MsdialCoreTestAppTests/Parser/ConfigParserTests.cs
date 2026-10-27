@@ -1453,6 +1453,127 @@ public sealed class ConfigParserTests
     }
 
     /// <summary>
+    /// A settings file without the suggestions column, or with it left blank, suggests as before.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_SuggestsWhenTheColumnIsAbsentOrBlank()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var without = directory.CreateFile(
+            "without.tsv",
+            $"annotator_id\tmsp_file_path\n" +
+            $"strict\t{msp}\n");
+        var blank = directory.CreateFile(
+            "blank.tsv",
+            $"annotator_id\tmsp_file_path\tsuggestions\n" +
+            $"strict\t{msp}\t\n");
+
+        var parsedWithout = ConfigParser.ReadMspAnnotatorSettings(
+            directory.CreateFile("without.txt", $"Msp annotator settings file path: {without}\n"), new MsdialLcmsParameter());
+        var parsedBlank = ConfigParser.ReadMspAnnotatorSettings(
+            directory.CreateFile("blank.txt", $"Msp annotator settings file path: {blank}\n"), new MsdialLcmsParameter());
+
+        Assert.IsTrue(parsedWithout.Single().AllowsSuggestions);
+        Assert.IsTrue(parsedBlank.Single().AllowsSuggestions);
+    }
+
+    /// <summary>
+    /// The switch is read per annotator, in any letter case, and the run log states it beside the library kind.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_ReadsTheSuggestionsSwitchAndStatesIt()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tlibrary_kind\tsuggestions\n" +
+            $"strict\t{msp}\tacquired\tTrue\n" +
+            $"glacier\t{msp}\tpredicted\tFALSE\n" +
+            $"broad\t{msp}\tacquired\ttrue\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var original = Console.Out;
+        var captured = new StringWriter();
+        List<MspAnnotatorSetting> parsed;
+        try {
+            Console.SetOut(captured);
+            parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+        }
+        finally {
+            Console.SetOut(original);
+        }
+
+        CollectionAssert.AreEqual(new[] { true, false, true }, parsed.Select(setting => setting.AllowsSuggestions).ToArray());
+        var log = captured.ToString();
+        StringAssert.Contains(log, "MSP annotator strict: annotation suggestions enabled");
+        StringAssert.Contains(log, "MSP annotator glacier: annotation suggestions disabled");
+        StringAssert.Contains(log, "MSP annotator broad: annotation suggestions enabled");
+    }
+
+    /// <summary>
+    /// Anything other than true, false or blank refuses the run, and the message names the value and the annotator.
+    /// </summary>
+    /// <remarks>
+    /// Unlike library_kind, a typo is not read as the old meaning: here the old meaning is the behaviour the column exists
+    /// to switch off.
+    /// </remarks>
+    [DataTestMethod]
+    [DataRow("flase")]
+    [DataRow("no")]
+    [DataRow("0")]
+    [DataRow("off")]
+    public void ReadMspAnnotatorSettings_RefusesASuggestionsValueThatIsNeitherTrueNorFalse(string value)
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tsuggestions\n" +
+            $"glacier\t{msp}\t{value}\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var error = Assert.ThrowsException<FormatException>(() => ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter()));
+
+        StringAssert.Contains(error.Message, $"suggestions '{value}'");
+        StringAssert.Contains(error.Message, "'glacier'");
+        StringAssert.Contains(error.Message, "msp_annotator_settings.tsv");
+    }
+
+    /// <summary>
+    /// The phrase MS-DIAL Interactive looks for is in the compiled Console as one string.
+    /// </summary>
+    /// <remarks>
+    /// Interactive reports that a Console can switch an annotator's suggestions off only when it finds the text
+    /// "annotation suggestions disabled" in the Console's assembly, as UTF-8 or UTF-16 (msp_suggestions). The run log is
+    /// the same whether the phrase is one literal or built at run time from "annotation suggestions " and the state, so
+    /// the log tests above cannot see the difference; the assembly can. The search is Interactive's own.
+    /// </remarks>
+    [TestMethod]
+    public void TheConsoleAssemblyHoldsTheSuggestionsSwitchMarkerAsOneString()
+    {
+        var assembly = File.ReadAllBytes(typeof(ConfigParser).Assembly.Location);
+
+        Assert.IsTrue(Contains(assembly, Encoding.Unicode.GetBytes("annotation suggestions disabled")) || Contains(assembly, Encoding.UTF8.GetBytes("annotation suggestions disabled")),
+            "MS-DIAL Interactive would report that this Console has no per-annotator suggestions switch");
+        Assert.IsTrue(Contains(assembly, Encoding.Unicode.GetBytes("MSP annotator settings TSV requires a 'msp_file_path' column.")),
+            "the control: the search finds another literal of the same assembly");
+        Assert.IsFalse(Contains(assembly, Encoding.Unicode.GetBytes("annotation suggestions withheld")),
+            "the control: the search does not find a phrase the Console does not hold");
+
+        static bool Contains(byte[] haystack, byte[] needle)
+        {
+            for (var i = 0; i + needle.Length <= haystack.Length; i++) {
+                if (haystack.AsSpan(i, needle.Length).SequenceEqual(needle)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
     /// A METHOD-FILE KEY THAT HAD NO EFFECT SAYS SO.
     /// </summary>
     /// <remarks>

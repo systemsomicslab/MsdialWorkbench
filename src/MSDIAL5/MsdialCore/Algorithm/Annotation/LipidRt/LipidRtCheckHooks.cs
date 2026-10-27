@@ -81,11 +81,16 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
     public static class LipidRtCheckHooks
     {
         /// <summary>Hook A: the peaks of one analysis file, after annotation and before they are saved.</summary>
-        public static LipidRtUnitRun RunOnPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, ParameterBase parameter) {
+        /// <param name="predictedLibraryAnnotators">The annotators that search a library of predicted spectra
+        /// (<see cref="LipidRtInputBuilder.PredictedLibraryAnnotators"/>); their matches are not evaluated. Null when none is
+        /// known, in which case only the evidence record tells an in-silico match apart. Required rather than defaulted, here
+        /// and in <see cref="RunOnSpots"/>, so that a caller written before the set existed, or a merge that restores one,
+        /// does not compile instead of silently confirming a predicted-library match that records RuleBased.</param>
+        public static LipidRtUnitRun RunOnPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, ParameterBase parameter, ISet<string> predictedLibraryAnnotators) {
             if (peaks is null) throw new ArgumentNullException(nameof(peaks));
             if (parameter is null) throw new ArgumentNullException(nameof(parameter));
             return Run(parameter,
-                () => LipidRtInputBuilder.FromPeaks(peaks, parameter.IonMode),
+                () => LipidRtInputBuilder.FromPeaks(peaks, parameter.IonMode, predictedLibraryAnnotators),
                 (result, hash) => LipidRtTagProtocol.ApplyToPeaks(peaks, result, hash));
         }
 
@@ -93,11 +98,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         /// Hook B: the spots of one alignment, after they are packed and every step that changes their annotations has run,
         /// and before the result is saved or exported.
         /// </summary>
-        public static LipidRtUnitRun RunOnSpots(IReadOnlyList<AlignmentSpotProperty> spots, ParameterBase parameter) {
+        /// <param name="predictedLibraryAnnotators">As for <see cref="RunOnPeaks"/>.</param>
+        public static LipidRtUnitRun RunOnSpots(IReadOnlyList<AlignmentSpotProperty> spots, ParameterBase parameter, ISet<string> predictedLibraryAnnotators) {
             if (spots is null) throw new ArgumentNullException(nameof(spots));
             if (parameter is null) throw new ArgumentNullException(nameof(parameter));
             return Run(parameter,
-                () => LipidRtInputBuilder.FromSpots(spots, parameter.IonMode),
+                () => LipidRtInputBuilder.FromSpots(spots, parameter.IonMode, predictedLibraryAnnotators),
                 (result, hash) => LipidRtTagProtocol.ApplyToSpots(spots, result, hash));
         }
 

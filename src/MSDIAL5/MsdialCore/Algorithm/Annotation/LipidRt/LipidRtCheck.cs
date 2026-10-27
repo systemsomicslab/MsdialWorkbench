@@ -294,6 +294,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
                 };
             }
             foreach (var s in candidates) {
+                if (s.IsInSilico) {
+                    // the unannotated peak it would be without the in-silico library: its annotation is no evidence about others
+                    rows[s.Id] = new PoolRow
+                    {
+                        Id = s.Id, Rt = s.Rt, Mz = s.Mz, Height = NonNegativeHeight(s.Height), Adduct = s.Adduct ?? string.Empty,
+                    };
+                    continue;
+                }
                 var composition = s.Composition;
                 rows[s.Id] = new PoolRow
                 {

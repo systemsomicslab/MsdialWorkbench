@@ -158,8 +158,9 @@ namespace CompMs.MsdialCore.Export.Tests
         private static string[] ExportToLines(
             IMsdialDataStorage<ParameterBase> storage,
             AlignmentResultContainer container,
-            List<MSDec.MSDecResult> msdecs) {
-            var exporter = new MztabFormatExporter(storage.DataBases);
+            List<MSDec.MSDecResult> msdecs,
+            DataBaseStorage databases = null) {
+            var exporter = new MztabFormatExporter(databases ?? storage.DataBases);
             using var stream = new MemoryStream();
             exporter.MztabFormatExporterCore(
                 stream,
@@ -790,6 +791,69 @@ namespace CompMs.MsdialCore.Export.Tests
                 "a spectrum was compared and partly agreed: that is citable evidence");
             Assert.IsFalse(evidence.Any(f => f[2] == unmatched.MasterAlignmentID.ToString()),
                 "a comparison that explained nothing supports no identification");
+        }
+
+        /// <summary>
+        /// An accepted match against a predicted spectrum is cited, under the in-silico library that holds it; a match
+        /// against one that was not accepted is not.
+        /// </summary>
+        /// <remarks>
+        /// The measured spectrum was compared against the predicted one, so an accepted match has the same thing to cite as
+        /// an acquired one. A comparison that was not accepted reads BySpectrumPredictionTool whether it fell short or
+        /// explained nothing, so the acceptance is the line.
+        /// </remarks>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task AnAcceptedInSilicoMatchIsCitedUnderItsLibraryAndARejectedOneIsNot() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            var accepted = container.AlignmentSpotProperties.First(s => s.Name == "Quercetin");
+            foreach (var result in accepted.MatchResults.MatchResults) {
+                result.EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool;
+                result.IsReferenceMatched = true;
+            }
+            var rejected = container.AlignmentSpotProperties.First(s => s.Name == "Isodemethylwedelolactone");
+            foreach (var result in rejected.MatchResults.MatchResults) {
+                result.EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool;
+                result.IsReferenceMatched = false;
+                result.IsAnnotationSuggested = true;
+            }
+            // The fixture's annotator, re-homed in a library declared in silico, as the Console builds one from a
+            // settings row with library_kind=predicted.
+            var annotatorId = accepted.MatchResults.Representative.AnnotatorID;
+            Assert.AreEqual(annotatorId, rejected.MatchResults.Representative.AnnotatorID, "one library holds both");
+            var databases = InSilicoLibrary("GLACIER_test", annotatorId);
+
+            var lines = ExportToLines(storage, container, msdecs, databases);
+            var evidence = lines.Where(line => line.StartsWith("SME\t")).Select(line => line.Split('\t')).ToArray();
+
+            var cited = evidence.Where(f => f[2] == accepted.MasterAlignmentID.ToString()).ToArray();
+            Assert.IsTrue(cited.Length > 0, "an accepted comparison against a predicted spectrum is citable evidence");
+            Assert.IsTrue(cited.All(f => f[3].StartsWith("GLACIER_test:", System.StringComparison.Ordinal)), "database_identifier names the library");
+            Assert.IsTrue(cited.All(f => f[15] == "[,, MS-DIAL algorithm matching score, ]"), "the identification method claims no acquired reference");
+            Assert.IsFalse(cited.Any(f => f.Any(field => field.IndexOf("reference spectrum", System.StringComparison.OrdinalIgnoreCase) >= 0)));
+            Assert.IsTrue(lines.Contains("MTD\tdatabase[1]-prefix\tGLACIER_test"));
+            StringAssert.Contains(lines.Single(line => line.StartsWith("MTD\tdatabase[1]\t")), "in-silico", "the prefix resolves to a library declared in silico");
+            Assert.AreEqual("InSilico", SmallMoleculeRow(lines, accepted).Value("opt_global_evidence_source"));
+
+            Assert.IsFalse(evidence.Any(f => f[2] == rejected.MasterAlignmentID.ToString()),
+                "a predicted spectrum the match was not accepted against supports no identification");
+        }
+
+        private static DataBaseStorage InSilicoLibrary(string databaseId, string annotatorId) {
+            var database = new MoleculeDataBase(new List<MoleculeMsReference>(), databaseId, DataBaseSource.PredictedMsp, SourceType.MspDB, @"C:\libraries\in_silico.msp");
+            var parameter = new ParameterBase { TargetOmics = TargetOmics.Metabolomics, };
+            var searchParameter = new CompMs.Common.Parameter.MsRefSearchParameterBase();
+            var annotator = new MassAnnotator(database, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, annotatorId, 1);
+            var databases = DataBaseStorage.CreateEmpty();
+            databases.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>> {
+                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, parameter.PeakPickBaseParam, searchParameter, ignoreIsotopicPeak: true)),
+            });
+            return databases;
         }
 
         /// <summary>

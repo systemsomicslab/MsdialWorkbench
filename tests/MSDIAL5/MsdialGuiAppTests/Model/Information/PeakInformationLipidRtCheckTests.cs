@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
         [TestMethod]
         public void TheAlignmentPanelShowsTheVerdictOfTheSelectedSpot() {
             var spots = LipidRtTestSpots.Spots();
-            LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics());
+            LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics(), null);
             var tg521 = new AlignmentSpotPropertyModel(LipidRtTestSpots.Find(spots, 52, 1));
             var unannotated = new AlignmentSpotPropertyModel(spots[0]);
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>(tg521);
@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Information.Tests
             var viewModel = new PeakInformationViewModel(model);
 
             StringAssert.StartsWith(model.LipidRtCheck, "Confirmed: TG 52:1 elutes after ");
-            StringAssert.StartsWith(model.LipidRtCheckDetail, "Confirmed: set by the lipid RT check (MsdialLipidRtCheck/1.0).");
+            StringAssert.StartsWith(model.LipidRtCheckDetail, "Confirmed: set by the lipid RT check (MsdialLipidRtCheck/1.1).");
             Assert.IsTrue(viewModel.HasLipidRtCheck.Value);
             Assert.AreEqual(model.LipidRtCheck, viewModel.LipidRtCheck.Value);
 

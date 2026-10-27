@@ -151,6 +151,19 @@ public sealed class LcmsProcess
             // left in place usually means the switch was meant to be on, so it is said out loud.
             Console.WriteLine($"Warning: 'Compounds library file path for RT correction' is set ({param.CompoundListForRtCorrectionPath}) but 'Execute RT correction' is False, so the library is not used.");
         }
+        // The MSP annotator table is read here for the same reason: a value it refuses should stop
+        // the run before the analysis files and the raw data are read. The libraries it names are
+        // read later, with the others. A preview searches no library, so it does not read the table.
+        List<MspAnnotatorSetting> mspAnnotatorSettings = [];
+        if (!automaticRtCorrectionPreviewOnly) {
+            try {
+                mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
+            }
+            catch (FormatException ex) {
+                Console.Error.WriteLine($"MSP annotator settings cannot be used: {ex.Message}");
+                return -1;
+            }
+        }
         var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
         if (!isCorrectlyImported) {
             return -1;
@@ -186,7 +199,6 @@ public sealed class LcmsProcess
             return PreviewAutomaticRtCorrection(previewStorage, outputFolder, automaticRtCorrectionAnchorLibrary, anchorLibraryIdentity);
         }
 
-        var mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
         var textAnnotatorSettings = ConfigParser.ReadTextAnnotatorSettings(methodFile, param);
         var lbmAnnotatorPriority = ConfigParser.ReadLbmAnnotatorPriority(methodFile);
         CommonProcess.ParseLibraries(param, targetMz, mspAnnotatorSettings, textAnnotatorSettings, out IupacDatabase iupacDB,
@@ -207,7 +219,7 @@ public sealed class LcmsProcess
             var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
             foreach (var setting in mspDB.AnnotatorSettings) {
                 var targetOmics = setting.TargetOmics ?? param.TargetOmics;
-                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, setting.AnnotatorId, setting.Priority);
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
                 annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: true)));
             }
             if (annotatorPairs.Count > 0) {
