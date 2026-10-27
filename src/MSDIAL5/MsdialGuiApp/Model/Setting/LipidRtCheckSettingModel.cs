@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,11 @@ namespace CompMs.App.Msdial.Model.Setting
     /// Confirmed are left as they are. Cross-polarity corroboration is not applied here (v1.1).
     /// </para>
     /// <para>
+    /// The project's databases go with it, as they go to hooks A and B, so a match from a library of predicted spectra is
+    /// not evaluated here either. Under lipidomics such a match records RuleBased, as the LBM's does, and only its library
+    /// tells the two apart; without the databases a run from here could confirm what processing left NotEvaluable.
+    /// </para>
+    /// <para>
     /// A run is not undoable, and it clears the result's undo history: an earlier tag edit's undo would put back tags as
     /// they were before the run, such as a Confirmed credited to the check that the new verdicts contradict.
     /// </para>
@@ -36,16 +42,20 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly ParameterBase _parameter;
         private readonly IReadOnlyList<AlignmentSpotPropertyModel> _spots;
+        private readonly DataBaseStorage _dataBases;
         private readonly Func<Task> _saveAsync;
         private readonly UndoManager _undoManager;
 
         /// <param name="parameter">The project's parameter; its lipid RT check settings are read and, on a run, written.</param>
         /// <param name="spots">The spots of the loaded alignment result.</param>
+        /// <param name="dataBases">The project's databases; the annotators of a library of predicted spectra are read from them
+        /// when the check runs.</param>
         /// <param name="saveAsync">Saves the loaded alignment result (spots with their verdicts, and the tag file).</param>
         /// <param name="undoManager">The undo history of the loaded alignment result's edits, cleared by a run.</param>
-        public LipidRtCheckSettingModel(ParameterBase parameter, IReadOnlyList<AlignmentSpotPropertyModel> spots, Func<Task> saveAsync, UndoManager undoManager) {
+        public LipidRtCheckSettingModel(ParameterBase parameter, IReadOnlyList<AlignmentSpotPropertyModel> spots, DataBaseStorage dataBases, Func<Task> saveAsync, UndoManager undoManager) {
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             _spots = spots ?? throw new ArgumentNullException(nameof(spots));
+            _dataBases = dataBases ?? throw new ArgumentNullException(nameof(dataBases));
             _saveAsync = saveAsync ?? throw new ArgumentNullException(nameof(saveAsync));
             _undoManager = undoManager ?? throw new ArgumentNullException(nameof(undoManager));
 
@@ -128,9 +138,10 @@ namespace CompMs.App.Msdial.Model.Setting
             Commit();
             var spots = _spots.Select(spot => spot.innerModel).ToList();
             var parameter = _parameter;
+            var predictedLibraryAnnotators = LipidRtInputBuilder.PredictedLibraryAnnotators(_dataBases);
             // The check reads and writes the spots themselves, not their views, so it may run off the UI thread; the views
             // are told afterwards, on the caller's thread.
-            var run = await Task.Run(() => LipidRtCheckHooks.RunOnSpots(spots, parameter));
+            var run = await Task.Run(() => LipidRtCheckHooks.RunOnSpots(spots, parameter, predictedLibraryAnnotators));
             _undoManager.Clear();
             foreach (var spot in _spots) {
                 spot.RaiseLipidRtCheckChanged();

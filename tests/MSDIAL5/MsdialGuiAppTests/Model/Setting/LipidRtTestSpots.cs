@@ -2,6 +2,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
@@ -49,6 +50,32 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
 
         public static AlignmentSpotProperty Find(IEnumerable<AlignmentSpotProperty> spots, int c, int db) {
             return spots.Single(s => s.Name.StartsWith($"TG {c}:{db}|", StringComparison.Ordinal));
+        }
+
+        /// <summary>
+        /// The project's databases with one empty MSP library declared in silico (<see cref="DataBaseSource.PredictedMsp"/>),
+        /// searched by the annotator <paramref name="annotatorId"/>.
+        /// </summary>
+        public static DataBaseStorage WithPredictedLibrary(string annotatorId) {
+            var databases = DataBaseStorage.CreateEmpty();
+            var database = new MoleculeDataBase(new List<MoleculeMsReference>(), "predicted_db", DataBaseSource.PredictedMsp, SourceType.MspDB, "predicted.msp");
+            var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics, };
+            var annotator = new MassAnnotator(database, parameter.MspSearchParam, TargetOmics.Lipidomics, SourceType.MspDB, annotatorId, 1);
+            databases.AddMoleculeDataBase(database, new List<IAnnotatorParameterPair<MoleculeDataBase>>
+            {
+                new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, parameter.PeakPickBaseParam, parameter.MspSearchParam, ignoreIsotopicPeak: true)),
+            });
+            return databases;
+        }
+
+        /// <summary>
+        /// Makes the spot's match one by <paramref name="annotatorId"/>, recorded as an annotator scoring under lipidomics
+        /// records it: RuleBased, as the LBM's.
+        /// </summary>
+        public static void MatchFromLibrary(AlignmentSpotProperty spot, string annotatorId) {
+            var match = spot.MatchResults.Representative;
+            match.AnnotatorID = annotatorId;
+            match.EvidenceSource = AnnotationEvidenceSource.RuleBased;
         }
 
         private static IEnumerable<(int Id, double Rt, double Mz, string? Name)> Grid() {

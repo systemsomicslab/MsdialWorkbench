@@ -70,22 +70,31 @@ public sealed class FileProcess : IFileProcessor {
             await _peakAnnotationProcess.AnnotateAsync(analysisFile, mSDecResultCollections, chromPeakFeatures.Items, provider, progress, token).ConfigureAwait(false);
 
             // Hook A of the lipid RT check: this file's peaks against each other, on this file's own RT axis, after the
-            // annotation and before the save, so the Console and the GUI both get it. It reads only this file's peaks and
-            // the shared parameter, and writes only this file's peaks, so it is safe inside the per-file parallel loop.
+            // annotation and before the save, so the Console and the GUI both get it.
             token.ThrowIfCancellationRequested();
-            var lipidRt = LipidRtCheckHooks.RunOnPeaks(chromPeakFeatures.Items, _parameter, _predictedLibraryAnnotators);
-            if (lipidRt.Ran || lipidRt.Error != null || lipidRt.Tags.Withdrawn > 0) {
-                Console.WriteLine($"Lipid RT check ({analysisFile.AnalysisFileName}): {lipidRt.Describe()}");
-            }
-            if (lipidRt.Error != null) {
-                _lipidRtFailures.Enqueue((analysisFile.AnalysisFileName, lipidRt));
-            }
+            RunLipidRtCheck(analysisFile, chromPeakFeatures.Items);
         }
 
         // file save
         token.ThrowIfCancellationRequested();
         await SaveToFileAsync(analysisFile, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
         progress?.Report(100);
+    }
+
+    /// <summary>
+    /// Hook A of the lipid RT check on one file's annotated peaks, with the annotators of the project's libraries of
+    /// predicted spectra, whose matches it does not evaluate. It reads only this file's peaks and the shared parameter and
+    /// set, and writes only this file's peaks, so it is safe inside the per-file parallel loop.
+    /// </summary>
+    internal LipidRtUnitRun RunLipidRtCheck(AnalysisFileBean analysisFile, IReadOnlyList<ChromatogramPeakFeature> peaks) {
+        var lipidRt = LipidRtCheckHooks.RunOnPeaks(peaks, _parameter, _predictedLibraryAnnotators);
+        if (lipidRt.Ran || lipidRt.Error != null || lipidRt.Tags.Withdrawn > 0) {
+            Console.WriteLine($"Lipid RT check ({analysisFile.AnalysisFileName}): {lipidRt.Describe()}");
+        }
+        if (lipidRt.Error != null) {
+            _lipidRtFailures.Enqueue((analysisFile.AnalysisFileName, lipidRt));
+        }
+        return lipidRt;
     }
 
     private async Task<(ChromatogramPeakFeatureCollection, MSDecResultCollection[])> LoadPeakAndScans(AnalysisFileBean analysisFile, CancellationToken token) {

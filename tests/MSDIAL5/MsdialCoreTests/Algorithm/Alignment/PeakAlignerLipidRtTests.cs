@@ -61,7 +61,27 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             }
         }
 
-        private static PeakAligner CreateAligner(bool trackIsotopeLabels) {
+        /// <summary>
+        /// The aligner passes the annotators of the project's libraries of predicted spectra to hook B, so a lipid named by
+        /// one is not evaluated even when its record says RuleBased, as a match scored under lipidomics does (Q5).
+        /// </summary>
+        [TestMethod]
+        public void HookBDoesNotEvaluateAMatchFromALibraryOfPredictedSpectra() {
+            var aligner = CreateAligner(trackIsotopeLabels: false, predictedLipid: "TG 52:1|");
+            aligner.PredictedLibraryAnnotators = new HashSet<string> { "glacier_lipid" };
+
+            var container = aligner.Alignment(Files(), new AlignmentFileBean { FileID = 0 }, null);
+
+            var tg521 = Find(container.AlignmentSpotProperties, 52, 1);
+            Assert.IsTrue(aligner.LipidRtRun.Ran, aligner.LipidRtRun.Describe());
+            Assert.AreEqual("glacier_lipid", tg521.MatchResults.Representative.AnnotatorID);
+            Assert.IsFalse(tg521.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
+            Assert.AreEqual(LipidRtOutcome.NotEvaluable, tg521.LipidRtVerdict.Outcome);
+            StringAssert.Contains(tg521.LipidRtVerdict.Evidence, "in silico");
+            Assert.IsTrue(Find(container.AlignmentSpotProperties, 52, 2).TagCollection.IsSelected(PeakSpotTag.CONFIRMED), "the LBM-named neighbour is still confirmed");
+        }
+
+        private static PeakAligner CreateAligner(bool trackIsotopeLabels, string predictedLipid = null) {
             var parameter = new ParameterBase
             {
                 MachineCategory = MachineCategory.LCMS,
@@ -73,7 +93,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 RetentionTimeAlignmentTolerance = 0.01f,
             };
             var iupac = new IupacDatabase();
-            var factory = new GridFactory(parameter, iupac, new MockFiller(parameter), new MockAccessor(new List<List<IMSScanProperty>>()));
+            var factory = new GridFactory(parameter, iupac, new MockFiller(parameter), new MockAccessor(new List<List<IMSScanProperty>>()), predictedLipid);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = new FakeDataProviderFactory();
             return aligner;
@@ -91,7 +111,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             return spots.Single(s => s.Name.StartsWith($"TG {c}:{db}|", StringComparison.Ordinal));
         }
 
-        private static List<AlignmentSpotProperty> Grid() {
+        /// <param name="predictedLipid">The start of the name of the spot whose match is the predicted library's
+        /// annotator's ("glacier_lipid", RuleBased); null for none.</param>
+        private static List<AlignmentSpotProperty> Grid(string predictedLipid) {
             var objects = new List<(double Rt, double Mz, string Name)> { (0.5, 300.1, null), (19.5, 301.1, null) };
             foreach (var c in new[] { 48, 50, 52, 54, 56 }) {
                 foreach (var db in new[] { 0, 1, 2, 3 }) {
@@ -131,7 +153,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                         IsLipidChainsMatch = true,
                         IsReferenceMatched = true,
                         Source = SourceType.MspDB,
-                        AnnotatorID = "lbm",
+                        AnnotatorID = predictedLipid != null && name.StartsWith(predictedLipid, StringComparison.Ordinal) ? "glacier_lipid" : "lbm",
+                        EvidenceSource = AnnotationEvidenceSource.RuleBased,
                         WeightedDotProduct = 0.8f,
                         TotalScore = 0.8f,
                     });
@@ -144,8 +167,14 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         /// <summary>Hands the aligner the grid as its refined spots, whatever the joiner found.</summary>
         private sealed class GridRefiner : IAlignmentRefiner
         {
+            private readonly string _predictedLipid;
+
+            public GridRefiner(string predictedLipid) {
+                _predictedLipid = predictedLipid;
+            }
+
             public (List<AlignmentSpotProperty>, List<int>) Refine(IList<AlignmentSpotProperty> alignments) {
-                var spots = Grid();
+                var spots = Grid(_predictedLipid);
                 return (spots, spots.Select(s => s.MasterAlignmentID).ToList());
             }
         }
@@ -161,13 +190,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         {
             private readonly MockFiller _filler;
             private readonly DataAccessor _accessor;
+            private readonly string _predictedLipid;
 
-            public GridFactory(ParameterBase param, IupacDatabase iupac, MockFiller filler, DataAccessor accessor) : base(param, iupac) {
+            public GridFactory(ParameterBase param, IupacDatabase iupac, MockFiller filler, DataAccessor accessor, string predictedLipid) : base(param, iupac) {
                 _filler = filler;
                 _accessor = accessor;
+                _predictedLipid = predictedLipid;
             }
 
-            public override IAlignmentRefiner CreateAlignmentRefiner() => new GridRefiner();
+            public override IAlignmentRefiner CreateAlignmentRefiner() => new GridRefiner(_predictedLipid);
             public override DataAccessor CreateDataAccessor() => _accessor;
             public override IGapFiller CreateGapFiller() => _filler;
             public override PeakAligner CreatePeakAligner() => new PeakAligner(this, null);

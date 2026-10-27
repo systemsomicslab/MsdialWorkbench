@@ -74,9 +74,37 @@ public sealed class MspAnnotatorSuggestionsTests
         CollectionAssert.AreEqual(before, Directory.GetFiles(input).Select(Path.GetFileName).OrderBy(name => name).ToArray(),
             "nothing is written beside the raw data");
         Assert.AreEqual(0, Directory.GetFileSystemEntries(output).Length, "nothing is written to the output folder");
+        Assert.IsFalse(stdout.Contains("Loading analysis files"), "refused before the analysis files are imported: " + stdout);
     }
 
-    private static (string Input, string Output, string MethodFile) Prepare(ScratchDirectory directory, string suggestions)
+    /// <summary>
+    /// With RT correction on, the analysis files are first read for the correction's anchors, so a value the table refuses
+    /// stops the run before that: the RT correction library is checked, then the table, and only then the raw data.
+    /// </summary>
+    [TestMethod]
+    public void Run_RefusesASuggestionsValueItCannotReadBeforeRtCorrectionReadsTheRawData()
+    {
+        using var directory = new ScratchDirectory();
+        var anchors = directory.File(
+            "anchors.txt",
+            "Name\tRT\tRT tolerance\tm/z\tm/z tolerance\tMinimum height\tInclude\n"
+            + "Anchor A\t3.0\t0.5\t300.1\t0.01\t1000\ttrue\n");
+        var (input, output, methodFile) = Prepare(directory, "no", $"Execute RT correction: True\nCompounds library file path for RT correction: {anchors}\n");
+        var before = Directory.GetFiles(input).Select(Path.GetFileName).OrderBy(name => name).ToArray();
+
+        var (result, stdout, stderr) = RunLcms(input, output, methodFile);
+
+        Assert.AreEqual(-1, result, stdout);
+        StringAssert.Contains(stderr, "suggestions 'no' for MSP annotator 'glacier'");
+        Assert.IsFalse(stderr.Contains("RT correction library could not be used"), "the RT correction library is valid: " + stderr);
+        Assert.IsFalse(stdout.Contains("Loading analysis files"), stdout);
+        Assert.IsFalse(stdout.Contains("RT correction started"), "no raw file is read for the anchors: " + stdout);
+        CollectionAssert.AreEqual(before, Directory.GetFiles(input).Select(Path.GetFileName).OrderBy(name => name).ToArray(),
+            "nothing is written beside the raw data");
+        Assert.AreEqual(0, Directory.GetFileSystemEntries(output).Length, "nothing is written to the output folder");
+    }
+
+    private static (string Input, string Output, string MethodFile) Prepare(ScratchDirectory directory, string suggestions, string extraMethodLines = "")
     {
         var input = directory.Folder("raw");
         var output = directory.Folder("output");
@@ -93,7 +121,8 @@ public sealed class MspAnnotatorSuggestionsTests
             """
             MSP annotator settings file path: msp_annotators.tsv
             Number of threads: 2
-            """);
+
+            """ + extraMethodLines);
         return (input, output, methodFile);
     }
 

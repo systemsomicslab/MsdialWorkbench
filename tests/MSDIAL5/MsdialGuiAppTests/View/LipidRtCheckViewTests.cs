@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.View.Tests
         [TestMethod]
         public void TheSettingWindowLoadsAndBindsToItsViewModel() {
             OnUiThread(() => {
-                var model = new LipidRtCheckSettingModel(LipidRtTestSpots.Lipidomics(), new AlignmentSpotPropertyModel[0], () => Task.CompletedTask, new Model.Service.UndoManager());
+                var model = new LipidRtCheckSettingModel(LipidRtTestSpots.Lipidomics(), new AlignmentSpotPropertyModel[0], DataBaseStorage.CreateEmpty(), () => Task.CompletedTask, new Model.Service.UndoManager());
                 using var viewModel = new LipidRtCheckSettingViewModel(model);
                 var view = new LipidRtCheckSettingView { DataContext = viewModel, };
                 DoEvents();
