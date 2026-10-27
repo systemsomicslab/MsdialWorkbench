@@ -12,6 +12,8 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly ICollectionView _view;
         private readonly List<Predicate<T>> _enabledPredicates;
         private readonly List<Predicate<T>> _disabledPredicates;
+        private readonly object _syncObject = new object();
+        private Predicate<T>[] _activePredicates = Array.Empty<Predicate<T>>();
         private Predicate<object>? _predicate;
         private readonly CompositeDisposable _disposables;
 
@@ -22,42 +24,63 @@ namespace CompMs.App.Msdial.Model.Search
             _disposables = new CompositeDisposable();
         }
 
-        private void ReloadFilter() {
-            _view.Filter -= _predicate;
-            _predicate = obj => obj is T t && _enabledPredicates.All(pred => pred.Invoke(t));
-            _view.Filter += _predicate;
+        // The view's Filter is installed once and never reassigned afterwards.
+        // Assigning ICollectionView.Filter refreshes the view on the spot, and that throws
+        // "'Filter' is not allowed during an AddNew or EditItem transaction" while a DataGrid row is being edited.
+        // Turning a filter on or off only swaps the predicate list; the refresh itself is left to
+        // PeakSpotNavigatorViewModel, which already waits for the edit to end.
+        private void InstallFilter() {
+            if (_predicate is null) {
+                _predicate = obj => obj is T t && _activePredicates.All(pred => pred.Invoke(t));
+                _view.Filter += _predicate;
+            }
+        }
+
+        private void PublishPredicates() {
+            _activePredicates = _enabledPredicates.ToArray();
         }
 
         public void Attatch(Predicate<T> predicate) {
-            _enabledPredicates.Add(predicate);
-            ReloadFilter();
+            lock (_syncObject) {
+                _enabledPredicates.Add(predicate);
+                PublishPredicates();
+            }
+            InstallFilter();
         }
 
         public void Attatch(Predicate<T> predicate, IObservable<bool> enabled, bool initial) {
-            if (initial) {
-                _enabledPredicates.Add(predicate);
-                ReloadFilter();
-            }
-            else {
-                _disabledPredicates.Add(predicate);
-            }
-            _disposables.Add(enabled.Subscribe(e => {
-                if (e) {
-                    _disabledPredicates.Remove(predicate);
+            lock (_syncObject) {
+                if (initial) {
                     _enabledPredicates.Add(predicate);
+                    PublishPredicates();
                 }
                 else {
-                    _enabledPredicates.Remove(predicate);
                     _disabledPredicates.Add(predicate);
                 }
-                ReloadFilter();
+            }
+            InstallFilter();
+            _disposables.Add(enabled.Subscribe(e => {
+                lock (_syncObject) {
+                    if (e) {
+                        _disabledPredicates.Remove(predicate);
+                        _enabledPredicates.Add(predicate);
+                    }
+                    else {
+                        _enabledPredicates.Remove(predicate);
+                        _disabledPredicates.Add(predicate);
+                    }
+                    PublishPredicates();
+                }
             }));
         }
 
         public void Detatch() {
             _view.Filter -= _predicate;
-            _enabledPredicates.Clear();
-            _disabledPredicates.Clear();
+            lock (_syncObject) {
+                _enabledPredicates.Clear();
+                _disabledPredicates.Clear();
+                PublishPredicates();
+            }
             _predicate = null;
             _disposables.Dispose();
             _disposables.Clear();
