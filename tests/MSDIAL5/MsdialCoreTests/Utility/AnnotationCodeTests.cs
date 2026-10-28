@@ -36,8 +36,8 @@ public class AnnotationCodeTests
     }
 
     /// <summary>
-    /// No code was decided for an in-silico match also supported by RT; 330 would claim an acquired reference spectrum, so
-    /// it reports 450. An acquired match with RT is 330 as before.
+    /// An in-silico match also supported by RT or CCS is 450 (author, 2026-10-28): 330/230/130 would claim an acquired
+    /// reference spectrum, and 350/250/150 are not defined now. An acquired match with RT is 330 as before.
     /// </summary>
     [TestMethod]
     public void AnInSilicoMatchWithRetentionTimeStays450() {
@@ -55,18 +55,65 @@ public class AnnotationCodeTests
         Assert.AreEqual(450, DataAccess.GetAnnotationCode(mobility, MachineCategory.LCIMMS));
     }
 
-    [TestMethod]
-    public void ALipidLevelResolvedByTheRulesKeepsItsCode() {
-        var predicted = Match(AnnotationEvidenceSource.BySpectrumPredictionTool);
-        predicted.IsLipidClassMatch = true;
-        Assert.AreEqual(420, DataAccess.GetAnnotationCode(predicted, MachineCategory.LCMS));
+    /// <summary>
+    /// An in-silico hit on a lipid is 450 whatever lipid level is flagged, so it never falls into the 400-420 band of
+    /// rule-based lipid annotation (author, 2026-10-28).
+    /// </summary>
+    [DataTestMethod]
+    [DataRow(MachineCategory.LCMS)]
+    [DataRow(MachineCategory.LCIMMS)]
+    public void AnInSilicoLipidHitIs450WhateverItsLipidLevel(MachineCategory category) {
+        var classLevel = Match(AnnotationEvidenceSource.BySpectrumPredictionTool);
+        classLevel.IsLipidClassMatch = true;
+        Assert.AreEqual(450, DataAccess.GetAnnotationCode(classLevel, category));
+
+        var chainLevel = Match(AnnotationEvidenceSource.BySpectrumPredictionTool);
+        chainLevel.IsLipidChainsMatch = true;
+        chainLevel.IsLipidClassMatch = true;
+        Assert.AreEqual(450, DataAccess.GetAnnotationCode(chainLevel, category));
+
+        var positionLevel = Match(AnnotationEvidenceSource.BySpectrumPredictionTool);
+        positionLevel.IsLipidPositionMatch = true;
+        positionLevel.IsRtMatch = true;
+        Assert.AreEqual(450, DataAccess.GetAnnotationCode(positionLevel, category));
     }
 
+    /// <summary>Rule-based lipid annotation (the LBM, recorded RuleBased) keeps the 400-420 band and its RT promotion.</summary>
     [TestMethod]
-    public void APeptideKeeps430() {
+    public void ARuleBasedLipidKeepsItsCodes() {
+        var position = Match(AnnotationEvidenceSource.RuleBased);
+        position.IsLipidPositionMatch = true;
+        Assert.AreEqual(400, DataAccess.GetAnnotationCode(position, MachineCategory.LCMS));
+
+        var chains = Match(AnnotationEvidenceSource.RuleBased);
+        chains.IsLipidChainsMatch = true;
+        Assert.AreEqual(410, DataAccess.GetAnnotationCode(chains, MachineCategory.LCMS));
+
+        var lipidClass = Match(AnnotationEvidenceSource.RuleBased);
+        lipidClass.IsLipidClassMatch = true;
+        Assert.AreEqual(420, DataAccess.GetAnnotationCode(lipidClass, MachineCategory.LCMS));
+
+        var noLevel = Match(AnnotationEvidenceSource.RuleBased);
+        Assert.AreEqual(430, DataAccess.GetAnnotationCode(noLevel, MachineCategory.LCMS));
+
+        lipidClass.IsRtMatch = true;
+        Assert.AreEqual(320, DataAccess.GetAnnotationCode(lipidClass, MachineCategory.LCMS));
+    }
+
+    /// <summary>
+    /// Peptides are out of scope: LcmsFastaAnnotator records the b/y ladder as BySpectrumPredictionTool, and a FASTA result
+    /// still takes the acquired-spectrum codes, with their RT and CCS promotions.
+    /// </summary>
+    [DataTestMethod]
+    [DataRow(MachineCategory.LCMS)]
+    [DataRow(MachineCategory.LCIMMS)]
+    public void APeptideIsNotReportedAs450(MachineCategory category) {
         var peptide = Match(AnnotationEvidenceSource.BySpectrumPredictionTool);
         peptide.Source = SourceType.FastaDB;
-        Assert.AreEqual(430, DataAccess.GetAnnotationCode(peptide, MachineCategory.LCMS));
+        Assert.AreEqual(430, DataAccess.GetAnnotationCode(peptide, category));
+
+        peptide.IsRtMatch = true;
+        Assert.AreEqual(330, DataAccess.GetAnnotationCode(peptide, category));
     }
 
     [TestMethod]
