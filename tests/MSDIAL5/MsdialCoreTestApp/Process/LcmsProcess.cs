@@ -733,10 +733,14 @@ public sealed class LcmsProcess
                     ("MZ", CreateQuantAccessor("MZ")),
                     ("SN", CreateQuantAccessor("SN")),
                     ("MSMS", CreateQuantAccessor("MSMS")),
-                    ("Reference matched", CreateQuantAccessor("Reference matched")));
+                    ("Reference matched", CreateQuantAccessor("Reference matched")),
+                    (CompMs.MsdialCore.Utility.DataAccess.QaInSilicoMatchedColumn, CreateQuantAccessor(CompMs.MsdialCore.Utility.DataAccess.QaInSilicoMatchedColumn)));
                 // Written beside the height matrix rather than instead of it: it is the
                 // same peak heights in long form, with the per-file columns the QA step
                 // reads. It follows the height request because no parameter names it.
+                // "Reference matched" leaves out a peak whose accepted annotation is an
+                // in-silico match, which "In-silico matched" marks instead (the author's
+                // decision of 2026-10-28: an in-silico match is never an identification).
                 Console.WriteLine($"LC-MS quality-assurance matrix: {qaOutputFile}");
             }
 
