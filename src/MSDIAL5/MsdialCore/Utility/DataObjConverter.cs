@@ -223,7 +223,13 @@ namespace CompMs.MsdialCore.Utility
         ///    not a candidate and loses this key to any real one, for the reason
         ///    <see cref="AnnotationEvidence.RankOf"/> gives; without that it would take the neutral
         ///    evidence rank and could outrank a real candidate whose spectrum was compared and failed.
-        ///    An unknown a person set is a real result: it is manually modified and is compared as such.
+        ///
+        ///    An unknown a person set ("set unknown", Manual|Unknown) is treated the same way, by the
+        ///    author's decision of 2026-10-28: it names no compound, so it must not carry its file
+        ///    into the spot over another file's real annotation, although it is a manual
+        ///    modification. A manual modification that names a compound still ranks first. Between
+        ///    a manual unknown and a peak without candidates nothing in this key separates them, so
+        ///    peak height decides, and then file order.
         ///
         /// 3. Peak height, higher first. Unchanged.
         ///
@@ -248,7 +254,7 @@ namespace CompMs.MsdialCore.Utility
 
         private static Tuple<bool, bool, bool, int, int, float> AnnotationPrecedence(AlignmentChromPeakFeature peak) {
             var representative = peak.MatchResults?.Representative;
-            if (representative is null || (representative.IsUnknown && !representative.IsManuallyModified)) {
+            if (representative is null || representative.IsUnknown) {
                 return NoCandidate;
             }
             return MsScanMatchResultContainer.ResultOrder(representative);

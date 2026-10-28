@@ -52,6 +52,18 @@ public sealed class LcmsAlignmentLightRunnerRepresentativeTests
         Assert.AreSame(taller, StreamedRepresentative(shorter, taller));
     }
 
+    /// <summary>A manual "set unknown" does not carry its file into the spot (author, 2026-10-28).</summary>
+    [TestMethod]
+    public void AManualUnknownDoesNotWinTheSpot() {
+        var setUnknown = Peak(0, 9000, new MsScanMatchResult {
+            Source = SourceType.Manual | SourceType.Unknown, EvidenceSource = AnnotationEvidenceSource.Manual,
+        });
+        var accepted = Peak(1, 1000, Result("acquired", priority: 3, 0.4f, AnnotationEvidenceSource.ReferenceSpectrum));
+
+        Assert.AreSame(accepted, StreamedRepresentative(setUnknown, accepted));
+        Assert.AreSame(DataObjConverter.GetRepresentativePeak([setUnknown, accepted]), StreamedRepresentative(setUnknown, accepted));
+    }
+
     private static AlignmentChromPeakFeature StreamedRepresentative(params AlignmentChromPeakFeature[] peaks) {
         var type = typeof(LcmsAlignmentLightRunner).GetNestedType("LightSpotAccumulator", BindingFlags.NonPublic)
             ?? throw new InvalidOperationException("LightSpotAccumulator not found");

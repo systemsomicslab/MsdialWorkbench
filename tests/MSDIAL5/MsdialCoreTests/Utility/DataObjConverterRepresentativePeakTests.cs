@@ -108,22 +108,53 @@ public class DataObjConverterRepresentativePeakTests
     }
 
     /// <summary>
-    /// An unknown a person set is a manual modification and wins as one, so the spot takes that file and is unknown. Pinned
-    /// so that a change to it is a decision; it is listed as a question for the author.
+    /// An unknown a person set names no compound, so it does not carry its file into the spot over another file's accepted
+    /// match (author, 2026-10-28), even when it is the taller peak and comes first.
     /// </summary>
     [TestMethod]
-    public void AManualUnknownWinsAsAManualModification() {
-        var automatic = Peak(0, height: 9000, Acquired(AcquiredHigh, 0.99f));
-        var setUnknown = Peak(1, height: 1000, new MsScanMatchResult {
-            Source = SourceType.Manual | SourceType.Unknown, EvidenceSource = AnnotationEvidenceSource.Manual,
-        });
+    public void AManualUnknownLosesToAnotherFilesAcceptedMatch() {
+        var setUnknown = Peak(0, height: 9000, ManualUnknown());
+        var accepted = Peak(1, height: 1000, Acquired(AcquiredLow, 0.40f));
 
-        Assert.AreSame(setUnknown, DataObjConverter.GetRepresentativePeak([automatic, setUnknown]));
+        Assert.AreSame(accepted, DataObjConverter.GetRepresentativePeak([setUnknown, accepted]));
+        Assert.AreSame(accepted, DataObjConverter.GetRepresentativePeak([accepted, setUnknown]));
     }
 
     /// <summary>
-    /// A product-ion spectrum is still the first key, above a manual modification, as it was above the score before. Pinned
-    /// for the same reason as the manual unknown.
+    /// The manual unknown also loses to a candidate that is only suggested: it is ranked as a peak without candidates.
+    /// </summary>
+    [TestMethod]
+    public void AManualUnknownLosesToASuggestion() {
+        var setUnknown = Peak(0, height: 9000, ManualUnknown());
+        var suggested = Peak(1, height: 1000, Suggested(Acquired(AcquiredLow, 0.20f)));
+
+        Assert.AreSame(suggested, DataObjConverter.GetRepresentativePeak([setUnknown, suggested]));
+    }
+
+    /// <summary>
+    /// Against peaks that have no candidates the manual unknown is their equal, so peak height decides and a complete tie
+    /// keeps the first peak: deterministic, and the same answer as if nobody had set anything.
+    /// </summary>
+    [TestMethod]
+    public void AManualUnknownAmongPeaksWithoutCandidatesIsDecidedByHeightThenOrder() {
+        var setUnknownShort = Peak(0, height: 1000, ManualUnknown());
+        var noneTall = Peak(1, height: 2000);
+        Assert.AreSame(noneTall, DataObjConverter.GetRepresentativePeak([setUnknownShort, noneTall]));
+
+        var setUnknownTall = Peak(0, height: 2000, ManualUnknown());
+        var noneShort = Peak(1, height: 1000);
+        Assert.AreSame(setUnknownTall, DataObjConverter.GetRepresentativePeak([setUnknownTall, noneShort]));
+
+        var setUnknownEqual = Peak(0, height: 1000, ManualUnknown());
+        var noneEqual = Peak(1, height: 1000);
+        Assert.AreSame(setUnknownEqual, DataObjConverter.GetRepresentativePeak([setUnknownEqual, noneEqual]));
+        Assert.AreSame(noneEqual, DataObjConverter.GetRepresentativePeak([noneEqual, setUnknownEqual]));
+        Assert.AreEqual(0, DataObjConverter.CompareRepresentativePrecedence(setUnknownEqual, noneEqual));
+    }
+
+    /// <summary>
+    /// A product-ion spectrum is still the first key, above a manual modification, as it was above the score before
+    /// (confirmed by the author, 2026-10-28).
     /// </summary>
     [TestMethod]
     public void AManualModificationOnAPeakWithoutMsmsDoesNotOutrankAPeakWithMsms() {
@@ -201,6 +232,11 @@ public class DataObjConverterRepresentativePeakTests
         Name = $"in silico {priority}", Source = SourceType.MspDB, AnnotatorID = $"in silico {priority}", Priority = priority,
         TotalScore = score, IsReferenceMatched = true, IsSpectrumMatch = true, IsPrecursorMzMatch = true,
         EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool,
+    };
+
+    /// <summary>What "set unknown" in the GUI stores (SetUnknownDoCommand).</summary>
+    private static MsScanMatchResult ManualUnknown() => new() {
+        Source = SourceType.Manual | SourceType.Unknown, EvidenceSource = AnnotationEvidenceSource.Manual,
     };
 
     private static MsScanMatchResult Suggested(MsScanMatchResult result) {
