@@ -1316,6 +1316,43 @@ return results;
             property.InChIKey = string.Empty;
         }
 
+        /// <summary>
+        /// The "Annotation tag (VS1.0)" of a match result: MS-DIAL's compound identification
+        /// confidence code, written as the reliability of mzTab-M (MS:1003032) and in every text export.
+        /// </summary>
+        /// <remarks>
+        /// The first digit is what supports the match besides m/z, the second what the spectrum
+        /// established:
+        ///
+        /// <code>
+        /// 1x0  RT + CCS + MS/MS (ion mobility)      500  RT + CCS + m/z (ion mobility)
+        /// 2x0  CCS + MS/MS (ion mobility)           510  CCS + m/z (ion mobility)
+        /// 3x0  RT (or RI) + MS/MS                   520  RT + m/z
+        /// 340  RT/RI + EI-MS (GC-MS)                530  m/z
+        /// 4x0  MS/MS                                999  unknown
+        /// 440  EI-MS (GC-MS)
+        /// 450  MS/MS matched to an in-silico (predicted) reference spectrum
+        ///
+        /// x = 0 lipid acyl position resolved, 1 acyl chains resolved, 2 lipid class resolved,
+        ///     3 MS/MS matched to an acquired reference spectrum
+        /// </code>
+        ///
+        /// 450 is the author's decision of 2026-10-28 (D-C). A match against a spectrum that was
+        /// predicted from a structure is still an MS/MS match, so it stays in the 4xx series, but it
+        /// is not the same claim as a match against an acquired reference spectrum, which 430 makes;
+        /// 440 was already taken by EI-MS. The test is the evidence record the annotator wrote --
+        /// <see cref="AnnotationEvidenceSource.BySpectrumPredictionTool"/>, which ForDatabaseMatch
+        /// records for a library declared <see cref="DataBaseSource.PredictedMsp"/> -- applied where
+        /// the spectrum match would otherwise give 430, so under exactly the conditions 430 is given.
+        ///
+        /// Four boundaries of the decision are drawn here provisionally, and each is a question for
+        /// the author rather than a settled answer. A predicted match that the lipid rules resolved
+        /// to a class, chain or position keeps 400-420. A predicted match that is also supported by
+        /// RT or CCS reports 450, not a 1xx-3xx code, because no code for that combination was
+        /// decided and 330 would claim an acquired reference. A peptide keeps 430, although
+        /// LcmsFastaAnnotator records its b/y ladder as predicted too. GC-MS is not touched, because
+        /// an EI spectrum is not an MS/MS one.
+        /// </remarks>
         public static int GetAnnotationCode(MsScanMatchResult result, MachineCategory category) {
             var code = 999; // unknown
             if (result == null) return code;
@@ -1325,7 +1362,7 @@ return results;
                 return code;
             }
             else if (category == MachineCategory.LCIMMS || category == MachineCategory.IMMS) {
-                if (result.IsPrecursorMzMatch) code = 530; // 430: m/z+MS/MS matched
+                if (result.IsPrecursorMzMatch) code = 530; // 530: m/z matched
                 if (result.IsSpectrumMatch) code = 430; // 430: m/z+MS/MS matched
                 if (code == 430) {
                     if (result.IsLipidPositionMatch) {
@@ -1337,6 +1374,9 @@ return results;
                     else if (result.IsLipidClassMatch) {
                         code = 420; //420: MS/MS matched, lipid class resolved
                     }
+                }
+                if (code == 430 && IsInSilicoMsmsMatch(result)) {
+                    return 450; // 450: MS/MS matched to an in-silico (predicted) reference spectrum
                 }
 
                 if (result.IsRtMatch && result.IsCcsMatch) {
@@ -1395,6 +1435,9 @@ return results;
                         code = 420; //420: MS/MS matched, lipid class resolved
                     }
                 }
+                if (code == 430 && IsInSilicoMsmsMatch(result)) {
+                    return 450; // 450: MS/MS matched to an in-silico (predicted) reference spectrum
+                }
 
                 if (result.IsRtMatch || result.IsRiMatch) {
                     if (result.IsSpectrumMatch) {
@@ -1416,6 +1459,15 @@ return results;
 
         public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {
             return GetAnnotationCode(result, param.MachineCategory);
+        }
+
+        /// <summary>
+        /// Whether a spectrum match was made against a reference spectrum predicted in silico from a
+        /// structure, as opposed to an acquired one. Peptides are excluded; see GetAnnotationCode.
+        /// </summary>
+        private static bool IsInSilicoMsmsMatch(MsScanMatchResult result) {
+            return result.EvidenceSource == AnnotationEvidenceSource.BySpectrumPredictionTool
+                && (result.Source & SourceType.FastaDB) == 0;
         }
 
         // Alignment result
