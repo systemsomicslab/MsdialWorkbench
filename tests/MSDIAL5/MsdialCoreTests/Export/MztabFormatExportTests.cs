@@ -844,6 +844,82 @@ namespace CompMs.MsdialCore.Export.Tests
                 "a predicted spectrum the match was not accepted against supports no identification");
         }
 
+        /// <summary>
+        /// Each candidate against a predicted spectrum is held to the acceptance its spot is held to: with suggestions allowed
+        /// for an in-silico library, the candidates that were only suggested are not cited beside the accepted ones. Weak
+        /// candidates against acquired spectra are still cited, as before.
+        /// </summary>
+        /// <remarks>
+        /// The leak this pins: the spot gate read only the representative and then every candidate became a row, so a real
+        /// run wrote 2,403 evidence rows against 146 accepted in-silico matches.
+        /// </remarks>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task OnlyAcceptedInSilicoCandidatesAreCitedWhateverTheSuggestions() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+
+            var predicted = container.AlignmentSpotProperties.First(s => s.Name == "Quercetin");
+            var representative = predicted.MatchResults.Representative;
+            representative.EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool;
+            representative.IsReferenceMatched = true;
+            representative.IsSpectrumMatch = true;
+            var acceptedAlternative = Alternative(representative, "Morin", 1000, 0.1f);
+            predicted.MatchResults.AddResult(acceptedAlternative);
+            for (var i = 0; i < 5; i++) {
+                var suggestion = Alternative(representative, $"Predicted suggestion {i}", 2000 + i, 0.2f + 0.01f * i);
+                suggestion.IsReferenceMatched = false;
+                suggestion.IsSpectrumMatch = false;
+                suggestion.IsAnnotationSuggested = true;
+                predicted.MatchResults.AddResult(suggestion);
+            }
+            Assert.AreSame(representative, predicted.MatchResults.Representative, "the accepted match still represents the spot");
+
+            var acquired = container.AlignmentSpotProperties.First(s => s.Name == "Isodemethylwedelolactone");
+            var acquiredRepresentative = acquired.MatchResults.Representative;
+            acquiredRepresentative.EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum;
+            acquiredRepresentative.IsReferenceMatched = true;
+            var weak = Alternative(acquiredRepresentative, "Wedelolactone", 3000, 0.1f);
+            weak.EvidenceSource = AnnotationEvidenceSource.WeakSpectrumMatch;
+            weak.IsReferenceMatched = false;
+            weak.IsSpectrumMatch = false;
+            weak.IsAnnotationSuggested = true;
+            acquired.MatchResults.AddResult(weak);
+
+            var lines = ExportToLines(storage, container, msdecs);
+            var rows = lines.Select(line => line.Split('\t')).ToArray();
+
+            var cited = rows.Where(f => f[0] == "SME" && f[2] == predicted.MasterAlignmentID.ToString()).ToArray();
+            CollectionAssert.AreEqual(new[] { "Quercetin", "Morin" }, cited.Select(f => f[7]).ToArray(),
+                "the accepted in-silico matches are cited and the suggestions are not");
+            CollectionAssert.AreEqual(new[] { "1", "2" }, cited.Select(f => f[f.Length - 1]).ToArray());
+            var feature = rows.Single(f => f[0] == "SMF" && f[1] == predicted.MasterAlignmentID.ToString());
+            Assert.AreEqual(string.Join("|", cited.Select(f => f[1])), feature[2], "the feature references only the rows written");
+            Assert.AreEqual("1", feature[3]);
+            Assert.AreEqual("450", SmallMoleculeRow(lines, predicted).Value("reliability"),
+                "an accepted in-silico match is reported as code 450, not as the acquired-spectrum code 430 (D-C)");
+
+            var acquiredCited = rows.Where(f => f[0] == "SME" && f[2] == acquired.MasterAlignmentID.ToString()).ToArray();
+            CollectionAssert.AreEqual(new[] { "Isodemethylwedelolactone", "Wedelolactone" }, acquiredCited.Select(f => f[7]).ToArray(),
+                "a weak match against an acquired spectrum is still cited");
+
+            var written = rows.Where(f => f[0] == "SME").Select(f => f[1]).ToArray();
+            var referenced = rows.Where(f => f[0] == "SMF" && f[2] != "null").SelectMany(f => f[2].Split('|')).ToArray();
+            CollectionAssert.AreEquivalent(written, referenced);
+        }
+
+        private static MsScanMatchResult Alternative(MsScanMatchResult representative, string name, int libraryOffset, float scoreBelow) {
+            var alternative = representative.Clone();
+            alternative.Name = name;
+            alternative.LibraryID = representative.LibraryID + libraryOffset;
+            alternative.TotalScore = representative.TotalScore - scoreBelow;
+            return alternative;
+        }
+
         private static DataBaseStorage InSilicoLibrary(string databaseId, string annotatorId) {
             var database = new MoleculeDataBase(new List<MoleculeMsReference>(), databaseId, DataBaseSource.PredictedMsp, SourceType.MspDB, @"C:\libraries\in_silico.msp");
             var parameter = new ParameterBase { TargetOmics = TargetOmics.Metabolomics, };

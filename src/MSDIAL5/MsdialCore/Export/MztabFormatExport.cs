@@ -338,12 +338,21 @@ namespace CompMs.MsdialCore.Export
                 case AnnotationEvidenceSource.WeakSpectrumMatch:
                     return true;
                 case AnnotationEvidenceSource.BySpectrumPredictionTool:
-                    return result.IsReferenceMatched;
+                    return !IsUnacceptedPrediction(result);
                 case AnnotationEvidenceSource.Unspecified:
                     return !AnnotationName.IsPrecursorOnlySuggestion(spot.Name);
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// A match against a spectrum predicted from a structure that was not accepted: nothing to
+        /// cite, for the spot (<see cref="HasCitableSpectralEvidence"/>) and for each of its
+        /// candidates (<see cref="Assign"/>).
+        /// </summary>
+        private static bool IsUnacceptedPrediction(MsScanMatchResult result) {
+            return result.EvidenceSource == AnnotationEvidenceSource.BySpectrumPredictionTool && !result.IsReferenceMatched;
         }
 
         /// <summary>
@@ -400,13 +409,34 @@ namespace CompMs.MsdialCore.Export
             return groups;
         }
 
+        /// <remarks>
+        /// The spot gate, <see cref="HasCitableSpectralEvidence"/>, reads only the representative, and
+        /// every candidate of a spot that passes it used to become a row. With suggestions allowed for
+        /// an in-silico library, a spot whose representative was an accepted match therefore cited
+        /// every predicted spectrum its precursor window held as well -- on real data 2,403 rows
+        /// against 146 accepted matches. A predicted spectrum is citable only when the match against it
+        /// was accepted (see the gate for why acceptance is the only line the record can draw), and
+        /// that holds for each candidate, not only for the one that represents the spot. So each
+        /// predicted candidate is held to it here, whatever the suggestions setting.
+        ///
+        /// Only that arm of the gate is applied per candidate. A candidate against an acquired
+        /// spectrum, or one from a project saved before the evidence record existed, is written as
+        /// before, weak matches included: the gate calls a weak match citable, and the rank and
+        /// scores of the row say how far it got. A peptide candidate, whose b/y ladder is recorded as
+        /// predicted, is held to the same acceptance, as the gate already held a peptide
+        /// representative.
+        ///
+        /// The representative of a spot that passed the gate is never removed by this, so the rank 1
+        /// row is the one it always was; a drift spot, which the gate does not read, can lose all its
+        /// rows and then references none, as a drift spot without candidates always has.
+        /// </remarks>
         private static int Assign(Dictionary<AlignmentSpotProperty, SmeGroup> groups, AlignmentSpotProperty spot, int nextSmeId) {
-            var candidates = AnnotationCandidates.Of(spot.MatchResults);
-            if (candidates.Count == 0) {
+            var candidates = AnnotationCandidates.Of(spot.MatchResults).Where(candidate => !IsUnacceptedPrediction(candidate)).ToArray();
+            if (candidates.Length == 0) {
                 return nextSmeId;
             }
             groups[spot] = new SmeGroup(candidates, nextSmeId);
-            return nextSmeId + candidates.Count;
+            return nextSmeId + candidates.Length;
         }
 
         private static SmeGroup? GroupOf(Dictionary<AlignmentSpotProperty, SmeGroup> groups, AlignmentSpotProperty spot)
