@@ -1475,10 +1475,50 @@ return results;
         /// The peptide carve-out is explicit: a FASTA result is excluded although LcmsFastaAnnotator
         /// records its b/y ladder as BySpectrumPredictionTool, because peptides are outside the
         /// author's decision on 450 and keep 430.
+        ///
+        /// Public because the QA matrix splits its "Reference matched" cells by the same test (see
+        /// <see cref="IsQaReferenceMatched"/>), so that a cell it calls "In-silico matched" is one
+        /// whose annotation the exports code 450. A null result is no match.
         /// </remarks>
-        private static bool IsInSilicoMsmsMatch(MsScanMatchResult result) {
-            return result.EvidenceSource == AnnotationEvidenceSource.BySpectrumPredictionTool
+        public static bool IsInSilicoMsmsMatch(MsScanMatchResult? result) {
+            return result != null
+                && result.EvidenceSource == AnnotationEvidenceSource.BySpectrumPredictionTool
                 && (result.Source & SourceType.FastaDB) == 0;
+        }
+
+        /// <summary>The QA matrix column of the cells whose accepted annotation is an in-silico match.</summary>
+        public const string QaInSilicoMatchedColumn = "In-silico matched";
+
+        /// <summary>
+        /// Whether the QA matrix (*.qa.tsv) marks one file's peak of an alignment spot "Reference
+        /// matched": its name reads as an accepted annotation, and that annotation -- the peak's own
+        /// representative match result -- is not an in-silico match.
+        /// </summary>
+        /// <remarks>
+        /// The author's decision of 2026-10-28: an MS/MS match against a spectrum predicted in silico
+        /// is never an identification, so the QA's reference-match count must not count it. Such a
+        /// cell is "In-silico matched" instead (<see cref="IsQaInSilicoMatched"/>); the two are
+        /// disjoint, and together they are the cells a Console before this change marked "Reference
+        /// matched". Acquired-spectrum and LBM rule-based matches are unchanged.
+        ///
+        /// The test is the cell's own peak, as the column always was: the matrix is per injection, and
+        /// a spot's representative is the annotation of one of its peaks. Among the peaks with a
+        /// product-ion spectrum, <see cref="DataObjConverter.CompareRepresentativePrecedence"/> ranks an
+        /// accepted acquired or rule-based match above an in-silico one, so a spot an in-silico match
+        /// represents has no such peak; a cell of it that stays "Reference matched" is one whose own
+        /// peak, with no product-ion spectrum, carries another kind of accepted match.
+        /// </remarks>
+        public static bool IsQaReferenceMatched(AlignmentChromPeakFeature peak) {
+            return IsReferenceMatchedName(peak.Name) && !IsInSilicoMsmsMatch(peak.MatchResults?.Representative);
+        }
+
+        /// <summary>
+        /// Whether the QA matrix marks one file's peak of an alignment spot "In-silico matched": its
+        /// name reads as an accepted annotation, and that annotation is an in-silico match
+        /// (<see cref="IsInSilicoMsmsMatch"/>). Never true where <see cref="IsQaReferenceMatched"/> is.
+        /// </summary>
+        public static bool IsQaInSilicoMatched(AlignmentChromPeakFeature peak) {
+            return IsReferenceMatchedName(peak.Name) && IsInSilicoMsmsMatch(peak.MatchResults?.Representative);
         }
 
         // Alignment result
@@ -1520,7 +1560,8 @@ return results;
                 case "MZ": return Math.Round(spotProperty.Mass, 5).ToString();
                 case "SN": return Math.Round(spotProperty.PeakShape.SignalToNoise, 1).ToString();
                 case "MSMS": return spotProperty.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
-                case "Reference matched": return IsReferenceMatchedName(spotProperty.Name) ? "TRUE" : "FALSE";
+                case "Reference matched": return IsQaReferenceMatched(spotProperty) ? "TRUE" : "FALSE";
+                case QaInSilicoMatchedColumn: return IsQaInSilicoMatched(spotProperty) ? "TRUE" : "FALSE";
                 default: return string.Empty;
             }
         }
@@ -1539,7 +1580,8 @@ return results;
                 case "MZ": return spotProperty.Mass;
                 case "SN": return spotProperty.PeakShape.SignalToNoise;
                 case "MSMS": return spotProperty.MS2RawSpectrumID;
-                case "Reference matched": return IsReferenceMatchedName(spotProperty.Name) ? 1d : 0d;
+                case "Reference matched": return IsQaReferenceMatched(spotProperty) ? 1d : 0d;
+                case QaInSilicoMatchedColumn: return IsQaInSilicoMatched(spotProperty) ? 1d : 0d;
                 default: return -1;
             }
         }
