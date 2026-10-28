@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -180,19 +181,83 @@ namespace CompMs.MsdialCore.Utility
             }
         }
 
+        /// <summary>
+        /// The peak whose file represents an alignment spot: the spot takes its name, its annotation
+        /// candidates, its MS/MS spectrum and its isotope pattern from this peak.
+        /// </summary>
+        /// <remarks>
+        /// The order, best first, is <see cref="CompareRepresentativePrecedence"/>: a peak with a
+        /// product-ion spectrum, then the precedence of each peak's own representative annotation,
+        /// then peak height. The first peak in the list wins a complete tie, as before.
+        /// </remarks>
         public static AlignmentChromPeakFeature? GetRepresentativePeak(IReadOnlyList<AlignmentChromPeakFeature> alignment) {
             if (alignment.Count == 0) return null;
-            var alignmentWithMSMS = alignment.Where(align => !align.MS2RawSpectrumID2CE.IsEmptyOrNull()).ToArray(); // ms2 contained
-            if (alignmentWithMSMS.Length != 0) {
-                return alignmentWithMSMS.Argmax(peak =>
-                    // highest total score then highest intensity
-                    (peak.MatchResults.MatchResults.Max(val => val.TotalScore), peak.PeakHeightTop)
-                );
+            return alignment.Argmax(RepresentativePrecedence);
+        }
+
+        /// <summary>
+        /// Which of two aligned peaks has the stronger claim to represent their spot: positive when
+        /// <paramref name="x"/> does, negative when <paramref name="y"/> does, 0 for a complete tie.
+        /// </summary>
+        /// <remarks>
+        /// Three keys, in this order.
+        ///
+        /// 1. Whether the peak carries a product-ion spectrum. Unchanged: a peak with one has always
+        ///    been preferred over every peak without one, whatever their scores. It stays above the
+        ///    manual modification of the next key, as it was above the score: the spot's MS/MS
+        ///    spectrum comes from the representative file.
+        ///
+        /// 2. The precedence of the peak's own representative annotation -- the candidate
+        ///    <see cref="MsScanMatchResultContainer.Representative"/> already chose for that peak --
+        ///    by <see cref="MsScanMatchResultContainer.ResultOrder"/>, the same key that chose it:
+        ///    manual modification, reference match, suggestion, evidence rank, annotator priority,
+        ///    total score. This is the author's decision of 2026-10-28 (D-A), for every project:
+        ///    first whether the annotation is reference-matched, then the annotator's tier, then the
+        ///    score. It replaces the highest total score over ALL of a peak's candidates, which let a
+        ///    candidate that did not represent its own peak decide which file represented the spot:
+        ///    adding an in-silico library moved a spot to the file whose in-silico candidate scored
+        ///    highest, and the spot then showed that file's acquired-library name. A candidate can now
+        ///    only influence this choice through the peak it represents.
+        ///
+        ///    A peak with no candidate at all reports the synthetic unknown result. That placeholder is
+        ///    not a candidate and loses this key to any real one, for the reason
+        ///    <see cref="AnnotationEvidence.RankOf"/> gives; without that it would take the neutral
+        ///    evidence rank and could outrank a real candidate whose spectrum was compared and failed.
+        ///
+        ///    An unknown a person set ("set unknown", Manual|Unknown) is treated the same way, by the
+        ///    author's decision of 2026-10-28: it names no compound, so it must not carry its file
+        ///    into the spot over another file's real annotation, although it is a manual
+        ///    modification. A manual modification that names a compound still ranks first. Between
+        ///    a manual unknown and a peak without candidates nothing in this key separates them, so
+        ///    peak height decides, and then file order.
+        ///
+        /// 3. Peak height, higher first. Unchanged.
+        ///
+        /// Where a modality has no tiers -- one annotator, no evidence record, or no annotation at all
+        /// -- the second key reduces to the representative's verdicts and total score, and with no
+        /// candidates anywhere to peak height alone, as before.
+        /// </remarks>
+        public static int CompareRepresentativePrecedence(AlignmentChromPeakFeature x, AlignmentChromPeakFeature y) {
+            return RepresentativePrecedence(x).CompareTo(RepresentativePrecedence(y));
+        }
+
+        private static (bool, Tuple<bool, bool, bool, int, int, float>, double) RepresentativePrecedence(AlignmentChromPeakFeature peak) {
+            return (HasProductIonSpectrum(peak), AnnotationPrecedence(peak), peak.PeakHeightTop);
+        }
+
+        private static bool HasProductIonSpectrum(AlignmentChromPeakFeature peak) {
+            return !peak.MS2RawSpectrumID2CE.IsEmptyOrNull();
+        }
+
+        private static readonly Tuple<bool, bool, bool, int, int, float> NoCandidate
+            = Tuple.Create(false, false, false, int.MinValue, int.MinValue, float.MinValue);
+
+        private static Tuple<bool, bool, bool, int, int, float> AnnotationPrecedence(AlignmentChromPeakFeature peak) {
+            var representative = peak.MatchResults?.Representative;
+            if (representative is null || representative.IsUnknown) {
+                return NoCandidate;
             }
-            return alignment.Argmax(peak =>
-                // highest total score then highest intensity
-                (peak.MatchResults.MatchResults.Max(val => val.TotalScore), peak.PeakHeightTop)
-            );
+            return MsScanMatchResultContainer.ResultOrder(representative);
         }
 
         public static int GetRepresentativeFileID(IReadOnlyList<AlignmentChromPeakFeature> alignment) {

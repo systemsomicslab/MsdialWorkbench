@@ -318,8 +318,14 @@ namespace CompMs.MsdialCore.DataObj
         /// in projects saved from this branch; the author accepted that on 2026-09-14 on the grounds
         /// that no such project exists outside this development. Reanalysis, not migration, is the
         /// remedy if one turns up.
+        ///
+        /// Internal rather than private because the choice of an alignment spot's representative
+        /// peak compares the peaks' own representatives by this same key
+        /// (DataObjConverter.CompareRepresentativePrecedence), so the file chosen to represent a spot
+        /// and the candidate chosen to represent a feature cannot disagree about which annotation is
+        /// the better one.
         /// </remarks>
-        private static Tuple<bool, bool, bool, int, int, float> ResultOrder(MsScanMatchResult result) {
+        internal static Tuple<bool, bool, bool, int, int, float> ResultOrder(MsScanMatchResult result) {
             return Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, AnnotationEvidence.Rank(result.EvidenceSource), result.Priority, result.TotalScore);
         }
     }

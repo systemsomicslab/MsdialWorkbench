@@ -517,11 +517,16 @@ internal sealed class LcmsAlignmentLightRunner {
             }
         }
 
+        /// <summary>
+        /// The light alignment's representative choice: the same order as the full aligner's,
+        /// <see cref="DataObjConverter.CompareRepresentativePrecedence"/>.
+        /// </summary>
+        /// <remarks>
+        /// Strictly better only, so the first peak streamed in -- the lowest file -- keeps a complete
+        /// tie, as <see cref="DataObjConverter.GetRepresentativePeak"/> keeps the first in its list.
+        /// </remarks>
         private static bool IsBetterRepresentative(AlignmentChromPeakFeature candidate, AlignmentChromPeakFeature current) {
-            var candidateScore = candidate.MatchResults?.Representative?.TotalScore ?? 0d;
-            var currentScore = current.MatchResults?.Representative?.TotalScore ?? 0d;
-            return (candidate.IsMsmsAssigned, candidateScore, candidate.PeakHeightTop)
-                 .CompareTo((current.IsMsmsAssigned, currentScore, current.PeakHeightTop)) > 0;
+            return DataObjConverter.CompareRepresentativePrecedence(candidate, current) > 0;
         }
     }
 }
