@@ -2,7 +2,32 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
-                    xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing">
+                    xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+                    xmlns:chartView="clr-namespace:CompMs.App.Msdial.View.Chart">
+
+    <chartView:SpectrumLabelPlacement x:Key="SpectrumLabelPlacement"/>
+
+    <!-- Select labels from the full spectrum while peak lines are drawn in separate layers. -->
+    <ControlTemplate TargetType="ItemsControl" x:Key="SpectrumLayersWithAnnotations">
+        <ControlTemplate.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+        </ControlTemplate.Resources>
+        <Grid>
+            <ItemsPresenter/>
+            <chart:Annotator DataContext="{Binding UpperSpectrumViewModel}"
+                             ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
+                             HorizontalPropertyName="{Binding HorizontalProperty}"
+                             VerticalPropertyName="{Binding VerticalProperty}"
+                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
+                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
+                             MinimumOrder="{Binding MinimumAnnotationOrder.Value}"
+                             Brush="Black"
+                             LabelPlacement="{StaticResource SpectrumLabelPlacement}"
+                             Format="F4"
+                             ClipToBounds="True"
+                             Visibility="{Binding IsAnnotationVisible.Value, Converter={StaticResource BooleanToVisibility}}"/>
+        </Grid>
+    </ControlTemplate>
 
     <Style TargetType="TextBlock" x:Key="GraphTitle">
         <Setter Property="FontFamily" Value="Calibri"/>
