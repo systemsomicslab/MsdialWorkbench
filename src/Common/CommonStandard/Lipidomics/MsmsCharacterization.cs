@@ -3016,7 +3016,7 @@ namespace CompMs.Common.Lipidomics
                     #endregion
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI", LbmClass.PI, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
@@ -3038,7 +3038,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI", LbmClass.PI, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
 
             }
@@ -10584,7 +10584,7 @@ AdductIon adduct)
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("Hex2Cer", LbmClass.Hex2Cer, "d", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
             else
@@ -10717,7 +10717,7 @@ AdductIon adduct)
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("Hex3Cer", LbmClass.Hex3Cer, "d", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
             else
@@ -17633,7 +17633,7 @@ AdductIon adduct)
                     if (frag01 && frag02)
                     {
                         return LipidMsmsCharacterizationUtility.returnAnnotationResult(PaHex[lipidclass.ToString()], lipidclass, "", theoreticalMz, adduct,
-                            totalCarbon, totalDoubleBond, 0, candidates, 1);
+                            totalCarbon, totalDoubleBond, 0, candidates, 2);
                     }
                 }
                 return null;
@@ -18510,7 +18510,7 @@ AdductIon adduct)
                     #endregion
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI_d5", LbmClass.PI_d5, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
@@ -18532,7 +18532,7 @@ AdductIon adduct)
                     //candidates.Add(molecule);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI_d5", LbmClass.PI_d5, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
 
             }
