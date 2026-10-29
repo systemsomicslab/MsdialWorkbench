@@ -228,7 +228,7 @@
                                                          ContentAlignment="BottomCenter"
                                                          Brush="Black"
                                                          MinimumOrder="{Binding MinimumAnnotationOrder.Value}"
-                                                         Overlap="Spectrum"
+                                                         LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                                                          Format="F4"
                                                          ClipToBounds="True"/>
                                     </Grid>

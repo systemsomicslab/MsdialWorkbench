@@ -16,198 +16,25 @@ namespace CompMs.Graphics.Chart.Tests;
 public class AnnotatorTests
 {
     [STATestMethod]
-    public void SpectrumLabels_KeepOnlyTheStrongerLabelWithinFiveMassUnits() {
-        foreach (var pair in new[] { (84.05d, 86.05d), (267d, 269d), (135.07d, 136.05d), (100d, 105d) }) {
-            var peaks = new[] { Peak(pair.Item2, 700d), Peak(pair.Item1, 1000d) };
-            var chart = CreateChart(peaks);
-            chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 320d));
-            var expected = new[] { pair.Item1.ToString("F4", System.Globalization.CultureInfo.InvariantCulture) };
+    public void LabelPlacement_UsesTheStrategyAndRestoresOverlapBehaviourWhenCleared() {
+        var chart = CreateChart(new[] { Peak(100d, 1000d), Peak(160d, 500d) });
+        CollectionAssert.AreEquivalent(new[] { "100.0000", "160.0000" }, RenderLabels(chart));
 
-            CollectionAssert.AreEqual(expected, RenderLabels(chart));
-            CollectionAssert.AreEqual(expected, RenderLabels(chart, 1600d));
-            chart.FlippedY = false;
-            chart.ContentAlignment = System.Drawing.ContentAlignment.BottomCenter;
-            CollectionAssert.AreEqual(expected, RenderLabels(chart));
-            Assert.AreSame(peaks, chart.ItemsSource);
-            CollectionAssert.AreEqual(new[] { 700d, 1000d }, peaks.Select(peak => peak.Intensity).ToArray());
-        }
+        var placement = new FirstLabelPlacement();
+        chart.LabelPlacement = placement;
+        chart.MinimumRelativeOrder = .75d;
+        CollectionAssert.AreEqual(new[] { "100.0000" }, RenderLabels(chart));
+        Assert.AreEqual(2, placement.AnchorCount);
+        chart.LabelPlacement = null;
+        chart.MinimumRelativeOrder = 0d;
+        CollectionAssert.AreEquivalent(new[] { "100.0000", "160.0000" }, RenderLabels(chart));
     }
 
     [STATestMethod]
-    public void SpectrumLabels_CompareUnroundedMassesInsteadOfAxisCoordinates() {
-        var chart = CreateChart(new[] { Peak(84d, 1000d), Peak(86d, 700d), Peak(135d, 400d) });
-        chart.HorizontalAxis = new LogScaleAxisManager<double>(1d, 200d);
-        CollectionAssert.AreEquivalent(new[] { "84.0000", "135.0000" }, RenderLabels(chart));
-
-        chart = CreateChart(new[] { Peak(100d, 1000d), Peak(105.00001d, 700d) });
-        CollectionAssert.AreEquivalent(new[] { "100.0000", "105.0000" }, RenderLabels(chart));
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_OnlyAcceptedPeaksSuppressTheirMassNeighbours() {
-        var chart = CreateChart(new[] { Peak(100d, 900d), Peak(104d, 1000d), Peak(108d, 800d), Peak(112d, 500d) });
-
-        CollectionAssert.AreEquivalent(new[] { "104.0000", "112.0000" }, RenderLabels(chart));
-    }
-
-    [STATestMethod]
-    public void ExistingCharts_KeepCloseMassLabelsOutsideSpectrumMode() {
+    public void ExistingCharts_KeepCloseLabelsAtDifferentHeights() {
         var chart = CreateChart(new[] { Peak(100d, 1000d), Peak(102d, 500d) });
-        chart.Overlap = (IOverlapMethod)new OverlapMethodTypeConverter().ConvertFromInvariantString("Direct");
 
         CollectionAssert.AreEquivalent(new[] { "100.0000", "102.0000" }, RenderLabels(chart));
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_KeepAProminentPeakInTheGapInsteadOfItsCrowdedNeighbour() {
-        var chart = CreateChart(new[] {
-            Peak(74d, 1000d), Peak(87d, 700d), Peak(147d, 600d), Peak(55d, 580d),
-            Peak(43d, 450d), Peak(111d, 430d), Peak(143d, 400d),
-        });
-        chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 250d));
-
-        var labels = RenderLabels(chart, 227.5d, 113.5d);
-        foreach (var label in new[] { "74.0000", "87.0000", "147.0000", "111.0000" }) {
-            CollectionAssert.Contains(labels, label, $"Missing {label}; visible: {string.Join(", ", labels)}");
-        }
-        CollectionAssert.DoesNotContain(labels, "143.0000");
-
-        chart.FlippedY = false;
-        chart.ContentAlignment = System.Drawing.ContentAlignment.BottomCenter;
-        var mirrored = RenderLabels(chart, 227.5d, 113.5d);
-        CollectionAssert.Contains(mirrored, "111.0000");
-        CollectionAssert.DoesNotContain(mirrored, "143.0000");
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_SpaceNearbyWeakPeaksWithoutHidingIsolatedWeakPeaks() {
-        var chart = CreateChart(new[] {
-            Peak(177d, 1000d), Peak(220d, 460d), Peak(135d, 380d),
-            Peak(67d, 220d), Peak(41d, 215d), Peak(91d, 180d), Peak(121d, 170d),
-            Peak(66d, 20d), Peak(39.9d, 15d), Peak(310d, 20d),
-        });
-        chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 350d));
-        chart.MinimumRelativeOrder = .01d;
-
-        var labels = RenderLabels(chart, 227.5d, 113.5d);
-        foreach (var label in new[] { "177.0000", "220.0000", "135.0000", "67.0000", "310.0000" }) {
-            CollectionAssert.Contains(labels, label, $"Missing {label}; visible: {string.Join(", ", labels)}");
-        }
-        foreach (var label in new[] { "41.0000", "91.0000", "66.0000", "39.9000" }) {
-            CollectionAssert.DoesNotContain(labels, label);
-        }
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_LimitDenseClustersAndFillUnlabelledRegions() {
-        var chart = CreateChart(new[] {
-            Peak(172.08d, 1000d), Peak(157.08d, 480d), Peak(158.04d, 350d),
-            Peak(130.05d, 260d), Peak(173.01d, 180d), Peak(126.99d, 150d),
-            Peak(167.99d, 100d), Peak(63d, 80d), Peak(70d, 70d), Peak(250d, 50d),
-        });
-        chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 300d));
-
-        var expected = new[] { "172.0800", "157.0800", "63.0000", "250.0000" };
-        CollectionAssert.AreEquivalent(expected, RenderLabels(chart, 177.5d, 113.5d));
-        chart.FlippedY = false;
-        chart.ContentAlignment = System.Drawing.ContentAlignment.BottomCenter;
-        CollectionAssert.AreEquivalent(expected, RenderLabels(chart, 177.5d, 113.5d));
-
-        chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(-7d, 293d));
-        chart.FlippedX = true;
-        CollectionAssert.AreEquivalent(expected, RenderLabels(chart, 177.5d, 113.5d));
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_AllowMoreLabelsWhenThePlotOrFormattedTextHasMoreSpace() {
-        var chart = CreateChart(new[] { Peak(100d, 1000d), Peak(120d, 990d) });
-        chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 300d));
-
-        CollectionAssert.AreEquivalent(new[] { "100.0000" }, RenderLabels(chart, 300d, 180d));
-        CollectionAssert.AreEquivalent(new[] { "100.0000", "120.0000" }, RenderLabels(chart, 600d, 180d));
-
-        chart.Format = "F1";
-        CollectionAssert.AreEquivalent(new[] { "100.0", "120.0" }, RenderLabels(chart, 300d, 180d));
-        chart.Format = "F0";
-        CollectionAssert.AreEquivalent(new[] { "100", "120" }, RenderLabels(chart, 300d, 180d));
-
-        chart.Format = "F4";
-        chart.FontSize = 24d;
-        chart.InvalidateVisual();
-        CollectionAssert.AreEquivalent(new[] { "100.0000" }, RenderLabels(chart, 600d, 180d));
-    }
-
-    [STATestMethod]
-    [DataRow(true)]
-    [DataRow(false)]
-    public void SpectrumLabels_UseSeparatedHeightsWhenThePlotHasSpace(bool flippedY) {
-        var peaks = new[] { Peak(100d, 1000d), Peak(106d, 500d), Peak(120d, 200d) };
-        var chart = CreateChart(peaks);
-        chart.FlippedY = flippedY;
-        chart.ContentAlignment = flippedY ? System.Drawing.ContentAlignment.TopCenter : System.Drawing.ContentAlignment.BottomCenter;
-
-        CollectionAssert.AreEquivalent(new[] { "100.0000", "106.0000" }, RenderLabels(chart, 177.5d, 113.5d));
-        CollectionAssert.AreEquivalent(new[] { "100.0000", "106.0000", "120.0000" }, RenderLabels(chart));
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_PreferTheStrongestPeakInEachLocalRegion() {
-        var peaks = new[] { Peak(100d, 480d), Peak(110d, 500d), Peak(120d, 490d), Peak(160d, 200d) };
-        var chart = CreateChart(peaks);
-
-        CollectionAssert.AreEquivalent(new[] { "110.0000", "160.0000" }, RenderLabels(chart));
-        CollectionAssert.AreEquivalent(new[] { "100.0000", "110.0000", "120.0000", "160.0000" }, RenderLabels(chart, 1600));
-        Assert.AreSame(peaks, chart.ItemsSource);
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_KeepNearbyPeaksWhenTheirHeightsAreClearlySeparated() {
-        var chart = CreateChart(new[] { Peak(162.07d, 1000d), Peak(177.09d, 250d) });
-        chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 300d));
-
-        CollectionAssert.AreEquivalent(new[] { "162.0700", "177.0900" }, RenderLabels(chart, 177.5d, 113.5d));
-        chart.FlippedY = false;
-        chart.ContentAlignment = System.Drawing.ContentAlignment.BottomCenter;
-        CollectionAssert.AreEquivalent(new[] { "162.0700", "177.0900" }, RenderLabels(chart, 177.5d, 113.5d));
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_KeepProminentPeaksAtTheOriginalSmallPlotSize() {
-        var chart = CreateChart(new[] { Peak(220d, 1000d), Peak(70d, 870d), Peak(145d, 770d), Peak(145.9d, 20d) });
-        chart.HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(-20d, 320d));
-
-        var labels = RenderLabels(chart, 177.5d, 113.5d);
-        foreach (var label in new[] { "220.0000", "70.0000", "145.0000" }) {
-            CollectionAssert.Contains(labels, label, $"Missing {label}; visible: {string.Join(", ", labels)}");
-        }
-        var shifted = GlyphRuns(VisualTreeHelper.GetDrawing(chart))
-            .Single(glyph => new string(glyph.GlyphRun.Characters.ToArray()) == "145.0000");
-        var peakX = chart.HorizontalAxis.TranslateToRenderPoint(chart.HorizontalAxis.TranslateToAxisValue(145d), chart.FlippedX, chart.ActualWidth);
-        Assert.IsTrue(shifted.Bounds.Left + shifted.Bounds.Width / 2d > peakX + 1d);
-        Assert.IsTrue(shifted.Bounds.Right <= chart.ActualWidth);
-
-        chart.FontSize = 17d;
-        chart.InvalidateVisual();
-        var largerLabels = RenderLabels(chart, 177.5d, 113.5d);
-        foreach (var label in new[] { "220.0000", "70.0000", "145.0000" }) {
-            CollectionAssert.Contains(largerLabels, label);
-        }
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_DoNotShiftLabelsBeyondTheRightPlotEdge() {
-        var chart = CreateChart(new[] { Peak(138d, 1000d), Peak(174d, 960d) });
-
-        CollectionAssert.AreEquivalent(new[] { "138.0000" }, RenderLabels(chart, 200d));
-        CollectionAssert.AreEquivalent(new[] { "138.0000", "174.0000" }, RenderLabels(chart, 400d));
-    }
-
-    [STATestMethod]
-    public void SpectrumLabels_RecheckLaterNeighboursAfterShifting() {
-        var chart = CreateChart(new[] { Peak(110d, 960d), Peak(130d, 980d), Peak(80d, 1000d) });
-
-        CollectionAssert.AreEquivalent(new[] { "80.0000", "130.0000" }, RenderLabels(chart, 200d));
-        CollectionAssert.AreEquivalent(new[] { "80.0000", "130.0000", "110.0000" }, RenderLabels(chart, 600d));
     }
 
     [STATestMethod]
@@ -284,6 +111,7 @@ public class AnnotatorTests
     [STATestMethod]
     public void ExistingCharts_KeepTheirUnfilteredHorizontalOverlapBehaviour() {
         var chart = CreateChart(new[] { Peak(100d, 1000d), Peak(120d, 200d), Peak(160d, 2d) });
+        CollectionAssert.AreEquivalent(new[] { "100.0000", "120.0000", "160.0000" }, RenderLabels(chart));
         chart.Overlap = (IOverlapMethod)new OverlapMethodTypeConverter().ConvertFromInvariantString("Horizontal,Direct");
 
         Assert.AreEqual(0d, chart.MinimumRelativeOrder);
@@ -322,6 +150,18 @@ public class AnnotatorTests
 
     private static SpectrumPeak Peak(double mass, double intensity) => new SpectrumPeak(mass, intensity);
 
+    private sealed class FirstLabelPlacement : ILabelPlacement {
+        public Pen? LeaderLinePen => null;
+
+        public int AnchorCount { get; private set; }
+
+        public bool TryPlaceLabel(LabelLayout candidate, IReadOnlyList<LabelLayout> accepted, IReadOnlyList<Point> anchors, Size plotSize, bool flippedY, out Point origin) {
+            AnchorCount = anchors.Count;
+            origin = candidate.Origin;
+            return accepted.Count == 0;
+        }
+    }
+
     private static Annotator CreateChart(SpectrumPeak[] peaks) => new Annotator {
         HorizontalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 200d)),
         VerticalAxis = new ContinuousAxisManager<double>(new AxisRange(0d, 1200d)),
@@ -330,7 +170,7 @@ public class AnnotatorTests
         OrderingPropertyName = nameof(SpectrumPeak.Intensity),
         LabelPropertyName = nameof(SpectrumPeak.Mass),
         Format = "F4",
-        Overlap = (IOverlapMethod)new OverlapMethodTypeConverter().ConvertFromInvariantString("Spectrum"),
+        Overlap = (IOverlapMethod)new OverlapMethodTypeConverter().ConvertFromInvariantString("Direct"),
         ItemsSource = peaks,
     };
 

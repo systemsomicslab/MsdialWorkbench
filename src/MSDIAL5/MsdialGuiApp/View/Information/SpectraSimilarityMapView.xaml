@@ -149,7 +149,7 @@
                                          OrderingPropertyName="Intensity"
                                          Brush="Black"
                                          MinimumRelativeOrder="0.01"
-                                         Overlap="Spectrum"
+                                         LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                                          Format="F4"
                                          ClipToBounds="True"/>
                     </Grid>
@@ -181,7 +181,7 @@
                                          ContentAlignment="BottomCenter"
                                          Brush="Black"
                                          MinimumRelativeOrder="0.01"
-                                         Overlap="Spectrum"
+                                         LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                                          Format="F4"
                                          ClipToBounds="True"/>
                     </Grid>

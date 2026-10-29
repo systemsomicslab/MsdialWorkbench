@@ -52,7 +52,7 @@
                                  LabelPropertyName="{Binding HorizontalProperty, Mode=OneTime}"
                                  TopN="5"
                                  MinimumRelativeOrder="0.01"
-                                 Overlap="Spectrum"/>
+                                 LabelPlacement="{StaticResource SpectrumLabelPlacement}"/>
             </Grid>
         </chart:SimpleChartControl>
     </Grid>

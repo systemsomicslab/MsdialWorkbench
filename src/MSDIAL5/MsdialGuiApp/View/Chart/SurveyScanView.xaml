@@ -115,7 +115,7 @@
                              Brush="Black"
                              Format="N4"
                              MinimumRelativeOrder="0.01"
-                             Overlap="Spectrum"
+                             LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                              ClipToBounds="True"
                              IsHitTestVisible="False"/>
         </chart:MultiChart>

@@ -85,7 +85,7 @@
                                              OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                              Brush="Black"
                                              MinimumOrder="{Binding MinimumAnnotationOrder.Value}"
-                                             Overlap="Spectrum"
+                                             LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                                              ClipToBounds="True"/>
                         </Grid>
                     </Border>
@@ -140,7 +140,7 @@
                                              OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                              Brush="Black"
                                              MinimumOrder="{Binding MinimumAnnotationOrder.Value}"
-                                             Overlap="Spectrum"
+                                             LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                                              FontSize="17"/>
                         </Grid>
                     </Border>
