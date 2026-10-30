@@ -134,7 +134,8 @@ namespace Rfx.Riken.OsakaUniv
             var ContributorIdentifier = "XXXX";
             var id = rawData.ScanNumber;
             if (id < 0) {
-                id = rawData.GetHashCode() % 100_000_000;
+                // mask the sign bit: a negative hash would give an accession like "MSFINDER-XXXX--0001234"
+                id = (rawData.GetHashCode() & int.MaxValue) % 100_000_000;
             }
 
             // accession
@@ -143,15 +144,8 @@ namespace Rfx.Riken.OsakaUniv
 
         private static void writeResultAsMassBankRecord(Stream stream, RawData rawData, List<FormulaResult> formulaResults, List<FragmenterResult> sfdResults, AnalysisParamOfMsfinder param) {
             using (var sw = new StreamWriter(stream, Encoding.ASCII, 4096, false)) {
-                var Identifier = "MSFINDER";
-                var ContributorIdentifier = "XXXX";
-
                 // accession
-                var id = rawData.ScanNumber;
-                if (id < 0) {
-                    id = rawData.GetHashCode() % 100_000_000;
-                }
-                sw.WriteLine($"ACCESSION: {Identifier}-{ContributorIdentifier}-{id:D8}");
+                sw.WriteLine($"ACCESSION: {getMassBankRecordAccession(rawData)}");
 
                 var MSType = "MS2";
                 var name = string.IsNullOrEmpty(rawData.MetaboliteName) ? rawData.Name : rawData.MetaboliteName;
