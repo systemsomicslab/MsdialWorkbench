@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Runs a built MSDIALCUI.exe over the vendor demo data and checks that each processing mode
+    finishes with results, as the pre-release check of the console application.
+
+    Like MsdialGuiAppUiTests it has no ProjectReference to the application: the executable under
+    test is the one handed in through the run settings (see README.md), so a release check runs
+    exactly what is about to be shipped. Without those settings every test reports Inconclusive,
+    which keeps the solution-wide `dotnet test` in CI harmless.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
+  </ItemGroup>
+</Project>
