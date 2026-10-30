@@ -28,7 +28,10 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
         /// Anything more to set on the "Measurement parameters" page, after the data type and
         /// polarity, such as the project metadata.
         /// </param>
-        public static void CreateProjectAndRun(MsdialSession session, RawDataset dataset, string work, bool dragAndDrop, Action<Window>? onMeasurementPage = null) {
+        /// <param name="beforeRun">
+        /// Anything more to set on the later pages (see <see cref="ShowWizardPage"/>) before Run.
+        /// </param>
+        public static void CreateProjectAndRun(MsdialSession session, RawDataset dataset, string work, bool dragAndDrop, Action<Window>? onMeasurementPage = null, Action<Window>? beforeRun = null) {
             session.Press(session.ById(session.MainWindow, "Button_NewProject").AsButton(), "New project");
             var wizard = session.WaitForDialog(WizardTitle, DialogTimeout);
 
@@ -59,7 +62,22 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             Next(session, wizard); // Peak detection
 
             session.ById(wizard, "TextBox_MinimumPeakHeight", WizardTitle).AsTextBox().Enter(dataset.MinimumPeakHeight.ToString());
+            beforeRun?.Invoke(wizard);
             session.Press(session.ButtonNamed(wizard, "Run", WizardTitle), "Run", WizardTitle);
+        }
+
+        /// <summary>
+        /// Opens a page of the project wizard by its name in the list on the left ("Identification",
+        /// "Alignment parameters", ...), as a user jumps to it.
+        /// </summary>
+        public static void ShowWizardPage(MsdialSession session, Window wizard, string page) {
+            var item = session.WaitFor($"finding the '{page}' page of the project settings",
+                () => wizard.FindAllDescendants(cf => cf.ByControlType(ControlType.ListItem))
+                    .FirstOrDefault(listItem => listItem.FindFirstDescendant(cf => cf.ByName(page)) is not null)?.AsListBoxItem(),
+                Controls.FindTimeout,
+                title => title == WizardTitle);
+            item.Select();
+            session.Settle($"opening the '{page}' page of the project settings", WizardTitle);
         }
 
         private static void Next(MsdialSession session, Window wizard) {

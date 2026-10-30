@@ -59,14 +59,33 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
                 () => fileDialog.FindFirstDescendant(cf => cf.ByAutomationId("1148").And(cf.ByControlType(ControlType.Edit)))?.AsTextBox(),
                 FindTimeout,
                 _ => true);
-            fileName.Text = directory;
-            fileName.Focus();
-            Keyboard.Type(VirtualKeyShort.ENTER);
-            // Navigating repaints the dialog; typing the names before it settles can be lost.
-            System.Threading.Thread.Sleep(1000);
+            // The names are looked up in the folder the dialog shows, which is the one it showed
+            // last time unless navigation has finished; so wait until its address bar names the
+            // folder, pressing Enter again if the first one was lost.
+            for (var attempt = 0; attempt < 3 && !ShowsFolder(fileDialog, directory); attempt++) {
+                fileName.Text = directory;
+                fileName.Focus();
+                Keyboard.Type(VirtualKeyShort.ENTER);
+                FlaUI.Core.Tools.Retry.WhileFalse(() => ShowsFolder(fileDialog, directory), TimeSpan.FromSeconds(5));
+            }
+            if (!ShowsFolder(fileDialog, directory)) {
+                session.Fail("choosing files", $"The file dialog did not move to {directory}.");
+            }
             fileName.Text = fileNames.Length == 1 ? fileNames[0] : string.Join(" ", fileNames.Select(name => $"\"{name}\""));
             fileName.Focus();
             Keyboard.Type(VirtualKeyShort.ENTER);
+        }
+
+        // 1001 is the address bar of the common file dialog; its name ends with the folder shown,
+        // after a localized "Address:" label.
+        private static bool ShowsFolder(Window fileDialog, string directory) {
+            try {
+                var address = fileDialog.FindFirstDescendant(cf => cf.ByAutomationId("1001"))?.Name;
+                return address is not null && address.TrimEnd('\\').EndsWith(directory.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception) {
+                return false;
+            }
         }
     }
 }

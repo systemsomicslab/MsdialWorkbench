@@ -20,10 +20,6 @@ namespace CompMs.App.Msdial.UiTests
     {
         private const string PropertyDialogTitle = "Project property setting";
 
-        private static readonly RawDataset HandsOnPositive = new RawDataset("Hands-on data1 pos", @"data1\pos", Polarity.Positive, 1000,
-            "0717_kinetex_wine_50_4min_pos_IDA_A1.wiff", "0717_kinetex_wine_50_4min_pos_IDA_B1.wiff", "0717_kinetex_wine_50_4min_pos_IDA_C1.wiff",
-            "0717_kinetex_wine_50_4min_pos_IDA_D1.wiff", "0717_kinetex_wine_50_4min_pos_IDA_E1.wiff", "0717_kinetex_wine_50_4min_pos_IDA_F1.wiff");
-
         // The text box ids are the same on the measurement page of the project wizard and in the
         // project property dialog.
         private static readonly Metadata Entered = new Metadata {
@@ -50,12 +46,12 @@ namespace CompMs.App.Msdial.UiTests
         public void EntersSavesEditsAndExportsProjectMetadata() {
             var exe = RunParameters.RequireMsdialExe(TestContext);
             var handsOnDir = RunParameters.RequireHandsOnDataDir(TestContext);
-            var work = WorkDirectory.Prepare(TestContext, handsOnDir, HandsOnPositive);
+            var work = WorkDirectory.Prepare(TestContext, handsOnDir, HandsOnData.Part1Positive);
 
             // Entered in the project wizard, it shows in the property dialog and is saved.
             using (var session = MsdialSession.Launch(TestContext, exe)) {
-                Workflow.CreateProjectAndRun(session, HandsOnPositive, work, dragAndDrop: false, onMeasurementPage: wizard => EnterMetadata(session, wizard));
-                Workflow.WaitForResults(session, HandsOnPositive, "processing");
+                Workflow.CreateProjectAndRun(session, HandsOnData.Part1Positive, work, dragAndDrop: false, onMeasurementPage: wizard => EnterMetadata(session, wizard));
+                Workflow.WaitForResults(session, HandsOnData.Part1Positive, "processing");
                 AssertPropertyDialogShows(session, Entered, "right after processing");
                 Workflow.SaveProject(session);
                 session.Close();
@@ -64,7 +60,7 @@ namespace CompMs.App.Msdial.UiTests
 
             // It survives opening the project again, and can be changed there and saved.
             using (var session = MsdialSession.Launch(TestContext, exe)) {
-                Workflow.LoadProject(session, HandsOnPositive, project);
+                Workflow.LoadProject(session, HandsOnData.Part1Positive, project);
                 AssertPropertyDialogShows(session, Entered, "after opening the saved project");
                 EditInPropertyDialog(session, Edited, finish: true);
                 Workflow.SaveProject(session);
@@ -73,12 +69,12 @@ namespace CompMs.App.Msdial.UiTests
 
             // The change survives, Cancel throws an edit away, and the export carries the values.
             using (var session = MsdialSession.Launch(TestContext, exe)) {
-                Workflow.LoadProject(session, HandsOnPositive, project);
+                Workflow.LoadProject(session, HandsOnData.Part1Positive, project);
                 AssertPropertyDialogShows(session, Edited, "after editing, saving and opening again");
                 EditInPropertyDialog(session, new Metadata { ["TextBox_Authors"] = "Should be thrown away" }, finish: false);
                 AssertPropertyDialogShows(session, Edited, "after cancelling an edit");
 
-                Workflow.BrowseResults(session, HandsOnPositive);
+                Workflow.BrowseResults(session, HandsOnData.Part1Positive);
                 var export = Path.Combine(work, "export");
                 Workflow.ExportAlignment(session, export, dialog => ChooseMassBankRecords(session, dialog));
                 AssertMassBankRecordsCarry(export, Edited);
