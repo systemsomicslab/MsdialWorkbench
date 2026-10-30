@@ -70,7 +70,9 @@ namespace CompMs.App.MsdialConsole.ReleaseTests
             new ConsoleCase("mzml", "lcms", IonMode.Negative, new[] { @"mzml\Nega_Ida_QC_1_1.mzML", @"mzml\Nega_Ida_QC_1_5.mzML" }) {
                 Method = new Dictionary<string, string> { ["Minimum peak height"] = "10" },
             },
-            new ConsoleCase("hive_hmd", "lcms", IonMode.Positive, new[] { @"hive\Mx DDA CID POS Chiron_1.hmd" }),
+            new ConsoleCase("hive_hmd", "lcms", IonMode.Positive, new[] { @"hive\Mx DDA CID POS Chiron_1.hmd" }) {
+                KnownIssue = "The console collects input files by DataAccess.IsDataFormatSupported, whose SupportMsRawDataExtension has no hmd or mzb, so it finds no input in a folder of Hive files.",
+            },
 
             // LC-IM-MS, direct infusion and ion mobility
             new ConsoleCase("bruker_lcimms", "lcimms", IonMode.Positive, new[] {
