@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Drives a built MSDIAL.exe through UI Automation to catch crashes a person would otherwise find
+    by clicking through the release candidate.
+
+    It deliberately has no ProjectReference to MsdialGuiApp: the binary under test is the one handed
+    in through the run settings (see ui.runsettings.example), so a release check exercises exactly
+    what is about to be shipped rather than whatever this checkout happens to build. Without those
+    settings every test reports Inconclusive, which keeps the solution-wide `dotnet test` in CI
+    harmless.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FlaUI.UIA3" Version="4.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ui.runsettings.example" />
+  </ItemGroup>
+</Project>

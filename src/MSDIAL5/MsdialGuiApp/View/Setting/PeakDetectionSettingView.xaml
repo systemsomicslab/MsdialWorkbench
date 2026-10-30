@@ -38,6 +38,7 @@
                                    ToolTip="Recommend: 1000-3000 (QTOF), 10000-30000 (Orbitrap, FT-MS)"
                                    Style="{StaticResource AlignedContent}">
                     <TextBox Text="{Binding MinimumAmplitude.Value}"
+                             AutomationProperties.AutomationId="TextBox_MinimumPeakHeight"
                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Mass slice width:"
