@@ -9,7 +9,10 @@
     <RibbonQuickAccessToolBar.Resources>
         <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
     </RibbonQuickAccessToolBar.Resources>
-    <RibbonButton Command="{Binding CreateNewProjectCommand}" SmallImageSource="{StaticResource New_project_is}"/>
-    <RibbonButton Command="{Binding OpenProjectCommand}" SmallImageSource="{StaticResource Open_is}"/>
-    <RibbonButton Command="{Binding SaveProjectCommand}" SmallImageSource="{StaticResource Save_is}"/>
+    <RibbonButton Command="{Binding CreateNewProjectCommand}" SmallImageSource="{StaticResource New_project_is}"
+                  AutomationProperties.AutomationId="Button_QuickNewProject"/>
+    <RibbonButton Command="{Binding OpenProjectCommand}" SmallImageSource="{StaticResource Open_is}"
+                  AutomationProperties.AutomationId="Button_QuickOpenProject"/>
+    <RibbonButton Command="{Binding SaveProjectCommand}" SmallImageSource="{StaticResource Save_is}"
+                  AutomationProperties.AutomationId="Button_QuickSaveProject"/>
 </RibbonQuickAccessToolBar>

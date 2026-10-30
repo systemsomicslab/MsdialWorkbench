@@ -137,6 +137,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialImmsCoreTests", "test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGuiAppTests", "tests\MSDIAL5\MsdialGuiAppTests\MsdialGuiAppTests.csproj", "{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGuiAppUiTests", "tests\MSDIAL5\MsdialGuiAppUiTests\MsdialGuiAppUiTests.csproj", "{F384AFA2-12BC-4DEB-945D-E358591D0D76}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcImMsApiTests", "tests\MSDIAL5\MsdialLcImMsApiTests\MsdialLcImMsApiTests.csproj", "{4187672A-07AB-4D45-BFE4-845C5323D0D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrate", "src\MSDIAL5\MsdialIntegrate\MsdialIntegrate.csproj", "{9A103A62-9578-48A1-B967-D046925D3AC3}"
@@ -1546,6 +1548,26 @@ Global
 		{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}.Release|x64.ActiveCfg = Release|Any CPU
 		{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}.Release|x64.Build.0 = Release|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug vendor unsupported|Any CPU.ActiveCfg = Debug vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug vendor unsupported|Any CPU.Build.0 = Debug vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug vendor unsupported|x64.ActiveCfg = Debug vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug vendor unsupported|x64.Build.0 = Debug vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug with args|Any CPU.ActiveCfg = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug with args|Any CPU.Build.0 = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug with args|x64.ActiveCfg = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug with args|x64.Build.0 = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Debug|x64.Build.0 = Debug|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release vendor unsupported|Any CPU.ActiveCfg = Release vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release vendor unsupported|Any CPU.Build.0 = Release vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release vendor unsupported|x64.ActiveCfg = Release vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release vendor unsupported|x64.Build.0 = Release vendor unsupported|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release|x64.ActiveCfg = Release|Any CPU
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76}.Release|x64.Build.0 = Release|Any CPU
 		{4187672A-07AB-4D45-BFE4-845C5323D0D2}.Debug vendor unsupported|Any CPU.ActiveCfg = Debug|Any CPU
 		{4187672A-07AB-4D45-BFE4-845C5323D0D2}.Debug vendor unsupported|Any CPU.Build.0 = Debug|Any CPU
 		{4187672A-07AB-4D45-BFE4-845C5323D0D2}.Debug vendor unsupported|x64.ActiveCfg = Debug vendor unsupported|Any CPU
@@ -1903,6 +1925,7 @@ Global
 		{24FC9BAA-C80A-4FEF-8295-4C58C888EA9F} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
 		{87341028-41D3-4090-A9EA-99014FFB7B9B} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
 		{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
+		{F384AFA2-12BC-4DEB-945D-E358591D0D76} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
 		{4187672A-07AB-4D45-BFE4-845C5323D0D2} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
 		{4CC31723-8ECF-43DD-9399-BDEB31E75CBC} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
 		{B1471530-7779-4A57-9664-1E3A06F1A449} = {765ED28C-F085-4C96-8E81-683BBAE67B01}
