@@ -331,7 +331,7 @@ namespace Rfx.Riken.OsakaUniv
                         case "AC$MASS_SPECTROMETRY":
                             switch (subtag) {
                                 case "ION_MODE":
-                                    switch (subcontent)
+                                    switch (subcontent.ToUpperInvariant())
                                     {
                                         case "POSITIVE":
                                             rawData.IonMode = IonMode.Positive;

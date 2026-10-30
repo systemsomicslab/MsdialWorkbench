@@ -216,7 +216,7 @@ namespace Rfx.Riken.OsakaUniv
                 sw.WriteLine($"AC$INSTRUMENT_TYPE: {rawData.InstrumentType}");
 
                 // ac$mass_spectrometry: ion_mode
-                sw.WriteLine($"AC$MASS_SPECTROMETRY: ION_MODE {rawData.IonMode}");
+                sw.WriteLine($"AC$MASS_SPECTROMETRY: ION_MODE {rawData.IonMode.ToString().ToUpperInvariant()}");
 
                 // ac$mass_spectrometry mstype
                 sw.WriteLine($"AC$MASS_SPECTROMETRY: MS_TYPE {MSType}");
