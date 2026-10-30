@@ -241,7 +241,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 // pk$splash
                 var spectra = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
-                var maxIntensity = spectra.Max(p => p.Intensity);
+                var maxIntensity = spectra.Count > 0 ? spectra.Max(p => p.Intensity) : 1d;
                 spectra = spectra.Where(p => p.Intensity / maxIntensity * 100 >= param.RelativeAbundanceCutOff).ToList();
                 if (spectra.Count > 0) {
                     var splashHandler = new NSSplash.Splash();
