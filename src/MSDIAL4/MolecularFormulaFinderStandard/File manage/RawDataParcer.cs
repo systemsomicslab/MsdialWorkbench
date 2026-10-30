@@ -308,7 +308,8 @@ namespace Rfx.Riken.OsakaUniv
                         case "CH$CDK_DEPICT":
                             break;
                         case "CH$LINK":
-                            switch (subtag) {
+                            // MS-DIAL writes "CH$LINK: INCHIKEY: <key>", so accept the subtag with a trailing colon too
+                            switch (subtag?.TrimEnd(':')) {
                                 case "INCHIKEY":
                                     rawData.InchiKey = subcontent;
                                     break;
