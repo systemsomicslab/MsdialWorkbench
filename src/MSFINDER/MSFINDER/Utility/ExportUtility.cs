@@ -251,15 +251,9 @@ namespace Rfx.Riken.OsakaUniv
                 for (int i = 0; i < spectra.Count; i++) {
                     var mz = spectra[i].Mz;
 
-                    var comment = "";
                     var originalComment = spectra[i].Comment;
                     var additionalComment = getProductIonComment(mz, formulaResults, sfdResults, rawData.IonMode);
-                    if (originalComment != "") {
-                        comment = originalComment + "; " + additionalComment;
-                    }
-                    else {
-                        comment = additionalComment;
-                    }
+                    var comment = string.Join("; ", new[] { originalComment, additionalComment }.Where(c => !string.IsNullOrEmpty(c)));
 
                     if (comment != string.Empty) {
                         sw.WriteLine($"  {mz:F5} {comment}");
