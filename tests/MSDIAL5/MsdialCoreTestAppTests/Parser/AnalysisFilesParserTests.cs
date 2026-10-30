@@ -47,6 +47,20 @@ public sealed class AnalysisFilesParserTests
     }
 
     [TestMethod]
+    public void ReadFolderContents_IncludesHiveFiles()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile("run.hmd");
+        directory.CreateFile("run.mzb");
+
+        var files = AnalysisFilesParser.ReadFolderContents(directory.Path);
+
+        CollectionAssert.AreEquivalent(
+            new[] { "run.hmd", "run.mzb" },
+            files.Select(file => Path.GetFileName(file.AnalysisFilePath)).ToArray());
+    }
+
+    [TestMethod]
     public void ReadInput_MixedFormatsWithRedirectedInput_ContinuesWithoutReadingAndWarns()
     {
         using var directory = MixedFormatFolder();
