@@ -143,7 +143,7 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         private static void writeResultAsMassBankRecord(Stream stream, RawData rawData, List<FormulaResult> formulaResults, List<FragmenterResult> sfdResults, AnalysisParamOfMsfinder param) {
-            using (var sw = new StreamWriter(stream, Encoding.ASCII, 4096, false)) {
+            using (var sw = new StreamWriter(stream, new UTF8Encoding(false), 4096, false)) {
                 // accession
                 sw.WriteLine($"ACCESSION: {getMassBankRecordAccession(rawData)}");
 

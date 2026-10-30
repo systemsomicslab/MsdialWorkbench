@@ -522,7 +522,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public static void MassBankRecordWriter(string filePath, RawData rawData) {
             List<string> lines;
-            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+            using (var sr = new StreamReader(filePath, Encoding.UTF8)) {
                 lines = new List<string>();
                 while (!sr.EndOfStream) {
                     lines.Add(sr.ReadLine());
@@ -598,7 +598,7 @@ namespace Rfx.Riken.OsakaUniv
                     }
                 }
             }
-            using (var sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+            using (var sw = new StreamWriter(filePath, false, new UTF8Encoding(false))) {
                 foreach (var line in lines) {
                     sw.WriteLine(line);
                 }
