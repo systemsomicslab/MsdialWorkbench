@@ -8,6 +8,7 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 {
@@ -29,18 +30,22 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
-            return SelectTopHit(FindCandidatesCore(query.Property, query.Parameter ?? Parameter));
+            return SelectTopHit(FindCandidatesCore(query.Property, query.Parameter ?? Parameter, query.GetCancellationToken()));
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
-            return FindCandidatesCore(query.Property, query.Parameter ?? Parameter)
+            return FindCandidatesCore(query.Property, query.Parameter ?? Parameter, query.GetCancellationToken())
                 .OrderByDescending(result => result.TotalScore)
                 .ToList();
         }
 
-        private IEnumerable<MsScanMatchResult> FindCandidatesCore(IMSProperty property, MsRefSearchParameterBase parameter) {
+        private IEnumerable<MsScanMatchResult> FindCandidatesCore(IMSProperty property, MsRefSearchParameterBase parameter, CancellationToken token = default) {
+            token.ThrowIfCancellationRequested();
             return SearchCore(property, parameter.Ms1Tolerance)
-                .Select(candidate => CalculateScoreCore(property, candidate, parameter));
+                .Select(candidate => {
+                    token.ThrowIfCancellationRequested();
+                    return CalculateScoreCore(property, candidate, parameter);
+                });
         }
 
         public List<MoleculeMsReference> Search(IAnnotationQuery<MsScanMatchResult> query) {

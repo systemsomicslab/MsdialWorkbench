@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <None Update="Resources\Export\*" CopyToOutputDirectory="PreserveNewest"/>
+    <None Update="Resources\Serialization\*.json" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 
 </Project>

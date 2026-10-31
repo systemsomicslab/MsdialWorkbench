@@ -4,6 +4,7 @@ using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CompMs.Common.Components {
     [MessagePackObject]
@@ -44,7 +45,77 @@ namespace CompMs.Common.Components {
         [Key(3)]
         public IonMode IonMode { get; set; }
         [Key(4)]
-        public List<SpectrumPeak> Spectrum { get; set; }
+        public List<SpectrumPeak> Spectrum {
+            get {
+                var current = Volatile.Read(ref _spectrum);
+                if (current != null) { return current; }
+                if (Volatile.Read(ref _compactSpectrum) is { } values) {
+                    var expanded = SpectrumPeakData.FromCompact(values).ToMutableList();
+                    current = Interlocked.CompareExchange(ref _spectrum, expanded, null) ?? expanded;
+                    Volatile.Write(ref _compactSpectrum, null);
+                    return current;
+                }
+                return Volatile.Read(ref _spectrum);
+            }
+            set { _spectrum = value; _compactSpectrum = null; }
+        }
+        private List<SpectrumPeak> _spectrum;
+        private Array _compactSpectrum;
+
+        [IgnoreMember]
+        public bool IsSpectrumCompact => _compactSpectrum != null;
+
+        public SpectrumPeakData GetSpectrumPeakData() => _compactSpectrum is { } values
+            ? SpectrumPeakData.FromCompact(values) : new SpectrumPeakData(_spectrum);
+
+        /// <summary>Call only while importing an owned library; existing public lists remain mutable.</summary>
+        public bool TryCompactSpectrum() {
+            if (_compactSpectrum != null) { return true; }
+            if (_spectrum == null || _spectrum.Count == 0) { return false; }
+            var packable = true;
+            foreach (var peak in _spectrum) {
+                // Preserve annotated/derived peaks verbatim rather than dropping uncommon metadata.
+                if (peak == null || peak.GetType() != typeof(SpectrumPeak) || peak.Comment != null
+                    || BitConverter.DoubleToInt64Bits(peak.Resolution) != 0 || peak.Charge != 0 || peak.IsotopeFrag
+                    || peak.PeakQuality != 0 || peak.PeakID != 0 || peak.IsotopeParentPeakID != -1 || peak.IsotopeWeightNumber != -1
+                    || peak.IsMatched || peak.SpectrumComment != 0 || peak.IsAbsolutelyRequiredFragmentForAnnotation
+                    || BitConverter.DoubleToInt64Bits(peak.FragmentationScore) != 0) {
+                    return false;
+                }
+                if (packable) { packable = FitsPackedValue(peak.Mass) && FitsPackedValue(peak.Intensity); }
+            }
+            if (packable) {
+                // Two exact unsigned 16-bit integers share one word; fractional and special values keep doubles.
+                var values = new uint[_spectrum.Count];
+                // Signed conversions avoid expensive floating-to-unsigned helpers on .NET Framework.
+                for (var i = 0; i < values.Length; i++) { values[i] = ((uint)(int)_spectrum[i].Mass << 16) | (uint)(int)_spectrum[i].Intensity; }
+                _compactSpectrum = values;
+            }
+            else {
+                var values = new SpectrumPeakValue[_spectrum.Count];
+                for (var i = 0; i < values.Length; i++) { values[i] = new SpectrumPeakValue(_spectrum[i].Mass, _spectrum[i].Intensity); }
+                _compactSpectrum = values;
+            }
+            _spectrum = null;
+            return true;
+        }
+
+        private static bool FitsPackedValue(double value) => value >= 0 && value <= ushort.MaxValue && (int)value == value
+            && (value != 0 || BitConverter.DoubleToInt64Bits(value) == 0);
+
+        public MoleculeMsReference CreateSerializationCopy() {
+            if (_compactSpectrum == null) { return this; }
+            var copy = (MoleculeMsReference)MemberwiseClone();
+            copy.Spectrum = GetSpectrumPeakData().ToMutableList();
+            return copy;
+        }
+
+        /// <summary>Copies metadata for a serializer that writes the spectrum separately.</summary>
+        public MoleculeMsReference CreateSerializationMetadataCopy() {
+            var copy = (MoleculeMsReference)MemberwiseClone();
+            copy.Spectrum = null;
+            return copy;
+        }
 
         // set for IMoleculeProperty
         [Key(5)]
