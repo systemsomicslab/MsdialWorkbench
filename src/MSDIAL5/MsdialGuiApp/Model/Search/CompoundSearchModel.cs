@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive.Disposables;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -48,6 +49,8 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly ICompoundSearchUsecase<ICompoundResult, T> _compoundSearchService;
         private readonly T _peakSpot;
         private readonly BusyNotifier _isBusy;
+        private readonly CancellationTokenSource _lifetimeSource;
+        private readonly CancellationToken _lifetime;
 
         public CompoundSearchModel(IFileBean fileBean, T peakSpot, ICompoundSearchUsecase<ICompoundResult, T> compoundSearchService, PlotComparedMsSpectrumUsecase plotComparedMsSpectrumService, SetAnnotationUsecase setAnnotationService) {
             File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
@@ -56,6 +59,9 @@ namespace CompMs.App.Msdial.Model.Search
             _plotService = plotComparedMsSpectrumService;
             _setAnnotationService = setAnnotationService;
             _isBusy = new BusyNotifier();
+            _lifetimeSource = new CancellationTokenSource();
+            _lifetime = _lifetimeSource.Token;
+            Disposables.Add(Disposable.Create(_lifetimeSource.Dispose));
             SearchParameter = _compoundSearchService.ObserveProperty(m => m.SearchParameter)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -104,9 +110,28 @@ namespace CompMs.App.Msdial.Model.Search
         public IObservable<bool> IsBusy => _isBusy;
 
         public async Task SearchAsync(CancellationToken token) {
-            using (_isBusy.ProcessStart()) {
-                CompoundResults = await Task.Run(() => _compoundSearchService.Search(_peakSpot), token).ConfigureAwait(false);
+            try {
+                _lifetime.ThrowIfCancellationRequested();
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(token, _lifetime);
+                token = linked.Token;
+                using (_isBusy.ProcessStart()) {
+                    var results = await Task.Run(() => _compoundSearchService is ICancellableCompoundSearchUsecase<ICompoundResult, T> cancellable
+                        ? cancellable.Search(_peakSpot, token) : _compoundSearchService.Search(_peakSpot), token).ConfigureAwait(false);
+                    token.ThrowIfCancellationRequested();
+                    if (!disposedValue) {
+                        CompoundResults = results;
+                    }
+                }
             }
+            catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) {
+                // Window closure completes the observable normally, including a delayed initial search.
+            }
+        }
+
+        protected override void Dispose(bool disposing) {
+            // WPF queues resource disposal; cancellation must reach scoring as soon as the window closes.
+            if (disposing && !disposedValue) { _lifetimeSource.Cancel(); }
+            base.Dispose(disposing);
         }
 
         public void SetConfidence() {

@@ -14,6 +14,32 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
     [TestClass()]
     public class MsReferenceScorerTests
     {
+        [DataTestMethod]
+        [DataRow(TargetOmics.Metabolomics)]
+        [DataRow(TargetOmics.Lipidomics)]
+        public void NumericScoringPreservesCompactReferencesAndAllResultFields(TargetOmics omics) {
+            foreach (var count in new[] { 0, 1, 3, 20 }) {
+                var reference = new MoleculeMsReference {
+                    Name = "PC 16:0_18:1", CompoundClass = "PC", InChIKey = "Test",
+                    PrecursorMz = 760.585, AdductType = AdductIon.GetAdductIon("[M+H]+"),
+                    IonMode = IonMode.Positive, ChromXs = new ChromXs(2),
+                    Spectrum = Enumerable.Range(0, count)
+                        .Select(index => new SpectrumPeak(184.0733 + index * 17, 100 - index)).ToList(),
+                };
+                var scan = new MSScanProperty {
+                    PrecursorMz = reference.PrecursorMz, IonMode = reference.IonMode,
+                    Spectrum = reference.Spectrum.Select(peak => new SpectrumPeak(peak.Mass, peak.Intensity)).ToList(),
+                };
+                var parameter = new MsRefSearchParameterBase { Ms1Tolerance = .01f, Ms2Tolerance = .025f };
+                var scorer = new MsReferenceScorer("Test", 0, omics, SourceType.MspDB, CollisionType.CID, true, DataBaseSource.Msp);
+                var expected = scorer.CalculateScore(reference, scan, null, reference, null, parameter);
+                Assert.AreEqual(count > 0, reference.TryCompactSpectrum());
+                var actual = scorer.CalculateScore(reference, scan, null, reference, null, parameter);
+                CollectionAssert.AreEqual(MessagePack.MessagePackSerializer.Serialize(expected), MessagePack.MessagePackSerializer.Serialize(actual));
+                Assert.AreEqual(count > 0, reference.IsSpectrumCompact, "Numeric scoring must not expand reference peaks.");
+            }
+        }
+
         [TestMethod()]
         public void CalculateScoreTest() {
             var reference = new MoleculeMsReference

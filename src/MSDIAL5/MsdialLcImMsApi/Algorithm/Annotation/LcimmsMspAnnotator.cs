@@ -14,6 +14,7 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 {
@@ -41,22 +42,24 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key, query.GetCancellationToken()).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key);
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key, query.GetCancellationToken());
         }
 
 
         private List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes,
-            MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID) {
+            MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID, CancellationToken token = default) {
+            token.ThrowIfCancellationRequested();
 
             var candidates = SearchCore(property, parameter);
             var results = new List<MsScanMatchResult>(candidates.Count);
             foreach (var candidate in candidates) {
+                token.ThrowIfCancellationRequested();
                 var result = CalculateScoreCore(property, scan, isotopes, candidate, candidate.IsotopicPeaks, parameter, omics, annotatorID);
                 ValidateCore(result, property, scan, candidate, parameter, omics);
                 results.Add(result);

@@ -8,10 +8,11 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class AnnotationQuery : IAnnotationQuery<MsScanMatchResult>
+    public class AnnotationQuery : IAnnotationQuery<MsScanMatchResult>, ICancellableAnnotationQuery
     {
         private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> _finder;
         private readonly bool _ignoreIsotopicPeak;
@@ -57,7 +58,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public IonFeatureCharacter IonFeature { get; }
         public MsRefSearchParameterBase Parameter { get; }
 
+        public CancellationToken CancellationToken { get; set; }
+
         public IEnumerable<MsScanMatchResult> FindCandidates(bool forceFind = false) {
+            CancellationToken.ThrowIfCancellationRequested();
             if (_finder == null || !forceFind && _ignoreIsotopicPeak && !IonFeature.IsMonoIsotopicIon) {
                 return Enumerable.Empty<MsScanMatchResult>();
             }

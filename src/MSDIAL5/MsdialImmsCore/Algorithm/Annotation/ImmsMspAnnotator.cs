@@ -13,6 +13,7 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 {
@@ -40,23 +41,25 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key, query.GetCancellationToken()).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key);
+            return FindCandidatesCore(query.Property, query.NormalizedScan, query.Isotopes, parameter, omics, Key, query.GetCancellationToken());
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IMSScanProperty normScan, IReadOnlyList<IsotopicPeak> isotopes,
-            MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey) {
+            MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey, CancellationToken token = default) {
+            token.ThrowIfCancellationRequested();
 
             var candidates = parameter.IsUseCcsForAnnotationFiltering
                 ? SearchWithCcsCore(property, parameter.Ms1Tolerance, parameter.CcsTolerance)
                 : SearchCore(property, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(candidates.Count);
             foreach (var candidate in candidates) {
+                token.ThrowIfCancellationRequested();
                 var result = CalculateScoreCore(property, normScan, isotopes, candidate, candidate.IsotopicPeaks, parameter, omics, sourceKey);
                 ValidateCore(result, property, normScan, candidate, parameter, omics);
                 results.Add(result);

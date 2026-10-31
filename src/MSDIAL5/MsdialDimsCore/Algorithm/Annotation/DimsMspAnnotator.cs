@@ -10,6 +10,7 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 {
@@ -38,18 +39,20 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key, query.GetCancellationToken()).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key);
+            return FindCandidatesCore(query.Property, query.NormalizedScan, parameter, Key, query.GetCancellationToken());
         }
 
-        private List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, string sourceKey) {
+        private List<MsScanMatchResult> FindCandidatesCore(IMSProperty property, IMSScanProperty scan, MsRefSearchParameterBase parameter, string sourceKey, CancellationToken token = default) {
+            token.ThrowIfCancellationRequested();
             var candidates = SearchBound(property, parameter.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(candidates.Count);
             foreach (var candidate in candidates) {
+                token.ThrowIfCancellationRequested();
                 var result = CalculateScoreCore(property, scan, candidate, parameter, sourceKey);
                 results.Add(result);
             }

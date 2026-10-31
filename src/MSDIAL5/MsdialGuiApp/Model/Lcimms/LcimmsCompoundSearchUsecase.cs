@@ -7,10 +7,11 @@ using CompMs.MsdialCore.DataObj;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    internal sealed class LcimmsCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<LcimmsCompoundResult, PeakSpotModel>
+    internal sealed class LcimmsCompoundSearchUsecase : BindableBase, ICancellableCompoundSearchUsecase<LcimmsCompoundResult, PeakSpotModel>
     {
         public LcimmsCompoundSearchUsecase(IReadOnlyList<CompoundSearcher> compoundSearchers) {
             CompoundSearchers = compoundSearchers;
@@ -50,12 +51,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private MsRefSearchParameterBase? _searchParameterBase;
 
-        public IReadOnlyList<LcimmsCompoundResult> Search(PeakSpotModel peakSpot) {
+        public IReadOnlyList<LcimmsCompoundResult> Search(PeakSpotModel peakSpot) => Search(peakSpot, default);
+
+        public IReadOnlyList<LcimmsCompoundResult> Search(PeakSpotModel peakSpot, CancellationToken token) {
+            token.ThrowIfCancellationRequested();
             var results = SelectedCompoundSearcher?.Search(
                 peakSpot.PeakSpot.MSIon,
                 peakSpot.MsScan,
                 new List<RawPeakElement>(),
-                new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
+                new IonFeatureCharacter { IsotopeWeightNumber = 0, }, // Assume this is not isotope.
+                token
             );
             if (results is null) {
                 return System.Array.Empty<LcimmsCompoundResult>();

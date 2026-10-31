@@ -25,6 +25,9 @@ namespace CompMs.Common.Parser
         /// <param name="filepath"></param>
         /// <returns></returns>
         public static List<MoleculeMsReference> MspFileReader(string filepath)
+            => MspFileReader(filepath, compactSpectra: false);
+
+        public static List<MoleculeMsReference> MspFileReader(string filepath, bool compactSpectra)
         {
             var mspFields = new List<MoleculeMsReference>();
             var counter = 0;
@@ -51,6 +54,7 @@ namespace CompMs.Common.Parser
                             var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
                             if (isSpecRetrieved) break;
                         }
+                        if (compactSpectra) { mspField.TryCompactSpectrum(); }
                         mspFields.Add(mspField);
                         counter++;
                     }
@@ -597,8 +601,8 @@ namespace CompMs.Common.Parser
             if (record.FragmentationCondition != string.Empty)
                 sw.WriteLine("COLLISIONENERGY: " + record.FragmentationCondition);
             sw.WriteLine("COMMENT: " + record.Comment);
-            sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
-            foreach (var peak in record.Spectrum) {
+            sw.WriteLine("Num Peaks: " + record.GetSpectrumPeakData().Count);
+            foreach (var peak in ExportPeaks(record)) {
                 sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
             }
             sw.WriteLine();
@@ -616,9 +620,9 @@ namespace CompMs.Common.Parser
             sw.WriteLine("INCHIKEY: " + record.InChIKey);
             sw.WriteLine("IONMODE: " + record.IonMode);
             sw.WriteLine("Comment: Computationally generated spectral record in MS-DIAL project");
-            sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
+            sw.WriteLine("Num Peaks: " + record.GetSpectrumPeakData().Count);
 
-            foreach (var peak in record.Spectrum) {
+            foreach (var peak in ExportPeaks(record)) {
                 if (string.IsNullOrEmpty(peak.Comment)) {
                     sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
                 }
@@ -664,9 +668,9 @@ namespace CompMs.Common.Parser
             sw.WriteLine("IONMODE: " + record.IonMode);
             sw.WriteLine("DatabaseUniqueIdentifier: " + record.DatabaseUniqueIdentifier);
             sw.WriteLine("Comment: " + record.Comment);
-            sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
+            sw.WriteLine("Num Peaks: " + record.GetSpectrumPeakData().Count);
 
-            foreach (var peak in record.Spectrum) {
+            foreach (var peak in ExportPeaks(record)) {
                 if (string.IsNullOrEmpty(peak.Comment)) {
                     sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
                 }
@@ -681,6 +685,16 @@ namespace CompMs.Common.Parser
                 }
             }
             sw.WriteLine();
+        }
+
+        private static IEnumerable<(double Mass, double Intensity, string Comment)> ExportPeaks(MoleculeMsReference record) {
+            if (record.IsSpectrumCompact) {
+                var data = record.GetSpectrumPeakData();
+                for (var i = 0; i < data.Count; i++) { yield return (data[i].Mass, data[i].Intensity, null); }
+            }
+            else {
+                foreach (var peak in record.Spectrum) { yield return (peak.Mass, peak.Intensity, peak.Comment); }
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 {
@@ -34,20 +35,22 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.Isotopes, parameter, Key).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.Isotopes, parameter, Key, query.GetCancellationToken()).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
-            return FindCandidatesCore(query.Property, query.Isotopes, parameter, Key);
+            return FindCandidatesCore(query.Property, query.Isotopes, parameter, Key, query.GetCancellationToken());
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IReadOnlyList<IsotopicPeak> isotopes,
-            MsRefSearchParameterBase parameter, string sourceKey) {
+            MsRefSearchParameterBase parameter, string sourceKey, CancellationToken token = default) {
+            token.ThrowIfCancellationRequested();
             var candidates = SearchCore(property, parameter);
             var results = new List<MsScanMatchResult>(candidates.Count);
             foreach (var candidate in candidates) {
+                token.ThrowIfCancellationRequested();
                 var result = CalculateScoreCore(property, isotopes, candidate, candidate.IsotopicPeaks, parameter, sourceKey);
                 ValidateCore(result, property, candidate, parameter);
                 results.Add(result);

@@ -113,7 +113,7 @@ public sealed class GcmsProcess
         {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB is null ? [] : [.. mspDB.Database],
+            // The GUI and current serializer use DataBases; do not also persist a duplicate legacy MSP list.
             TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
@@ -313,7 +313,7 @@ public sealed class GcmsProcess
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
             using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
             using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
-            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
+            await projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => throw new IOException($"Saving GC-MS dataset '{parameter.ProjectFileName}' failed.")).ConfigureAwait(false);
             streamManager.Complete();
         }
 

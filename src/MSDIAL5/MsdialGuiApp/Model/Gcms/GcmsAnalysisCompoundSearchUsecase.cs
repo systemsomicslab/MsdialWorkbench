@@ -8,15 +8,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Gcms
 {
-    internal sealed class GcmsAnalysisCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<GcmsCompoundResult, Ms1BasedSpectrumFeature>
+    internal sealed class GcmsAnalysisCompoundSearchUsecase : BindableBase, ICancellableCompoundSearchUsecase<GcmsCompoundResult, Ms1BasedSpectrumFeature>
     {
         private readonly CalculateMatchScore? _calculateMatchScore;
+        private readonly GcmsCompoundSearchCache? _cache;
 
         public GcmsAnalysisCompoundSearchUsecase(CalculateMatchScore? calculateMatchScore)
         {
+            _cache = calculateMatchScore is null ? null : GcmsCompoundSearchCache.For(calculateMatchScore);
             SearchParameter = calculateMatchScore?.CopySearchParameter();
             _calculateMatchScore = SearchParameter is { }
                 ? calculateMatchScore?.With(SearchParameter)
@@ -38,18 +41,23 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public MsRefSearchParameterBase? SearchParameter { get; }
 
-        public IReadOnlyList<GcmsCompoundResult> Search(Ms1BasedSpectrumFeature target) {
+        public IReadOnlyList<GcmsCompoundResult> Search(Ms1BasedSpectrumFeature target) => Search(target, default);
+
+        public IReadOnlyList<GcmsCompoundResult> Search(Ms1BasedSpectrumFeature target, CancellationToken token) {
             if (_calculateMatchScore is null) {
                 return Array.Empty<GcmsCompoundResult>();
             }
-            var compounds = _calculateMatchScore.CalculateMatches(target.Scan)
+            return _cache!.Search(target.Scan, SearchParameter!, (scan, parameter) => {
+                var calculator = _calculateMatchScore.With(parameter);
+                var compounds = calculator.CalculateMatches(scan, token)
                     .OrderByDescending(r => r.TotalScore)
-                    .Select(result => new GcmsCompoundResult(_calculateMatchScore.Reference(result), result))
+                    .Select(result => new GcmsCompoundResult(calculator.Reference(result), result))
                     .ToArray();
-            foreach (var compound in compounds) {
-                ((ICompoundResult)compound).MatchResult.Source |= SourceType.Manual;
-            }
-            return compounds;
+                foreach (var compound in compounds) {
+                    ((ICompoundResult)compound).MatchResult.Source |= SourceType.Manual;
+                }
+                return compounds;
+            }, token);
         }
     }
 }

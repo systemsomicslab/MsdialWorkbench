@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -14,5 +15,10 @@ namespace CompMs.App.Msdial.Model.Search
         MsRefSearchParameterBase? SearchParameter { get; }
 
         IReadOnlyList<TCompoundResult> Search(TTarget target);
+    }
+
+    internal interface ICancellableCompoundSearchUsecase<out TResult, in TTarget> : ICompoundSearchUsecase<TResult, TTarget>
+    {
+        IReadOnlyList<TResult> Search(TTarget target, CancellationToken token);
     }
 }

@@ -16,6 +16,7 @@ using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
     public class LcmsFastaAnnotator : 
@@ -43,7 +44,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
             var msrefParam = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, msrefParam, proteomicsParam).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, msrefParam, proteomicsParam, query.GetCancellationToken()).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IPepAnnotationQuery query) {
@@ -51,7 +52,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             if (query.Scan.Spectrum.IsEmptyOrNull()) return new List<MsScanMatchResult>();
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam);
+            var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam, query.GetCancellationToken());
             if (pepResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
             var repForwardResult = pepResults[0];
             var repPeptide = Refer(repForwardResult);
@@ -75,7 +76,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             //    return new List<MsScanMatchResult>() { repForwardResult, decoyResult };
             //}
 
-            var decoyResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, DecoyPeptideMsRef, parameter, proteomicsParam);
+            var decoyResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, DecoyPeptideMsRef, parameter, proteomicsParam, query.GetCancellationToken());
             if (decoyResults.IsEmptyOrNull()) {
                 repForwardResult.IsDecoy = false;
                 var repReverseResult = new MsScanMatchResult() { IsDecoy = true };
@@ -109,10 +110,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         private List<MsScanMatchResult> FindCandidatesCore(
             IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, IonFeatureCharacter character, 
             List<PeptideMsReference> pepMsRef, 
-            MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam) {
+            MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam, CancellationToken token = default) {
+            token.ThrowIfCancellationRequested();
             (var lo, var hi) = SearchBoundIndex(property, character, pepMsRef, msrefSearchParam.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
+                token.ThrowIfCancellationRequested();
                 var candidate = pepMsRef[i];
                 if (msrefSearchParam.IsUseTimeForAnnotationFiltering
                     && Math.Abs(property.ChromXs.RT.Value - candidate.ChromXs.RT.Value) > msrefSearchParam.RtTolerance) {

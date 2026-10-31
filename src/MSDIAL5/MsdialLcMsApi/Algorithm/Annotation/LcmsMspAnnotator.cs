@@ -58,20 +58,22 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
-            return FindCandidatesCore(query, query.Parameter ?? Parameter).FirstOrDefault();
+            return FindCandidatesCore(query).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
-            return FindCandidatesCore(query, query.Parameter ?? Parameter).ToList();
+            return FindCandidatesCore(query).ToList();
         }
 
-        private IEnumerable<MsScanMatchResult> FindCandidatesCore(IAnnotationQuery<MsScanMatchResult> query, MsRefSearchParameterBase parameter) {
-            return SearchCore(query.Property, parameter)
-                .Select(candidate => CalculateScore(query, candidate))
-                .OrderByDescending(result => result.TotalScore);
+        private IEnumerable<MsScanMatchResult> FindCandidatesCore(IAnnotationQuery<MsScanMatchResult> query) {
+            return FindCandidatesWithoutOrdering(query).OrderByDescending(result => result.TotalScore);
         }
+
+        public IEnumerable<MsScanMatchResult> FindCandidatesWithoutOrdering(IAnnotationQuery<MsScanMatchResult> query)
+            => SearchCore(query.Property, query.Parameter ?? Parameter).Select(candidate => CalculateScore(query, candidate));
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
+            query.GetCancellationToken().ThrowIfCancellationRequested();
             var result = scorer.Score(query, reference);
             // The peak and the reference are no longer in scope here, so the requirement is
             // read from the record the scorer just wrote from those same two values.
