@@ -225,6 +225,29 @@ public class MsScanMatchingTests
         Assert.AreEqual(reference.Name, MsScanMatching.GetLipidNameFromReference(reference));
     }
 
+    [TestMethod()]
+    public void GetLipidomicsMatchedPeaksScores_ParsedLipidName_KeepsLipidBonus() {
+        var reference = CreateParsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var plain = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        Assert.AreEqual(1d, plain[0]);
+        CollectionAssert.AreEqual(new[] { 2d, plain[1], }, actual);
+    }
+
+    [TestMethod()]
+    public void GetRefinedLipidAnnotationLevel_ParsedLipidName_MatchesClassAndChain() {
+        var reference = CreateParsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var actual = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, _mzTolerance,
+            out var isLipidClassMatched, out var isLipidChainMatched, out var isLipidPositionMatched, out var isOthers);
+        Assert.AreEqual("PC 34:1|PC 16:0_18:1", actual);
+        Assert.IsTrue(isLipidClassMatched);
+        Assert.IsTrue(isLipidChainMatched);
+        Assert.IsFalse(isLipidPositionMatched);
+        Assert.IsFalse(isOthers);
+    }
+
     private static void AssertReturnedAsOthers(MoleculeMsReference reference, string actual,
         bool isLipidClassMatched, bool isLipidChainMatched, bool isLipidPositionMatched, bool isOthers) {
         Assert.AreEqual(reference.Name, actual);
@@ -252,6 +275,24 @@ public class MsScanMatchingTests
                 new() { Mass = 376.3949, Intensity = 999, },
                 new() { Mass = 393.422, Intensity = 50, },
                 new() { Mass = 411.4326, Intensity = 100, },
+            ],
+        };
+    }
+
+    // A PC whose name parses, with the m/z 184.0733 head group fragment and both acyl fragments.
+    private static MoleculeMsReference CreateParsedLipidReference() {
+        return new MoleculeMsReference
+        {
+            Name = "PC 16:0_18:1",
+            CompoundClass = "PC",
+            AdductType = AdductIon.GetAdductIon("[M+H]+"),
+            PrecursorMz = 760.58508,
+            IonMode = IonMode.Positive,
+            Spectrum = [
+                new() { Mass = 184.0733, Intensity = 999, },
+                new() { Mass = 496.3398, Intensity = 50, },
+                new() { Mass = 522.3554, Intensity = 50, },
+                new() { Mass = 760.5851, Intensity = 100, },
             ],
         };
     }
