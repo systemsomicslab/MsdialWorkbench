@@ -248,6 +248,27 @@ public class MsScanMatchingTests
         Assert.IsFalse(isOthers);
     }
 
+    [TestMethod()]
+    public void GetLipidomicsMatchedPeaksScores_ChainWithoutColon_ReturnsMatchedPeaksScores() {
+        var reference = CreateUnparsedLipidReference();
+        reference.Name = "Cholesterol d7";
+        reference.CompoundClass = "ST";
+        var scan = CreateQueryScan(reference);
+        var expected = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [TestMethod()]
+    public void GetLipidomicsMatchedPeaksScores_NullFormula_KeepsLipidBonus() {
+        var reference = CreateParsedLipidReference();
+        reference.Formula = null;
+        var scan = CreateQueryScan(reference);
+        var plain = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        CollectionAssert.AreEqual(new[] { 2d, plain[1], }, actual);
+    }
+
     private static void AssertReturnedAsOthers(MoleculeMsReference reference, string actual,
         bool isLipidClassMatched, bool isLipidChainMatched, bool isLipidPositionMatched, bool isOthers) {
         Assert.AreEqual(reference.Name, actual);
