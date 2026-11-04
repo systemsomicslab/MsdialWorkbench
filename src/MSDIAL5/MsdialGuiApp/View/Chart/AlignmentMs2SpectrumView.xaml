@@ -111,6 +111,7 @@
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
+                          Template="{StaticResource SpectrumLayersWithAnnotations}"
                           core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -154,15 +155,6 @@
                                     </ToolTip>
                                 </chart:LineSpectrumControlSlim.ToolTip>
                             </chart:LineSpectrumControlSlim>
-                            <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
-                                             HorizontalPropertyName="{Binding HorizontalProperty}"
-                                             VerticalPropertyName="{Binding VerticalProperty}"
-                                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
-                                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
-                                             Brush="Black"
-                                             Overlap="Horizontal, Direct"
-                                             Format="F4"
-                                             ClipToBounds="True"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -212,7 +204,8 @@
                                      OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                      ContentAlignment="BottomCenter"
                                      Brush="Black"
-                                     Overlap="Horizontal, Direct"
+                                     MinimumOrder="{Binding MinimumAnnotationOrder.Value}"
+                                     LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                                      Format="F4"
                                      ClipToBounds="True"/>
                 </Grid>
