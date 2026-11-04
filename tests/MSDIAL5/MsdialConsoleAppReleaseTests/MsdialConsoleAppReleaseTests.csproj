@@ -24,4 +24,12 @@
     <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
     <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="console-cases.example.json" />
+  </ItemGroup>
 </Project>

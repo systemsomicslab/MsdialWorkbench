@@ -5,16 +5,17 @@ vendor format and processing mode and fails unless the run finishes with peaks i
 
 ## Running
 
-The executable under test and the demo data are always passed explicitly:
+The executable under test, the demo data and the list of cases are always passed explicitly:
 
 ```
-dotnet test tests/MSDIAL5/MsdialConsoleAppReleaseTests -- "TestRunParameters.Parameter(name=\"ConsoleExe\", value=\"C:\path\to\MSDIALCUI.exe\")" "TestRunParameters.Parameter(name=\"DemoDataDir\", value=\"D:\msdial_demofiles\")"
+dotnet test tests/MSDIAL5/MsdialConsoleAppReleaseTests -- "TestRunParameters.Parameter(name=\"ConsoleExe\", value=\"C:\path\to\MSDIALCUI.exe\")" "TestRunParameters.Parameter(name=\"DemoDataDir\", value=\"D:\msdial_demofiles\")" "TestRunParameters.Parameter(name=\"CasesFile\", value=\"C:\path\to\console-cases.json\")"
 ```
 
 | Parameter     | Meaning                                                            |
 |---------------|--------------------------------------------------------------------|
 | `ConsoleExe`  | The `MSDIALCUI.exe` under test, for example an unpacked release zip. |
 | `DemoDataDir` | The demo data folder.                                              |
+| `CasesFile`   | The JSON file listing the cases (see [Cases](#cases)). Keep it outside the repository. |
 | `Cases`       | Optional. Comma-separated case names to run (`sciex_wiff2,gcms_netcdf`); the rest report Inconclusive. |
 
 A test whose parameters are missing reports Inconclusive, so the solution-wide `dotnet test` in CI
@@ -42,9 +43,24 @@ output are attached to the test result.
 
 ## Cases
 
-The list is `ProcessingTests.Cases`: Thermo, SCIEX (WIFF, WIFF2, EAD), Waters, Agilent, Shimadzu,
-Bruker, mzML and Hive for LC-MS; Bruker timsTOF for LC-IM-MS, DIMS and IMMS; netCDF, Agilent
-MassHunter, Shimadzu, Thermo GC-QE and ABF for GC-MS.
+The cases are listed in the JSON file `CasesFile` names, one test result per case. The file stays
+outside the repository so the demo data's file names are not published;
+`console-cases.example.json` shows the format:
 
-A case with a `KnownIssue` reports Inconclusive with the reason instead of running. Remove the
-`KnownIssue` once the cause is fixed, so the case guards against it coming back.
+| Field | Meaning |
+|-------|---------|
+| `name` | The name in the test results and in the `Cases` parameter. |
+| `mode` | The console command: `lcms`, `gcms`, `dims`, `imms` or `lcimms`. |
+| `ionMode` | `Positive` or `Negative`. |
+| `rawData` | The measurement files relative to `DemoDataDir`, as a user puts them in the input folder: a file, or for a run stored as a folder (Agilent and Bruker .d, Waters .raw), that folder. List companions such as a `.wiff.scan` too. |
+| `method` | Optional. Method file entries that replace the template's or are added to it, by their names in the method file. `{DemoDataDir}` in a value is replaced with the demo data folder. |
+| `riCompoundFile` | Optional. A retention index compound file relative to `DemoDataDir`; the run writes an RI dictionary that maps every input file to it, as GC-MS with RI needs. |
+| `knownIssue` | Optional. Why the case is expected to fail. |
+
+To add a case or change a setting, edit that file; the code does not change.
+
+A case with a `knownIssue` reports Inconclusive with the reason instead of running. Remove the
+`knownIssue` once the cause is fixed, so the case guards against it coming back.
+
+The cases are read when the tests run, not when they are discovered, so Test Explorer shows
+`ProcessesDemoData` once and the results list each case.

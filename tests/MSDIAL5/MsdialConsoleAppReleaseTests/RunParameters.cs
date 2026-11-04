@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -17,6 +18,34 @@ namespace CompMs.App.MsdialConsole.ReleaseTests
         public const string ConsoleExe = nameof(ConsoleExe);
         public const string DemoDataDir = nameof(DemoDataDir);
         public const string Cases = nameof(Cases);
+
+        /// <summary>
+        /// The JSON file that lists the cases: their raw data under <see cref="DemoDataDir"/> and
+        /// method entries. It lives outside the repository, so the demo data's file names are not
+        /// published.
+        /// </summary>
+        public const string CasesFile = nameof(CasesFile);
+
+        /// <summary>
+        /// The cases of <see cref="CasesFile"/>, as the rows of a data-driven test. Without the
+        /// parameter there is one row, <c>null</c>, which the test reports Inconclusive.
+        /// </summary>
+        public static IEnumerable<object?[]> CaseData() {
+            if (TestRun.Context?.Properties[CasesFile] is not string path || string.IsNullOrWhiteSpace(path)) {
+                return new[] { new object?[] { null } };
+            }
+            if (!File.Exists(path)) {
+                throw new FileNotFoundException($"{CasesFile} points to '{path}', which does not exist.", path);
+            }
+            return ReleaseTests.CasesFile.Load(path).Select(consoleCase => new object?[] { consoleCase });
+        }
+
+        public static ConsoleCase RequireCase(ConsoleCase? consoleCase) {
+            if (consoleCase is null) {
+                Assert.Inconclusive($"The run parameter '{CasesFile}' is not set. See tests/MSDIAL5/MsdialConsoleAppReleaseTests/README.md.");
+            }
+            return consoleCase!;
+        }
 
         public static string RequireConsoleExe(TestContext context) {
             var path = Require(context, ConsoleExe);
