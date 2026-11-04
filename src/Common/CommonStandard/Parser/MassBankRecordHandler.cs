@@ -116,7 +116,7 @@ namespace CompMs.Common.Parser
                 // ch$cdkdepict
 
                 // ch$link
-                WriteLineIfNotEmpty(writer, "CH$LINK: INCHIKEY: {0}", molecule.InChIKey);
+                WriteLineIfNotEmpty(writer, "CH$LINK: INCHIKEY {0}", molecule.InChIKey);
 
                 // sp$scientific_name
                 // sp$lineage
