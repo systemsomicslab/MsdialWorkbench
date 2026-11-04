@@ -305,8 +305,9 @@ namespace CompMs.MsdialCore.DataObj
         /// Which of a feature's stored candidates is THE annotation of that feature.
         /// </summary>
         /// <remarks>
-        /// The evidence rank is placed above Priority for the reason given in
-        /// FacadeMatchResultEvaluator.SelectTopHit, and below the two verdicts for the reason given
+        /// The evidence rank is placed below Priority for the reason given in
+        /// FacadeMatchResultEvaluator.SelectTopHit -- it orders candidates within one annotator,
+        /// not across annotators -- and below the two verdicts for the reason given
         /// in MsScanMatchResultEvaluator.SelectTopHit. IsManuallyModified stays first, so a person's
         /// choice is still final.
         ///
@@ -326,7 +327,7 @@ namespace CompMs.MsdialCore.DataObj
         /// the better one.
         /// </remarks>
         internal static Tuple<bool, bool, bool, int, int, float> ResultOrder(MsScanMatchResult result) {
-            return Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, AnnotationEvidence.Rank(result.EvidenceSource), result.Priority, result.TotalScore);
+            return Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, AnnotationEvidence.Rank(result.EvidenceSource), result.TotalScore);
         }
     }
 }

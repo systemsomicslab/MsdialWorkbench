@@ -210,7 +210,7 @@ namespace CompMs.MsdialCore.Utility
         /// 2. The precedence of the peak's own representative annotation -- the candidate
         ///    <see cref="MsScanMatchResultContainer.Representative"/> already chose for that peak --
         ///    by <see cref="MsScanMatchResultContainer.ResultOrder"/>, the same key that chose it:
-        ///    manual modification, reference match, suggestion, evidence rank, annotator priority,
+        ///    manual modification, reference match, suggestion, annotator priority, evidence rank,
         ///    total score. This is the author's decision of 2026-10-28 (D-A), for every project:
         ///    first whether the annotation is reference-matched, then the annotator's tier, then the
         ///    score. It replaces the highest total score over ALL of a peak's candidates, which let a

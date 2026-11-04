@@ -61,9 +61,7 @@ namespace CompMs.Common.DataObj.Result {
     /// These values describe WHAT WAS COMPARED AND WHAT IT SUPPORTS. So an MSP candidate for a
     /// feature with no product-ion spectrum is <see cref="PrecursorOnly"/>, not
     /// <see cref="ReferenceSpectrum"/>: the repository already speaks that way --
-    /// AnnotationName.NoMs2Prefix calls exactly this case a "precursor-only suggestion", and the
-    /// programme's annotation policy is written the same way, "a lower-priority MS/MS reference
-    /// match outranks a higher-priority precursor-only suggestion". Which database the name came
+    /// AnnotationName.NoMs2Prefix calls exactly this case a "precursor-only suggestion". Which database the name came
     /// from is a separate question, and <see cref="MsScanMatchResult.Source"/> already answers it.
     ///
     /// The "and what it supports" half is carried by <see cref="WeakSpectrumMatch"/> and
@@ -289,8 +287,10 @@ namespace CompMs.Common.DataObj.Result {
         /// belongs in the ordering of the candidates, not folded into their scores. A weight would
         /// make that judgement tradeable, so a large enough similarity could buy a precursor-only
         /// candidate past a spectral match; as a separate key it cannot be bought at any score.
-        /// It is also the programme's written annotation policy, in as many words: "a lower-priority
-        /// MS/MS reference match outranks a higher-priority precursor-only suggestion".
+        ///
+        /// The rank orders candidates WITHIN one annotation method. Between annotators the
+        /// analyst's database order (MsScanMatchResult.Priority) is read first, so it is not the
+        /// rank that decides whether an m/z-RT library placed above an MS/MS library wins.
         ///
         /// NEVER <c>(int)source</c>. The serialized values are a compatibility record -- 3 is where
         /// <c>PredictedSpectrum</c> sat, 8 is the member that was appended after it -- and they run
