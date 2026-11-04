@@ -308,7 +308,8 @@ namespace Rfx.Riken.OsakaUniv
                         case "CH$CDK_DEPICT":
                             break;
                         case "CH$LINK":
-                            switch (subtag) {
+                            // MS-DIAL writes "CH$LINK: INCHIKEY: <key>", so accept the subtag with a trailing colon too
+                            switch (subtag?.TrimEnd(':')) {
                                 case "INCHIKEY":
                                     rawData.InchiKey = subcontent;
                                     break;
@@ -331,7 +332,7 @@ namespace Rfx.Riken.OsakaUniv
                         case "AC$MASS_SPECTROMETRY":
                             switch (subtag) {
                                 case "ION_MODE":
-                                    switch (subcontent)
+                                    switch (subcontent.ToUpperInvariant())
                                     {
                                         case "POSITIVE":
                                             rawData.IonMode = IonMode.Positive;
@@ -521,7 +522,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public static void MassBankRecordWriter(string filePath, RawData rawData) {
             List<string> lines;
-            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+            using (var sr = new StreamReader(filePath, Encoding.UTF8)) {
                 lines = new List<string>();
                 while (!sr.EndOfStream) {
                     lines.Add(sr.ReadLine());
@@ -597,7 +598,7 @@ namespace Rfx.Riken.OsakaUniv
                     }
                 }
             }
-            using (var sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+            using (var sw = new StreamWriter(filePath, false, new UTF8Encoding(false))) {
                 foreach (var line in lines) {
                     sw.WriteLine(line);
                 }

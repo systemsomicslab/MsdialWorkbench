@@ -134,7 +134,8 @@ namespace Rfx.Riken.OsakaUniv
             var ContributorIdentifier = "XXXX";
             var id = rawData.ScanNumber;
             if (id < 0) {
-                id = rawData.GetHashCode() % 100_000_000;
+                // mask the sign bit: a negative hash would give an accession like "MSFINDER-XXXX--0001234"
+                id = (rawData.GetHashCode() & int.MaxValue) % 100_000_000;
             }
 
             // accession
@@ -142,16 +143,9 @@ namespace Rfx.Riken.OsakaUniv
         }
 
         private static void writeResultAsMassBankRecord(Stream stream, RawData rawData, List<FormulaResult> formulaResults, List<FragmenterResult> sfdResults, AnalysisParamOfMsfinder param) {
-            using (var sw = new StreamWriter(stream, Encoding.ASCII, 4096, false)) {
-                var Identifier = "MSFINDER";
-                var ContributorIdentifier = "XXXX";
-
+            using (var sw = new StreamWriter(stream, new UTF8Encoding(false), 4096, false)) {
                 // accession
-                var id = rawData.ScanNumber;
-                if (id < 0) {
-                    id = rawData.GetHashCode() % 100_000_000;
-                }
-                sw.WriteLine($"ACCESSION: {Identifier}-{ContributorIdentifier}-{id:D8}");
+                sw.WriteLine($"ACCESSION: {getMassBankRecordAccession(rawData)}");
 
                 var MSType = "MS2";
                 var name = string.IsNullOrEmpty(rawData.MetaboliteName) ? rawData.Name : rawData.MetaboliteName;
@@ -216,7 +210,7 @@ namespace Rfx.Riken.OsakaUniv
                 sw.WriteLine($"AC$INSTRUMENT_TYPE: {rawData.InstrumentType}");
 
                 // ac$mass_spectrometry: ion_mode
-                sw.WriteLine($"AC$MASS_SPECTROMETRY: ION_MODE {rawData.IonMode}");
+                sw.WriteLine($"AC$MASS_SPECTROMETRY: ION_MODE {rawData.IonMode.ToString().ToUpperInvariant()}");
 
                 // ac$mass_spectrometry mstype
                 sw.WriteLine($"AC$MASS_SPECTROMETRY: MS_TYPE {MSType}");
@@ -241,7 +235,7 @@ namespace Rfx.Riken.OsakaUniv
 
                 // pk$splash
                 var spectra = FragmentAssigner.GetCentroidMsMsSpectrum(rawData);
-                var maxIntensity = spectra.Max(p => p.Intensity);
+                var maxIntensity = spectra.Count > 0 ? spectra.Max(p => p.Intensity) : 1d;
                 spectra = spectra.Where(p => p.Intensity / maxIntensity * 100 >= param.RelativeAbundanceCutOff).ToList();
                 if (spectra.Count > 0) {
                     var splashHandler = new NSSplash.Splash();
@@ -257,15 +251,9 @@ namespace Rfx.Riken.OsakaUniv
                 for (int i = 0; i < spectra.Count; i++) {
                     var mz = spectra[i].Mz;
 
-                    var comment = "";
                     var originalComment = spectra[i].Comment;
                     var additionalComment = getProductIonComment(mz, formulaResults, sfdResults, rawData.IonMode);
-                    if (originalComment != "") {
-                        comment = originalComment + "; " + additionalComment;
-                    }
-                    else {
-                        comment = additionalComment;
-                    }
+                    var comment = string.Join("; ", new[] { originalComment, additionalComment }.Where(c => !string.IsNullOrEmpty(c)));
 
                     if (comment != string.Empty) {
                         sw.WriteLine($"  {mz:F5} {comment}");
