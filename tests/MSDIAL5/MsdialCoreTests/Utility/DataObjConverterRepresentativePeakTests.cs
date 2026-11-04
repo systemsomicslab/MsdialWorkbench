@@ -86,13 +86,22 @@ public class DataObjConverterRepresentativePeakTests
     }
 
     /// <summary>
-    /// The evidence rank sits above the tier, as it does inside a peak: an accepted in-silico match does not outrank an
-    /// accepted acquired one even when its library is given the higher priority.
+    /// The tier sits above the evidence rank, as it does inside a peak: the evidence rank orders candidates within one
+    /// annotator, so an accepted in-silico match from a library the analyst placed higher outranks an accepted acquired one.
     /// </summary>
     [TestMethod]
-    public void AnAcceptedAcquiredMatchOutranksAnAcceptedInSilicoMatchOfHigherPriority() {
+    public void AnAcceptedInSilicoMatchOfHigherPriorityOutranksAnAcceptedAcquiredMatch() {
+        var acquired = Peak(0, height: 9000, Acquired(AcquiredLow, 1.90f));
+        var predicted = Peak(1, height: 1000, Predicted(priority: 10, 0.70f));
+
+        Assert.AreSame(predicted, DataObjConverter.GetRepresentativePeak([acquired, predicted]));
+    }
+
+    /// <summary>Within one tier the evidence rank still decides: the acquired match outranks a higher-scoring in-silico one.</summary>
+    [TestMethod]
+    public void WithinOneTierAnAcceptedAcquiredMatchOutranksAnAcceptedInSilicoMatch() {
         var acquired = Peak(0, height: 1000, Acquired(AcquiredLow, 0.70f));
-        var predicted = Peak(1, height: 9000, Predicted(priority: 10, 1.90f));
+        var predicted = Peak(1, height: 9000, Predicted(AcquiredLow, 1.90f));
 
         Assert.AreSame(acquired, DataObjConverter.GetRepresentativePeak([predicted, acquired]));
     }

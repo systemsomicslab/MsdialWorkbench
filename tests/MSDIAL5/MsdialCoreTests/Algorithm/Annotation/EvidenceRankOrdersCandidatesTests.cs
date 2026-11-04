@@ -193,25 +193,44 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         /// <summary>
-        /// ACROSS annotators, what was compared outranks which library the analyst listed first.
+        /// ACROSS annotators, the library order the analyst set decides, not what was compared.
         /// </summary>
         /// <remarks>
-        /// This is the programme's annotation policy written as code: "a lower-priority MS/MS
-        /// reference match outranks a higher-priority precursor-only suggestion". Priority is the
-        /// analyst's ordering of their databases -- IdentifySettingModel hands out
-        /// <c>AnnotatorModels.Count - index</c> -- so before this the first library in their list
-        /// won even when a later one had matched a spectrum and it had not.
+        /// Priority is the analyst's ordering of their databases -- IdentifySettingModel hands out
+        /// <c>AnnotatorModels.Count - index</c>, and "move up" changes it. The evidence rank only
+        /// prefers a spectrum-backed candidate within one annotation method; it must not let a
+        /// lower-priority library's MS/MS match take the name from a higher-priority library's
+        /// precursor-only match. The scores favour the later library too, so only Priority can make
+        /// the preferred one win.
         /// </remarks>
         [TestMethod()]
-        public void TheFacadePrefersWhatWasComparedOverTheAnalystsLibraryOrder() {
-            var preferred = Candidate("from the preferred library", 0.90f, AnnotationEvidenceSource.PrecursorOnly);
+        public void TheFacadeKeepsTheAnalystsLibraryOrderAcrossAnnotators() {
+            var preferred = Candidate("from the preferred library", 0.60f, AnnotationEvidenceSource.PrecursorOnly);
+            preferred.AnnotatorID = "preferred";
             preferred.Priority = 2;
-            var later = Candidate("from a later library", 0.60f, AnnotationEvidenceSource.ReferenceSpectrum);
+            var later = Candidate("from a later library", 0.90f, AnnotationEvidenceSource.ReferenceSpectrum);
+            later.AnnotatorID = "later";
             later.Priority = 1;
 
             var facade = new FacadeMatchResultEvaluator();
 
-            Assert.AreEqual("from a later library", facade.SelectTopHit(new[] { preferred, later }).Name);
+            Assert.AreEqual("from the preferred library", facade.SelectTopHit(new[] { preferred, later }).Name);
+            Assert.AreEqual("from the preferred library", facade.SelectTopHit(new[] { later, preferred }).Name);
+        }
+
+        /// <summary>
+        /// WITHIN one annotator (equal Priority), the facade still prefers what was compared.
+        /// </summary>
+        [TestMethod()]
+        public void TheFacadePrefersWhatWasComparedWithinOneAnnotator() {
+            var massOnly = Candidate("mass only", 0.95f, AnnotationEvidenceSource.PrecursorOnly);
+            massOnly.Priority = 1;
+            var compared = Candidate("spectrum compared", 0.60f, AnnotationEvidenceSource.ReferenceSpectrum);
+            compared.Priority = 1;
+
+            var facade = new FacadeMatchResultEvaluator();
+
+            Assert.AreEqual("spectrum compared", facade.SelectTopHit(new[] { massOnly, compared }).Name);
         }
 
         /// <summary>
@@ -251,24 +270,78 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         }
 
         /// <summary>
-        /// The Representative -- the candidate whose name is exported -- follows the same rule.
+        /// The Representative -- the candidate whose name is exported -- follows the same rule:
+        /// Priority first across annotators.
         /// </summary>
-        /// <remarks>
-        /// Without this the change would be half-applied in the worst possible way: the better
-        /// evidence would be kept by SelectTopN and then the exported name would still be taken from
-        /// the higher-scoring candidate.
-        /// </remarks>
         [TestMethod()]
-        public void TheRepresentativeIsChosenByEvidenceBeforePriority() {
-            var preferred = Candidate("from the preferred library", 0.90f, AnnotationEvidenceSource.PrecursorOnly);
+        public void TheRepresentativeIsChosenByPriorityBeforeEvidence() {
+            var preferred = Candidate("from the preferred library", 0.60f, AnnotationEvidenceSource.PrecursorOnly);
+            preferred.AnnotatorID = "preferred";
             preferred.Priority = 2;
-            var later = Candidate("from a later library", 0.60f, AnnotationEvidenceSource.ReferenceSpectrum);
+            var later = Candidate("from a later library", 0.90f, AnnotationEvidenceSource.ReferenceSpectrum);
+            later.AnnotatorID = "later";
             later.Priority = 1;
 
             var container = new MsScanMatchResultContainer();
-            container.AddResults(new[] { preferred, later });
+            container.AddResults(new[] { later, preferred });
 
-            Assert.AreEqual("from a later library", container.Representative.Name);
+            Assert.AreEqual("from the preferred library", container.Representative.Name);
+        }
+
+        /// <summary>
+        /// The case observed in the lipidomics hands-on: an m/z-RT text library of internal
+        /// standards moved above an LBM library keeps the standard's name, although the LBM matched
+        /// an MS/MS spectrum and the text library compared none.
+        /// </summary>
+        [TestMethod()]
+        public void AHigherPriorityTextDbPrecursorOnlyMatchBeatsALowerPriorityMsMsMatch() {
+            var textDb = new MsScanMatchResult
+            {
+                Name = "PG 15:0-18:1(d7)",
+                Source = SourceType.TextDB,
+                AnnotatorID = "EquiSPLASH",
+                Priority = 2,
+                TotalScore = 0.80f,
+                IsPrecursorMzMatch = true,
+                IsRtMatch = true,
+                IsReferenceMatched = true,
+                EvidenceSource = AnnotationEvidenceSource.PrecursorOnly,
+            };
+            var lbm = new MsScanMatchResult
+            {
+                Name = "PE O-22:3_15:0",
+                Source = SourceType.MspDB,
+                AnnotatorID = "LBM",
+                Priority = 1,
+                TotalScore = 0.90f,
+                IsPrecursorMzMatch = true,
+                IsSpectrumMatch = true,
+                IsReferenceMatched = true,
+                EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum,
+            };
+
+            var container = new MsScanMatchResultContainer();
+            container.AddResults(new[] { lbm, textDb });
+
+            Assert.AreEqual("PG 15:0-18:1(d7)", container.Representative.Name);
+            Assert.AreEqual("PG 15:0-18:1(d7)", new FacadeMatchResultEvaluator().SelectTopHit(new[] { lbm, textDb }).Name);
+        }
+
+        /// <summary>
+        /// Within one annotator, the Representative still prefers what was compared over a
+        /// better-scoring precursor-only candidate.
+        /// </summary>
+        [TestMethod()]
+        public void TheRepresentativePrefersWhatWasComparedWithinOneAnnotator() {
+            var massOnly = Candidate("mass only", 0.95f, AnnotationEvidenceSource.PrecursorOnly);
+            massOnly.Priority = 1;
+            var compared = Candidate("spectrum compared", 0.60f, AnnotationEvidenceSource.ReferenceSpectrum);
+            compared.Priority = 1;
+
+            var container = new MsScanMatchResultContainer();
+            container.AddResults(new[] { massOnly, compared });
+
+            Assert.AreEqual("spectrum compared", container.Representative.Name);
         }
 
         /// <summary>
