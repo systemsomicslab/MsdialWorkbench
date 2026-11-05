@@ -716,6 +716,10 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference centrality weight", AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction interpolate blanks by analytical order", AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction local support RT window", AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor mode", AlignmentBaseParam.AutomaticRtCorrection.AnchorMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor library file path", AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor peak selection mode", AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor peak selection RT weight", AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionRtWeight.ToString(CultureInfo.InvariantCulture) }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Filtering");
@@ -1303,6 +1307,73 @@ namespace CompMs.MsdialCore.Parameter
         [Key(15)]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public float? SerializedLocalSupportRtWindow { get; set; } = DefaultLocalSupportRtWindow;
+
+        /// <summary>
+        /// The anchor library of <see cref="AnchorMode"/> UserOnly and Hybrid: the seven-column
+        /// text the user-defined RT correction reads (Name, RT, RT tolerance, m/z, m/z tolerance,
+        /// minimum height, T/F), read more strictly than it reads it (the T/F column must say
+        /// True, False, T or F; numbers take a decimal point). A True row is an anchor the user
+        /// names; a False row keeps the automatic selection from taking a candidate within its
+        /// m/z and RT tolerances. Empty when no library is used, and in a project saved before
+        /// key 16 existed.
+        /// </summary>
+        [Key(16)]
+        public string AnchorLibraryFilePath {
+            get => _anchorLibraryFilePath ?? string.Empty;
+            set => _anchorLibraryFilePath = value;
+        }
+        private string? _anchorLibraryFilePath = string.Empty;
+
+        /// <summary>
+        /// Where the anchors come from. A project saved before key 17 existed loads as
+        /// <see cref="AutomaticRtCorrectionAnchorMode.Automatic"/>, the type's default, which is
+        /// what it ran with.
+        /// </summary>
+        [Key(17)]
+        public AutomaticRtCorrectionAnchorMode AnchorMode { get; set; } = AutomaticRtCorrectionAnchorMode.Automatic;
+
+        /// <summary>
+        /// How a user anchor's peak is chosen when its m/z and RT window holds more than one peak,
+        /// as in the user-defined RT correction. A project saved before key 18 existed loads with
+        /// HighestIntensity, the type's default.
+        /// </summary>
+        [Key(18)]
+        public RetentionTimeCorrectionPeakSelectionMode AnchorPeakSelectionMode { get; set; } = RetentionTimeCorrectionPeakSelectionMode.HighestIntensity;
+
+        public const float DefaultAnchorPeakSelectionRtWeight = 0.5F;
+
+        /// <summary>
+        /// The weight of RT closeness against intensity when <see cref="AnchorPeakSelectionMode"/>
+        /// is Weighted, between 0 and 1.
+        /// </summary>
+        [IgnoreMember]
+        public float AnchorPeakSelectionRtWeight {
+            get => SerializedAnchorPeakSelectionRtWeight ?? DefaultAnchorPeakSelectionRtWeight;
+            set => SerializedAnchorPeakSelectionRtWeight = value;
+        }
+
+        /// <summary>
+        /// The stored form of <see cref="AnchorPeakSelectionRtWeight"/>; use that property instead.
+        /// Nullable for the reason <see cref="SerializedLocalSupportRtWindow"/> is.
+        /// </summary>
+        [Key(19)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public float? SerializedAnchorPeakSelectionRtWeight { get; set; } = DefaultAnchorPeakSelectionRtWeight;
+    }
+
+    /// <summary>
+    /// Where the anchors of the automatic alignment RT correction come from.
+    /// </summary>
+    public enum AutomaticRtCorrectionAnchorMode {
+        /// <summary>Anchors are chosen from the detected peaks; no anchor library is read.</summary>
+        Automatic = 0,
+        /// <summary>Only the anchor library's True rows are anchors.</summary>
+        UserOnly = 1,
+        /// <summary>
+        /// The library's True rows are anchors, its False rows are kept out of the automatic
+        /// selection, and automatic anchors fill the RT bins the True rows leave empty.
+        /// </summary>
+        Hybrid = 2,
     }
 
     [MessagePackObject]

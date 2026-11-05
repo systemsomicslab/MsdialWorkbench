@@ -113,6 +113,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public ReactiveCollection<SingleSpectrumModel> UpperSpectraModel { get; }
+        public SingleSpectrumModel UpperSpectrumModel => _upperSpectrumModel;
         public SingleSpectrumModel LowerSpectrumModel { get; }
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }

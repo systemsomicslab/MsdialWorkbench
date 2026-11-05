@@ -1,7 +1,9 @@
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
@@ -96,6 +98,62 @@ public class AlignmentLongCSVExporterTests
             "ID\tFile\tClass\tFile type\tInjection order\tBatch ID\tHeight\r\n" +
             "9\tqc.raw\tQC\tQC\t17\t2\tvalue\r\n",
             Encoding.ASCII.GetString(stream.ToArray()));
+    }
+
+    /// <summary>
+    /// The QA matrix as the Console writes it: a file whose peak an in-silico match annotates is
+    /// "In-silico matched" and not "Reference matched" (the author's decision of 2026-10-28); a file
+    /// whose peak an acquired spectrum annotates stays "Reference matched".
+    /// </summary>
+    [TestMethod]
+    public void QaMatrixMarksAnInSilicoPeakInSilicoMatchedAndNotReferenceMatched()
+    {
+        var exporter = new AlignmentLongCSVExporter();
+        var files = new[]
+        {
+            new AnalysisFileBean { AnalysisFileId = 0, AnalysisFileName = "a", AnalysisFileClass = "S", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 1, AnalysisBatch = 1 },
+            new AnalysisFileBean { AnalysisFileId = 1, AnalysisFileName = "b", AnalysisFileClass = "S", AnalysisFileType = AnalysisFileType.Sample, AnalysisFileAnalyticalOrder = 2, AnalysisBatch = 1 },
+        };
+        var spot = new AlignmentSpotProperty
+        {
+            MasterAlignmentID = 4,
+            AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+            {
+                Annotated(0, "a", AnnotationEvidenceSource.ReferenceSpectrum),
+                Annotated(1, "b", AnnotationEvidenceSource.BySpectrumPredictionTool),
+            },
+        };
+        var parameter = new ParameterBase();
+        using var stream = new MemoryStream();
+
+        exporter.ExportValueWithFileMetadata(
+            stream,
+            new[] { spot },
+            files,
+            new MulticlassFileMetaAccessor(0),
+            ("Reference matched", new LegacyQuantValueAccessor("Reference matched", parameter)),
+            ("In-silico matched", new LegacyQuantValueAccessor("In-silico matched", parameter)));
+
+        Assert.AreEqual(
+            "ID\tFile\tClass\tFile type\tInjection order\tBatch ID\tReference matched\tIn-silico matched\r\n" +
+            "4\ta\tS\tSample\t1\t1\tTRUE\tFALSE\r\n" +
+            "4\tb\tS\tSample\t2\t1\tFALSE\tTRUE\r\n",
+            Encoding.ASCII.GetString(stream.ToArray()));
+    }
+
+    private static AlignmentChromPeakFeature Annotated(int fileId, string fileName, AnnotationEvidenceSource evidence)
+    {
+        var peak = new AlignmentChromPeakFeature { FileID = fileId, FileName = fileName, Name = "Compound" };
+        peak.MatchResults.AddResult(new MsScanMatchResult
+        {
+            Name = "Compound",
+            Source = SourceType.MspDB,
+            EvidenceSource = evidence,
+            IsReferenceMatched = true,
+            IsSpectrumMatch = true,
+            TotalScore = 0.8f,
+        });
+        return peak;
     }
 
     private sealed class FakeFileMetaAccessor : IFileClassMetaAccessor
