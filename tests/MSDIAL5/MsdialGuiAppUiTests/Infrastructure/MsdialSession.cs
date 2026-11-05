@@ -30,6 +30,7 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
         private static readonly TimeSpan ResponsiveTimeout = TimeSpan.FromSeconds(30);
         private static readonly TimeSpan ExitTimeout = TimeSpan.FromSeconds(30);
         private static readonly TimeSpan SettleTime = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan UnexpectedDialogGrace = TimeSpan.FromSeconds(3);
 
         private readonly TestContext _context;
         private readonly CrashReportWatcher _crashReports;
@@ -60,7 +61,12 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             };
             var process = Process.Start(startInfo);
             var application = FlaUIApplication.Attach(process.Id);
-            var automation = new UIA3Automation();
+            var automation = new UIA3Automation {
+                // MS-DIAL loads a large file or alignment on its UI thread, during which a UI
+                // Automation call can wait longer than the default before it is answered.
+                ConnectionTimeout = TimeSpan.FromMinutes(2),
+                TransactionTimeout = TimeSpan.FromMinutes(2),
+            };
             Window? mainWindow;
             try {
                 mainWindow = application.GetMainWindow(automation, StartupTimeout);
@@ -105,7 +111,13 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             var stopwatch = Stopwatch.StartNew();
             while (true) {
                 AssertHealthy(step);
-                var unexpected = OpenDialogs().Where(dialog => !(allowDialog?.Invoke(SafeTitle(dialog) ?? string.Empty) ?? false)).ToList();
+                var unexpected = UnexpectedDialogs(allowDialog);
+                if (unexpected.Count > 0) {
+                    // MS-DIAL flashes short-lived windows while it works (loading a library, for
+                    // one); a dialog that asks or reports something stays until it is answered.
+                    System.Threading.Thread.Sleep(UnexpectedDialogGrace);
+                    unexpected = UnexpectedDialogs(allowDialog);
+                }
                 if (unexpected.Count > 0) {
                     Fail(step, unexpected.Select(dialog => $"An unexpected dialog '{SafeTitle(dialog)}' is open:{Environment.NewLine}{DescribeText(dialog)}").ToList());
                 }
@@ -136,6 +148,24 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
                 () => OpenDialogs().FirstOrDefault(dialog => SafeTitle(dialog) == title),
                 timeout,
                 open => open == title || alsoOpen.Contains(open));
+        }
+
+        private List<Window> UnexpectedDialogs(Func<string, bool>? allowDialog) {
+            return OpenDialogs()
+                .Where(dialog => !IsProgressNotice(dialog))
+                .Where(dialog => !(allowDialog?.Invoke(SafeTitle(dialog) ?? string.Empty) ?? false))
+                .ToList();
+        }
+
+        // ShortMessageWindow ("Message": "Loading project...", "Saving the project as...") only says
+        // what MS-DIAL is busy with and closes itself; it never asks anything.
+        private static bool IsProgressNotice(Window window) {
+            try {
+                return window.AutomationId == "MessageWindow";
+            }
+            catch (Exception) {
+                return false;
+            }
         }
 
         public bool IsDialogOpen(string title) {
@@ -237,7 +267,7 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             catch (Exception) {
                 return dialogs;
             }
-            var pending = new Queue<(Window Window, int Depth)>(topLevel.Select(window => (window, 0)));
+            var pending = new Queue<(Window Window, int Depth)>(topLevel.Where(window => !IsPopup(window)).Select(window => (window, 0)));
             while (pending.Count > 0) {
                 var (window, depth) = pending.Dequeue();
                 if (!window.Equals(MainWindow) && !dialogs.Contains(window)) {
@@ -291,12 +321,26 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             }
         }
 
+        // Owned windows show under their owner in the tree, modal ones (ShowDialog) and the ones
+        // MS-DIAL opens with Show alike, such as the molecular networking export. WPF popups
+        // (tooltips, drop-downs, context menus) are windows too but no dialogs, so they are left out.
         private static Window[] SafeModalWindows(Window window) {
             try {
-                return window.ModalWindows;
+                return window.FindAllChildren(cf => cf.ByControlType(ControlType.Window).And(cf.ByClassName("Popup").Not()))
+                    .Select(child => child.AsWindow())
+                    .ToArray();
             }
             catch (Exception) {
                 return Array.Empty<Window>();
+            }
+        }
+
+        private static bool IsPopup(Window window) {
+            try {
+                return window.ClassName == "Popup";
+            }
+            catch (Exception) {
+                return false;
             }
         }
 
@@ -311,8 +355,10 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
 
         private static string DescribeText(Window window) {
             try {
-                var texts = window.FindAllDescendants(condition => condition.ByControlType(ControlType.Text))
-                    .Select(text => text.Name)
+                // Win32 message boxes put their text in Text elements; WPF ones may use a read-only
+                // TextBox, whose text is its value rather than its name.
+                var texts = window.FindAllDescendants(condition => condition.ByControlType(ControlType.Text).Or(condition.ByControlType(ControlType.Edit)))
+                    .Select(text => text.ControlType == ControlType.Edit ? text.AsTextBox().Text : text.Name)
                     .Where(name => !string.IsNullOrWhiteSpace(name));
                 return string.Join(Environment.NewLine, texts);
             }

@@ -26,10 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="ui.runsettings.example" />
+    <None Include="lcms-datasets.example.json" />
   </ItemGroup>
 </Project>

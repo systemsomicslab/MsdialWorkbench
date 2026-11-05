@@ -143,6 +143,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Database path:" VerticalAlignment="Center" Grid.Column="0"/>
                 <TextBox Text="{Binding DataBasePath.Value, UpdateSourceTrigger=PropertyChanged}"
+                         AutomationProperties.AutomationId="TextBox_DataBasePath"
                          HorizontalContentAlignment="Left"
                          Margin="8" Grid.Column="1"/>
                 <Button Content="Browse"

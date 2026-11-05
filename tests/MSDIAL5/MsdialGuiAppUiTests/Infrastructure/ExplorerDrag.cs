@@ -39,6 +39,8 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
                 Arrange(explorer, screen.Left, screen.Top, screen.Width / 3, screen.Height / 2);
                 Arrange(targetWindow, screen.Left + screen.Width / 3, screen.Top, screen.Width * 2 / 3, screen.Height * 2 / 3);
                 Thread.Sleep(500);
+                targetWindow.BringToFront();
+                explorer.BringToFront();
 
                 var items = names.Select(name => session.WaitFor($"finding '{name}' in File Explorer",
                     () => explorer.FindFirstDescendant(cf => cf.ByControlType(ControlType.ListItem).And(cf.ByName(name))),

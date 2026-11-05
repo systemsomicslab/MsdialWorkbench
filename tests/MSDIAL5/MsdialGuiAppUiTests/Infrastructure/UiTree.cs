@@ -38,9 +38,15 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
                 var properties = element.Properties;
                 var automationId = properties.AutomationId.ValueOrDefault;
                 var enabled = properties.IsEnabled.ValueOrDefault ? "" : " (disabled)";
+                // What a text box holds and whether a box is ticked are what a failing step most
+                // often needs to be told, and neither is in the name.
+                var value = element.Patterns.Value.PatternOrDefault?.Value.ValueOrDefault;
+                var toggle = element.Patterns.Toggle.PatternOrDefault?.ToggleState.ValueOrDefault;
                 return $"{properties.ControlType.ValueOrDefault} \"{properties.Name.ValueOrDefault}\""
                     + (string.IsNullOrEmpty(automationId) ? "" : $" #{automationId}")
-                    + $" [{properties.ClassName.ValueOrDefault}]{enabled}";
+                    + $" [{properties.ClassName.ValueOrDefault}]{enabled}"
+                    + (value is null ? "" : $" value=\"{value}\"")
+                    + (toggle is null ? "" : $" toggle={toggle}");
             }
             catch (Exception exception) {
                 return $"(unreadable: {exception.Message})";

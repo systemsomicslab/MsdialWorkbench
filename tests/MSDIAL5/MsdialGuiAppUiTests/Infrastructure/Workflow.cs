@@ -28,7 +28,14 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
         /// Anything more to set on the "Measurement parameters" page, after the data type and
         /// polarity, such as the project metadata.
         /// </param>
-        public static void CreateProjectAndRun(MsdialSession session, RawDataset dataset, string work, bool dragAndDrop, Action<Window>? onMeasurementPage = null) {
+        /// <param name="beforeRun">
+        /// Anything more to set on the later pages (see <see cref="ShowWizardPage"/>) before Run.
+        /// </param>
+        /// <param name="onFilesPage">
+        /// Anything more to set on the "Raw measurement files" page once the files are listed,
+        /// such as their types and classes.
+        /// </param>
+        public static void CreateProjectAndRun(MsdialSession session, RawDataset dataset, string work, bool dragAndDrop, Action<Window>? onMeasurementPage = null, Action<Window>? beforeRun = null, Action<Window>? onFilesPage = null) {
             session.Press(session.ById(session.MainWindow, "Button_NewProject").AsButton(), "New project");
             var wizard = session.WaitForDialog(WizardTitle, DialogTimeout);
 
@@ -48,6 +55,7 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
                 () => fileList.FindAllChildren(cf => cf.ByControlType(ControlType.DataItem)).Length == dataset.Files.Count ? wizard : null,
                 DialogTimeout,
                 title => title == WizardTitle);
+            onFilesPage?.Invoke(wizard);
             Next(session, wizard);
 
             var polarity = dataset.Polarity == Polarity.Positive ? "RadioButton_PositiveMode" : "RadioButton_NegativeMode";
@@ -59,7 +67,22 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             Next(session, wizard); // Peak detection
 
             session.ById(wizard, "TextBox_MinimumPeakHeight", WizardTitle).AsTextBox().Enter(dataset.MinimumPeakHeight.ToString());
+            beforeRun?.Invoke(wizard);
             session.Press(session.ButtonNamed(wizard, "Run", WizardTitle), "Run", WizardTitle);
+        }
+
+        /// <summary>
+        /// Opens a page of the project wizard by its name in the list on the left ("Identification",
+        /// "Alignment parameters", ...), as a user jumps to it.
+        /// </summary>
+        public static void ShowWizardPage(MsdialSession session, Window wizard, string page) {
+            var item = session.WaitFor($"finding the '{page}' page of the project settings",
+                () => wizard.FindAllDescendants(cf => cf.ByControlType(ControlType.ListItem))
+                    .FirstOrDefault(listItem => listItem.FindFirstDescendant(cf => cf.ByName(page)) is not null)?.AsListBoxItem(),
+                Controls.FindTimeout,
+                title => title == WizardTitle);
+            item.Select();
+            session.Settle($"opening the '{page}' page of the project settings", WizardTitle);
         }
 
         private static void Next(MsdialSession session, Window wizard) {
@@ -97,17 +120,33 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             WaitForResults(session, dataset, "loading the project");
         }
 
+        /// <summary>
+        /// Opens every analysis file and then the alignment the way the navigator opens them, by
+        /// double-clicking: selecting an item only highlights it and loads nothing.
+        /// </summary>
         public static void BrowseResults(MsdialSession session, RawDataset dataset) {
             var files = session.ById(session.MainWindow, "ListBox_FileName").AsListBox();
             foreach (var item in files.Items) {
-                item.Select();
-                session.Settle($"opening the analysis file {DisplayedName(item)}");
+                Open(session, item, $"opening the analysis file {DisplayedName(item)}");
             }
             if (HasAlignment(dataset)) {
                 var alignment = session.ById(session.MainWindow, "ListBox_AlignedFiles").AsListBox().Items.First();
-                alignment.Select();
-                session.Settle($"opening the alignment {DisplayedName(alignment)}");
+                Open(session, alignment, $"opening the alignment {DisplayedName(alignment)}");
+                // Commands about the open alignment, such as Normalization, are enabled only once
+                // it is loaded, which tells it was.
+                SelectRibbonTab(session, "Data visualization");
+                session.WaitFor("the alignment being loaded",
+                    () => session.MainWindow.FindFirstDescendant(cf => cf.ByName("Normalization").And(cf.ByControlType(ControlType.Button)))?.AsButton() is { IsEnabled: true } button ? button : null,
+                    ProcessingTimeout,
+                    title => title.StartsWith("Progress"));
             }
+        }
+
+        private static void Open(MsdialSession session, AutomationElement item, string step) {
+            session.MainWindow.BringToFront();
+            item.Patterns.ScrollItem.PatternOrDefault?.ScrollIntoView();
+            item.DoubleClick();
+            session.Settle(step, title => title.StartsWith("Progress"));
         }
 
         // The items' own names are their view model types; what the user reads is the text inside.
