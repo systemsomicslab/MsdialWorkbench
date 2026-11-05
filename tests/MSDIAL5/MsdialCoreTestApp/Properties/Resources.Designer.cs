@@ -59,14 +59,5 @@ namespace CompMs.App.MsdialConsole.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   5.5.241113 に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string VERSION {
-            get {
-                return ResourceManager.GetString("VERSION", resourceCulture);
-            }
-        }
     }
 }

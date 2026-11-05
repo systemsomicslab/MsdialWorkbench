@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
             FilePropertiesModel fileProperties,
             StudyContextModel studyContext,
             IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
+            : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties, broker) {
             Storage = storage;
             _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             StudyContext = studyContext;
@@ -250,6 +250,8 @@ namespace CompMs.App.Msdial.Model.Dims
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AnalysisModel = null;
             }
             return AnalysisModel = new DimsAnalysisModel(
                 analysisFile,
@@ -269,6 +271,7 @@ namespace CompMs.App.Msdial.Model.Dims
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
+                AlignmentModel = null;
             }
             return AlignmentModel = new DimsAlignmentModel(
                 alignmentFileModel,

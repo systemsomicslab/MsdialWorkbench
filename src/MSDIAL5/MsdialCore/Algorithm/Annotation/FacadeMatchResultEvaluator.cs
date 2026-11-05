@@ -43,9 +43,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return results.SelectMany(result => Get(result?.AnnotatorID)?.SelectReferenceMatchResults(IEnumerableExtension.Return(result))).ToList();
         }
 
+        /// <summary>
+        /// The best of several candidates from DIFFERENT annotators.
+        /// </summary>
+        /// <remarks>
+        /// The evidence rank goes ABOVE Priority here, and that placement is the programme's
+        /// annotation policy written as code: "a lower-priority MS/MS reference match outranks a
+        /// higher-priority precursor-only suggestion". Priority is the analyst's ordering of their
+        /// databases -- IdentifySettingModel hands out <c>AnnotatorModels.Count - index</c>, so the
+        /// first database in their list wins every tie beneath it. That ordering says which library
+        /// they trust, which is a different question from what was actually compared, and until now
+        /// the first library won even when a later one had matched a spectrum and it had not.
+        ///
+        /// Source stays first: its Manual bit is the top bit of the flags byte, so a candidate a
+        /// person accepted still dominates everything below.
+        ///
+        /// Note that this key is only consulted across annotators, and StandardAnnotationProcess
+        /// calls it once per annotator, so in that path Source and Priority are constant within the
+        /// set and the rank is the first key that can separate anything.
+        /// </remarks>
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
             return results.DefaultIfEmpty()
-                .Argmax(result => (result?.Source ?? SourceType.None, result?.Priority ?? -1, result?.TotalScore ?? 0));
+                .Argmax(result => (result?.Source ?? SourceType.None, AnnotationEvidence.RankOf(result), result?.Priority ?? -1, result?.TotalScore ?? 0));
         }
 
         public static FacadeMatchResultEvaluator FromDataBases(DataBaseStorage storage) {

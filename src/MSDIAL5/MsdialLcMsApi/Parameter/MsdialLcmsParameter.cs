@@ -20,6 +20,13 @@ namespace CompMs.MsdialLcmsApi.Parameter {
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();
+            // The lipid RT check runs in LC-MS processing only (hooks A and B); MsdialLcImMsParameter derives from this
+            // class and does not run it, so the section is written for LC-MS projects only.
+            if (MachineCategory == Common.Enum.MachineCategory.LCMS) {
+                pStrings.Add("\r\n");
+                pStrings.Add("# Lipid RT check");
+                pStrings.AddRange(LipidRtCheckParam.ParametersAsText(TargetOmics));
+            }
             return pStrings;
         }
     }

@@ -77,10 +77,24 @@ namespace CompMs.App.Msdial.Model.Export
                 return;
             }
             var filename = Path.Combine(destinationFolder, $"{FilePrefix}_{fileBeanModel.AnalysisFileName}.{FileSuffix}");
-            using (var stream = File.Open(filename, FileMode.Create, FileAccess.Write)) {
-                var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
-                features = features.Flatten();
-                _exporters[SelectedType].Export(stream, fileBeanModel.File, features, new());
+            var stream = File.Open(filename, FileMode.Create, FileAccess.Write);
+            try {
+                using (stream) {
+                    var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
+                    features = features.Flatten();
+                    _exporters[SelectedType].Export(stream, fileBeanModel.File, features, new());
+                }
+            }
+            catch {
+                // The file is opened before the spectra are read (from the raw data, for centroid spectra):
+                // a file that could not be finished is not left behind as if it were the result.
+                try {
+                    File.Delete(filename);
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
+
+                }
+                throw;
             }
         }
     }

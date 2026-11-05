@@ -43,6 +43,29 @@ namespace CompMs.MsdialCore.Utility {
             return false;
         }
 
+        /// <summary>
+        /// Whether the raw data of a sample are present: a file, or a vendor folder (Agilent or Bruker .d, Waters .raw).
+        /// An imzML file also needs its .ibd beside it. Present does not mean readable.
+        /// </summary>
+        public static bool RawDataExists(string filepath) {
+            if (string.IsNullOrEmpty(filepath)) {
+                return false;
+            }
+            if (System.IO.Directory.Exists(filepath)) {
+                return true;
+            }
+            if (!System.IO.File.Exists(filepath)) {
+                return false;
+            }
+            try {
+                return !string.Equals(System.IO.Path.GetExtension(filepath), ".imzML", StringComparison.OrdinalIgnoreCase)
+                    || System.IO.File.Exists(System.IO.Path.ChangeExtension(filepath, ".ibd"));
+            }
+            catch (ArgumentException) {
+                return false;
+            }
+        }
+
         // raw data access
         public static List<RawSpectrum> GetAllSpectra(string filepath) {
             List<RawSpectrum> rawSpectra = null;
@@ -256,6 +279,49 @@ namespace CompMs.MsdialCore.Utility {
                     }
                 }
                 if (!isTargetCEFound) Console.WriteLine("Target CE cannot be found.");
+            }
+            return targetSpecID;
+        }
+
+        /// <summary>
+        /// The product-ion scan at the target collision energy that is nearest the MS1 peak top.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="ChromatogramPeakFeature.MS2RawSpectrumID2CE"/> of an AIF feature holds every scan that was,
+        /// while it was being filled, the closest so far at its energy, and it can be filled more than once over
+        /// different scan ranges. <see cref="GetTargetCEIndexForMS2RawSpectrum"/> takes the last matching entry
+        /// in enumeration order, which is then not always the nearest one: on a single-energy Thermo AIF file
+        /// (ST004304 QC-D2-B) it chose a scan farther from the apex than the nearest one for 841 of 2,346 peaks.
+        /// Returns <see cref="ChromatogramPeakFeature.MS2RawSpectrumID"/>, the product-ion scan of any energy nearest
+        /// the peak top, when no scan has the target energy, as <see cref="GetTargetCEIndexForMS2RawSpectrum"/> does.
+        /// Unlike it, this writes nothing to the console: the caller counts such features through the overload with
+        /// <c>isTargetCEMissing</c> and reports one summary per file and energy.
+        /// </remarks>
+        public static int GetTargetCEIndexNearestPeakTop(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
+            return GetTargetCEIndexNearestPeakTop(chromPeakFeature, targetCE, out _);
+        }
+
+        /// <param name="isTargetCEMissing">
+        /// True when a target energy is set (<paramref name="targetCE"/> &gt;= 0) and no product-ion scan of the feature has it,
+        /// so that the returned scan, if any, is of another energy.
+        /// </param>
+        public static int GetTargetCEIndexNearestPeakTop(ChromatogramPeakFeature chromPeakFeature, double targetCE, out bool isTargetCEMissing) {
+            var targetSpecID = chromPeakFeature.MS2RawSpectrumID;
+            isTargetCEMissing = false;
+            if (targetCE >= 0) {
+                var top = chromPeakFeature.MS1RawSpectrumIdTop;
+                var nearest = chromPeakFeature.MS2RawSpectrumID2CE
+                    .Where(pair => Math.Abs(pair.Value - targetCE) < 0.01)
+                    .OrderBy(pair => Math.Abs(pair.Key - top))
+                    .ThenBy(pair => pair.Key)
+                    .Select(pair => (int?)pair.Key)
+                    .FirstOrDefault();
+                if (nearest is int id) {
+                    targetSpecID = id;
+                }
+                else {
+                    isTargetCEMissing = true;
+                }
             }
             return targetSpecID;
         }

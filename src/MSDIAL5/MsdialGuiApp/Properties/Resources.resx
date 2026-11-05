@@ -129,7 +129,4 @@
   <data name="VDD_URI" xml:space="preserve">
     <value>https://api.github.com/repos/systemsomicslab/MsdialWorkbench/releases?per_page=100</value>
   </data>
-  <data name="VERSION" xml:space="preserve">
-    <value>5.5.250403-beta</value>
-  </data>
 </root>

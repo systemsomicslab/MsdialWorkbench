@@ -3,6 +3,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialGcMsApi.Algorithm;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,9 @@ public sealed class QuantmassBrowserModel : BindableBase
     }
 
     public AlignmentSpotPropertyModelCollection Spots => _spotSource.Spots;
+
+    /// <summary>The samples whose raw data the recalculation reads.</summary>
+    public ReadOnlyObservableCollection<AnalysisFileBeanModel> AnalysisFiles => _fileCollection.AnalysisFiles;
 
     public AlignmentSpotPropertyModel? SelectedSpot {
         get => _selectedSpot;

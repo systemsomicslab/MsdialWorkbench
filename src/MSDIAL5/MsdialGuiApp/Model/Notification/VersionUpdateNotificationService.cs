@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Properties;
 using CompMs.App.Msdial.Utility;
+using CompMs.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,6 +59,22 @@ namespace CompMs.App.Msdial.Model.Notification
 
         private static void ShowUpdatePopup(VersionDescriptionDocument vdd)
         {
+            // A BUILD NEWER THAN THE RELEASE IS NOT OFFERED AN UPDATE TO IT.
+            //
+            // The test below this is a string INEQUALITY with no ordering, so anyone running a
+            // locally built MS-DIAL -- everyone developing it, and anyone who built the binary they
+            // used for a paper -- was told on every start that a new version was available, and the
+            // newer thing was the one already running.
+            //
+            // DatePublished has been parsed out of the release feed since this class was written and
+            // read nowhere, so the fix needs no new request and no new field. Same-day still
+            // notifies, and a date that cannot be parsed still notifies: the cost of a redundant
+            // dialog is one click, and the cost of the opposite error is a user sitting on an old
+            // version for a year without knowing.
+            if (MsdialBuildIdentity.IsNewerThan(vdd.DatePublished)) {
+                return;
+            }
+
             if (GlobalResources.Instance.Version != vdd.LatestVersion)
             {
                 var result = MessageBox.Show(
@@ -81,6 +98,28 @@ namespace CompMs.App.Msdial.Model.Notification
             // TODO: Show "Checking for updates" in status bar
             Uri updateUri = new Uri(Resources.VDD_URI);
             FetchVersionDescriptionDocument(updateUri, ShowUpdatePopup);
+        }
+
+        /// <summary>
+        /// "MSDIAL-v5.5.241113" becomes "5.5.241113".
+        /// </summary>
+        /// <remarks>
+        /// Was TrimStart("MSDIAL-v".ToCharArray()), which trims ANY of {M,S,D,I,A,L,-,v}
+        /// repeatedly rather than the prefix as a unit. It gives the right answer today only
+        /// because the selection guard above requires the tag to start "MSDIAL-v5", so the trim
+        /// stops on the '5' that is not in the set. A tag whose version part began with any of
+        /// those characters -- a suffix scheme, a differently named series -- would have had
+        /// characters eaten off the front of its version with no error, and the popup would then
+        /// compare a mangled string and fire forever.
+        /// </remarks>
+        internal static string WithoutTagPrefix(string? tagName) {
+            const string prefix = "MSDIAL-v";
+            if (string.IsNullOrEmpty(tagName)) {
+                return string.Empty;
+            }
+            return tagName!.StartsWith(prefix, StringComparison.Ordinal)
+                ? tagName.Substring(prefix.Length)
+                : tagName;
         }
 
         private class MyWebClient : WebClient
@@ -116,7 +155,7 @@ namespace CompMs.App.Msdial.Model.Notification
             public VersionDescriptionDocument ToVersionDescriptionDocument() {
                 return new VersionDescriptionDocument
                 {
-                    LatestVersion = TagName?.TrimStart("MSDIAL-v".ToCharArray()) ?? string.Empty,
+                    LatestVersion = VersionUpdateNotificationService.WithoutTagPrefix(TagName),
                     DatePublished = PublishedAt,
                     DownloadUri = new Uri(HtmlUrl),
                 };

@@ -7,6 +7,7 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -35,16 +36,19 @@ internal sealed class LcmsAlignmentLightRunner {
     private readonly double _rttol;
     private readonly double _mzfactor;
     private readonly double _rtfactor;
+    private readonly AlignmentRetentionTimeCorrectionCollection? _alignmentRtCorrection;
 
     public LcmsAlignmentLightRunner(
         IMsdialDataStorage<MsdialLcmsParameter> storage,
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
         IDataProviderFactory<AnalysisFileBean> providerFactory,
-        IProgress<int>? progress) {
+        IProgress<int>? progress,
+        AlignmentRetentionTimeCorrectionCollection? alignmentRtCorrection = null) {
         _storage = storage;
         _evaluator = evaluator;
         _providerFactory = providerFactory;
         _progress = progress;
+        _alignmentRtCorrection = alignmentRtCorrection;
         _parameter = storage.Parameter;
         _mztol = _parameter.Ms1AlignmentTolerance;
         _rttol = _parameter.RetentionTimeAlignmentTolerance;
@@ -56,6 +60,7 @@ internal sealed class LcmsAlignmentLightRunner {
         var factory = new LcmsAlignmentProcessFactory(_storage, _evaluator) {
             Progress = _progress,
             SkipIonAbundanceCorrelationLinks = true,
+            AlignmentRtCorrection = _alignmentRtCorrection,
         };
         var joiner = (LcmsPeakJoiner)factory.CreatePeakJoiner();
         var accessor = (IFeatureAccessor<ChromatogramPeakFeature>)factory.CreateDataAccessor();
@@ -94,7 +99,7 @@ internal sealed class LcmsAlignmentLightRunner {
 
         Console.WriteLine($"Alignment light mode: {kept.Count} alignment spots retained from {accumulators.Count} master spots.");
         Console.WriteLine("Alignment light mode: gap-fill pass started.");
-        var gapFiller = new LcmsGapFiller(_parameter);
+        var gapFiller = new LcmsGapFiller(_parameter, _alignmentRtCorrection);
         reporter = ReportProgress.FromLength(_progress, 40.0, 40.0);
         counter = 0;
         foreach (var file in analysisFiles) {
@@ -122,7 +127,11 @@ internal sealed class LcmsAlignmentLightRunner {
             TotalAlignmentSpotCount = resultSpots.Count,
             AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(resultSpots),
         };
-        return new LcmsAlignmentLightResult(container, msdecResults);
+        // Hook B of the lipid RT check, as PeakAligner runs it after packing the spots. In light mode the alignment
+        // objects are not saved, so the verdicts and the Confirmed tags reach only this run's exports (the Comment
+        // column, the mzTab-M columns and the review list) and are not persisted.
+        var lipidRt = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, _parameter);
+        return new LcmsAlignmentLightResult(container, msdecResults, lipidRt);
     }
 
     private List<AlignmentSpotProperty> InitializeSpots(IReadOnlyList<ChromatogramPeakFeature> master) {
@@ -353,28 +362,10 @@ internal sealed class LcmsAlignmentLightRunner {
     private static IEnumerable<MSDecResult> EnumerateRepresentativeDeconvolutions(
         IReadOnlyList<AnalysisFileBean> files,
         IReadOnlyList<LightSpotAccumulator> spots) {
-        var deconvolutionInfo = new Dictionary<int, (int version, List<long> pointers, bool isAnnotationInfo)>();
-        foreach (var file in files) {
-            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-            deconvolutionInfo[file.AnalysisFileId] = (version, pointers, isAnnotationInfo);
-        }
-
-        var streams = files.ToDictionary(file => file.AnalysisFileId, file => File.OpenRead(file.DeconvolutionFilePath));
-        try {
-            foreach (var acc in spots.OrderBy(acc => acc.Spot.MasterAlignmentID)) {
-                var representative = acc.RepresentativePeak ?? throw new InvalidOperationException("Alignment light spot has no representative peak.");
-                var fileId = representative.FileID;
-                var peakId = representative.MasterPeakID;
-                var info = deconvolutionInfo[fileId];
-                yield return MsdecResultsReader.ReadMSDecResult(
-                    streams[fileId], info.pointers[peakId],
-                    info.version, info.isAnnotationInfo);
-            }
-        }
-        finally {
-            foreach (var stream in streams.Values) {
-                stream.Close();
-            }
+        using var reader = new RepresentativeDeconvolutionReader(files);
+        foreach (var acc in spots.OrderBy(acc => acc.Spot.MasterAlignmentID)) {
+            var representative = acc.RepresentativePeak ?? throw new InvalidOperationException("Alignment light spot has no representative peak.");
+            yield return reader.Read(representative);
         }
     }
 
@@ -528,11 +519,15 @@ internal sealed class LcmsAlignmentLightRunner {
 }
 
 internal sealed class LcmsAlignmentLightResult {
-    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults) {
+    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults, LipidRtUnitRun? lipidRtRun = null) {
         Container = container;
         MsdecResults = msdecResults;
+        LipidRtRun = lipidRtRun;
     }
 
     public AlignmentResultContainer Container { get; }
     public IReadOnlyList<MSDecResult> MsdecResults { get; }
+
+    /// <summary>What the lipid RT check did on the light alignment (hook B).</summary>
+    public LipidRtUnitRun? LipidRtRun { get; }
 }

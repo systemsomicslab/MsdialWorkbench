@@ -382,13 +382,17 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param);
             } 
 
-            result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
-            
+            var isotopeSimilarity = GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            result.IsotopeSimilarity = (float)isotopeSimilarity;
+
             var isCcsMatch = false;
             var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
 
             result.CcsSimilarity = (float)ccsSimilarity;
             result.IsCcsMatch = isCcsMatch;
+            result.MeasuredTerms = result.MeasuredTerms
+                .With(MeasuredTerms.Isotope, isotopeSimilarity)
+                .With(MeasuredTerms.Ccs, ccsSimilarity);
             result.TotalScore = (float)GetTotalScore(result, param);
             return result;
         }
@@ -403,13 +407,17 @@ namespace CompMs.Common.Algorithm.Scoring {
                 result = CompareMS2ProteomicsScanProperties(scanProp, chargestate, refSpec, param, (float)andromedaDelta, andromedaMaxPeaks);
             }
 
-            result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            var isotopeSimilarity = GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
+            result.IsotopeSimilarity = (float)isotopeSimilarity;
 
             var isCcsMatch = false;
             var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
 
             result.CcsSimilarity = (float)ccsSimilarity;
             result.IsCcsMatch = isCcsMatch;
+            result.MeasuredTerms = result.MeasuredTerms
+                .With(MeasuredTerms.Isotope, isotopeSimilarity)
+                .With(MeasuredTerms.Ccs, ccsSimilarity);
             result.TotalScore = (float)GetTotalScore(result, param);
             return result;
         }
@@ -492,9 +500,26 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
 
+        /// <param name="retentionMatchTolerance">
+        /// The widest retention difference that may be called a match, on whichever axis this run
+        /// uses. Separate from the search tolerance, which stays the Gaussian's width: see
+        /// RetentionMatchPolicy. Left at MaxValue by callers that are not annotating -- notably
+        /// the peak joiners, which compare two acquired spectra to each other.
+        /// </param>
         public static MsScanMatchResult CompareEIMSScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
-            MsRefSearchParameterBase param, bool isUseRetentionIndex = false) {
+            MsRefSearchParameterBase param, bool isUseRetentionIndex = false, double retentionMatchTolerance = double.MaxValue) {
             var result = CompareMSScanProperties(scanProp, refSpec, param, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            // Narrowed here, before IsReferenceMatched is derived from it below. The cap can only
+            // take a verdict away, never grant one: the inner comparison has already refused the
+            // pair if either side carries no value.
+            if (isUseRetentionIndex) {
+                result.IsRiMatch = result.IsRiMatch
+                    && Math.Abs(scanProp.ChromXs.RI.Value - refSpec.ChromXs.RI.Value) <= retentionMatchTolerance;
+            }
+            else {
+                result.IsRtMatch = result.IsRtMatch
+                    && Math.Abs(scanProp.ChromXs.RT.Value - refSpec.ChromXs.RT.Value) <= retentionMatchTolerance;
+            }
             var msMatchedScore = GetIntegratedSpectraSimilarity(result);
             if (isUseRetentionIndex) {
                 result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, msMatchedScore, param.IsUseTimeForAnnotationScoring);
@@ -657,7 +682,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 SquaredWeightedDotProduct = (float)sqweightedDotProduct,
                 SquaredSimpleDotProduct = (float)sqsimpleDotProduct, SquaredReverseDotProduct = (float)sqreverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,
-                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch
+                RtSimilarity = (float)rtSimilarity, RiSimilarity = (float)riSimilarity, IsPrecursorMzMatch = isMs1Match, IsRtMatch = isRtMatch, IsRiMatch = isRiMatch,
+                // Every basic and EI comparison funnels through here, so recording the terms here
+                // covers all of them. The callers that go on to add the matched-peaks terms need add
+                // nothing: those share the dot products' availability gate. The isotope and CCS terms
+                // are computed by callers above this one and recorded there.
+                MeasuredTerms = MeasuredTerms.None
+                    .WithSpectrum(sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct)
+                    .With(MeasuredTerms.AccurateMass, ms1Similarity)
+                    .With(MeasuredTerms.RetentionTime, rtSimilarity)
+                    .With(MeasuredTerms.RetentionIndex, riSimilarity),
             };
 
             return result;
@@ -795,18 +829,54 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static double GetSpectralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
             if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
 
-            var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks1), SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks2), bin);
-            var entropy12 = GetSpectralEntropy(combinedSpectrum);
-            var entropy1 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks1, bin));
-            var entropy2 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks2, bin));
+            var p = FrameBinnedSpectrum.Create(peaks1, bin);
+            var q = FrameBinnedSpectrum.Create(peaks2, bin);
+            var totalP = NonNegativeTotal(p);
+            var totalQ = NonNegativeTotal(q);
 
-            return 1 - (2 * entropy12 - entropy1 - entropy2) * 0.5;
+            // With p and q the frame intensities scaled to a unit total, the similarity is
+            // 1 - (2 H(m) - H(p) - H(q)) / 2 with m = (p + q) / 2. A frame held by
+            // only one spectrum, say p, contributes exactly p to 2 H(m) - H(p) - H(q), and p and q
+            // each total 1, so everything outside the shared frames cancels against the leading 1:
+            //   similarity = sum over shared frames of ((p + q) log2 (p + q) - p log2 p - q log2 q) / 2
+            // (Li et al., Nat. Methods 18, 1524 (2021); Li & Fiehn, Nat. Methods 20, 1475 (2023)).
+            var similarity = 0d;
+            int i = 0, j = 0;
+            while (i < p.Count && j < q.Count) {
+                if (p.Frames[i] < q.Frames[j]) {
+                    i++;
+                }
+                else if (q.Frames[j] < p.Frames[i]) {
+                    j++;
+                }
+                else {
+                    var pi = NonNegative(p.Intensities[i++]) / totalP;
+                    var qj = NonNegative(q.Intensities[j++]) / totalQ;
+                    similarity += XLog2X(pi + qj) - XLog2X(pi) - XLog2X(qj);
+                }
+            }
+            return similarity * .5;
         }
 
         public static double GetSpectralEntropy(
             List<SpectrumPeak> peaks) {
-            var sumIntensity = peaks.Sum(n => n.Intensity);
-            return -1 * peaks.Sum(n => n.Intensity / sumIntensity * Math.Log(n.Intensity / sumIntensity, 2));
+            var sumIntensity = peaks.Sum(n => NonNegative(n.Intensity));
+            return -1 * peaks.Sum(n => XLog2X(NonNegative(n.Intensity) / sumIntensity));
+        }
+
+        // x log2 x, taking 0 log 0 as its limit 0 rather than the NaN that 0 * -Infinity evaluates to.
+        private static double XLog2X(double x) => x > 0d ? x * Math.Log(x, 2) : 0d;
+
+        // A negative intensity is not a valid peak and has no probability to give; it is counted as 0,
+        // not as NaN. In the similarity this applies to a frame's summed intensity.
+        private static double NonNegative(double intensity) => Math.Max(intensity, 0d);
+
+        private static double NonNegativeTotal(FrameBinnedSpectrum spectrum) {
+            var total = 0d;
+            for (int i = 0; i < spectrum.Count; i++) {
+                total += NonNegative(spectrum.Intensities[i]);
+            }
+            return total;
         }
 
         public static double[] GetModifiedDotProductScore(
@@ -2272,10 +2342,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 //20260203
                 case LbmClass.SPEHex:
                     return LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 case LbmClass.SPGHex:
                     return LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 default:
                     return null;
             }
@@ -3926,10 +3996,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 //20260203
                 case LbmClass.SPEHex:
                     return LipidMsmsCharacterization.JudgeIfSpehex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 case LbmClass.SPGHex:
                     return LipidMsmsCharacterization.JudgeIfSpghex(molecule.LipidName, msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, totalOxidized, adduct);
+                        totalCarbon, totalDbBond, adduct);
                 default:
                     return null;
             }

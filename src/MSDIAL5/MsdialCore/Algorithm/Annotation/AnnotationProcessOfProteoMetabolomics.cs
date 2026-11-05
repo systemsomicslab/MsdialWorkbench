@@ -171,20 +171,24 @@ public class AnnotationProcessOfProteoMetabolomics : IAnnotationProcess {
     private void SetAnnotationResult(ChromatogramPeakFeature chromPeakFeature, IAnnotationQuery<MsScanMatchResult> query, IMatchResultEvaluator<MsScanMatchResult> matchResultEvaluator, MSDecResult msdecResult, double collisionEnergy) {
         var candidates = query.FindCandidates();
         var results = matchResultEvaluator.FilterByThreshold(candidates);
+        // The molecule side of a proteo-metabolomics run, scored on metabolomics criteria. This
+        // process keeps ONE result per (peak, annotator), not three, so the population size is
+        // discarded even more aggressively here than elsewhere.
+        var population = CandidatePopulation.Of(candidates, results, matchResultEvaluator.IsReferenceMatched);
         var matches = matchResultEvaluator.SelectReferenceMatchResults(results);
         if (matches.Count > 0) {
             var best = matchResultEvaluator.SelectTopHit(matches);
             best.IsReferenceMatched = true;
             best.CollisionEnergy = collisionEnergy;
             best.SpectrumID = msdecResult.RawSpectrumID;
-            chromPeakFeature.MatchResults.AddResult(best);
+            chromPeakFeature.MatchResults.AddResult(population.RecordOn(best));
         }
         else if (results.Count > 0) {
             var best = matchResultEvaluator.SelectTopHit(results);
             best.IsAnnotationSuggested = true;
             best.CollisionEnergy = collisionEnergy;
             best.SpectrumID = msdecResult.RawSpectrumID;
-            chromPeakFeature.MatchResults.AddResult(best);
+            chromPeakFeature.MatchResults.AddResult(population.RecordOn(best));
         }
     }
 

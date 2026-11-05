@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
+using System.Linq;
 namespace CompMs.MsdialImmsCore.Export.Tests
 {
     [TestClass()]
@@ -53,7 +54,12 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             "Total score",
             "S/N",
             "MS1 isotopes",
-            "MSMS spectrum" };
+            "MSMS spectrum",
+            "Measured terms",
+            "Evidence source",
+            "Candidates found",
+            "Candidates above threshold",
+            "Candidates reference matched" };
 
         [TestMethod()]
         public void GetHeadersTest() {
@@ -92,6 +98,35 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var msdec = new MSDecResult();
             var provider = new MockDataProvider();
             var content = accessor.GetContent(feature, msdec, provider, stubFile, new());
+            // HEADER/CONTENT PARITY. Every header must have a content key, or an exporter throws
+            // KeyNotFoundException the moment it indexes the content by header name; and every content
+            // key must have a header, or its value is computed and then silently dropped on the floor.
+            // Nothing checked either direction before, which is how "Enhanced dot product" and
+            // "Spectrum entropy" came to be computed on every analysis row and written to no file in
+            // any mode, for as long as they have existed.
+            //
+            // A drop has to be declared here, with a reason. That is the whole mechanism: it does not
+            // forbid dropping a key, it forbids dropping one by accident.
+            var declaredDrops = new HashSet<string>
+            {
+            // PRE-EXISTING AND UNINTENDED, declared here rather than fixed. BaseAnalysisMetadataAccessor
+            // computes both of these for every row and lists them in its own header array, but this
+            // mode replaces that array and omits them, so they are computed and thrown away on every
+            // analysis export in this mode. Fixing it changes the published column set of four modes,
+            // which is a compatibility decision that does not belong in the commit that adds the
+            // evidence columns. Declared so that the next accidental drop cannot hide among them.
+            "Enhanced dot product",
+            "Spectrum entropy",
+            };
+            foreach (var header in accessor.GetHeaders()) {
+                Assert.IsTrue(content.ContainsKey(header),
+                    $"header \"{header}\" has no content key, so exporting would throw");
+            }
+            foreach (var key in content.Keys) {
+                Assert.IsTrue(declaredDrops.Contains(key) || accessor.GetHeaders().Contains(key),
+                    $"content key \"{key}\" has no header, so its value never reaches the file");
+            }
+
 
             Assert.AreEqual("100.991", content["Mobility left"]);
             Assert.AreEqual("101.001", content["Mobility"]);

@@ -1,12 +1,16 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -109,7 +113,8 @@ namespace CompMs.MsdialCore.Export
             //SML Header
             var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
             var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2);
+            var hasLipidRt = HasLipidRtVerdicts(spots);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2, hasLipidRt);
             //SML data
 
             foreach (var spot in spots)
@@ -117,13 +122,13 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
                     sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2
+                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2, hasLipidRt
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmlDataLine(
                         sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                         );
                 }
             }
@@ -216,7 +221,8 @@ namespace CompMs.MsdialCore.Export
 
             var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
             var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic, hasComment, hasMs2);
+            var hasLipidRt = HasLipidRtVerdicts(spots);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic, hasComment, hasMs2, hasLipidRt);
 
             var smfTemp = Path.GetTempFileName();
             var smeTemp = Path.GetTempFileName();
@@ -234,7 +240,7 @@ namespace CompMs.MsdialCore.Export
                         var metadata = metaAccessor.GetContent(spot, msdec);
                         WriteSmlDataLine(
                             sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                            database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                            database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                             );
                         WriteSmfDataLine(
                             smfWriter, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
@@ -245,7 +251,7 @@ namespace CompMs.MsdialCore.Export
                         {
                             WriteSmlDataLine(
                                 sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                                database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                                database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                                 );
                             WriteSmfDataLine(
                                 smfWriter, driftSpot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
@@ -286,7 +292,45 @@ namespace CompMs.MsdialCore.Export
             if (spot.IsBlankFilteredByPostCurator) { return false; }
             if (meta.IsNormalizeSplash && spot.InternalStandardAlignmentID == -1) { return false; }
             if (meta.IsNormalizeIS && spot.InternalStandardAlignmentID == -1) { return false; }
-            return !spot.Name.Contains("no MS2");
+            return HasCitableSpectralEvidence(spot);
+        }
+
+        /// <summary>
+        /// Whether there is a spectral comparison worth citing as evidence for this identification.
+        /// </summary>
+        /// <remarks>
+        /// This gate used to read <c>!spot.Name.Contains("no MS2")</c>, which re-implemented one
+        /// third of AnnotationName's vocabulary as a raw substring. It caught "no MS2" and nothing
+        /// else, so a "low score" spot -- spectrum acquired, compared, below the acceptance
+        /// criteria -- passed every gate and received a full rank-1 evidence row with ms_level 2
+        /// and a complete score set, with nothing in that row saying it had failed. The peptide
+        /// path's "w/o MS2" passed too, and it means exactly what "no MS2" means.
+        ///
+        /// The evidence record answers this directly. A weak match IS citable: a spectrum was
+        /// compared and partly agreed, and the rank and scores of the row say how far it got --
+        /// that is what the evidence section is for. A comparison that explained nothing, and a
+        /// candidate for which no spectrum was compared at all, have nothing to cite.
+        ///
+        /// The Unspecified arm is for projects saved before the evidence record existed. Their
+        /// results deserialize to Unspecified and no grading can be recovered, so they keep the old
+        /// answer -- with one correction that costs no information: the test is now a prefix rather
+        /// than a substring, and it covers "w/o MS2" as well, because that spelling says the same
+        /// thing. "low score" still passes there, as it always has, because for those projects
+        /// there is no record that could tell a weak comparison from a failed one.
+        /// </remarks>
+        private static bool HasCitableSpectralEvidence(AlignmentSpotProperty spot) {
+            var result = spot.MatchResults.Representative;
+            if (result is null) { return false; }
+            switch (result.EvidenceSource) {
+                case AnnotationEvidenceSource.ReferenceSpectrum:
+                case AnnotationEvidenceSource.RuleBased:
+                case AnnotationEvidenceSource.WeakSpectrumMatch:
+                    return true;
+                case AnnotationEvidenceSource.Unspecified:
+                    return !AnnotationName.IsPrecursorOnlySuggestion(spot.Name);
+                default:
+                    return false;
+            }
         }
 
         /// <summary>
@@ -385,7 +429,8 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<string> SmlDataHeader,
             IReadOnlyDictionary<int, string> internalStandardDic,
             bool hasComment,
-            bool hasMs2
+            bool hasMs2,
+            bool hasLipidRt
             )
         {
             var matchResult = spot.MatchResults.Representative;
@@ -393,8 +438,15 @@ namespace CompMs.MsdialCore.Export
             var inchi = "null";
             var smlID = metadata["Alignment ID"];
             var smfIDrefs = metadata["Alignment ID"];
-            var chemicalName = metadata["Metabolite name"];
-            chemicalName = chemicalName.Split('|')[chemicalName.Split('|').Length - 1];
+            // A compound name and nothing else. Any suggestion prefix -- "no MS2: ", "low score: "
+            // -- moves to opt_global_evidence_source below, where a reader can act on it instead of
+            // parsing it back out of a name, and where it says more than the prefix could: the
+            // prefix collapsed "compared and fell short" and "compared and explained nothing" into
+            // one word. The structural level comes from the record, never from the punctuation;
+            // AnnotationName.AtSupportedLevel documents why the pipe cannot be read as text.
+            var chemicalName = AnnotationName.AtSupportedLevel(
+                AnnotationName.WithoutPrefix(metadata["Metabolite name"]),
+                matchResult?.IsLipidChainsMatch ?? false);
             var databaseIdentifier = "null";
             var LibraryID = spot?.MatchResults?.Representative.LibraryID;
             var rep = spot?.MatchResults?.Representative;
@@ -404,13 +456,16 @@ namespace CompMs.MsdialCore.Export
             {
                 if(_annotatorID2DataBaseID.TryGetValue(rep.AnnotatorID, out var databaseID))
                 {
-                    databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + rep.Name.Split('|').Last();
+                    // No WithoutPrefix here: MsScanMatchResult.Name is never prefixed -- the
+                    // prefixes are written onto the FEATURE name by DataAccess, not onto the match
+                    // result -- so the only normalisation this needs is the structural level.
+                    databaseIdentifier = _annotatorID2DataBaseID[rep.AnnotatorID!] + ":" + AnnotationName.AtSupportedLevel(rep.Name, rep.IsLipidChainsMatch);
                 }
                 else
                 {
                     if (rep.AnnotatorID == "MS-FINDER")
                     {
-                        databaseIdentifier = "MS-FINDER:" + rep.Name.Split('|').Last();
+                        databaseIdentifier = "MS-FINDER:" + AnnotationName.AtSupportedLevel(rep.Name, rep.IsLipidChainsMatch);
                     }
                 }
             }
@@ -478,11 +533,20 @@ namespace CompMs.MsdialCore.Export
                 LineData.AddRange(SetMsmsPresence(spot));  // add 20251208
             }
             LineData.AddRange(SetSpectrumMatch(matchResult));  // add 20251208
+            // Positional: these two must stay in the order their headers were added above. The
+            // '|' that AnnotationEvidenceFormat joins the terms with is mzTab-M's own in-field list
+            // separator, so a multi-term value reads as a list to a conformant parser.
+            LineData.Add(AnnotationEvidenceFormat.Source(matchResult));
+            LineData.Add(AnnotationEvidenceFormat.Terms(matchResult));
             if (hasComment)
             {
                 LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
             }
             LineData.AddRange(SetOntology(spot));  // add 20260127
+            if (hasLipidRt)
+            {
+                LineData.AddRange(SetLipidRtVerdict(spot));
+            }
             sw.WriteLine(string.Join(Separator, LineMetaData)
             + Separator
             + string.Join(Separator, LineData));
@@ -626,7 +690,7 @@ namespace CompMs.MsdialCore.Export
                 charge = "-" + spot.AdductType.ChargeNumber.ToString();
             }
 
-            var repName = (candidate.Name ?? string.Empty).Split('|').Last();
+            var repName = AnnotationName.AtSupportedLevel(candidate.Name ?? string.Empty, candidate.IsLipidChainsMatch);
             var repLibraryID = candidate.LibraryID;
             var chemicalFormula = ValueOrNull(reference?.Formula?.FormulaString);
             var smiles = ValueOrNull(reference?.SMILES);
@@ -672,7 +736,7 @@ namespace CompMs.MsdialCore.Export
                 _annotatorID2DataBaseID.TryGetValue(candidate.AnnotatorID, out var databaseID) &&
                 !string.IsNullOrEmpty(candidate.Name))
             {
-                databaseIdentifier = databaseID + ":" + candidate.Name.Split('|').Last();
+                databaseIdentifier = databaseID + ":" + AnnotationName.AtSupportedLevel(candidate.Name, candidate.IsLipidChainsMatch);
             }
 
             var SmeLine = new List<string>() {
@@ -800,12 +864,31 @@ namespace CompMs.MsdialCore.Export
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "cv[" + (i + 1) + "]-uri", cvList[i][3] }));
             }
 
+            var libraryStatistics = new List<string>();
             for (int i = 0; i < database.Count; i++)
             {
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]", database[i].Metadata }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]-prefix", database[i].AnnotatorID }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]-version", database[i].Filename }));
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "database[" + (i + 1) + "]-uri", database[i].Uri }));
+                if (database[i].Statistics != null) {
+                    libraryStatistics.Add("[,, MS-DIAL library statistics database[" + (i + 1) + "], " + database[i].Statistics + "]");
+                }
+            }
+
+            // WHAT A PRIVATE LIBRARY CAN SAY ABOUT ITSELF. database[n]-uri names a file on one disk:
+            // exact for its owner, useless to a reader, and carrying a directory layout that should
+            // not always travel. A public library has a DOI beside it; a laboratory's own MSP has
+            // nothing. These three numbers are what it can honestly publish -- how many records, how
+            // many compounds, and a digest of the records the run actually searched -- and they are
+            // enough for a reader to check that two runs used the same library, and for the
+            // laboratory to recognise its own. The author asked for exactly this on 2026-09-15.
+            //
+            // In custom[n] rather than a database[n]-fingerprint of our own invention, because that
+            // is the slot mzTab-M defines for information it does not itself model, and the file has
+            // to stay readable by a validator.
+            for (int i = 0; i < libraryStatistics.Count; i++) {
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "custom[" + (i + 1) + "]", libraryStatistics[i] }));
             }
 
             var normalizedCommentList = new List<string>();
@@ -999,7 +1082,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2)
+            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2, bool hasLipidRt)
         {
 
             var SmlHeaderMeta = new List<string>()
@@ -1040,11 +1123,25 @@ namespace CompMs.MsdialCore.Export
                 SmlDataHeader.Add("opt_global_ms2_presence");
             }
             SmlDataHeader.Add("opt_global_spectrum_matched");
+            // The reliability the name no longer carries. Two columns, not five: the candidate
+            // counts in the evidence record describe how many alternatives there were, and mzTab-M
+            // already says that in the ranked SME rows, so repeating it here would be a second
+            // spelling of the same fact.
+            SmlDataHeader.Add("opt_global_evidence_source");
+            SmlDataHeader.Add("opt_global_measured_terms");
             if (hasComment)
             {
                 SmlDataHeader.Add("opt_global_user_comment");
             }
             SmlDataHeader.Add("opt_global_Ontology");
+            // The lipid RT check's verdict, after the ontology so that no existing column moves. Written when the check
+            // left a verdict on any spot; a spot it did not evaluate reads "null".
+            if (hasLipidRt)
+            {
+                SmlDataHeader.Add("opt_global_lipid_rt_outcome");
+                SmlDataHeader.Add("opt_global_lipid_rt_reason");
+                SmlDataHeader.Add("opt_global_lipid_rt_score");
+            }
 
             sw.WriteLine(string.Join(Separator, SmlHeaderMeta) + Separator + string.Join(Separator, SmlDataHeader));
             return SmlDataHeader;
@@ -1185,6 +1282,32 @@ namespace CompMs.MsdialCore.Export
         {
             return new List<string>() { ValueOrNull(spot.Ontology) };
         }
+
+        private static bool HasLipidRtVerdicts(IReadOnlyList<AlignmentSpotProperty> spots)
+        {
+            return spots.Any(s => s.LipidRtVerdict != null
+                || (s.AlignmentDriftSpotFeatures?.Any(d => d.LipidRtVerdict != null) ?? false));
+        }
+
+        /// <summary>
+        /// opt_global_lipid_rt_outcome, _reason and _score: the outcome and reason names of the lipid RT check
+        /// (e.g. "Confirmed", "ConfirmedRt") and its graded score, "null" where the spot was not evaluated.
+        /// </summary>
+        private static List<string> SetLipidRtVerdict(
+            AlignmentSpotProperty spot
+        )
+        {
+            var verdict = spot.LipidRtVerdict;
+            if (verdict is null)
+            {
+                return new List<string>() { "null", "null", "null" };
+            }
+            return new List<string>() {
+                verdict.Outcome.ToString(),
+                verdict.Reason.ToString(),
+                verdict.Score is double score ? score.ToString("R", CultureInfo.InvariantCulture) : "null",
+            };
+        }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
         )
@@ -1308,6 +1431,21 @@ namespace CompMs.MsdialCore.Export
             return idConfidenceMeasure;
         }
 
+        /// <summary>
+        /// The three numbers a library can publish about itself, or null when it has no records.
+        /// </summary>
+        /// <remarks>
+        /// A text database of retention times and masses carries no spectra and an EAD lipid database
+        /// is generated in memory, so neither has a record set worth fingerprinting; those declare
+        /// themselves by kind alone. See <see cref="LibraryFingerprint"/>.
+        /// </remarks>
+        private static string LibraryStatistics(MoleculeDataBase database) {
+            if (database?.RecordCount is null or 0) {
+                return null;
+            }
+            return $"{database.RecordCount} records; {database.CompoundCount} compounds; {database.ContentDigest}";
+        }
+
         private IReadOnlyList<Database> SetDatabaseList(ParameterBase meta, IReadOnlyList<AlignmentSpotProperty> spots)
         {
             var database = new List<Database>();
@@ -1322,6 +1460,7 @@ namespace CompMs.MsdialCore.Export
                             AnnotatorID = db.DataBase.Id,
                             Metadata = "[,, User-defined MSP library file, ]",
                             Type = "null",
+                            Statistics = LibraryStatistics(db.DataBase),
                             Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
                             Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
                         });
@@ -1333,6 +1472,23 @@ namespace CompMs.MsdialCore.Export
                             AnnotatorID = db.DataBase.Id,
                             Metadata = "[,, MS-DIAL LipidsMsMs database, ]",
                             Type = "null",
+                            Statistics = LibraryStatistics(db.DataBase),
+                            Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
+                            Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
+                        });
+                        break;
+                    // Declared separately from Msp, not folded into it, because the whole point of
+                    // the kind is that a reader can tell a generated library from an acquired one.
+                    // Omitting the case entirely -- which is what happened when PredictedMsp was
+                    // added -- left the mzTab citing a database[n] prefix in its annotation rows that
+                    // the MTD section never declared.
+                    case DataBaseSource.PredictedMsp:
+                        database.Add(new Database
+                        {
+                            AnnotatorID = db.DataBase.Id,
+                            Metadata = "[,, User-defined in-silico MSP library file, ]",
+                            Type = "null",
+                            Statistics = LibraryStatistics(db.DataBase),
                             Filename = ValueOrNull(Path.GetFileName(db.DataBase.DataBaseSourceFilePath)),
                             Uri = "file://" + db.DataBase.DataBaseSourceFilePath.Replace("\\", "/").Replace(" ", "%20") ?? "null"
                         });
@@ -1443,73 +1599,10 @@ namespace CompMs.MsdialCore.Export
                 var analysisFilePath = files[i].AnalysisFilePath;
                 var analysisFileExtention = Path.GetExtension(analysisFilePath).ToUpper();
 
-                var msRunFormat = ""; // analysed file format
-                var msRunIDFormat = ""; // analysed file Datapoint Number
-                switch (analysisFileExtention)
-                {
-                    case (".ABF"):
-                        msRunFormat = "[,, ABF(Analysis Base File) file, ]";
-                        msRunIDFormat = "[,, ABF file Datapoint Number, ]";
-                        break;
-                    case (".IBF"):
-                        msRunFormat = "[,, IBF file, ]";
-                        msRunIDFormat = "[,, IBF file Datapoint Number, ]";
-                        break;
-                    case (".WIFF"):
-                    case (".WIFF2"):
-                        msRunFormat = "[MS, MS:1000562, ABI WIFF format, ]";
-                        msRunIDFormat = "[MS, MS:1000770, WIFF nativeID format, ]";
-                        break;
-                    case (".D"):
-                        msRunFormat = "[MS, MS:1001509, Agilent MassHunter format, ]";
-                        msRunIDFormat = "[MS, MS:1001508, Agilent MassHunter nativeID format, ]";
-                        break;
-                    case (".CDF"):
-                        msRunFormat = "[EDAM, format:3650, netCDF, ]";
-                        msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
-                        break;
-                    case (".MZML"):
-                        msRunFormat = "[MS, MS:1000584, mzML format, ]";
-                        msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
-                        break;
-                    case (".RAW"):
-                        var isDirectory = System.IO.File.GetAttributes(analysisFilePath).HasFlag(FileAttributes.Directory);
-                        if (isDirectory)
-                        {
-                            msRunFormat = "[MS, MS:1000526, Waters raw format, ]";
-                            msRunIDFormat = "[MS, MS:1000769, Waters nativeID format, ]";
-                        }
-                        else
-                        {
-                            msRunFormat = "[MS, MS:1000563, Thermo RAW format, ]";
-                            msRunIDFormat = "[MS, MS:1000768, Thermo nativeID format, ]";
-                        }
-                        break;
-                    case (".LRP"):
-                        msRunFormat = "[,, LRP file, ]";
-                        msRunIDFormat = "[,, LRP file Datapoint Number, ]";
-                        break;
-                    case (".HMD"):
-                        msRunFormat = "[,, Hive HMD file, ]";
-                        msRunIDFormat = "[,, Hive HMD file Datapoint Number, ]";
-                        break;
-                    case (".MZB"):
-                        msRunFormat = "[,, Hive mzB file, ]";
-                        msRunIDFormat = "[,, Hive mzB file Datapoint Number, ]";
-                        break;
-                    case (".LCD"):
-                        msRunFormat = "[MS, MS:1003009, Shimadzu Biotech LCD format, ]";
-                        msRunIDFormat = "[MS, MS:1000929, Shimadzu Biotech nativeID format, ]";
-                        break;
-                    case (".QGD"):
-                        msRunFormat = "[,, Shimadzu GC/MS format, ]";
-                        msRunIDFormat = "[,, Shimadzu GC/MS format file Datapoint Number, ]";
-                        break;
-                    default:
-                        msRunFormat = "[,, Unknown file format, ]";
-                        msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
-                        break;
-                }
+                // A file on disk is described by what the disk shows, as before formats were recorded. A file whose raw
+                // data have since been deleted or moved is described by the format recorded while they were present; with
+                // nothing recorded (a project saved before formats were recorded) it gets the unknown terms.
+                var (msRunFormat, msRunIDFormat) = MsRunFormatTerms(RawFileFormatClassifier.Resolve(files[i]), analysisFileExtention);
                 msRunIDFormat = "[,, MS-DIAL set Datapoint Number, ]";
                 var id = files[i].AnalysisFileId + 1;
                 fileMetadataDic.Add(id, new RawFileMetadata()
@@ -1533,6 +1626,73 @@ namespace CompMs.MsdialCore.Export
             return fileMetadataDic;
         }
 
+        /// <summary>
+        /// The ms_run format and nativeID format terms for a raw data file of <paramref name="format"/>. An unknown
+        /// format is described by a user term that names only the extension (<paramref name="upperExtension"/>, upper case).
+        /// </summary>
+        /// <remarks>
+        /// These are the terms the exporter wrote when it told the format from the file on disk, kept as they were.
+        /// The nativeID format is not written: every run's id_format is "MS-DIAL set Datapoint Number", because
+        /// spectra_ref uses MS-DIAL's scan numbers. imzML has no term here and is written as an unknown file.
+        /// </remarks>
+        internal static (string Format, string IdFormat) MsRunFormatTerms(RawFileFormat format, string upperExtension)
+        {
+            switch (format)
+            {
+                case RawFileFormat.Abf:
+                    return ("[,, ABF(Analysis Base File) file, ]", "[,, ABF file Datapoint Number, ]");
+                case RawFileFormat.Ibf:
+                    return ("[,, IBF file, ]", "[,, IBF file Datapoint Number, ]");
+                case RawFileFormat.SciexWiff:
+                case RawFileFormat.SciexWiff2:
+                    return ("[MS, MS:1000562, ABI WIFF format, ]", "[MS, MS:1000770, WIFF nativeID format, ]");
+                // Agilent and Bruker both write a ".d" folder. Bruker's holds analysis.baf
+                // (BAF) or analysis.tdf / analysis.tsf (timsTOF); Agilent's holds AcqData.
+                case RawFileFormat.BrukerTdf:
+                    return ("[MS, MS:1002817, Bruker TDF format, ]", "[MS, MS:1002818, Bruker TDF nativeID format, ]");
+                case RawFileFormat.BrukerTsf:
+                    return ("[MS, MS:1003282, Bruker TSF format, ]", "[MS, MS:1003283, Bruker TSF nativeID format, ]");
+                case RawFileFormat.BrukerBaf:
+                    return ("[MS, MS:1000815, Bruker BAF format, ]", "[MS, MS:1000772, Bruker BAF nativeID format, ]");
+                case RawFileFormat.AgilentMassHunterD:
+                    return ("[MS, MS:1001509, Agilent MassHunter format, ]", "[MS, MS:1001508, Agilent MassHunter nativeID format, ]");
+                case RawFileFormat.NetCdf:
+                    return ("[EDAM, format:3650, netCDF, ]", "[MS, MS:1000776, scan number only nativeID format, ]");
+                case RawFileFormat.MzML:
+                    return ("[MS, MS:1000584, mzML format, ]", "[MS, MS:1000776, scan number only nativeID format, ]");
+                // A Waters .raw is a folder and a Thermo .raw a file.
+                case RawFileFormat.WatersRaw:
+                    return ("[MS, MS:1000526, Waters raw format, ]", "[MS, MS:1000769, Waters nativeID format, ]");
+                case RawFileFormat.ThermoRaw:
+                    return ("[MS, MS:1000563, Thermo RAW format, ]", "[MS, MS:1000768, Thermo nativeID format, ]");
+                case RawFileFormat.KanomaxLrp:
+                    return ("[,, LRP file, ]", "[,, LRP file Datapoint Number, ]");
+                case RawFileFormat.HiveHmd:
+                    return ("[,, Hive HMD file, ]", "[,, Hive HMD file Datapoint Number, ]");
+                case RawFileFormat.HiveMzb:
+                    return ("[,, Hive mzB file, ]", "[,, Hive mzB file Datapoint Number, ]");
+                case RawFileFormat.ShimadzuLcd:
+                    return ("[MS, MS:1003009, Shimadzu Biotech LCD format, ]", "[MS, MS:1000929, Shimadzu Biotech nativeID format, ]");
+                case RawFileFormat.ShimadzuQgd:
+                    return ("[,, Shimadzu GC/MS format, ]", "[,, Shimadzu GC/MS format file Datapoint Number, ]");
+                case RawFileFormat.ImzML:
+                case RawFileFormat.Unknown:
+                default:
+                    break;
+            }
+            // A .raw or .d whose format was never recorded and that is not on disk (or holds nothing recognisable)
+            // is neither vendor's, and is described as unknown rather than as a vendor it may not be.
+            switch (upperExtension)
+            {
+                case (".RAW"):
+                    return ("[,, Unknown .raw format, ]", "[,, Unknown file format Datapoint Number, ]");
+                case (".D"):
+                    return ("[,, Unknown .d folder format, ]", "[,, Unknown file format Datapoint Number, ]");
+                default:
+                    return ("[,, Unknown file format, ]", "[,, Unknown file format Datapoint Number, ]");
+            }
+        }
+
         static string SetAdductTypeString(string adductIons)
         {
             if (adductIons != "null" && adductIons.Length > 2 && adductIons.Substring(adductIons.Length - 2, 1) == "]")
@@ -1554,6 +1714,13 @@ namespace CompMs.MsdialCore.Export
             public DataBaseSource Source { get; set; }
             public string Filename { get; set; }
             public string Uri { get; set; }
+
+            /// <summary>
+            /// Record count, compound count and content digest, or null for a library that holds no
+            /// records to describe -- an EAD lipid database generated in memory, or a text database
+            /// of retention times.
+            /// </summary>
+            public string Statistics { get; set; }
         }
 
         public class RawFileMetadata

@@ -30,7 +30,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Margin="0,64,0,0">
+        <Grid Margin="0,64,0,0"
+              IsEnabled="{Binding IsNotLoading.Value}">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -209,7 +210,8 @@
             </StackPanel>
         </Grid>
 
-        <ContentControl Content="{Binding MethodViewModel.Value}">
+        <ContentControl Content="{Binding MethodViewModel.Value}"
+                        IsEnabled="{Binding IsNotLoading.Value}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type lcvm:LcmsMethodViewModel}"
                               xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
