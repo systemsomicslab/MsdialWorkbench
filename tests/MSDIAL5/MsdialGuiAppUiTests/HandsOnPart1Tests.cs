@@ -25,9 +25,9 @@ namespace CompMs.App.Msdial.UiTests
         public void AnnotatesWithMassBankAndExportsTheMolecularNetwork() {
             var exe = RunParameters.RequireMsdialExe(TestContext);
             var handsOnDir = RunParameters.RequireHandsOnDataDir(TestContext);
-            var dataset = HandsOnData.Part1Positive;
+            var dataset = HandsOnData.Part1Positive(handsOnDir);
             var work = WorkDirectory.Prepare(TestContext, handsOnDir, dataset);
-            var library = Path.Combine(handsOnDir, HandsOnData.Part1Library);
+            var library = HandsOnData.Part1Library(handsOnDir);
 
             using (var session = MsdialSession.Launch(TestContext, exe)) {
                 Workflow.CreateProjectAndRun(session, dataset, work, dragAndDrop: false, beforeRun: wizard => AddMspDataBase(session, wizard, library));

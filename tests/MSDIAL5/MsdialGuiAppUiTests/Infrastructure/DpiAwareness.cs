@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.InteropServices;
 
@@ -9,13 +8,11 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
     /// coordinates, while a process that is not DPI aware is handed scaled ones for the mouse, so
     /// on a scaled monitor a click or a drag would land beside the control it aims at.
     /// </summary>
-    [TestClass]
-    public static class DpiAwareness
+    internal static class DpiAwareness
     {
         private static readonly IntPtr PerMonitorAwareV2 = new IntPtr(-4);
 
-        [AssemblyInitialize]
-        public static void Initialize(TestContext context) {
+        public static void Apply() {
             try {
                 SetProcessDpiAwarenessContext(PerMonitorAwareV2);
             }

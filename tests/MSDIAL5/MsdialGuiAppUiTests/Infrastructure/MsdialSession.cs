@@ -61,7 +61,12 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
             };
             var process = Process.Start(startInfo);
             var application = FlaUIApplication.Attach(process.Id);
-            var automation = new UIA3Automation();
+            var automation = new UIA3Automation {
+                // MS-DIAL loads a large file or alignment on its UI thread, during which a UI
+                // Automation call can wait longer than the default before it is answered.
+                ConnectionTimeout = TimeSpan.FromMinutes(2),
+                TransactionTimeout = TimeSpan.FromMinutes(2),
+            };
             Window? mainWindow;
             try {
                 mainWindow = application.GetMainWindow(automation, StartupTimeout);
@@ -146,7 +151,21 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
         }
 
         private List<Window> UnexpectedDialogs(Func<string, bool>? allowDialog) {
-            return OpenDialogs().Where(dialog => !(allowDialog?.Invoke(SafeTitle(dialog) ?? string.Empty) ?? false)).ToList();
+            return OpenDialogs()
+                .Where(dialog => !IsProgressNotice(dialog))
+                .Where(dialog => !(allowDialog?.Invoke(SafeTitle(dialog) ?? string.Empty) ?? false))
+                .ToList();
+        }
+
+        // ShortMessageWindow ("Message": "Loading project...", "Saving the project as...") only says
+        // what MS-DIAL is busy with and closes itself; it never asks anything.
+        private static bool IsProgressNotice(Window window) {
+            try {
+                return window.AutomationId == "MessageWindow";
+            }
+            catch (Exception) {
+                return false;
+            }
         }
 
         public bool IsDialogOpen(string title) {
@@ -336,8 +355,10 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
 
         private static string DescribeText(Window window) {
             try {
-                var texts = window.FindAllDescendants(condition => condition.ByControlType(ControlType.Text))
-                    .Select(text => text.Name)
+                // Win32 message boxes put their text in Text elements; WPF ones may use a read-only
+                // TextBox, whose text is its value rather than its name.
+                var texts = window.FindAllDescendants(condition => condition.ByControlType(ControlType.Text).Or(condition.ByControlType(ControlType.Edit)))
+                    .Select(text => text.ControlType == ControlType.Edit ? text.AsTextBox().Text : text.Name)
                     .Where(name => !string.IsNullOrWhiteSpace(name));
                 return string.Join(Environment.NewLine, texts);
             }

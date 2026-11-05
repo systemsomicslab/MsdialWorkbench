@@ -29,6 +29,48 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
         }
 
         /// <summary>
+        /// The control of type <paramref name="type"/> that follows a label: MS-DIAL lays its
+        /// settings out as a label and then its control, and most of those controls have no name.
+        /// Only what comes after the label counts; the first control in the label's container may
+        /// belong to the setting above it.
+        /// </summary>
+        public static AutomationElement ByLabel(this MsdialSession session, AutomationElement root, string label, ControlType type, params string[] allowedDialogs) {
+            return session.WaitFor($"finding the {type} labelled '{label}'",
+                () => root.FindAllDescendants(cf => cf.ByName(label).And(cf.ByControlType(ControlType.Text)))
+                    .Select(text => FollowingControl(text, type))
+                    .FirstOrDefault(found => found is not null),
+                FindTimeout,
+                allowedDialogs.Contains);
+        }
+
+        private static AutomationElement? FollowingControl(AutomationElement label, ControlType type) {
+            // Climb from the label until one of the siblings after it is, or holds, the control.
+            for (var element = label; element.Parent is { } parent; element = parent) {
+                var siblings = parent.FindAllChildren();
+                var index = Array.FindIndex(siblings, sibling => sibling.Equals(element));
+                foreach (var sibling in siblings.Skip(index + 1)) {
+                    if (sibling.ControlType == type) {
+                        return sibling;
+                    }
+                    if (sibling.FindFirstDescendant(cf => cf.ByControlType(type)) is { } inside) {
+                        return inside;
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Brings a window to the front before the real mouse is used on it: a click lands on
+        /// whatever window is on top at that point, which need not be MS-DIAL's once something else
+        /// on the desktop has taken the foreground.
+        /// </summary>
+        public static void BringToFront(this Window window) {
+            window.SetForeground();
+            Wait.UntilInputIsProcessed(TimeSpan.FromMilliseconds(300));
+        }
+
+        /// <summary>
         /// Presses a button once it is enabled; a command that never becomes executable fails the
         /// step instead of being clicked into nothing.
         /// </summary>

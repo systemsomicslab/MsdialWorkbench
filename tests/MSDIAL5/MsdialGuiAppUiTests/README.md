@@ -23,7 +23,8 @@ dotnet test tests/MSDIAL5/MsdialGuiAppUiTests -- "TestRunParameters.Parameter(na
 |---------------|------------------------------------------------------------|
 | `MsdialExe`   | The `MSDIAL.exe` under test.                               |
 | `DemoDataDir` | The demo data the console checks use (`LcmsScenarioTests`). |
-| `HandsOnDataDir` | The unpacked hands-on data (`ProjectMetadataTests`). |
+| `DatasetsFile` | The JSON file listing the `LcmsScenarioTests` datasets. Keep it outside the repository. |
+| `HandsOnDataDir` | The unpacked hands-on data (`ProjectMetadataTests`, `HandsOnPart1Tests`, `HandsOnPart2Tests`). |
 | `Datasets`    | Optional. Comma-separated `LcmsScenarioTests` datasets to run; the others report Inconclusive. |
 
 A test whose parameters are missing reports Inconclusive instead of failing, so the
@@ -54,19 +55,38 @@ are attached to the test result.
 | Test | Needs | Takes | What it does |
 |------|-------|-------|--------------|
 | `StartupTests` | `MsdialExe` | seconds | Starts MS-DIAL and closes it. |
-| `LcmsScenarioTests` | `MsdialExe`, `DemoDataDir` | 1–12 min per dataset | For each vendor dataset: creates an LC-MS project, processes it, opens every file and the alignment, exports the alignment result, closes, then loads the project again and opens the results once more. |
+| `LcmsScenarioTests` | `MsdialExe`, `DemoDataDir`, `DatasetsFile` | 1–12 min per dataset | For each vendor dataset: creates an LC-MS project, processes it, opens every file and the alignment, exports the alignment result, closes, then loads the project again and opens the results once more. |
 | `ProjectMetadataTests` | `MsdialExe`, `HandsOnDataDir` | ~7 min | Enters the project metadata (instrument type, instrument, authors, license, collision energy, comment) in the project wizard, checks it in Option > Project property setting, saves, reopens, edits and saves it there, checks that Cancel discards an edit, and checks the MassBank record export carries it. |
+| `HandsOnPart1Tests` | `MsdialExe`, `HandsOnDataDir` | ~4 min | Part 1 of the hands-on guide: annotates `data1\pos` with the MassBank MSP and exports the molecular network. |
+| `HandsOnPart2Tests` | `MsdialExe`, `HandsOnDataDir` | ~12 min | Part 2: lipidomics of `data2\neg` with a blank and sample classes, the EquiSPLASH text library, blank removal, SPLASH normalization and the raw and normalized exports, compared with the guide's expected result. Needs one lipid library (`.lbm*`) beside `MSDIAL.exe`. |
 
 `HandsOnDataDir` is the unpacked `metabolomics_hands-on.zip` of the MS-DIAL metabolomics hands-on,
-with its `data1.zip` unpacked inside it (the test uses `data1\pos`).
+with its `data1.zip` and `data2.zip` unpacked inside it. The tests take the `.wiff` files they find
+in `data1\pos` and `data2\neg`.
 
-The datasets (mzML, Sciex WIFF and WIFF2, Waters, Agilent, Shimadzu, Thermo, Hive) and the
-polarity and minimum peak height each needs are listed in `LcmsScenarioTests.Datasets`. To run only
-some of them, name them in the `Datasets` parameter; the others report Inconclusive:
+### Scenario datasets
+
+`LcmsScenarioTests` runs the datasets listed in the JSON file `DatasetsFile` names, one test result
+per dataset. The file stays outside the repository so the demo data's file names are not
+published; `lcms-datasets.example.json` shows the format:
+
+| Field | Meaning |
+|-------|---------|
+| `name` | The name in the test results and in the `Datasets` parameter. |
+| `folder` | The folder holding the files, relative to `DemoDataDir` (or absolute). |
+| `polarity` | `Positive` or `Negative`. |
+| `minimumPeakHeight` | Set below the intensities in the data; one above every peak leaves a file empty and MS-DIAL stops with "No peak information". |
+| `files` | The measurement files as a user picks them: a file, or for a run stored as a folder (Agilent .d, Waters .raw), that folder. |
+
+To add a vendor or change a setting, edit that file; the code does not change. To run only some of
+the datasets, name them in the `Datasets` parameter; the others report Inconclusive:
 
 ```
-dotnet test tests/MSDIAL5/MsdialGuiAppUiTests -- "TestRunParameters.Parameter(name=\"MsdialExe\", value=\"...\")" "TestRunParameters.Parameter(name=\"DemoDataDir\", value=\"D:\msdial_demofiles\")" "TestRunParameters.Parameter(name=\"Datasets\", value=\"Sciex WIFF,Agilent D\")"
+dotnet test tests/MSDIAL5/MsdialGuiAppUiTests --settings path/to/ui.runsettings -- "TestRunParameters.Parameter(name=\"Datasets\", value=\"Sciex WIFF,Agilent D\")"
 ```
+
+The datasets are read when the tests run, not when they are discovered, so Test Explorer shows
+`CreatesProcessesExportsAndReopensAProject` once and the results list each dataset.
 
 The scenario copies the raw files (with companions such as `.wiff.scan`) to
 `%TEMP%\MsdialUiTests\<dataset>-<time>` and processes them there, so the demo data folder is never

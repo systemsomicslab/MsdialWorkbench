@@ -46,12 +46,13 @@ namespace CompMs.App.Msdial.UiTests
         public void EntersSavesEditsAndExportsProjectMetadata() {
             var exe = RunParameters.RequireMsdialExe(TestContext);
             var handsOnDir = RunParameters.RequireHandsOnDataDir(TestContext);
-            var work = WorkDirectory.Prepare(TestContext, handsOnDir, HandsOnData.Part1Positive);
+            var dataset = HandsOnData.Part1Positive(handsOnDir);
+            var work = WorkDirectory.Prepare(TestContext, handsOnDir, dataset);
 
             // Entered in the project wizard, it shows in the property dialog and is saved.
             using (var session = MsdialSession.Launch(TestContext, exe)) {
-                Workflow.CreateProjectAndRun(session, HandsOnData.Part1Positive, work, dragAndDrop: false, onMeasurementPage: wizard => EnterMetadata(session, wizard));
-                Workflow.WaitForResults(session, HandsOnData.Part1Positive, "processing");
+                Workflow.CreateProjectAndRun(session, dataset, work, dragAndDrop: false, onMeasurementPage: wizard => EnterMetadata(session, wizard));
+                Workflow.WaitForResults(session, dataset, "processing");
                 AssertPropertyDialogShows(session, Entered, "right after processing");
                 Workflow.SaveProject(session);
                 session.Close();
@@ -60,7 +61,7 @@ namespace CompMs.App.Msdial.UiTests
 
             // It survives opening the project again, and can be changed there and saved.
             using (var session = MsdialSession.Launch(TestContext, exe)) {
-                Workflow.LoadProject(session, HandsOnData.Part1Positive, project);
+                Workflow.LoadProject(session, dataset, project);
                 AssertPropertyDialogShows(session, Entered, "after opening the saved project");
                 EditInPropertyDialog(session, Edited, finish: true);
                 Workflow.SaveProject(session);
@@ -69,12 +70,12 @@ namespace CompMs.App.Msdial.UiTests
 
             // The change survives, Cancel throws an edit away, and the export carries the values.
             using (var session = MsdialSession.Launch(TestContext, exe)) {
-                Workflow.LoadProject(session, HandsOnData.Part1Positive, project);
+                Workflow.LoadProject(session, dataset, project);
                 AssertPropertyDialogShows(session, Edited, "after editing, saving and opening again");
                 EditInPropertyDialog(session, new Metadata { ["TextBox_Authors"] = "Should be thrown away" }, finish: false);
                 AssertPropertyDialogShows(session, Edited, "after cancelling an edit");
 
-                Workflow.BrowseResults(session, HandsOnData.Part1Positive);
+                Workflow.BrowseResults(session, dataset);
                 var export = Path.Combine(work, "export");
                 Workflow.ExportAlignment(session, export, dialog => ChooseMassBankRecords(session, dialog));
                 AssertMassBankRecordsCarry(export, Edited);

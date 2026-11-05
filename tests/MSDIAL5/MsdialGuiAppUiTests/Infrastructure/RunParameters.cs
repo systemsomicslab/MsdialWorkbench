@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -44,6 +45,34 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
                 Assert.Fail($"{name} points to '{path}', which does not exist.");
             }
             return path;
+        }
+
+        /// <summary>
+        /// The JSON file that lists the scenario datasets: their folders under
+        /// <see cref="DemoDataDir"/>, files and settings. It lives outside the repository, so the
+        /// demo data's file names are not published.
+        /// </summary>
+        public const string DatasetsFile = nameof(DatasetsFile);
+
+        /// <summary>
+        /// The datasets of <see cref="DatasetsFile"/>, as the rows of a data-driven test. Without
+        /// the parameter there is one row, <c>null</c>, which the test reports Inconclusive.
+        /// </summary>
+        public static IEnumerable<object?[]> ScenarioDatasets() {
+            if (TestRun.Context?.Properties[DatasetsFile] is not string path || string.IsNullOrWhiteSpace(path)) {
+                return new[] { new object?[] { null } };
+            }
+            if (!File.Exists(path)) {
+                throw new FileNotFoundException($"{DatasetsFile} points to '{path}', which does not exist.", path);
+            }
+            return Infrastructure.DatasetsFile.Load(path).Select(dataset => new object?[] { dataset });
+        }
+
+        public static RawDataset RequireDataset(RawDataset? dataset) {
+            if (dataset is null) {
+                Assert.Inconclusive($"The run parameter '{DatasetsFile}' is not set. See tests/MSDIAL5/MsdialGuiAppUiTests/README.md.");
+            }
+            return dataset!;
         }
 
         public const string Datasets = nameof(Datasets);
