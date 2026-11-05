@@ -1162,9 +1162,14 @@ namespace CompMs.App.MsdialConsole.Parser
             if (value.IsEmptyOrNull()) {
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
-                || float.TryParse(value, out parsed)) {
+            // Invariant only, as Number() reads the method file. The process culture is invariant
+            // too, so a culture-dependent fallback would read a decimal comma as digit grouping and
+            // turn "0,01" into 1 without a word.
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)) {
                 setter(parsed);
+            }
+            else {
+                Console.WriteLine($"MSP annotator setting '{aliases[0]}': '{value}' is not a number written with a '.' decimal separator. The default is kept.");
             }
         }
 
