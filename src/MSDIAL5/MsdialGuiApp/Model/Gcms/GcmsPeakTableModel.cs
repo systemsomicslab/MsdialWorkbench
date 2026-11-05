@@ -33,14 +33,14 @@ namespace CompMs.App.Msdial.Model.Gcms
         public double RiMin { get; }
         public double RiMax { get; }
 
-        public override void MarkAllAsConfirmed() {
-            IDoCommand command = new MarkAllAsConfirmedCommand<Ms1BasedSpectrumFeature>(PeakSpots, true);
+        public override void MarkAllAsConfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<Ms1BasedSpectrumFeature>(peakSpots.OfType<Ms1BasedSpectrumFeature>().ToList(), true);
             command.Do();
             _undoManager.Add(command);
         }
 
-        public override void MarkAllAsUnconfirmed() {
-            IDoCommand command = new MarkAllAsConfirmedCommand<Ms1BasedSpectrumFeature>(PeakSpots, false);
+        public override void MarkAllAsUnconfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<Ms1BasedSpectrumFeature>(peakSpots.OfType<Ms1BasedSpectrumFeature>().ToList(), false);
             command.Do();
             _undoManager.Add(command);
         }

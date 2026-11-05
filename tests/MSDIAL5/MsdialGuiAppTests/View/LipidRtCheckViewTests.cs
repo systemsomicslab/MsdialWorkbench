@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.View.Tests
         [TestMethod]
         public void TheSettingWindowLoadsAndBindsToItsViewModel() {
             OnUiThread(() => {
-                var model = new LipidRtCheckSettingModel(LipidRtTestSpots.Lipidomics(), new AlignmentSpotPropertyModel[0], () => Task.CompletedTask, new Model.Service.UndoManager());
+                var model = new LipidRtCheckSettingModel(LipidRtTestSpots.Lipidomics(), new AlignmentSpotPropertyModel[0], DataBaseStorage.CreateEmpty(), () => Task.CompletedTask, new Model.Service.UndoManager());
                 using var viewModel = new LipidRtCheckSettingViewModel(model);
                 var view = new LipidRtCheckSettingView { DataContext = viewModel, };
                 DoEvents();
@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.View.Tests
         public void ThePeakInformationPanelShowsTheVerdictRowOnlyWhereThereIsAVerdict() {
             OnUiThread(() => {
                 var spots = LipidRtTestSpots.Spots();
-                LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics());
+                LipidRtCheckHooks.RunOnSpots(spots, LipidRtTestSpots.Lipidomics(), null);
                 var target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>(new AlignmentSpotPropertyModel(LipidRtTestSpots.Find(spots, 52, 1)));
                 using var information = new PeakInformationAlignmentModel(target);
                 using var viewModel = new PeakInformationViewModel(information);

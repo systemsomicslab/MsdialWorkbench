@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
     /// Every annotated object of the unit is a candidate and receives an outcome; only the eligible ones
     /// (<see cref="IsEligible"/>, SPEC 2.1) are evaluated, the others are NotEvaluable(Ineligible). An annotated object
     /// that is not eligible still takes part in the MS1 artefact layer as a possible brighter partner, with its
-    /// composition when its name is a lipid.
+    /// composition when its name is a lipid, except an in-silico one (<see cref="IsInSilico"/>).
     ///
     /// <see cref="Id"/> is a key and the last tie-breaker, never evidence.
     /// </remarks>
@@ -71,6 +71,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         public IReadOnlyList<LipidRtChain> Chains { get; set; } = Array.Empty<LipidRtChain>();
 
         public bool IsEligible { get; set; }
+
+        /// <summary>
+        /// The representative's evidence is in silico, or its annotator searches a library of predicted spectra (reason
+        /// "in_silico"). Such a candidate is not evaluated, and in the MS1 artefact layer it is the unannotated peak it would
+        /// be without that library: no composition, no adduct a relation must respect. A computed spectrum is a hypothesis,
+        /// so it is no evidence about its neighbours either.
+        /// </summary>
+        public bool IsInSilico { get; set; }
 
         /// <summary>Why the candidate is not eligible, e.g. "not_ref_matched,tag_520"; empty when eligible.</summary>
         public string IneligibleReason { get; set; } = string.Empty;
@@ -145,7 +153,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         public double Height { get; set; }
         public string Adduct { get; set; } = string.Empty;
 
-        /// <summary>The representative is an MS/MS match (annotation tag 3xx/4xx).</summary>
+        /// <summary>
+        /// The representative is an MS/MS match (annotation tag 3xx/4xx) that is not in silico: an annotated partner must
+        /// carry the ion an artefact relation assumes, and only an acquired spectrum's match says which ion it carries.
+        /// </summary>
         public bool IsMsmsAnnotated { get; set; }
     }
 

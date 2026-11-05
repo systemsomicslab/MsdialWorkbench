@@ -1251,7 +1251,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) return resultArray;
+                if (molecule == null || !molecule.IsValidatedFormat) return resultArray;
                 if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
@@ -1297,7 +1297,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) return resultArray;
+                if (molecule == null || !molecule.IsValidatedFormat) return resultArray;
                 //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculerSpeciesLevelAnnotationResultForEIEIO(msScanProp, molecule, bin);
@@ -1344,7 +1344,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) return resultArray;
+                if (molecule == null || !molecule.IsValidatedFormat) return resultArray;
                 //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculerSpeciesLevelAnnotationResultForOAD(msScanProp, molecule, bin);
@@ -1378,7 +1378,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = reference.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     return reference.Name;
                 }
                 var refinedName = string.Empty;
@@ -1422,7 +1422,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     isOthers = true;
                     return molMsRef.Name;
                 }
@@ -1490,7 +1490,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     isOthers = true;
                     return molMsRef.Name;
                 }
@@ -2379,7 +2379,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     isOthers = true;
                     return molMsRef.Name;
                 }

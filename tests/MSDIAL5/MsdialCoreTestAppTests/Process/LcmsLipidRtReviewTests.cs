@@ -40,7 +40,7 @@ public sealed class LcmsLipidRtReviewTests
     [TestMethod]
     public void TheReviewListIsWrittenNextToTheAlignmentExports() {
         var spots = TgGrid(shiftedC: 52, shiftedDb: 1, shift: 1.5);
-        var run = LipidRtCheckHooks.RunOnSpots(spots, Lipidomics());
+        var run = LipidRtCheckHooks.RunOnSpots(spots, Lipidomics(), null);
         var original = Console.Out;
         var captured = new StringWriter();
         string? file;
@@ -65,7 +65,7 @@ public sealed class LcmsLipidRtReviewTests
 
     [TestMethod]
     public void AnEmptyReviewListIsStillWrittenWhenTheCheckRan() {
-        var run = LipidRtCheckHooks.RunOnSpots(TgGrid(), Lipidomics());
+        var run = LipidRtCheckHooks.RunOnSpots(TgGrid(), Lipidomics(), null);
 
         var file = LcmsProcess.WriteLipidRtReview(run, _scratch, "AlignmentResult");
 
@@ -75,7 +75,7 @@ public sealed class LcmsLipidRtReviewTests
     [TestMethod]
     public void NothingIsWrittenWhenTheCheckDidNotRun() {
         var metabolomics = new MsdialLcmsParameter { TargetOmics = TargetOmics.Metabolomics, IonMode = IonMode.Positive };
-        var run = LipidRtCheckHooks.RunOnSpots(TgGrid(), metabolomics);
+        var run = LipidRtCheckHooks.RunOnSpots(TgGrid(), metabolomics, null);
 
         Assert.IsNull(LcmsProcess.WriteLipidRtReview(run, _scratch, "AlignmentResult"));
         Assert.IsNull(LcmsProcess.WriteLipidRtReview(null, _scratch, "AlignmentResult"));

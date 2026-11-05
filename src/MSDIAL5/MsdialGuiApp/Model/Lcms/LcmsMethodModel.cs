@@ -519,7 +519,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (alignmentModel is null) {
                 return null;
             }
-            return new LipidRtCheckSettingModel(_storage.Parameter, alignmentModel.Ms1Spots, alignmentModel.SaveAsync, alignmentModel.UndoManager);
+            return new LipidRtCheckSettingModel(_storage.Parameter, alignmentModel.Ms1Spots, _storage.DataBases, alignmentModel.SaveAsync, alignmentModel.UndoManager);
         }
     }
 }

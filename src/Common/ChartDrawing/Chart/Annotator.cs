@@ -275,7 +275,7 @@ namespace CompMs.Graphics.Chart
 
         public static readonly DependencyProperty FormatProperty = DependencyProperty.Register(
             nameof(Format), typeof(string), typeof(Annotator),
-            new PropertyMetadata("N5")
+            new FrameworkPropertyMetadata("N5", FrameworkPropertyMetadataOptions.AffectsRender, OnLabelChanged)
             );
         public string Format {
             get => (string)GetValue(FormatProperty);
@@ -303,7 +303,7 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty FontSizeProperty =
             DependencyProperty.Register(
                 nameof(FontSize), typeof(double), typeof(Annotator),
-                new PropertyMetadata(13d));
+                new FrameworkPropertyMetadata(13d, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public double FontSize {
             get => (double)GetValue(FontSizeProperty);
@@ -313,11 +313,47 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty OverlapProperty =
             DependencyProperty.Register(
                 nameof(Overlap), typeof(IOverlapMethod), typeof(Annotator),
-                new PropertyMetadata(IgnoreOverlap.Method));
+                new FrameworkPropertyMetadata(IgnoreOverlap.Method, FrameworkPropertyMetadataOptions.AffectsRender));
 
         public IOverlapMethod Overlap {
             get => (IOverlapMethod)GetValue(OverlapProperty);
             set => SetValue(OverlapProperty, value);
+        }
+
+        public static readonly DependencyProperty LabelPlacementProperty = DependencyProperty.Register(
+            nameof(LabelPlacement), typeof(ILabelPlacement), typeof(Annotator),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public ILabelPlacement? LabelPlacement {
+            get => (ILabelPlacement?)GetValue(LabelPlacementProperty);
+            set => SetValue(LabelPlacementProperty, value);
+        }
+
+        public static readonly DependencyProperty MinimumRelativeOrderProperty = DependencyProperty.Register(
+            nameof(MinimumRelativeOrder), typeof(double), typeof(Annotator),
+            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.AffectsRender),
+            value => (double)value >= 0d && (double)value <= 1d);
+
+        /// <summary>
+        /// Minimum fraction of the maximum ordering value in the full source required for a label.
+        /// Filtering precedes view clipping and axis transforms.
+        /// </summary>
+        public double MinimumRelativeOrder {
+            get => (double)GetValue(MinimumRelativeOrderProperty);
+            set => SetValue(MinimumRelativeOrderProperty, value);
+        }
+
+        public static readonly DependencyProperty MinimumOrderProperty = DependencyProperty.Register(
+            nameof(MinimumOrder), typeof(double), typeof(Annotator),
+            new FrameworkPropertyMetadata(double.NegativeInfinity, FrameworkPropertyMetadataOptions.AffectsRender),
+            value => !double.IsNaN((double)value));
+
+        /// <summary>
+        /// Minimum ordering value required for a label.
+        /// </summary>
+        public double MinimumOrder {
+            get => (double)GetValue(MinimumOrderProperty);
+            set => SetValue(MinimumOrderProperty, value);
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -328,7 +364,7 @@ namespace CompMs.Graphics.Chart
             var hAxis = HorizontalAxis;
             var vAxis = VerticalAxis;
             var datas = _lazyDatas.Datas;
-            if (hAxis == null || vAxis == null || datas == null)
+            if (hAxis == null || vAxis == null || datas == null || actualWidth <= 0d || actualHeight <= 0d)
                 return;
 
             double dx = 0, dy = 0;
@@ -357,39 +393,72 @@ namespace CompMs.Graphics.Chart
                     break;
             }
 
-            var texts = new List<Tuple<FormattedText, Point, Rect>>();
+            var texts = new List<LabelLayout>();
             var brush = Brush;
             var fontSize = FontSize;
             bool flippedX = FlippedX, flippedY = FlippedY;
             var overlap = Overlap;
             var ppd = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var repText = new FormattedText("1000.00000", culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd) { TextAlignment = TextAlignment.Center };
-            var repWidth = repText.Width;
-            var repHeight = repText.Height;
+            var placement = LabelPlacement;
+            var positions = placement is null ? null : datas
+                .Where(data => hAxis.Range.Contains(data.X))
+                .ToDictionary(data => data, data => new Point(hAxis.TranslateToRenderPoint(data.X, flippedX, actualWidth),
+                    vAxis.TranslateToRenderPoint(data.Y, flippedY, actualHeight)));
+            var anchors = positions?.Values.OrderBy(point => point.X).ToArray() ?? Array.Empty<Point>();
+            FormattedText CreateText(string label) => new FormattedText(label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd) {
+                TextAlignment = TextAlignment.Center,
+            };
+            var repText = placement is null ? CreateText("1000.00000") : null;
+            var repWidth = repText?.Width ?? 0d;
+            var repHeight = repText?.Height ?? 0d;
             var repVec = new Vector(repWidth / 2, repHeight / 2);
+            var minimumRelativeOrder = MinimumRelativeOrder;
+            var minimumOrder = minimumRelativeOrder > 0d
+                ? datas.Select(data => data.order).DefaultIfEmpty(0d).Max() * minimumRelativeOrder
+                : double.NegativeInfinity;
+            minimumOrder = Math.Max(minimumOrder, MinimumOrder);
             foreach(var data in datas.OrderByDescending(d => d.order)) {
                 if (TopN.HasValue && texts.Count >= TopN)
                     break;
+                if (data.order < minimumOrder || (minimumRelativeOrder > 0d && data.order <= 0d)) {
+                    break;
+                }
                 if (!string.IsNullOrEmpty(data.label) && hAxis.Range.Contains(data.X) && vAxis.Range.Contains(data.Y)) {
-
-                    double xx = hAxis.TranslateToRenderPoint(data.X, flippedX, actualWidth);
-                    double yy = vAxis.TranslateToRenderPoint(data.Y, flippedY, actualHeight);
+                    var anchor = positions is not null ? positions[data] : new Point(
+                        hAxis.TranslateToRenderPoint(data.X, flippedX, actualWidth),
+                        vAxis.TranslateToRenderPoint(data.Y, flippedY, actualHeight));
+                    double xx = anchor.X, yy = anchor.Y;
                     var p = new Point(xx + dx, yy + dy);
-                    var rect = new Rect(p - repVec, p + repVec);
-                    if (texts.Any(other => overlap.IsOverlap(rect, p, other.Item3, other.Item2))) {
-                        continue;
+                    FormattedText? text = null;
+                    if (placement is not null) {
+                        text = CreateText(data.label);
+                        var candidate = new LabelLayout(text, new Point(xx, yy), p);
+                        if (!placement.TryPlaceLabel(candidate, texts, anchors, new Size(actualWidth, actualHeight), flippedY, out p)) {
+                            continue;
+                        }
                     }
-
-                    var text = new FormattedText(data.label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd)
-                    {
-                        TextAlignment = TextAlignment.Center
-                    };
-                    texts.Add(Tuple.Create(text, p, rect));
+                    else {
+                        var rect = new Rect(p - repVec, p + repVec);
+                        if (texts.Any(other => overlap.IsOverlap(rect, p, new Rect(other.Origin - repVec, other.Origin + repVec), other.Origin))) {
+                            continue;
+                        }
+                    }
+                    texts.Add(new LabelLayout(text ?? CreateText(data.label), new Point(xx, yy), p));
                 }
             }
 
-            foreach ((var text, var point, _) in texts) {
-                drawingContext.DrawText(text, point);
+            var leaderPen = placement?.LeaderLinePen;
+            if (leaderPen is not null) {
+                foreach (var label in texts) {
+                    if (Math.Abs(label.Origin.X - label.Anchor.X) > 1d) {
+                        var bounds = label.Bounds;
+                        var end = new Point(label.Origin.X, flippedY ? bounds.Bottom + 1d : bounds.Top - 1d);
+                        drawingContext.DrawLine(leaderPen, label.Anchor, end);
+                    }
+                }
+            }
+            foreach (var label in texts) {
+                drawingContext.DrawText(label.Text, label.Origin);
             }
         }
 
@@ -440,7 +509,6 @@ namespace CompMs.Graphics.Chart
 
             public LabelData(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, IPropertiesAccessor xPropertiesAccessor, IPropertiesAccessor yPropertiesAccessor)
                 : base(data, xAxisManager, yAxisManager, xPropertiesAccessor, yPropertiesAccessor) {
-
             }
         }
 
