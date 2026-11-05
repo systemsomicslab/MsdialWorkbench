@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copy this file, point it at the build you want to check and pass it to dotnet test. See README.md. -->
+<RunSettings>
+  <TestRunParameters>
+    <!-- The MSDIAL.exe under test. -->
+    <Parameter name="MsdialExe" value="C:\path\to\MSDIAL.exe" />
+    <!-- The demo data the console checks use. Only scenario tests need it. -->
+    <Parameter name="DemoDataDir" value="D:\msdial_demofiles" />
+    <!-- The unpacked metabolomics_hands-on.zip, with data1.zip unpacked inside it. -->
+    <Parameter name="HandsOnDataDir" value="C:\path\to\metabolomics_hands-on" />
+  </TestRunParameters>
+</RunSettings>
