@@ -39,6 +39,22 @@
 		<DownloadLibraries Condition="'$(DownloadLibraries)' == ''">false</DownloadLibraries>
     <Nullable>enable</Nullable>
 	</PropertyGroup>
+	<!--
+		Keep System.Data.SQLite.Core's SQLite.Interop.dll out of the output folder's root.
+
+		Since PlatformTarget is x64 the SDK copies the package's runtimes/win-x64 native asset
+		(SQLite.Interop.dll 1.0.112) into the root, which it did not do before. The SCIEX reader
+		(lib/Sciex/SCIEX.Apis.Data.v1.dll) carries System.Data.SQLite 1.0.109 and needs the 1.0.109
+		interop that RawDataHandler puts in x64\; with a 1.0.112 one in the root found first,
+		opening a .wiff2 fails with "file is not a database" and MS-DIAL reports the file as
+		unreadable. Without the root copy the output is laid out as before PlatformTarget was set,
+		and as the console is.
+	-->
+	<Target Name="KeepSqliteInteropOutOfOutputRoot" AfterTargets="ResolvePackageAssets">
+		<ItemGroup>
+			<NativeCopyLocalItems Remove="@(NativeCopyLocalItems)" Condition="'%(Filename)%(Extension)' == 'SQLite.Interop.dll'" />
+		</ItemGroup>
+	</Target>
 	<Target Name="DownloadContentFiles" BeforeTargets="Build">
 		<ItemGroup>
 			<_DeployToItem Include="$(OutputPath)\*.lbm*" />
