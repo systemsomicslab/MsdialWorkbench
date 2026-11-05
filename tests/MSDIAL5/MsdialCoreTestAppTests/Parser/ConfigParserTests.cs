@@ -1375,6 +1375,41 @@ public sealed class ConfigParserTests
     }
 
     /// <summary>
+    /// A settings table saved from Excel on a PC with a decimal comma holds "0,05". Read with the
+    /// invariant culture and digit grouping allowed, that is 5, a tolerance a hundred times too
+    /// wide; the value must be refused instead, with a message, and the default kept.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_RefusesADecimalCommaAndKeepsTheDefault()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tms2_tolerance\n" +
+            $"comma\t{msp}\t0,05\n" +
+            $"blank\t{msp}\t\n");
+        var method = directory.CreateFile(
+            "method.txt",
+            $"Msp annotator settings file path: {settings}\n");
+
+        var output = new StringWriter();
+        var original = Console.Out;
+        List<MspAnnotatorSetting> parsed;
+        try {
+            Console.SetOut(output);
+            parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+        }
+        finally {
+            Console.SetOut(original);
+        }
+
+        Assert.AreEqual(2, parsed.Count);
+        Assert.AreEqual(parsed[1].SearchParameter.Ms2Tolerance, parsed[0].SearchParameter.Ms2Tolerance);
+        StringAssert.Contains(output.ToString(), "'0,05' is not a number written with a '.' decimal separator");
+    }
+
+    /// <summary>
     /// A run with no GUI can still say whether a library's spectra were acquired or computed.
     /// </summary>
     /// <remarks>

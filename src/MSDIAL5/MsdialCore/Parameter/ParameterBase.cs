@@ -538,8 +538,8 @@ namespace CompMs.MsdialCore.Parameter
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
             pStrings.Add("# Project information");
-            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "MS-DIAL version number", MsdialVersionNumber.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project file path", Path.Combine(ProjectFolderPath, ProjectFileName).ToString() }));

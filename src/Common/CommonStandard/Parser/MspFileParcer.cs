@@ -8,6 +8,7 @@ using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,6 +18,12 @@ namespace CompMs.Common.Parser
 {
     public static class MspFileParser {
         static IupacDatabase IupacDatabase = IupacResourceParser.GetIUPACDatabase();
+
+        // MSP is text with a point as the decimal separator on every machine, so its numbers are read
+        // with the invariant culture rather than the regional format of the PC, which may use a comma.
+        private static bool TryParseNumber(string text, out float value) {
+            return float.TryParse(text, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out value);
+        }
 
         /// <summary>
         /// This is the MSP file parcer.
@@ -79,7 +86,7 @@ namespace CompMs.Common.Parser
                             ReadMspField(wkstr, out string fieldName, out string fieldValue);
                             var isSpecRetrieved = SetMspField(mspField, fieldName, fieldValue, sr);
 
-                            if (fieldName.ToLower().StartsWith("comment")) {
+                            if (fieldName.ToLowerInvariant().StartsWith("comment")) {
                                 for (int i = 0; i < mspField.Comment.Length; i++) {
                                     var charvalue = mspField.Comment[i];
                                     if (charvalue == 'S' && i + 7 <= mspField.Comment.Length - 1) {
@@ -276,10 +283,10 @@ namespace CompMs.Common.Parser
 
         public static bool SetMspField(MoleculeMsReference mspObj, string fieldName, string fieldValue, StreamReader sr, bool isFiehnDB = false) {
             // if (fieldValue.IsEmptyOrNull()) return false; // this code has some bug ?
-            switch (fieldName.ToLower()) {
+            switch (fieldName.ToLowerInvariant()) {
                 // string
                 case "name": mspObj.Name = fieldValue;  return false;
-                case "binid": mspObj.DatabaseID = int.TryParse(fieldValue, out int binid) ? binid : -1;  return false;
+                case "binid": mspObj.DatabaseID = int.TryParse(fieldValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out int binid) ? binid : -1;  return false;
 
                 case "comment": 
                 case "comments": 
@@ -311,20 +318,20 @@ namespace CompMs.Common.Parser
                 case "retentiontime": 
                 case "retention_time": 
                 case "rt": 
-                    if (float.TryParse(fieldValue, out float rt)) mspObj.ChromXs.RT = new RetentionTime(rt); 
+                    if (TryParseNumber(fieldValue, out float rt)) mspObj.ChromXs.RT = new RetentionTime(rt); 
                      return false;
 
                 case "retentionindex":
                 case "retention_index":
                 case "ri":
-                    if (float.TryParse(fieldValue, out float ri)) {
+                    if (TryParseNumber(fieldValue, out float ri)) {
                         mspObj.ChromXs.RI = new RetentionIndex(ri);
                         if (isFiehnDB) {
                             mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
                         }
                     } else if (fieldValue.Contains("a=")) {
                         var newFieldValue = fieldValue.Replace("a=", "");
-                        if (float.TryParse(newFieldValue, out ri)) {
+                        if (TryParseNumber(newFieldValue, out ri)) {
                             mspObj.ChromXs.RI = new RetentionIndex(ri);
                             if (isFiehnDB) {
                                 mspObj.ChromXs.RT = new RetentionTime((float)(ri * 0.001 / 60.0));
@@ -337,12 +344,12 @@ namespace CompMs.Common.Parser
                 case "ionmode": 
                 case "ion_mode":
                 //case "ionization":
-                    mspObj.IonMode = fieldValue.ToLower().Contains("n") ? IonMode.Negative : IonMode.Positive; 
+                    mspObj.IonMode = fieldValue.ToLowerInvariant().Contains("n") ? IonMode.Negative : IonMode.Positive; 
                      return false;
 
                 case "collision_energy":
                 case "collisionenergy":
-                    mspObj.CollisionEnergy = float.TryParse(fieldValue, out float ce) ? ce : -1;
+                    mspObj.CollisionEnergy = TryParseNumber(fieldValue, out float ce) ? ce : -1;
                     mspObj.FragmentationCondition = fieldValue;
                     return false;
 
@@ -350,12 +357,12 @@ namespace CompMs.Common.Parser
                 case "precursormz":
                 case "precursor_mz":
                 case "precursor_m/z":
-                    mspObj.PrecursorMz = float.TryParse(fieldValue, out float premz) ? premz : -1;  return false;
-                case "quantmass": mspObj.QuantMass = float.TryParse(fieldValue, out float quantmass) ? quantmass : -1;  return false;
+                    mspObj.PrecursorMz = TryParseNumber(fieldValue, out float premz) ? premz : -1;  return false;
+                case "quantmass": mspObj.QuantMass = TryParseNumber(fieldValue, out float quantmass) ? quantmass : -1;  return false;
 
                 case "collisioncrosssection":
                 case "ccs":
-                    mspObj.CollisionCrossSection = float.TryParse(fieldValue, out float ccs) ? ccs : -1;  return false;
+                    mspObj.CollisionCrossSection = TryParseNumber(fieldValue, out float ccs) ? ccs : -1;  return false;
 
                 case "precursortype":
                 case "precursor_type":
@@ -388,10 +395,10 @@ namespace CompMs.Common.Parser
                     else mspObj.Comment += "; carboncount=" + fieldValue;
                     return false;
                 case "mstype":
-                    if (fieldValue.ToLower() == "ms1") {
+                    if (fieldValue.ToLowerInvariant() == "ms1") {
                         var wkstr = sr.ReadLine();
                         ReadMspField(wkstr, out string titleName, out string titleValue);
-                        if (titleName.ToLower() == "num peaks") {
+                        if (titleName.ToLowerInvariant() == "num peaks") {
                             var isotopeSpec = ReadSpectrum(sr, titleValue);
                             mspObj.IsotopicPeaks = new List<DataObj.Property.IsotopicPeak>();
                             foreach (var isotope in isotopeSpec) {
@@ -404,10 +411,10 @@ namespace CompMs.Common.Parser
                         
                         wkstr = sr.ReadLine();
                         ReadMspField(wkstr, out titleName, out titleValue);
-                        if (titleName.ToLower() == "mstype" && titleValue.ToLower() == "ms2") {
+                        if (titleName.ToLowerInvariant() == "mstype" && titleValue.ToLowerInvariant() == "ms2") {
                             wkstr = sr.ReadLine();
                             ReadMspField(wkstr, out titleName, out titleValue);
-                            if (titleName.ToLower() == "num peaks") {
+                            if (titleName.ToLowerInvariant() == "num peaks") {
                                 mspObj.Spectrum = ReadSpectrum(sr, titleValue);
                                 return true;
                             }
@@ -417,10 +424,10 @@ namespace CompMs.Common.Parser
                         }
                         return false;
                     }
-                    else if (fieldValue.ToLower() == "ms2") {
+                    else if (fieldValue.ToLowerInvariant() == "ms2") {
                         var wkstr = sr.ReadLine();
                         ReadMspField(wkstr, out string titleName, out string titleValue);
-                        if (titleName.ToLower() == "num peaks") {
+                        if (titleName.ToLowerInvariant() == "num peaks") {
                             mspObj.Spectrum = ReadSpectrum(sr, titleValue);
                             return true;
                         }
@@ -437,7 +444,7 @@ namespace CompMs.Common.Parser
         public static List<SpectrumPeak> ReadSpectrum(StreamReader sr, string numPeakField) {
             var mspPeaks = new List<SpectrumPeak>();
 
-            if (int.TryParse(numPeakField.Trim(), out int peaknum)) {
+            if (int.TryParse(numPeakField.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int peaknum)) {
                 if (peaknum == 0) { return mspPeaks; }
 
                 var pairCount = 0;
@@ -457,14 +464,14 @@ namespace CompMs.Common.Parser
                             if (i == wkstr.Length - 1 && wkstr[i] != '"') {
                                 if (mzFill == false) {
                                     if (numChar != string.Empty) {
-                                        mspPeak.Mass = float.Parse(numChar);
+                                        mspPeak.Mass = float.Parse(numChar, CultureInfo.InvariantCulture);
                                         mzFill = true;
                                         numChar = string.Empty;
                                     }
                                 }
                                 else if (mzFill == true) {
                                     if (numChar != string.Empty) {
-                                        mspPeak.Intensity = float.Parse(numChar);
+                                        mspPeak.Intensity = float.Parse(numChar, CultureInfo.InvariantCulture);
                                         mzFill = false;
                                         numChar = string.Empty;
 
@@ -497,14 +504,14 @@ namespace CompMs.Common.Parser
                         else {
                             if (mzFill == false) {
                                 if (numChar != string.Empty) {
-                                    mspPeak.Mass = float.Parse(numChar);
+                                    mspPeak.Mass = float.Parse(numChar, CultureInfo.InvariantCulture);
                                     mzFill = true;
                                     numChar = string.Empty;
                                 }
                             }
                             else if (mzFill == true) {
                                 if (numChar != string.Empty) {
-                                    mspPeak.Intensity = float.Parse(numChar);
+                                    mspPeak.Intensity = float.Parse(numChar, CultureInfo.InvariantCulture);
                                     mzFill = false;
                                     numChar = string.Empty;
 
