@@ -15,8 +15,6 @@
     <IsPackable>false</IsPackable>
     <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
-
-    <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
