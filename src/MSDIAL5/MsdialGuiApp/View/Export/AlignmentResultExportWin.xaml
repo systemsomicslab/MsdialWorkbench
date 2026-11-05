@@ -80,6 +80,7 @@
                        VerticalAlignment="Center"
                        Grid.Column="0"/>
             <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     AutomationProperties.AutomationId="TextBox_ExportDirectory"
                      HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
                      Margin="5,0"
                      Grid.Column="1"/>
