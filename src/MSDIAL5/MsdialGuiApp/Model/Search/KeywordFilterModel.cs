@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -89,25 +90,29 @@ public void ClearKeywords() {
             bool Match(string word, List<string> keywords);
         }
 
+        // Keywords keep the case the user typed, because they are shown back in the filter box.
+        // Only the comparison ignores case.
+        private static bool ContainsIgnoreCase(string word, string keyword) {
+            return word.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         sealed class IgnoreIfWordIsNull : IKeywordFiltering {
             public IEnumerable<string> Filter(IEnumerable<string> keywords) {
-                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower());
+                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword));
             }
 
             public bool Match(string? word, List<string> keywords) {
-                word = word?.ToLower();
-                return keywords.All(keyword => word?.Contains(keyword) ?? false);
+                return keywords.All(keyword => word is not null && ContainsIgnoreCase(word, keyword));
             }
         }
 
         sealed class KeepIfWordIsNull : IKeywordFiltering {
             public IEnumerable<string> Filter(IEnumerable<string> keywords) {
-                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower());
+                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword));
             }
 
             public bool Match(string? word, List<string> keywords) {
-                word = word?.ToLower();
-                return word is null || keywords.All(keyword => word.Contains(keyword));
+                return word is null || keywords.All(keyword => ContainsIgnoreCase(word, keyword));
             }
         }
 
