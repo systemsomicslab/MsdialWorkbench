@@ -348,6 +348,8 @@ namespace CompMs.Common.Parser.Tests
             var written = Value(lines, "CH$SMILES");
             Assert.AreEqual(NcdkIsomericSmiles(smiles), written);
             Assert.AreEqual("INCHIKEY " + NcdkInChIKey(smiles), Value(lines, "CH$LINK"));
+            // The Validator reads CH$SMILES back and requires its InChIKey to be the one CH$LINK states.
+            Assert.AreEqual("INCHIKEY " + NcdkInChIKey(written), Value(lines, "CH$LINK"), $"{written} read back is another structure");
             if (NcdkInChIKey(smiles).EndsWith("-UHFFFAOYSA-N", StringComparison.Ordinal)) {
                 Assert.IsFalse(written.Contains('/') || written.Contains('\\'), $"{written} states stereo that the InChI does not have.");
             }
