@@ -598,39 +598,32 @@ namespace CompMs.Common.Parser
         /// "low score:", "no MS2:", "w/o MS2:", "Unsettled:" or "Putative:".
         /// </summary>
         public static bool IsSuggestionName(string name) {
-            if (string.IsNullOrWhiteSpace(name)) {
-                return false;
-            }
-            var value = name.TrimStart();
-            foreach (var prefix in SUGGESTION_PREFIXES) {
-                if (value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-                    && value.Substring(prefix.Length).TrimStart().StartsWith(":", StringComparison.Ordinal)) {
-                    return true;
-                }
-            }
-            return false;
+            return !string.IsNullOrWhiteSpace(name) && TryRemoveSuggestionPrefix(name.Trim(), out _);
         }
 
-        // MS-DIAL's markers of a suggestion that AnnotationName.Canonical leaves alone, because the other exports keep
-        // them in the name: "Unsettled:" (set by hand) and "Putative:" (another spot kept the same reference). A MassBank
-        // record states the level in COMMENT instead.
-        private static readonly string[] LEVEL_MARKERS = { "Unsettled", "Putative", };
-
-        private static readonly string[] SUGGESTION_PREFIXES = new[] {
-            AnnotationName.LowScorePrefix, AnnotationName.NoMs2Prefix, AnnotationName.WithoutMs2Prefix,
-        }.Concat(LEVEL_MARKERS).ToArray();
+        // The prefixes MS-DIAL writes before the reference name of a suggestion: AnnotationName's, which every export
+        // removes, and the markers the other exports keep in the name, "Unsettled" (set by hand) and "Putative" (another
+        // spot kept the same reference). A MassBank record states the level in COMMENT instead, so a suggestion loses both.
+        private static readonly string[] SUGGESTION_PREFIXES = {
+            AnnotationName.LowScorePrefix, AnnotationName.NoMs2Prefix, AnnotationName.WithoutMs2Prefix, "Unsettled", "Putative",
+        };
 
         /// <summary>The note a record carries when CH$NAME is one half of a dual lipid name.</summary>
         private const string DualNameNote = "the dual lipid name was written at the level its evidence supports";
 
         /// <summary>
         /// The name CH$NAME and RECORD_TITLE are made from, before sanitising: <see cref="AnnotationName.Canonical"/>, the
-        /// name every MS-DIAL export shows, and for a suggestion also without the <see cref="LEVEL_MARKERS"/>.
+        /// name every MS-DIAL export shows, of the name without its <see cref="SUGGESTION_PREFIXES"/> for a suggestion.
         /// </summary>
+        /// <remarks>
+        /// For a name MS-DIAL writes, removing the prefixes of a suggestion here and AnnotationName.WithoutPrefix in
+        /// Canonical agree on AnnotationName's prefixes (the constants are AnnotationName's); this also removes the
+        /// markers, prefixes stacked on one another, and a prefix written with a space before its colon, which
+        /// <see cref="IsSuggestionName"/>, and so the export policy, takes for a suggestion.
+        /// </remarks>
         private static string CompoundName(string name, MassBankAnnotationLevel level, bool lipidChainsResolved, out bool prefixRemoved, out bool dualNameReduced) {
             var original = name.Trim();
-            var value = level == MassBankAnnotationLevel.Suggested ? WithoutSuggestionMarkers(original) : original;
-            // The suggestion prefixes themselves are AnnotationName's, so that the list cannot drift from the writers'.
+            var value = level == MassBankAnnotationLevel.Suggested ? WithoutSuggestionPrefixes(original) : original;
             var withoutPrefix = AnnotationName.WithoutPrefix(value);
             var canonical = AnnotationName.Canonical(value, lipidChainsResolved);
             prefixRemoved = !string.Equals(withoutPrefix, original, StringComparison.Ordinal);
@@ -638,30 +631,28 @@ namespace CompMs.Common.Parser
             return canonical;
         }
 
-        // "Unsettled: low score: Glycine" and "Putative: low score: Glycine" -> "Glycine": the level markers and
-        // AnnotationName's suggestion prefixes, in whatever order MS-DIAL stacked them.
-        private static string WithoutSuggestionMarkers(string name) {
+        // "Unsettled: low score: Glycine", "Putative: low score: Glycine" and "Low score : Glycine" -> "Glycine".
+        private static string WithoutSuggestionPrefixes(string name) {
             var value = name.Trim();
-            while (true) {
-                var next = AnnotationName.WithoutPrefix(WithoutLevelMarker(value)).Trim();
-                if (string.Equals(next, value, StringComparison.Ordinal)) {
-                    return value;
-                }
-                value = next;
+            while (TryRemoveSuggestionPrefix(value, out var rest)) {
+                value = rest;
             }
+            return value;
         }
 
-        private static string WithoutLevelMarker(string name) {
-            foreach (var marker in LEVEL_MARKERS) {
-                if (!name.StartsWith(marker, StringComparison.OrdinalIgnoreCase)) {
+        private static bool TryRemoveSuggestionPrefix(string value, out string rest) {
+            foreach (var prefix in SUGGESTION_PREFIXES) {
+                if (!value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
                     continue;
                 }
-                var rest = name.Substring(marker.Length).TrimStart();
-                if (rest.StartsWith(":", StringComparison.Ordinal)) {
-                    return rest.Substring(1).Trim();
+                var after = value.Substring(prefix.Length).TrimStart();
+                if (after.StartsWith(":", StringComparison.Ordinal)) {
+                    rest = after.Substring(1).Trim();
+                    return true;
                 }
             }
-            return name;
+            rest = value;
+            return false;
         }
 
         // ---------------------------------------------------------------- peaks

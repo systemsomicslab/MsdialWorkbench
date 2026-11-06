@@ -510,6 +510,8 @@ namespace CompMs.Common.Parser.Tests
         [DataRow("low score: L-Pyroglutamic acid")]
         [DataRow("Unsettled: L-Pyroglutamic acid")]
         [DataRow("Putative: low score: L-Pyroglutamic acid")]
+        [DataRow("Low score : L-Pyroglutamic acid")] // IsSuggestionName, and so the export policy, takes it for a suggestion
+        [DataRow("putative:L-Pyroglutamic acid")]
         public void Suggested_KeepsTheStructureAndSaysSo(string name) {
             var handler = CreateHandler();
             handler.Comment = "project comment";
