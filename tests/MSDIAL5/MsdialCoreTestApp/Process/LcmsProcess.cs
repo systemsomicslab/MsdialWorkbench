@@ -8,6 +8,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
@@ -600,6 +601,7 @@ public sealed class LcmsProcess
             IReadOnlyList<MSDecResult> align_decResults;
             IDisposable? alignmentLightMsdecResults = null;
             LipidRtUnitRun? lipidRtRun;
+            IReadOnlyList<RemovedIsotopeSpot>? removedIsotopeSpots;
             if (isAlignmentLightMode) {
                 Console.WriteLine("Alignment light mode: streaming peak matrix, file-backed alignment deconvolution access, GUI chromatogram serialization, GUI alignment object serialization, and ion-abundance correlation links are disabled; text exports remain enabled.");
                 Console.WriteLine("Alignment started.");
@@ -617,6 +619,7 @@ public sealed class LcmsProcess
                 align_decResults = lightResult.MsdecResults;
                 alignmentLightMsdecResults = lightResult.MsdecResults as IDisposable;
                 lipidRtRun = lightResult.LipidRtRun;
+                removedIsotopeSpots = lightResult.RemovedIsotopeSpots;
                 Console.WriteLine("Alignment finished.");
             }
             else {
@@ -635,11 +638,19 @@ public sealed class LcmsProcess
                 }
                 Console.WriteLine("Alignment finished.");
                 lipidRtRun = aligner.LipidRtRun;
+                removedIsotopeSpots = aligner.RemovedIsotopeSpots;
                 result.Save(alignmentFile);
                 align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
                 MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
             }
             WriteLipidRtReview(lipidRtRun, outputFolder, alignmentFile.FileName);
+            if (removedIsotopeSpots is not null) {
+                // Spots whose representative peak is an isotope (M + n) and that are not reference-matched are left out
+                // of the alignment result; this list says which, with the ion each was taken as an isotope of.
+                var removedIsotopeFile = RemovedIsotopeSpotWriter.PathFor(outputFolder, alignmentFile.FileName);
+                RemovedIsotopeSpotWriter.Write(removedIsotopeFile, removedIsotopeSpots);
+                Console.WriteLine($"Alignment spots removed as isotopes: {removedIsotopeSpots.Count}, listed in {removedIsotopeFile}");
+            }
 
             var align_outputfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign");
             var align_accessor = new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);

@@ -49,13 +49,18 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 
             foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
                 if (spot.IsReferenceMatched(evaluator)) continue;
-                if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
+                if (spot.PeakCharacter.IsotopeWeightNumber > 0) {
+                    RecordRemovedAsIsotope(spot);
+                    continue;
+                }
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
             reporter.Report(4d, 4d);
 
             return cSpots;
         }
+
+        protected override bool RemovesIsotopeSpots => true;
 
         protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));
