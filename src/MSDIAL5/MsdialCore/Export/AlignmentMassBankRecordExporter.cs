@@ -48,9 +48,12 @@ namespace CompMs.MsdialCore.Export
             return _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, annotationLevel, out reason);
         }
 
-        /// <summary>Writes the record of <paramref name="spot"/>; throws <see cref="InvalidOperationException"/> when it cannot be built.</summary>
+        /// <summary>
+        /// Writes the record of <paramref name="spot"/>, or nothing for a spot that cannot become a valid record, so that
+        /// one such spot does not stop the export of the others. <see cref="TryExport"/> also says why.
+        /// </summary>
         void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
-            _handler.WriteRecord(stream, spot, spot, msdecResult, spot);
+            _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, out _);
         }
     }
 }
