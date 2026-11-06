@@ -1,0 +1,8 @@
+﻿<Project>
+
+  <ItemGroup>
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="Category" />       
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="IsConstants" />       
+  </ItemGroup>
+
+</Project>
