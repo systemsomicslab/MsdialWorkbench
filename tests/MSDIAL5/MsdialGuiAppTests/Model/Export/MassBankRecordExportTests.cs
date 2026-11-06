@@ -161,6 +161,63 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             Assert.AreEqual(1, Directory.GetFiles(_output, "*.txt").Length);
         }
 
+        // What an earlier export (or anything else) left in a folder: two records, under the contributor ID of this export
+        // and another, and files that are not records.
+        private static void PlaceEarlierRecords(string folder) {
+            Directory.CreateDirectory(folder);
+            File.WriteAllText(Path.Combine(folder, $"MSBNK-{Contributor}-MSDIAL26010112000000000000.txt"), "ACCESSION: earlier\n//\n");
+            File.WriteAllText(Path.Combine(folder, "MSBNK-OTHER_ID-MSDIAL26010112000000000001.txt"), "ACCESSION: earlier\n//\n");
+            File.WriteAllText(Path.Combine(folder, "notes.txt"), "not a record");
+            File.WriteAllText(Path.Combine(folder, $"MSBNK-{Contributor}-MSDIAL26010112000000000002.txtx"), "not a record");
+            Directory.CreateDirectory(Path.Combine(folder, "sub"));
+            File.WriteAllText(Path.Combine(folder, "sub", $"MSBNK-{Contributor}-MSDIAL26010112000000000003.txt"), "a subfolder is not where the export writes");
+        }
+
+        [TestMethod()]
+        public void Alignment_SaysThatTheFolderHoldsRecordsItDidNotWrite() {
+            // Every export takes accessions of its own, so a re-export into the same folder leaves the earlier set beside
+            // the new one, and the Validator passes the folder with both.
+            PlaceEarlierRecords(_output);
+            var broker = new MessageBroker();
+            var messages = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(messages.Add);
+            var (model, file) = CreateAlignmentExport(broker);
+            model.IsSelected = true;
+            model.ContributorID = Contributor;
+
+            ((IAlignmentResultExportModel)model).Export(file, _output, _ => { });
+
+            Assert.AreEqual(3, Directory.GetFiles(_output, "MSBNK-*.txt").Count(f => f.EndsWith(".txt")), "the earlier records are left as they are");
+            var summary = messages.Single();
+            Assert.AreEqual(MessageSeverity.Warning, summary.Severity);
+            StringAssert.Contains(summary.Content, $"1 MassBank record was written to {_output}.");
+            StringAssert.Contains(summary.Content, "2 MassBank records in the destination were not written by this export");
+            StringAssert.Contains(summary.Content, "submit one set only");
+        }
+
+        [TestMethod()]
+        public void Alignment_ReExportedIntoTheSameFolderCountsTheFirstExport() {
+            var (first, file) = CreateAlignmentExport(new MessageBroker());
+            first.IsSelected = true;
+            first.ContributorID = Contributor;
+            ((IAlignmentResultExportModel)first).Export(file, _output, _ => { });
+            var firstRecords = Directory.GetFiles(_output, "*.txt");
+            Assert.AreEqual(1, firstRecords.Length);
+            // The accession carries the export time to the second; wait for the next second, as a person re-exporting does.
+            System.Threading.Thread.Sleep(1100);
+
+            var broker = new MessageBroker();
+            var messages = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(messages.Add);
+            var (second, _) = CreateAlignmentExport(broker);
+            second.IsSelected = true;
+            second.ContributorID = Contributor;
+            ((IAlignmentResultExportModel)second).Export(file, _output, _ => { });
+
+            Assert.AreEqual(2, Directory.GetFiles(_output, "*.txt").Length, "the first set is not replaced");
+            StringAssert.Contains(messages.Single().Content, "1 MassBank record in the destination was not written by this export");
+        }
+
         [TestMethod()]
         public void Alignment_CountsNothingWhileTheMetadataIsInvalid() {
             var (model, file) = CreateAlignmentExport(new MessageBroker(), context => context.Authors = string.Empty);
@@ -469,6 +526,56 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             CollectionAssert.AreEqual(new[] { "Export failed", "MassBank export", }, messages.Select(m => m.Caption).ToArray());
             StringAssert.Contains(messages[1].Content, "2 MassBank records were written");
             Assert.IsNull(((IMsdialAnalysisExportSession)model).EndExport(_output), "the session was ended, so nothing of it lingers");
+        }
+
+        [TestMethod()]
+        public void SingleFile_SaysThatTheSampleFoldersHoldRecordsItDidNotWrite() {
+            // Two samples exported together; the first sample's folder holds two records of an earlier export, the second's
+            // none. Records the session itself wrote, in either folder, are not counted.
+            PlaceEarlierRecords(Path.Combine(_output, "sample_a"));
+            var broker = new MessageBroker();
+            var messages = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(messages.Add);
+            var files = new[] { SaveSingleFile("sample_a", 0), SaveSingleFile("sample_b", 1), };
+            var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), broker)
+            {
+                ShouldExport = true,
+                ContributorID = Contributor,
+            };
+            var collection = new AnalysisFileBeanModelCollection(files);
+            _disposables.Add(collection);
+            var export = new AnalysisResultExportModel(collection, _output, broker, model);
+            export.Selects(files);
+
+            export.Export();
+
+            var summary = messages.Single(m => m.Caption == "MassBank export");
+            Assert.AreEqual(MessageSeverity.Warning, summary.Severity);
+            StringAssert.Contains(summary.Content, $"2 MassBank records were written to per-sample folders under {_output}.");
+            StringAssert.Contains(summary.Content, "2 MassBank records in the destination were not written by this export");
+        }
+
+        [TestMethod()]
+        public void SingleFile_ReportsNoOtherRecordsInFoldersItWroteAlone() {
+            var file = SaveSingleFile();
+            var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), new MessageBroker())
+            {
+                ShouldExport = true,
+                ContributorID = Contributor,
+                IncludeSuggested = true,
+                IncludeUnknowns = true,
+            };
+            var session = (IMsdialAnalysisExportSession)model;
+
+            session.BeginExport();
+            ((IMsdialAnalysisExport)model).Export(_output, file);
+            var report = session.EndExport(_output);
+
+            Assert.AreEqual(3, Directory.GetFiles(Path.Combine(_output, "sample"), "*.txt").Length);
+            Assert.AreEqual(MessageSeverity.Information, report!.Severity);
+            Assert.IsFalse(report.Content.Contains("not written by this export"), report.Content);
         }
 
         private sealed class FailingExport : IMsdialAnalysisExport

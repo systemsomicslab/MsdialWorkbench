@@ -25,7 +25,9 @@ namespace CompMs.App.Msdial.Model.Export
     /// Spots are chosen by <see cref="MassBankExportPolicy"/>: by default only reference-matched spots with at least one
     /// MS/MS peak; suggested annotations and unknowns are opt-in. CountExportFiles and Export select spots with the same
     /// rule. The records are built by <see cref="MassBankRecordHandler"/> from the project metadata, and the export
-    /// reports what it wrote and what it skipped, with the reasons, once the whole alignment export has finished.
+    /// reports what it wrote and what it skipped, with the reasons, once the whole alignment export has finished. The
+    /// report also counts the MassBank records already in the export folder that this export did not write: every export
+    /// takes accessions of its own, so a re-export adds a second set beside the first instead of replacing it.
     /// </remarks>
     internal sealed class AlignmentResultMassBankRecordExportModel : BindableBase, IAlignmentResultExportModel, IAlignmentResultExportSession
     {
@@ -138,8 +140,9 @@ namespace CompMs.App.Msdial.Model.Export
                 // CH$NAME takes the spot's chain verdict, as the name in every other export of the alignment does.
                 var result = handler.BuildRecord(selection.Spot, selection.Spot, selection.Scan, selection.Spot, selection.Level, lipidChainsResolved: selection.Spot.AreLipidChainsResolved());
                 if (result.IsSuccess) {
-                    File.WriteAllText(Path.Combine(exportDirectory, result.FileName), result.Text, encoding);
-                    summary.AddWritten(result);
+                    var path = Path.Combine(exportDirectory, result.FileName);
+                    File.WriteAllText(path, result.Text, encoding);
+                    summary.AddWritten(result, path);
                     notification.Invoke($"Exporting {result.Accession}");
                 }
                 else {
@@ -147,6 +150,8 @@ namespace CompMs.App.Msdial.Model.Export
                     notification.Invoke($"Skipped {result.Accession}: {result.SkipReason}");
                 }
             }
+            // The records of an earlier export into this folder stay beside the new ones under accessions of their own.
+            summary.CountOtherRecords(exportDirectory, handler.Identifier);
             Report(summary.ToMessage(exportDirectory));
         }
 

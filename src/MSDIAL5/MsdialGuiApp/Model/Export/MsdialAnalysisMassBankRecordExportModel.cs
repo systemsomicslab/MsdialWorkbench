@@ -26,6 +26,8 @@ namespace CompMs.App.Msdial.Model.Export
     /// an export session, so that DATE and the time in every accession are the time of the export. Peak IDs start at 0
     /// in every file, so each accession also carries the ID of the analysis file, and the handler refuses an accession
     /// it has already issued: the records of one session never share an accession, whatever folder they are written to.
+    /// The report counts the MassBank records already in the per-sample folders that the session did not write, as a
+    /// re-export adds a second set beside the first instead of replacing it.
     /// </remarks>
     internal sealed class MsdialAnalysisMassBankRecordExportModel : BindableBase, IMsdialAnalysisExport, IMsdialAnalysisExportSession
     {
@@ -160,9 +162,12 @@ namespace CompMs.App.Msdial.Model.Export
                     continue;
                 }
                 Directory.CreateDirectory(folder);
-                File.WriteAllText(Path.Combine(folder, result.FileName), result.Text, encoding);
-                summary.AddWritten(result);
+                var path = Path.Combine(folder, result.FileName);
+                File.WriteAllText(path, result.Text, encoding);
+                summary.AddWritten(result, path);
             }
+            // The records of an earlier export of this sample stay beside the new ones under accessions of their own.
+            summary.CountOtherRecords(folder, handler.Identifier);
 
             if (_sessionSummary is null) {
                 _broker.Publish(summary.ToMessage(folder));
