@@ -41,6 +41,10 @@ namespace CompMs.App.Msdial.Model.Export
         }
 
         /// <summary>The message to show when the export ends.</summary>
+        /// <param name="destination">
+        /// Where the records were written, as the message completes "records were written to ...": a folder, or for the
+        /// peak list export of several samples "per-sample folders under" the folder; empty to leave it out.
+        /// </param>
         public MessageRequest ToMessage(string destination) {
             var content = new StringBuilder();
             content.Append(Written == 1 ? "1 MassBank record was written" : $"{Number(Written)} MassBank records were written");

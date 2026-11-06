@@ -109,7 +109,8 @@ namespace CompMs.App.Msdial.Model.Export
             _sessionHandler = null;
             _sessionSummary = null;
             _sessionRefused = false;
-            return summary?.ToMessage(destinationFolder);
+            // Export writes the records of each sample into a folder of its own under the destination folder.
+            return summary?.ToMessage(string.IsNullOrEmpty(destinationFolder) ? "per-sample folders" : $"per-sample folders under {destinationFolder}");
         }
 
         void IMsdialAnalysisExport.Export(string destinationFolder, AnalysisFileBeanModel fileBeanModel) {

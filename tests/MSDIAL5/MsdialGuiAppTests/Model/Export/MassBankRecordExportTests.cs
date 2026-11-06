@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Export.Tests
 
             var summary = messages.Single();
             Assert.AreEqual(MessageSeverity.Information, summary.Severity);
-            StringAssert.Contains(summary.Content, "1 MassBank record was written");
+            StringAssert.Contains(summary.Content, $"1 MassBank record was written to {_output}.");
             StringAssert.Contains(summary.Content, "2  suggested annotations");
             StringAssert.Contains(summary.Content, "1  unknowns");
             StringAssert.Contains(summary.Content, "1  without MS/MS peaks");
@@ -368,7 +368,7 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             CollectionAssert.Contains(lines, "CH$NAME: L-Pyroglutamic acid");
             CollectionAssert.Contains(lines, "CH$LINK: INCHIKEY ODHCTXKNWHHXJC-VKHMYHEASA-N");
             Assert.IsNotNull(report);
-            StringAssert.Contains(report!.Content, "1 MassBank record was written");
+            StringAssert.Contains(report!.Content, $"1 MassBank record was written to per-sample folders under {_output}.", "the records are in a folder per sample, not in the destination folder itself");
             StringAssert.Contains(report.Content, "3 peaks were not exported");
             StringAssert.Contains(report.Content, "2  unknowns");
             StringAssert.Contains(report.Content, "1  suggested annotations");
@@ -435,7 +435,7 @@ namespace CompMs.App.Msdial.Model.Export.Tests
                 var folder = Directory.GetFiles(Path.Combine(_output, file.AnalysisFileName), "*.txt").Select(Path.GetFileNameWithoutExtension).ToList();
                 Assert.IsTrue(folder.All(accession => accession.Contains($"F{file.AnalysisFileId:D4}P")), string.Join(", ", folder));
             }
-            StringAssert.Contains(messages.Single(m => m.Caption == "MassBank export").Content, "9 MassBank records were written");
+            StringAssert.Contains(messages.Single(m => m.Caption == "MassBank export").Content, $"9 MassBank records were written to per-sample folders under {_output}.");
         }
 
         [TestMethod()]
