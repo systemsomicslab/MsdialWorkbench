@@ -199,7 +199,7 @@
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Contributor ID:"
                                ToolTip="The contributor ID MassBank assigned to you (1 to 32 of A-Z, 0-9 and _). It is the second block of every MassBank accession, and the MassBank export starts from it.">
-                <TextBox Text="{Binding MassBankContributorId.Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="TextBox_MassBankContributorId"/>
+                <TextBox Text="{Binding MassBankContributorId.Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="TextBox_MassBankContributorID"/>
             </ui:LabeledContent>
             <TextBlock Text="The MassBank contributor ID is assigned by MassBank. Leave it empty until you have one."
                        Foreground="Gray" FontSize="10" TextWrapping="Wrap"
