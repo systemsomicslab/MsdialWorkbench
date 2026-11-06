@@ -283,10 +283,8 @@ namespace Rfx.Riken.OsakaUniv
                         case "PROJECT":
                             break;
                         case "COMMENT":
-                            if (string.IsNullOrEmpty(rawData.Comment)) {
-                                rawData.Comment = string.Empty;
-                            }
-                            rawData.Comment += content;
+                            // A record has one COMMENT line per remark; keep them apart, on the one line a query's comment is.
+                            rawData.Comment = string.IsNullOrEmpty(rawData.Comment) ? content : rawData.Comment + "; " + content;
                             break;
                         case "CH$NAME":
                             rawData.MetaboliteName = rawData.Name = content;
@@ -353,6 +351,7 @@ namespace Rfx.Riken.OsakaUniv
                                     rawData.Assign(d => d.RetentionTime, subcontent.Split()[0]);
                                     break;
                                 case "KOVATS_RTI":
+                                case "RETENTION_INDEX": // what MS-DIAL and MS-FINDER write
                                     rawData.Assign(d => d.RetentionIndex, subcontent.Split()[0]);
                                     break;
                                 case "CCS":
