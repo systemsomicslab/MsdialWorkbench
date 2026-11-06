@@ -63,6 +63,23 @@ namespace CompMs.App.Msdial.Model.Export
         /// <summary>True when <see cref="ContributorID"/> is a MassBank contributor ID; the export is refused otherwise.</summary>
         public bool IsContributorIdValid => MassBankVocabulary.IsValidContributorId(ContributorID);
 
+        /// <summary>The contributor ID saved with the project (Option &gt; Project property setting); empty when none is.</summary>
+        public string ProjectContributorID => _studyContextModel.MassBankContributorId ?? string.Empty;
+
+        /// <summary>True when the project only accepts metadata that makes valid MassBank records.</summary>
+        public bool IsProjectConstrainedToMassBankFormat => _studyContextModel.ConstrainToMassBankFormat;
+
+        /// <summary>
+        /// Starts <see cref="ContributorID"/> from the project's contributor ID, when the project has one; called as
+        /// the export dialog opens. Without one, the ID entered last time is kept.
+        /// </summary>
+        public void UseProjectContributorID() {
+            var projectId = ProjectContributorID;
+            if (projectId.Length > 0) {
+                ContributorID = projectId;
+            }
+        }
+
         public bool ShouldExport {
             get => _shouldExport;
             set => SetProperty(ref _shouldExport, value);
