@@ -1,6 +1,7 @@
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -172,24 +173,37 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
         /// <param name="configure">
         /// What to choose in the export dialog before pressing Export; the default formats when null.
         /// </param>
-        public static void ExportAlignment(MsdialSession session, string directory, Action<Window>? configure = null) {
+        /// <param name="reports">
+        /// The titles of the message boxes the chosen formats show when the export ends (the MassBank summary,
+        /// "MassBank export"); each is waited for, read and closed with OK. Any other dialog fails the test.
+        /// </param>
+        /// <returns>The text of each report, by title.</returns>
+        public static IReadOnlyDictionary<string, string> ExportAlignment(MsdialSession session, string directory, Action<Window>? configure = null, params string[] reports) {
             Directory.CreateDirectory(directory);
             SelectRibbonTab(session, "Export");
             session.Press(session.ButtonNamed(session.MainWindow, "Alignment result"), "Alignment result export");
             var dialog = session.WaitForDialog(ExportDialogTitle, DialogTimeout);
             session.ById(dialog, "TextBox_ExportDirectory", ExportDialogTitle).AsTextBox().Enter(directory);
             configure?.Invoke(dialog);
+            bool exporting(string title) => title == ExportDialogTitle || title.StartsWith("Progress") || title.StartsWith("Export") || reports.Contains(title);
             session.Press(session.ButtonNamed(dialog, "Export", ExportDialogTitle), "Export", ExportDialogTitle);
             session.WaitFor("the alignment result being exported",
                 () => !session.IsDialogOpen(ExportDialogTitle) || Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories).Any() ? directory : null,
                 ProcessingTimeout,
-                title => title == ExportDialogTitle || title.StartsWith("Progress") || title.StartsWith("Export"));
+                exporting);
+            var texts = new Dictionary<string, string>();
+            foreach (var report in reports) {
+                var box = session.WaitForDialog(report, ProcessingTimeout, exporting);
+                texts[report] = session.ReadText(box);
+                session.ButtonNamed(box, "OK", reports.Concat(new[] { ExportDialogTitle, }).ToArray()).Invoke();
+            }
             session.Settle("exporting the alignment result", ExportDialogTitle);
             // The dialog closes itself after exporting; close it only if it stayed.
             if (session.IsDialogOpen(ExportDialogTitle)) {
                 session.ButtonNamed(dialog, "Cancel", ExportDialogTitle).Invoke();
                 session.Settle("closing the export dialog", ExportDialogTitle);
             }
+            return texts;
         }
     }
 }

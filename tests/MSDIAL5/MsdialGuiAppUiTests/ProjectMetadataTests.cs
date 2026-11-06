@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.UiTests
     public class ProjectMetadataTests
     {
         private const string PropertyDialogTitle = "Project property setting";
+        private const string MassBankSummaryTitle = "MassBank export";
 
         // The text box ids are the same on the measurement page of the project wizard and in the
         // project property dialog.
@@ -32,7 +33,7 @@ namespace CompMs.App.Msdial.UiTests
         };
 
         private static readonly Metadata Edited = new Metadata {
-            ["TextBox_InstrumentType"] = "LC-ESI-QTOF edited",
+            ["TextBox_InstrumentType"] = "LC-ESI-QFT",
             ["TextBox_Instrument"] = "TripleTOF 6600, SCIEX",
             ["TextBox_Authors"] = "MS-DIAL UI test, edited",
             ["TextBox_License"] = "CC BY-SA",
@@ -77,7 +78,9 @@ namespace CompMs.App.Msdial.UiTests
 
                 Workflow.BrowseResults(session, dataset);
                 var export = Path.Combine(work, "export");
-                Workflow.ExportAlignment(session, export, dialog => ChooseMassBankRecords(session, dialog));
+                // The MassBank export ends with a summary of what it wrote, once the whole export has finished.
+                var reports = Workflow.ExportAlignment(session, export, dialog => ChooseMassBankRecords(session, dialog), MassBankSummaryTitle);
+                StringAssert.Contains(reports[MassBankSummaryTitle], "MassBank record", "the MassBank export summary");
                 AssertMassBankRecordsCarry(export, Edited);
                 session.Close();
             }
@@ -141,11 +144,21 @@ namespace CompMs.App.Msdial.UiTests
                 Controls.FindTimeout,
                 title => title == Workflow.ExportDialogTitle);
             record.IsChecked = true;
+            // MassBank refuses to export without a contributor ID in its format (A-Z, 0-9 and _).
+            session.ById(massBank, "TextBox_MassBankContributorID", Workflow.ExportDialogTitle).AsTextBox().Enter("MSDIAL_UI_TEST");
+            // The project is processed without an annotation library, so no spot is reference-matched, and by
+            // default only reference-matched spots are exported: ask for the unknowns and suggestions too.
+            foreach (var option in new[] { "Include suggested annotations", "Include unknowns", }) {
+                session.WaitFor($"finding the '{option}' check box",
+                    () => massBank.FindFirstDescendant(cf => cf.ByName(option).And(cf.ByControlType(ControlType.CheckBox)))?.AsCheckBox(),
+                    Controls.FindTimeout,
+                    title => title == Workflow.ExportDialogTitle).IsChecked = true;
+            }
         }
 
         /// <summary>
-        /// MassBank records carry four of the six fields: AUTHORS, LICENSE, AC$INSTRUMENT and
-        /// AC$INSTRUMENT_TYPE. Collision energy and comment are not part of the record.
+        /// MassBank records carry all six fields: AUTHORS, LICENSE, AC$INSTRUMENT, AC$INSTRUMENT_TYPE,
+        /// AC$MASS_SPECTROMETRY: COLLISION_ENERGY and COMMENT.
         /// </summary>
         private static void AssertMassBankRecordsCarry(string exportDirectory, Metadata expected) {
             var records = Directory.EnumerateFiles(exportDirectory, "*.txt", SearchOption.AllDirectories)
@@ -153,15 +166,18 @@ namespace CompMs.App.Msdial.UiTests
                 .ToList();
             Assert.IsTrue(records.Count > 0, $"No MassBank record was exported to {exportDirectory}.");
 
+            // Each line prefix, up to and including the separator before the value.
             var wanted = new Dictionary<string, string> {
-                ["AUTHORS"] = expected["TextBox_Authors"],
-                ["LICENSE"] = expected["TextBox_License"],
-                ["AC$INSTRUMENT"] = expected["TextBox_Instrument"],
-                ["AC$INSTRUMENT_TYPE"] = expected["TextBox_InstrumentType"],
+                ["AUTHORS: "] = expected["TextBox_Authors"],
+                ["LICENSE: "] = expected["TextBox_License"],
+                ["AC$INSTRUMENT: "] = expected["TextBox_Instrument"],
+                ["AC$INSTRUMENT_TYPE: "] = expected["TextBox_InstrumentType"],
+                ["AC$MASS_SPECTROMETRY: COLLISION_ENERGY "] = expected["TextBox_CollisionEnergy"],
+                ["COMMENT: "] = expected["TextBox_Comment"],
             };
             var lines = File.ReadAllLines(records[0]);
             var problems = wanted
-                .Select(entry => (entry.Key, Expected: entry.Value, Found: lines.FirstOrDefault(line => line.StartsWith(entry.Key + ": "))?.Substring(entry.Key.Length + 2)))
+                .Select(entry => (Key: entry.Key.TrimEnd(':', ' '), Expected: entry.Value, Found: lines.FirstOrDefault(line => line.StartsWith(entry.Key))?.Substring(entry.Key.Length)))
                 .Where(field => field.Found != field.Expected)
                 .Select(field => $"{field.Key}: expected '{field.Expected}', found '{field.Found ?? "(missing)"}'")
                 .ToList();

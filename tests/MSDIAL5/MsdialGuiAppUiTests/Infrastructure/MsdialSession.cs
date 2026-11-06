@@ -144,10 +144,23 @@ namespace CompMs.App.Msdial.UiTests.Infrastructure
         /// <paramref name="alsoOpen"/> may stay open beneath it.
         /// </summary>
         public Window WaitForDialog(string title, TimeSpan timeout, params string[] alsoOpen) {
+            return WaitForDialog(title, timeout, open => alsoOpen.Contains(open));
+        }
+
+        /// <summary>
+        /// Waits for the dialog titled <paramref name="title"/>, while the dialogs that
+        /// <paramref name="alsoOpen"/> accepts may stay open beneath it.
+        /// </summary>
+        public Window WaitForDialog(string title, TimeSpan timeout, Func<string, bool> alsoOpen) {
             return WaitFor($"waiting for the '{title}' dialog",
                 () => OpenDialogs().FirstOrDefault(dialog => SafeTitle(dialog) == title),
                 timeout,
-                open => open == title || alsoOpen.Contains(open));
+                open => open == title || alsoOpen(open));
+        }
+
+        /// <summary>The text a dialog shows, as a failure message would quote it.</summary>
+        public string ReadText(Window window) {
+            return DescribeText(window);
         }
 
         private List<Window> UnexpectedDialogs(Func<string, bool>? allowDialog) {

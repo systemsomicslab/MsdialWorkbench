@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Export;
+using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -11,18 +12,52 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private readonly MsdialAnalysisMassBankRecordExportModel _model;
 
         public MsdialAnalysisMassBankRecordExportViewModel(MsdialAnalysisMassBankRecordExportModel model) {
-            _model = model;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
             ShouldExport = model.ToReactivePropertySlimAsSynchronized(m => m.ShouldExport).AddTo(Disposables);
-            ContributorID = model.ToReactivePropertyAsSynchronized(m => m.ContributorID).AddTo(Disposables);
+            // The contributor ID is checked only while MassBank is chosen, so an unused option shows no error.
+            ContributorID = model.ToReactivePropertyAsSynchronized(m => m.ContributorID)
+                .SetValidateNotifyError(id => !ShouldExport.Value || MassBankVocabulary.IsValidContributorId(id) ? null : AlignmentResultMassBankRecordExportViewModel.ContributorIdError)
+                .AddTo(Disposables);
+            ShouldExport.Subscribe(_ => ContributorID.ForceValidate()).AddTo(Disposables);
+            IncludeSuggested = model.ToReactivePropertySlimAsSynchronized(m => m.IncludeSuggested).AddTo(Disposables);
+            IncludeUnknowns = model.ToReactivePropertySlimAsSynchronized(m => m.IncludeUnknowns).AddTo(Disposables);
+
+            // The project metadata cannot change while the export dialog is open, so it is checked once.
+            var problems = model.ValidateProjectMetadata();
+            HasProjectMetadataProblems = problems.Count > 0;
+            ProjectMetadataProblems = AlignmentResultMassBankRecordExportViewModel.FormatProjectMetadataProblems(problems);
+            ShowProjectMetadataProblems = ShouldExport.Select(selected => selected && HasProjectMetadataProblems)
+                .ToReadOnlyReactivePropertySlim(ShouldExport.Value && HasProjectMetadataProblems)
+                .AddTo(Disposables);
+
+            CanExport = ShouldExport
+                .CombineLatest(ContributorID, (selected, id) => !selected || (MassBankVocabulary.IsValidContributorId(id) && !HasProjectMetadataProblems))
+                .ToReadOnlyReactivePropertySlim(!ShouldExport.Value || (MassBankVocabulary.IsValidContributorId(ContributorID.Value) && !HasProjectMetadataProblems))
+                .AddTo(Disposables);
         }
 
         public string Label => _model.Label;
 
-        public ReactiveProperty<string?> ContributorID { get; }
+        public ReactiveProperty<string> ContributorID { get; }
 
         public ReactivePropertySlim<bool> ShouldExport { get; }
 
-        IObservable<bool> IMsdialAnalysisExportViewModel.CanExport => Observable.Return(true);
+        /// <summary>Also export suggested annotations, marked as such in the record.</summary>
+        public ReactivePropertySlim<bool> IncludeSuggested { get; }
+
+        /// <summary>Also export unknowns, with the name Unknown and no structure.</summary>
+        public ReactivePropertySlim<bool> IncludeUnknowns { get; }
+
+        public bool HasProjectMetadataProblems { get; }
+
+        public string ProjectMetadataProblems { get; }
+
+        /// <summary>True while MassBank is chosen and the project metadata keeps it from being exported.</summary>
+        public ReadOnlyReactivePropertySlim<bool> ShowProjectMetadataProblems { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> CanExport { get; }
+
+        IObservable<bool> IMsdialAnalysisExportViewModel.CanExport => CanExport;
         IObservable<bool> IMsdialAnalysisExportViewModel.ShouldExport => ShouldExport;
     }
 }
