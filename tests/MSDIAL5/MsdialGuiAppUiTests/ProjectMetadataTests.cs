@@ -11,7 +11,8 @@ namespace CompMs.App.Msdial.UiTests
     /// <summary>
     /// The project metadata (instrument, authors, license, collision energy, comment) that MassBank,
     /// MoNA and MSP exports carry: entered when the project is created, kept when it is saved and
-    /// opened again, changed afterwards in "Project property setting", and written to the export.
+    /// opened again, changed afterwards in "Project property setting", constrained there to MassBank
+    /// format with a contributor ID, and written to the export.
     /// It uses the data of the MS-DIAL metabolomics hands-on (part 1, SCIEX WIFF, positive).
     /// </summary>
     [TestClass]
@@ -20,6 +21,9 @@ namespace CompMs.App.Msdial.UiTests
     {
         private const string PropertyDialogTitle = "Project property setting";
         private const string MassBankSummaryTitle = "MassBank export";
+
+        // MassBank refuses to export without a contributor ID in its format (A-Z, 0-9 and _).
+        private const string ProjectContributor = "MSDIAL_UI_TEST";
 
         // The text box ids are the same on the measurement page of the project wizard and in the
         // project property dialog.
@@ -69,12 +73,14 @@ namespace CompMs.App.Msdial.UiTests
                 session.Close();
             }
 
-            // The change survives, Cancel throws an edit away, and the export carries the values.
+            // The change survives, Cancel throws an edit away, the values pass when the project is
+            // constrained to MassBank format, and the export carries them.
             using (var session = MsdialSession.Launch(TestContext, exe)) {
                 Workflow.LoadProject(session, dataset, project);
                 AssertPropertyDialogShows(session, Edited, "after editing, saving and opening again");
                 EditInPropertyDialog(session, new Metadata { ["TextBox_Authors"] = "Should be thrown away" }, finish: false);
                 AssertPropertyDialogShows(session, Edited, "after cancelling an edit");
+                ConstrainToMassBankFormat(session, Edited);
 
                 Workflow.BrowseResults(session, dataset);
                 var export = Path.Combine(work, "export");
@@ -132,6 +138,30 @@ namespace CompMs.App.Msdial.UiTests
             session.Settle(finish ? "finishing the project property dialog" : "cancelling the project property dialog", PropertyDialogTitle);
         }
 
+        /// <summary>
+        /// Turns on "Constrain to MassBank format": the saved instrument type selects its MassBank
+        /// parts (the preview shows the composed value) and the other saved values are valid, so
+        /// Finish stays enabled. The contributor ID saved here fills the MassBank export dialog.
+        /// </summary>
+        private static void ConstrainToMassBankFormat(MsdialSession session, Metadata expected) {
+            var dialog = OpenPropertyDialog(session);
+            session.ById(dialog, "CheckBox_ConstrainToMassBankFormat", PropertyDialogTitle).AsCheckBox().IsChecked = true;
+            session.Settle("constraining the project to MassBank format", PropertyDialogTitle);
+            var preview = session.ById(dialog, "TextBlock_InstrumentTypePreview", PropertyDialogTitle).Name;
+            session.ById(dialog, "TextBox_MassBankContributorID", PropertyDialogTitle).AsTextBox().Enter(ProjectContributor);
+            session.Settle("entering the project's MassBank contributor ID", PropertyDialogTitle);
+            var finish = session.ButtonNamed(dialog, "Finish", PropertyDialogTitle);
+            var canFinish = finish.IsEnabled;
+            session.ButtonNamed(dialog, canFinish ? "Finish" : "Cancel", PropertyDialogTitle).Invoke();
+            session.Settle(canFinish ? "finishing the project property dialog" : "cancelling the project property dialog", PropertyDialogTitle);
+
+            var wanted = "AC$INSTRUMENT_TYPE: " + expected["TextBox_InstrumentType"];
+            if (preview != wanted || !canFinish) {
+                session.Fail("constraining the project to MassBank format",
+                    $"Expected the preview '{wanted}' and Finish enabled; the dialog showed '{preview}' and Finish {(canFinish ? "enabled" : "disabled")}.");
+            }
+        }
+
         private static void ChooseMassBankRecords(MsdialSession session, Window dialog) {
             var massBank = session.WaitFor("finding the MassBank export option",
                 () => dialog.FindFirstDescendant(cf => cf.ByName("MassBank").And(cf.ByClassName("Expander"))),
@@ -144,8 +174,11 @@ namespace CompMs.App.Msdial.UiTests
                 Controls.FindTimeout,
                 title => title == Workflow.ExportDialogTitle);
             record.IsChecked = true;
-            // MassBank refuses to export without a contributor ID in its format (A-Z, 0-9 and _).
-            session.ById(massBank, "TextBox_MassBankContributorID", Workflow.ExportDialogTitle).AsTextBox().Enter("MSDIAL_UI_TEST");
+            // The dialog starts from the contributor ID saved in Project property setting.
+            var contributor = session.ById(massBank, "TextBox_MassBankContributorID", Workflow.ExportDialogTitle).AsTextBox().Text;
+            if (contributor != ProjectContributor) {
+                session.Fail("choosing the MassBank export", $"The contributor ID shows '{contributor}', not the project's '{ProjectContributor}'.");
+            }
             // The project is processed without an annotation library, so no spot is reference-matched, and by
             // default only reference-matched spots are exported: ask for the unknowns and suggestions too.
             foreach (var option in new[] { "Include suggested annotations", "Include unknowns", }) {
