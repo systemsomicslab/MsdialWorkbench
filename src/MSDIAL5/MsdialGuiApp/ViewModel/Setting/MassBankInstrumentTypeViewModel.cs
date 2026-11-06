@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         /// <summary>The problem with <paramref name="value"/> as AC$INSTRUMENT_TYPE; null when it is valid.</summary>
         public static string? Validate(string? value) {
-            if (MassBankVocabulary.IsValidInstrumentType(value)) {
+            if (MassBankVocabulary.IsValidInstrumentType(value ?? string.Empty)) {
                 return null;
             }
             return string.IsNullOrEmpty(value)
@@ -140,7 +140,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private void SelectFrom(string? value) {
             _synchronizing = true;
             try {
-                if (MassBankVocabulary.TryParseInstrumentType(value, out var separation, out var ionisation, out var analyzer)) {
+                if (MassBankVocabulary.TryParseInstrumentType(value ?? string.Empty, out var separation, out var ionisation, out var analyzer)) {
                     Separation.Value = separation;
                     Ionisation.Value = ionisation;
                     Analyzer.Value = FindOrAddAnalyzer(analyzer);
@@ -159,7 +159,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private void Compose() {
             var ionisation = Ionisation.Value;
             var analyzer = Analyzer.Value;
-            if (string.IsNullOrEmpty(ionisation) || analyzer is null) {
+            if (ionisation is null || ionisation.Length == 0 || analyzer is null) {
                 return;
             }
             var composed = MassBankVocabulary.ComposeInstrumentType(Separation.Value, ionisation, analyzer.Analyzer);
