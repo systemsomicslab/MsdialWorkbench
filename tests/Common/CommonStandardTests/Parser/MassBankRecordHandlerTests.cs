@@ -629,6 +629,22 @@ namespace CompMs.Common.Parser.Tests
         }
 
         [DataTestMethod()]
+        [DataRow("\tL-Pyroglutamic acid", MassBankAnnotationLevel.ReferenceMatched)]
+        [DataRow("L-Pyroglutamic acid ", MassBankAnnotationLevel.ReferenceMatched)]
+        [DataRow(" L-Pyroglutamic acid ", MassBankAnnotationLevel.Suggested)]
+        public void Name_ChangedOnlyAtItsEndsIsNotedForTheSummary(string name, MassBankAnnotationLevel level) {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.Name = name;
+
+            var result = handler.BuildRecord(Peak(), reference, reference, reference, level);
+            var lines = Lines(result);
+
+            Assert.AreEqual("L-Pyroglutamic acid", Value(lines, "CH$NAME"));
+            CollectionAssert.AreEqual(new[] { "the name was changed to characters MassBank accepts", }, result.Notes.ToArray());
+        }
+
+        [DataTestMethod()]
         [DataRow("PC 34:1|PC 16:0_18:1")]
         [DataRow("Cer 18:1;O2/16:0")]
         [DataRow("α-Tocopherol")]

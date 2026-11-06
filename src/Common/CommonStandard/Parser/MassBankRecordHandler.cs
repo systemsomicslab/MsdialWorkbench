@@ -468,7 +468,7 @@ namespace CompMs.Common.Parser
                 if (dualNameReduced) {
                     notes.Add(DualNameNote);
                 }
-                if (!string.Equals(name, compoundName.Trim(), StringComparison.Ordinal)) {
+                if (!string.Equals(name, compoundName, StringComparison.Ordinal)) {
                     notes.Add("the name was changed to characters MassBank accepts");
                 }
             }
@@ -620,24 +620,29 @@ namespace CompMs.Common.Parser
         /// Canonical agree on AnnotationName's prefixes (the constants are AnnotationName's); this also removes the
         /// markers, prefixes stacked on one another, and a prefix written with a space before its colon, which
         /// <see cref="IsSuggestionName"/>, and so the export policy, takes for a suggestion.
+        ///
+        /// The name is not trimmed unless a prefix is removed, so that a name changed only at its ends (a tab, a
+        /// no-break space) still differs from the written one and carries the note that its characters were changed.
         /// </remarks>
         private static string CompoundName(string name, MassBankAnnotationLevel level, bool lipidChainsResolved, out bool prefixRemoved, out bool dualNameReduced) {
-            var original = name.Trim();
-            var value = level == MassBankAnnotationLevel.Suggested ? WithoutSuggestionPrefixes(original) : original;
+            var value = level == MassBankAnnotationLevel.Suggested ? WithoutSuggestionPrefixes(name) : name;
             var withoutPrefix = AnnotationName.WithoutPrefix(value);
             var canonical = AnnotationName.Canonical(value, lipidChainsResolved);
-            prefixRemoved = !string.Equals(withoutPrefix, original, StringComparison.Ordinal);
+            prefixRemoved = !string.Equals(withoutPrefix, name, StringComparison.Ordinal);
             dualNameReduced = !string.Equals(canonical, withoutPrefix, StringComparison.Ordinal);
             return canonical;
         }
 
-        // "Unsettled: low score: Glycine", "Putative: low score: Glycine" and "Low score : Glycine" -> "Glycine".
+        // "Unsettled: low score: Glycine", "Putative: low score: Glycine" and "Low score : Glycine" -> "Glycine"; a name
+        // without such a prefix comes back as it is.
         private static string WithoutSuggestionPrefixes(string name) {
             var value = name.Trim();
+            var removed = false;
             while (TryRemoveSuggestionPrefix(value, out var rest)) {
                 value = rest;
+                removed = true;
             }
-            return value;
+            return removed ? value : name;
         }
 
         private static bool TryRemoveSuggestionPrefix(string value, out string rest) {
