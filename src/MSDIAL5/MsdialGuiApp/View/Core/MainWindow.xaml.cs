@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ProcessSettingViewModel>()
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
             broker.ToObservable<ProjectPropertySettingViewModel>()
-                .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 400, width: 400));
+                .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 600, width: 560));
             broker.ToObservable<ICompoundSearchViewModel>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
             broker.ToObservable<ExportMrmprobsViewModel>()
