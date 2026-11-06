@@ -442,6 +442,25 @@ namespace CompMs.Common.Parser.Tests
             CollectionAssert.Contains(lines, "COMMENT: CH$EXACT_MASS was calculated from PRECURSOR_M/Z and the adduct [M+H]+; it is not a reference value");
         }
 
+        // Glycine, C2H5NO2, M = 75.0320284; each precursor m/z from M, the proton mass 1.00727647 and the charge.
+        [DataTestMethod()]
+        [DataRow("[M+H]+", 76.03930487)]
+        [DataRow("[M-H]-", 74.02475193)]
+        [DataRow("[2M+H]+", 151.07133328)] // AdductIon.ConvertToExactMass gives 75.03230
+        [DataRow("[2M-H]-", 149.05678034)] // and 75.03175
+        [DataRow("[M+2H]2+", 38.52329067)]
+        public void Unknown_NeutralMassIsThatOfOneMoleculeWhateverTheAdduct(string adductName, double precursorMz) {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.AdductType = AdductIon.GetAdductIon(adductName);
+
+            var lines = Lines(handler.BuildRecord(Peak(mz: precursorMz), reference, reference, reference, MassBankAnnotationLevel.Unknown));
+
+            Assert.AreEqual("75.03203", Value(lines, "CH$EXACT_MASS"));
+            Assert.AreEqual("N/A", Value(lines, "CH$FORMULA"));
+            CollectionAssert.Contains(lines, $"COMMENT: CH$EXACT_MASS was calculated from PRECURSOR_M/Z and the adduct {reference.AdductType.AdductIonName}; it is not a reference value");
+        }
+
         [TestMethod()]
         public void Unknown_LevelIgnoresWhatTheMoleculeStillCarries() {
             var handler = CreateHandler();

@@ -423,7 +423,7 @@ namespace CompMs.Common.Parser
                 }
                 else {
                     formula = NotAvailable;
-                    exactMass = adductKnown ? adduct.ConvertToExactMass(peak.Mass) : double.NaN;
+                    exactMass = adductKnown ? NeutralMass(adduct, peak.Mass) : double.NaN;
                     if (!IsPositiveNumber(exactMass)) {
                         return Refuse("there is no formula, and the neutral mass cannot be derived from the precursor m/z and adduct");
                     }
@@ -1307,6 +1307,34 @@ namespace CompMs.Common.Parser
 
         private static bool IsPositiveNumber(double value) {
             return !double.IsNaN(value) && !double.IsInfinity(value) && value > 0d;
+        }
+
+        /// <summary>
+        /// The neutral monoisotopic mass M of the molecule behind a precursor of <paramref name="mz"/> with
+        /// <paramref name="adduct"/>: (m/z z - A + e z) / n for a cation and (m/z z - A - e z) / n for an anion, where z
+        /// is the charge, A the mass the adduct adds, e the electron mass and n the number of molecules (2 for [2M+H]+).
+        /// NaN when the adduct gives no positive charge or count, or no polarity.
+        /// </summary>
+        /// <remarks>
+        /// Not <see cref="AdductIon.ConvertToExactMass"/>, which adds the electrons after dividing by n, so that the
+        /// mass of a multimer is off by e (n - 1) z / n: +0.27 mDa for [2M+H]+.
+        /// </remarks>
+        private static double NeutralMass(AdductIon adduct, double mz) {
+            var charge = adduct.ChargeNumber;
+            var count = adduct.AdductIonXmer;
+            if (charge <= 0 || count <= 0) {
+                return double.NaN;
+            }
+            var electrons = ElectronMass * charge;
+            var ionMass = mz * charge - adduct.AdductIonAccurateMass;
+            switch (adduct.IonMode) {
+                case IonMode.Positive:
+                    return (ionMass + electrons) / count;
+                case IonMode.Negative:
+                    return (ionMass - electrons) / count;
+                default:
+                    return double.NaN;
+            }
         }
 
         private static double RetentionTimeInMinutes(RetentionTime rt) {
