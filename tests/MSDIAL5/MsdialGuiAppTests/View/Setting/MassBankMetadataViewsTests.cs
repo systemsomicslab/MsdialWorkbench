@@ -3,7 +3,9 @@ using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility.Tests;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Parser;
+using CompMs.Graphics.UI;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -14,13 +16,17 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.View.Setting.Tests
 {
     /// <summary>
-    /// The views of the MassBank format constraint, laid out without a window: every binding resolves, the
-    /// free-text and constrained controls swap with the toggle, and the lists show the saved values.
+    /// The views of the MassBank format constraint: every binding resolves, the free-text and constrained controls
+    /// swap with the toggle, and the lists show the saved values. Most are laid out without a window; the checks of
+    /// what the person sees (messages under the fields) show the view in a SettingDialog
+    /// off screen, as MainWindow does.
     /// </summary>
     [TestClass]
     public class MassBankMetadataViewsTests
@@ -88,6 +94,109 @@ namespace CompMs.App.Msdial.View.Setting.Tests
                 Assert.AreEqual(0, errors.Count, string.Join(Environment.NewLine, errors));
             });
             TestApplication.WaitForBackgroundWork();
+        }
+
+        [TestMethod]
+        public void TheProjectWizardHelperIsDisabledForAnExistingProject() {
+            TestApplication.Ensure();
+            Application.Current.Dispatcher.Invoke(() => {
+                var parameter = new MsdialLcmsParameter();
+                parameter.ProjectParam.InstrumentType = "LC-ESI-QTOF";
+                var model = new DatasetParameterSettingModel(parameter, new DatasetFileSettingModel(new DateTime(2026, 11, 6)), new MessageBroker());
+                using var vm = new DatasetParameterSettingViewModel(model, Observable.Return(true));
+                Assert.IsTrue(vm.IsReadOnly);
+                var errors = CollectBindingErrors(() => {
+                    var view = new DatasetParameterSettingView { DataContext = vm, };
+                    Layout(view);
+
+                    foreach (var id in new[] { "ComboBox_InstrumentSeparation", "ComboBox_InstrumentIonisation", "ComboBox_InstrumentAnalyzer", }) {
+                        Assert.IsFalse(Find(view, id).IsEnabled, $"#{id} is read-only for an existing project");
+                    }
+                    Assert.AreEqual("QTOF", (((ComboBox)Find(view, "ComboBox_InstrumentAnalyzer")).SelectedItem as MassBankAnalyzerPreset)?.Analyzer,
+                        "the saved value still shows");
+                });
+                Assert.AreEqual(0, errors.Count, string.Join(Environment.NewLine, errors));
+            });
+            TestApplication.WaitForBackgroundWork();
+        }
+
+        // Hosted as MainWindow hosts it: in a SettingDialog, whose window template has no AdornerDecorator of its own.
+        [TestMethod]
+        public void TheSettingDialogShowsWhatAConstrainedFieldNeeds() {
+            TestApplication.Ensure();
+            Application.Current.Dispatcher.Invoke(() => {
+                var parameter = new ProjectBaseParameter { InstrumentType = "LC-MS/MS", License = "CC-BY", };
+                using var vm = new ProjectPropertySettingViewModel(new StudyContextModel(parameter));
+                var dialog = OffscreenDialog(vm);
+                var errors = CollectBindingErrors(() => {
+                    try {
+                        dialog.Show();
+                        Settle(dialog);
+                        foreach (var id in new[] { "TextBox_Authors", "TextBox_Instrument", "TextBox_MassBankContributorID", }) {
+                            Assert.AreEqual(0, Adorners(Find(dialog, id)).Length, $"#{id} has nothing to say while the project is not constrained");
+                        }
+
+                        vm.ConstrainToMassBankFormat.Value = true;
+                        Settle(dialog);
+
+                        Assert.IsFalse(vm.FinishCommand.CanExecute(null));
+                        var authors = Find(dialog, "TextBox_Authors");
+                        Assert.IsTrue(Validation.GetHasError(authors));
+                        Assert.IsNotNull(AdornerLayer.GetAdornerLayer(authors), "the view brings its own adorner layer");
+                        CollectionAssert.Contains(AdornerTexts(authors), ProjectPropertySettingViewModel.AuthorsRequired, "the message is drawn under the field");
+                        CollectionAssert.Contains(AdornerTexts(Find(dialog, "TextBox_Instrument")), ProjectPropertySettingViewModel.InstrumentRequired);
+                        Assert.IsTrue(AdornerTexts(Find(dialog, "ComboBox_License")).Any(t => t.Contains("\"CC-BY\"")));
+                        foreach (var id in new[] { "ComboBox_InstrumentIonisation", "ComboBox_InstrumentAnalyzer", }) {
+                            Assert.AreEqual(1, Adorners(Find(dialog, id)).Length, $"#{id} is marked");
+                        }
+                        // The composer's own messages show as the tooltip of its lists, and its preview says what is wrong.
+                        Assert.AreEqual(MassBankInstrumentTypeViewModel.IonisationRequired, ((ComboBox)Find(dialog, "ComboBox_InstrumentIonisation")).ToolTip);
+                        Assert.AreEqual(MassBankInstrumentTypeViewModel.AnalyzerRequired, ((ComboBox)Find(dialog, "ComboBox_InstrumentAnalyzer")).ToolTip);
+                        StringAssert.Contains(((TextBlock)Find(dialog, "TextBlock_InstrumentTypePreview")).Text, "\"LC-MS/MS\" is not a MassBank instrument type");
+
+                        // A wrong contributor ID says why Finish is disabled, whether or not the project is constrained.
+                        vm.ConstrainToMassBankFormat.Value = false;
+                        vm.MassBankContributorId.Value = "riken-ims";
+                        Settle(dialog);
+                        Assert.AreEqual(0, Adorners(authors).Length, "turning the constraint off clears the messages");
+                        CollectionAssert.Contains(AdornerTexts(Find(dialog, "TextBox_MassBankContributorID")), ProjectPropertySettingViewModel.ContributorIdInvalid);
+                        Assert.AreEqual("Separation: none, LC, GC or CE", ((ComboBox)Find(dialog, "ComboBox_InstrumentSeparation")).ToolTip);
+                    }
+                    finally {
+                        dialog.Close();
+                    }
+                });
+                Assert.AreEqual(0, errors.Count, string.Join(Environment.NewLine, errors));
+            });
+            TestApplication.WaitForBackgroundWork();
+        }
+
+        private static SettingDialog OffscreenDialog(object viewModel) {
+            return new SettingDialog
+            {
+                Height = 600, Width = 560,
+                Title = "Project property setting",
+                DataContext = viewModel,
+                Content = new ProjectPropertySettingView(),
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                Left = -20000, Top = -20000,
+                ShowActivated = false,
+                ShowInTaskbar = false,
+            };
+        }
+
+        // Runs what the dispatcher has queued (layout, validation adorners) before the checks; called on its thread.
+        private static void Settle(Window window) {
+            window.UpdateLayout();
+            window.Dispatcher.Invoke(() => { }, DispatcherPriority.ContextIdle);
+        }
+
+        private static Adorner[] Adorners(UIElement element) {
+            return AdornerLayer.GetAdornerLayer(element)?.GetAdorners(element) ?? new Adorner[0];
+        }
+
+        private static List<string> AdornerTexts(UIElement element) {
+            return Adorners(element).SelectMany(a => Descendants(a)).OfType<TextBlock>().Select(t => t.Text).ToList();
         }
 
         private static void Layout(FrameworkElement view) {

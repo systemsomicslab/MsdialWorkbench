@@ -314,7 +314,7 @@
                         </ui:LabeledBar>
                         <!-- Optional: choosing from MassBank's vocabulary fills the instrument type above. -->
                         <ui:LabeledBar Label="MassBank style:"
-                                       ToolTip="Optional. Choose the separation, ionisation and analyzer to fill the instrument type in the MassBank format (e.g. LC-ESI-QTOF). Option > Project property setting can constrain the project to MassBank format.">
+                                       ToolTip="Optional. Choose the separation, ionization and analyzer to fill the instrument type in the MassBank format (e.g. LC-ESI-QTOF). Option > Project property setting can constrain the project to MassBank format.">
                             <Grid DataContext="{Binding InstrumentTypeComposer}"
                                   IsEnabled="{Binding DataContext.IsReadOnly, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource NegativeConverter}}"
                                   Margin="4,0,4,0">
@@ -341,17 +341,23 @@
                                 <ComboBox Name="ComboBox_InstrumentIonisation"
                                           ItemsSource="{Binding Ionisations}"
                                           SelectedItem="{Binding Ionisation.Value, Mode=TwoWay}"
-                                          ToolTip="Ionisation"
+                                          ToolTip="Ionization, e.g. ESI or EI"
                                           Grid.Column="2"/>
                                 <TextBlock Text="-" VerticalAlignment="Center" Margin="2,0" Grid.Column="3"/>
                                 <ComboBox Name="ComboBox_InstrumentAnalyzer"
                                           ItemsSource="{Binding Analyzers}"
                                           SelectedItem="{Binding Analyzer.Value, Mode=TwoWay}"
-                                          ToolTip="Analyzer"
+                                          ToolTip="Analyzer, e.g. QTOF or QFT"
                                           Grid.Column="4">
+                                    <!-- Each entry is cut to a fixed width, with the whole description in its tooltip. -->
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="ComboBoxItem">
+                                            <Setter Property="ToolTip" Value="{Binding Description, Mode=OneWay}"/>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock TextTrimming="CharacterEllipsis">
+                                            <TextBlock TextTrimming="CharacterEllipsis" MaxWidth="280">
                                                 <Run Text="{Binding Analyzer, Mode=OneWay}" FontWeight="Bold"/>
                                                 <Run Text="-"/>
                                                 <Run Text="{Binding Description, Mode=OneWay}"/>
