@@ -118,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new AlignmentSpectraExportFormat("Sdf", "sdf", new AlignmentSdfExporter(false, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
-            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
+            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext, _matchResultEvaluator, broker);
             var productions = new AlignmentReferenceMatchedProductIonExportModel(peakSpotSupplyer, analysisFileBeanModelCollection, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam.TargetOmics);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
             var mztabm = new AlignmentMztabMExportModel(analysisFileBeanModelCollection, peakSpotSupplyer, storage.DataBases, quantTypes.GetRange(0, 4), peakMeta);
@@ -466,7 +466,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     FileSuffix = "sdf",
                     Label = "MDL SDfile (*.sdf)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(parameter.ProjectParam, studyContext),
+                new MsdialAnalysisMassBankRecordExportModel(parameter.ProjectParam, studyContext, broker),
             };
             return models;
         }

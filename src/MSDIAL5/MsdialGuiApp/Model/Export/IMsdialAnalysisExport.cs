@@ -15,6 +15,18 @@ namespace CompMs.App.Msdial.Model.Export
         void Export(string destinationFolder, AnalysisFileBeanModel fileBeanModel);
     }
 
+    /// <summary>
+    /// An export that is told when an export of the selected files starts and ends, for example to check its settings
+    /// once and to report once for all the files.
+    /// </summary>
+    internal interface IMsdialAnalysisExportSession {
+        /// <summary>Called before the first file is exported.</summary>
+        void BeginExport();
+
+        /// <summary>Called after the last file was exported; the message to show, or null for none.</summary>
+        Service.MessageRequest? EndExport(string destinationFolder);
+    }
+
     internal sealed class MsdialAnalysisExportModel : BindableBase, IMsdialAnalysisExport
     {
         private readonly IAnalysisExporter<ChromatogramPeakFeatureCollection> _exporter;

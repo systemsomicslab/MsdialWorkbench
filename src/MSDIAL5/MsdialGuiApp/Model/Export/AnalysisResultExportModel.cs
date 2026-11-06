@@ -5,6 +5,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Export
 {
@@ -68,12 +69,22 @@ namespace CompMs.App.Msdial.Model.Export
             var publisher = new TaskProgressPublisher(_broker, "Exporting analysis result");
             using (publisher.Start()) {
                 try {
+                    var sessions = AnalysisExports.OfType<IMsdialAnalysisExportSession>().ToArray();
+                    foreach (var session in sessions) {
+                        session.BeginExport();
+                    }
                     double all = SelectedFiles.Count;
                     var counter = 0;
                     foreach (var file in SelectedFiles) {
                         publisher.Progress(counter++ / all, $"Exporting {file.AnalysisFileName}");
                         foreach (var exporter in AnalysisExports) {
                             exporter.Export(DestinationFolder, file);
+                        }
+                    }
+                    foreach (var session in sessions) {
+                        var report = session.EndExport(DestinationFolder);
+                        if (report is not null) {
+                            _broker.Publish(report);
                         }
                     }
                 }

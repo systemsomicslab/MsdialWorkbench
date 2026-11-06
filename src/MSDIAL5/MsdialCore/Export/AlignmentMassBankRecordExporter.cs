@@ -1,34 +1,56 @@
-﻿using CompMs.Common.Enum;
-using CompMs.Common.Extension;
+﻿using CompMs.Common;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace CompMs.MsdialCore.Export
 {
+    /// <summary>
+    /// MassBank records of alignment spots, with the project metadata, as the GUI's alignment MassBank export writes them.
+    /// </summary>
+    /// <remarks>
+    /// Create one per export, so that DATE and the accession date are the export time. Check
+    /// <see cref="ValidateMetadata"/> before exporting and refuse to export while it reports anything.
+    /// </remarks>
     internal sealed class AlignmentMassBankRecordExporter : IAlignmentSpectraExporter
     {
         private readonly MassBankRecordHandler _handler;
 
-        public AlignmentMassBankRecordExporter(IonMode ionMode, string instrumentType) {
-            var splash = new NSSplash.Splash();
-            _handler = new MassBankRecordHandler(ionMode, instrumentType, scan => CreateSplash(scan, splash));
+        public AlignmentMassBankRecordExporter(ProjectBaseParameter project, string contributorId) {
+            if (project is null) {
+                throw new ArgumentNullException(nameof(project));
+            }
+            _handler = new MassBankRecordHandler(project.IonMode, project.InstrumentType ?? string.Empty, MassBankSplash.Compute)
+            {
+                Authors = project.Authors ?? string.Empty,
+                License = project.License ?? string.Empty,
+                Instrument = project.Instrument ?? string.Empty,
+                CollisionEnergy = project.CollisionEnergy ?? string.Empty,
+                Comment = project.Comment ?? string.Empty,
+                ContributorIdentifier = contributorId ?? string.Empty,
+                MsdialVersion = MsdialBuildIdentity.FullIdentity,
+            };
         }
+
+        /// <summary>The problems with the project metadata or contributor ID; empty when records can be written.</summary>
+        public IReadOnlyList<string> ValidateMetadata() => _handler.ValidateMetadata();
 
         public string CreateExportFileName(AlignmentSpotProperty spot) {
             return _handler.GetAccession(spot) + ".txt";
         }
 
-        void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
-            _handler.WriteRecord(stream, spot, spot, msdecResult, spot);
+        /// <summary>Writes the record of <paramref name="spot"/>, or nothing, returning false with the reason.</summary>
+        public bool TryExport(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult, MassBankAnnotationLevel annotationLevel, out string reason) {
+            return _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, annotationLevel, out reason);
         }
 
-        private static string CreateSplash(Common.Interfaces.IMSScanProperty scan, NSSplash.Splash splash) {
-            return scan.Spectrum.IsEmptyOrNull()
-                ? "NA"
-                : splash.splashIt(new NSSplash.impl.MSSpectrum(string.Join(" ", scan.Spectrum.Select(p => $"{p.Mass}:{p.Intensity}"))));
+        /// <summary>Writes the record of <paramref name="spot"/>; throws <see cref="InvalidOperationException"/> when it cannot be built.</summary>
+        void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
+            _handler.WriteRecord(stream, spot, spot, msdecResult, spot);
         }
     }
 }
