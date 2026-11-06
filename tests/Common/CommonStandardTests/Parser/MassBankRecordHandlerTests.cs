@@ -3,6 +3,9 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NCDK;
+using NCDK.Graphs.InChI;
+using NCDK.Smiles;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -156,7 +159,7 @@ namespace CompMs.Common.Parser.Tests
 
                 var date = Value(lines, "DATE");
                 Assert.IsTrue(DateTime.TryParseExact(date, "yyyy.MM.dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed), date);
-                Assert.IsTrue(Math.Abs((parsed - DateTime.UtcNow.Date).TotalDays) <= 1, $"DATE {date} is not the Gregorian date of today.");
+                Assert.IsTrue(Math.Abs((parsed - DateTime.Now.Date).TotalDays) <= 1, $"DATE {date} is not the Gregorian date of today.");
                 Assert.AreEqual($"MSBNK-{Contributor}-MSDIAL{parsed.ToString("yyMMdd", CultureInfo.InvariantCulture)}00001101", Value(lines, "ACCESSION"));
                 Assert.AreEqual("129.04259", Value(lines, "CH$EXACT_MASS"));
                 CollectionAssert.Contains(lines, "MS$FOCUSED_ION: PRECURSOR_M/Z 130.04990");
@@ -199,11 +202,74 @@ namespace CompMs.Common.Parser.Tests
 
             var lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
 
-            Assert.AreEqual(smiles, Value(lines, "CH$SMILES"));
+            Assert.AreEqual(NcdkIsomericSmiles(smiles), Value(lines, "CH$SMILES"));
             StringAssert.StartsWith(Value(lines, "CH$IUPAC"), "InChI=1S/");
             Assert.AreEqual(formula, Value(lines, "CH$FORMULA"));
             Assert.AreEqual(exactMass, Value(lines, "CH$EXACT_MASS"));
             Assert.IsFalse(lines.Any(l => l.Contains("XXXXXXXXXXXXXX")), "The library InChIKey must not be written.");
+            Assert.AreEqual(smiles.Contains("[2H]"), lines.Contains("COMMENT: CH$EXACT_MASS is the monoisotopic mass of the isotope-labelled compound; CH$FORMULA cannot show isotopes"));
+        }
+
+        private static string NcdkIsomericSmiles(string smiles) {
+            return new SmilesGenerator(SmiFlavors.Isomeric).Create(new SmilesParser(CDK.Builder).ParseSmiles(smiles));
+        }
+
+        private static string NcdkInChIKey(string smiles) {
+            return InChIGeneratorFactory.Instance.GetInChIGenerator(new SmilesParser(CDK.Builder).ParseSmiles(smiles)).GetInChIKey();
+        }
+
+        // NCDK and the Validator's CDK read the stereo of some double bonds differently (imine C=N, conjugated rings):
+        // CH$SMILES is NCDK's own SMILES of the structure, so that both read the stereo NCDK put into the InChI.
+        [DataTestMethod()]
+        [DataRow(@"Clc1ccc(CN2CCS/C/2=N\C#N)cn1")] // thiacloprid: NCDK drops the imine stereo that CDK reads
+        [DataRow(@"CC1=C(CCC(O)=O)C2=N\C\1=C/C1=C(C=C)C(C)=C(N1)\C=C1/N\C(=C/C3=N/C(=C\2)/C(CCC(O)=O)=C3C)C(C)=C1C=C")] // protoporphyrin IX
+        public void Structure_SmilesIsNcdksOwnSmilesOfTheStructure(string smiles) {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.SMILES = smiles;
+
+            var lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+
+            var written = Value(lines, "CH$SMILES");
+            Assert.AreEqual(NcdkIsomericSmiles(smiles), written);
+            Assert.AreEqual("INCHIKEY " + NcdkInChIKey(smiles), Value(lines, "CH$LINK"));
+            if (NcdkInChIKey(smiles).EndsWith("-UHFFFAOYSA-N", StringComparison.Ordinal)) {
+                Assert.IsFalse(written.Contains('/') || written.Contains('\\'), $"{written} states stereo that the InChI does not have.");
+            }
+        }
+
+        [DataTestMethod()]
+        [DataRow("C[79Br]", "CH3Br", "93.94181", false)] // lighter than the element's average mass: NCDK reads its InChI wrongly
+        [DataRow("C[81Br]", "CH3Br", "95.93977", true)]
+        [DataRow("[13CH4]", "CH4", "17.03465", true)]
+        public void Structure_IsotopesKeepTheStructure(string smiles, string formula, string exactMass, bool labelledComment) {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.SMILES = smiles;
+
+            var result = handler.BuildRecord(Peak(), reference, reference, reference);
+            var lines = Lines(result);
+
+            Assert.AreEqual(NcdkIsomericSmiles(smiles), Value(lines, "CH$SMILES"), string.Join(" | ", result.Notes));
+            Assert.AreEqual(formula, Value(lines, "CH$FORMULA"));
+            Assert.AreEqual(exactMass, Value(lines, "CH$EXACT_MASS"));
+            Assert.AreEqual(labelledComment, lines.Any(l => l.StartsWith("COMMENT: CH$EXACT_MASS is the monoisotopic mass of the isotope-labelled compound")));
+        }
+
+        [TestMethod()]
+        public void Structure_WhoseInChILosesAnAtomIsNotAvailable() {
+            // The InChI of [1H]C leaves the explicit protium out of its formula (CH3), so no formula fits both.
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.SMILES = "[1H]C";
+            reference.Formula = new Formula();
+
+            var result = handler.BuildRecord(Peak(), reference, reference, reference);
+            var lines = Lines(result);
+
+            Assert.AreEqual("N/A", Value(lines, "CH$SMILES"));
+            Assert.AreEqual("N/A", Value(lines, "CH$IUPAC"));
+            CollectionAssert.Contains(result.Notes.ToList(), "the structure was written as N/A: its InChI does not keep the formula of the SMILES");
         }
 
         [DataTestMethod()]
@@ -237,6 +303,7 @@ namespace CompMs.Common.Parser.Tests
 
             Assert.AreEqual("C8H10N4O2", Value(lines, "CH$FORMULA"));
             Assert.AreEqual("197.09921", Value(lines, "CH$EXACT_MASS"));
+            CollectionAssert.Contains(lines, "COMMENT: CH$EXACT_MASS is the monoisotopic mass of the isotope-labelled compound; CH$FORMULA cannot show isotopes");
         }
 
         [TestMethod()]
@@ -259,6 +326,7 @@ namespace CompMs.Common.Parser.Tests
             Assert.AreEqual("N/A", Value(lines, "CH$IUPAC"));
             Assert.IsNull(Value(lines, "CH$LINK"));
             Assert.AreEqual("129.04263", Value(lines, "CH$EXACT_MASS")); // [M+H]+ at 130.04990
+            CollectionAssert.Contains(lines, "COMMENT: CH$EXACT_MASS was calculated from PRECURSOR_M/Z and the adduct [M+H]+; it is not a reference value");
         }
 
         [TestMethod()]
@@ -275,27 +343,61 @@ namespace CompMs.Common.Parser.Tests
         }
 
         [TestMethod()]
-        public void EmptyName_IsWrittenAsUnknown() {
+        public void EmptyName_WithoutAStructureIsWrittenAsUnknown() {
             var handler = CreateHandler();
             var reference = Pyroglutamic();
             reference.Name = "  ";
+            reference.SMILES = string.Empty;
 
             var lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
 
             Assert.AreEqual("Unknown", Value(lines, "CH$NAME"));
+            Assert.AreEqual("N/A", Value(lines, "CH$SMILES"));
+        }
+
+        [DataTestMethod()]
+        [DataRow("  ")]
+        [DataRow("%%%")]
+        public void EmptyName_WithAStructureIsRefused(string name) {
+            // "Unknown" next to a structure would name the compound unknown while identifying it.
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.Name = name;
+
+            var result = handler.BuildRecord(Peak(), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched);
+
+            Assert.IsFalse(result.IsSuccess);
+            StringAssert.Contains(result.SkipReason, "no name");
+        }
+
+        [DataTestMethod()]
+        [DataRow("low score: L-Pyroglutamic acid")]
+        [DataRow("Unsettled: L-Pyroglutamic acid")]
+        [DataRow("Putative: low score: L-Pyroglutamic acid")]
+        public void Suggested_KeepsTheStructureAndSaysSo(string name) {
+            var handler = CreateHandler();
+            handler.Comment = "project comment";
+            var reference = Pyroglutamic();
+            reference.Name = name;
+
+            var result = handler.BuildRecord(Peak(), reference, reference, reference, MassBankAnnotationLevel.Suggested);
+            var lines = Lines(result);
+
+            Assert.AreEqual("L-Pyroglutamic acid", Value(lines, "CH$NAME"), "CH$NAME is the compound name, without MS-DIAL's level prefix.");
+            Assert.AreEqual("L-Pyroglutamic acid; LC-ESI-QTOF; MS2", Value(lines, "RECORD_TITLE"));
+            var comments = lines.Where(l => l.StartsWith("COMMENT: ")).ToArray();
+            CollectionAssert.AreEqual(new[] { "COMMENT: project comment", $"COMMENT: Original name: {name}", "COMMENT: MS-DIAL annotation level: suggested", }, comments);
+            CollectionAssert.Contains(result.Notes.ToList(), "the suggestion prefix was removed from CH$NAME");
+            Assert.AreEqual("INCHIKEY ODHCTXKNWHHXJC-VKHMYHEASA-N", Value(lines, "CH$LINK"));
         }
 
         [TestMethod()]
-        public void Suggested_KeepsTheStructureAndSaysSo() {
+        public void Suggested_WithOnlyAPrefixAndAStructureIsRefused() {
             var handler = CreateHandler();
             var reference = Pyroglutamic();
-            reference.Name = "low score: L-Pyroglutamic acid";
+            reference.Name = "low score: ";
 
-            var lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference, MassBankAnnotationLevel.Suggested));
-
-            Assert.AreEqual("low score: L-Pyroglutamic acid", Value(lines, "CH$NAME"));
-            CollectionAssert.Contains(lines, "COMMENT: MS-DIAL annotation level: suggested");
-            Assert.AreEqual("INCHIKEY ODHCTXKNWHHXJC-VKHMYHEASA-N", Value(lines, "CH$LINK"));
+            Assert.IsFalse(handler.BuildRecord(Peak(), reference, reference, reference, MassBankAnnotationLevel.Suggested).IsSuccess);
         }
 
         [DataTestMethod()]
@@ -332,6 +434,33 @@ namespace CompMs.Common.Parser.Tests
         [DataRow("w/o MS2: Glycine")]
         public void Name_ThatTheGrammarAcceptsIsKept(string name) {
             Assert.AreEqual(name, MassBankRecordHandler.SanitizeName(name));
+        }
+
+        [DataTestMethod()]
+        [DataRow('ᢅ')] [DataRow('ᢆ')] // letters to .NET Framework, marks to Java since Unicode 9
+        [DataRow('ࡰ')] [DataRow('鿿')] [DataRow('Ꟁ')] [DataRow('ꟴ')] [DataRow('ౝ')] // letters to .NET 8, unassigned in Java 17
+        public void Name_DropsLettersThatJavaDoesNotKnow(char letter) {
+            Assert.AreEqual("ab", MassBankRecordHandler.SanitizeName("a" + letter + "b"));
+            Assert.AreEqual("ab", MassBankRecordHandler.SanitizeCompoundClass("a" + letter + "b"));
+        }
+
+        [DataTestMethod()]
+        [DataRow("α")] [DataRow("é")] [DataRow("中")] [DataRow("अ")] [DataRow("ก")] [DataRow("ᠠ")] // Greek, Latin, CJK, Devanagari, Thai, Mongolian
+        public void Name_KeepsLettersOfOtherScripts(string letter) {
+            Assert.AreEqual("a" + letter + "b", MassBankRecordHandler.SanitizeName("a" + letter + "b"));
+        }
+
+        [TestMethod()]
+        public void Name_OriginalIsCutWithoutSplittingASurrogatePair() {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.Name = "%" + new string('e', 600 - "Original name: ".Length - 2) + "\U0001F600tail";
+
+            var lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+
+            var original = Value(lines, "COMMENT");
+            Assert.IsTrue(original.Length <= 600);
+            Assert.IsFalse(char.IsHighSurrogate(original[original.Length - 1]), "half of a surrogate pair would be written as U+FFFD");
         }
 
         [TestMethod()]
@@ -479,11 +608,51 @@ namespace CompMs.Common.Parser.Tests
             var comments = lines.Where(l => l.StartsWith("COMMENT: ")).Select(l => l.Substring("COMMENT: ".Length)).ToArray();
             CollectionAssert.AreEqual(new[] { "First line", "Second line", new string('x', 600), new string('x', 100), }, comments);
 
+            // Java's trim(), which the Validator's CONFIDENCE check uses, strips every control character too.
+            handler.Comment = "CONFIDENCE\u0001\n\u001FCONFIDENCE\n\u0000\nA\u0007B\n" + new string('e', 599) + "\U0001F600tail";
+            lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+            comments = lines.Where(l => l.StartsWith("COMMENT: ")).Select(l => l.Substring("COMMENT: ".Length)).ToArray();
+            CollectionAssert.AreEqual(new[] { "A B", new string('e', 599), "\U0001F600tail", }, comments);
+
             handler.CollisionEnergy = string.Empty;
             handler.Comment = string.Empty;
             handler.MsdialVersion = string.Empty;
             lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
             Assert.IsFalse(lines.Any(l => l.Contains("COLLISION_ENERGY") || l.StartsWith("COMMENT") || l.StartsWith("MS$DATA_PROCESSING")));
+
+            handler.Authors = "Tsugawa H,\tRIKEN\u0001";
+            handler.Instrument = "\u0002Orbitrap";
+            lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+            Assert.AreEqual("Tsugawa H, RIKEN", Value(lines, "AUTHORS"));
+            Assert.AreEqual("Orbitrap", Value(lines, "AC$INSTRUMENT"));
+        }
+
+        [TestMethod()]
+        public void Metadata_ThatIsOnlyControlCharactersOrTooLongIsRefused() {
+            var handler = CreateHandler();
+            handler.Authors = "\u0001";
+            handler.Instrument = "\u007F";
+            handler.InstrumentType = "LC-ESI-" + new string('Q', MassBankRecordHandler.MaxInstrumentTypeLength - 6);
+            Assert.AreEqual(3, handler.ValidateProjectMetadata().Count, string.Join(Environment.NewLine, handler.ValidateProjectMetadata()));
+
+            handler = CreateHandler();
+            handler.InstrumentType = "LC-ESI-" + new string('Q', MassBankRecordHandler.MaxInstrumentTypeLength - 7);
+            Assert.AreEqual(0, handler.ValidateProjectMetadata().Count);
+            var reference = Pyroglutamic();
+            reference.Name = new string('a', 50);
+            var title = Value(Lines(handler.BuildRecord(Peak(), reference, reference, reference)), "RECORD_TITLE");
+            Assert.AreEqual(600, title.Length);
+        }
+
+        [TestMethod()]
+        public void RelativeIntensity_IsComputedFromThePrintedIntensities() {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            reference.Spectrum = new List<SpectrumPeak> { new SpectrumPeak(56.04679, 0.006), new SpectrumPeak(84.04584, 0.016), new SpectrumPeak(130.04871, 0.026), };
+
+            var lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+
+            CollectionAssert.AreEqual(new[] { "  56.04679 0.01 333", "  84.04584 0.02 666", "  130.04871 0.03 999", }, PeakLines(lines));
         }
 
         [TestMethod()]

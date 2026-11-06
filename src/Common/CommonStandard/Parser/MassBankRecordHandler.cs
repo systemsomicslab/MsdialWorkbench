@@ -94,6 +94,15 @@ namespace CompMs.Common.Parser
         /// <summary>The value of COMMENT that marks a suggestion-level annotation.</summary>
         public const string SuggestedAnnotationComment = "MS-DIAL annotation level: suggested";
 
+        /// <summary>The reason <see cref="BuildRecord"/> gives when the spectrum has no peak to print.</summary>
+        public const string NoPeaksReason = "no MS/MS peaks";
+
+        /// <summary>
+        /// The longest AC$INSTRUMENT_TYPE that still leaves RECORD_TITLE ("name; type; MSn") within
+        /// <see cref="MaxRecordTitleLength"/> for a one-character name.
+        /// </summary>
+        public const int MaxInstrumentTypeLength = MaxRecordTitleLength - 3 - 5; // "X; " and "; MSn"
+
         private const string UnknownName = "Unknown";
         private const string NotAvailable = "N/A";
         private const double ElectronMass = 0.00054857990946;
@@ -115,7 +124,8 @@ namespace CompMs.Common.Parser
             IonMode = ionMode;
             InstrumentType = instrumentType ?? throw new ArgumentNullException(nameof(instrumentType));
             _splashCalculator = splashCalculator ?? throw new ArgumentNullException(nameof(splashCalculator));
-            _now = DateTime.UtcNow;
+            // The local date: DATE is the day the person exported, which in JST before 09:00 is not the UTC date.
+            _now = DateTime.Now;
         }
 
         public string Identifier { get; set; } = "MSBNK";
@@ -190,10 +200,14 @@ namespace CompMs.Common.Parser
                     ? "Instrument type is empty. MassBank needs [separation-]ionisation-analyzer, e.g. LC-ESI-QTOF, LC-ESI-QFT or LC-ESI-ITFT."
                     : $"Instrument type \"{InstrumentType}\" is not a MassBank instrument type. MassBank needs [separation-]ionisation-analyzer, e.g. LC-ESI-QTOF, LC-ESI-QFT or LC-ESI-ITFT.");
             }
-            if (!MassBankVocabulary.IsValidAuthors(Authors)) {
+            else if (InstrumentType.Length > MaxInstrumentTypeLength) {
+                problems.Add($"Instrument type is {InstrumentType.Length.ToString(INVARIANT)} characters long; RECORD_TITLE leaves room for at most {MaxInstrumentTypeLength.ToString(INVARIANT)}.");
+            }
+            // The value is written with control characters replaced by spaces, so it must still say something then.
+            if (!MassBankVocabulary.IsValidAuthors(Authors) || CleanLine(Authors).Length == 0) {
                 problems.Add("Authors must be given, on one line.");
             }
-            if (!MassBankVocabulary.IsValidInstrument(Instrument)) {
+            if (!MassBankVocabulary.IsValidInstrument(Instrument) || CleanLine(Instrument).Length == 0) {
                 problems.Add("Instrument must be given, on one line.");
             }
             if (!MassBankVocabulary.IsValidLicense(License)) {
@@ -281,7 +295,7 @@ namespace CompMs.Common.Parser
             // Peaks: sorted, merged where they print the same, and only what PK$PEAK prints feeds SPLASH.
             var peaks = PreparePeaks(scan.Spectrum);
             if (peaks.Count == 0) {
-                return Refuse("no MS/MS peaks");
+                return Refuse(NoPeaksReason);
             }
 
             // Polarity: the spot's own adduct; the handler's ion mode only when the adduct does not say.
@@ -292,11 +306,19 @@ namespace CompMs.Common.Parser
                 return Refuse($"the polarity is {polarity}, but a MassBank record is POSITIVE or NEGATIVE");
             }
 
-            // Name.
+            // Name. A suggestion is named after its reference, without MS-DIAL's level prefix ("low score:", ...):
+            // CH$NAME is a compound name, and the level is stated in COMMENT.
             var isUnknown = annotationLevel == MassBankAnnotationLevel.Unknown;
             var originalName = molecule.Name ?? string.Empty;
-            var name = isUnknown ? UnknownName : SanitizeName(originalName);
-            if (string.IsNullOrEmpty(name)) {
+            var prefixRemoved = false;
+            var nameSource = originalName;
+            if (annotationLevel == MassBankAnnotationLevel.Suggested && IsSuggestionName(originalName)) {
+                nameSource = StripSuggestionPrefixes(originalName);
+                prefixRemoved = true;
+            }
+            var name = isUnknown ? UnknownName : SanitizeName(nameSource);
+            var hasName = name.Length > 0;
+            if (!hasName) {
                 name = UnknownName;
             }
             var nameChanged = !isUnknown && !string.IsNullOrWhiteSpace(originalName) && !string.Equals(name, originalName, StringComparison.Ordinal);
@@ -309,17 +331,25 @@ namespace CompMs.Common.Parser
                     notes.Add(structureNote);
                 }
             }
+            if (structure != null && !hasName) {
+                // "Unknown" next to a structure would name the compound unknown while identifying it.
+                return Refuse("the compound has a structure but no name in characters MassBank accepts");
+            }
             string formula;
             double exactMass;
+            var isotopeLabelled = false;
+            string inferredFrom = null;
             if (structure != null) {
                 formula = structure.Formula;
                 exactMass = structure.MonoisotopicMass;
+                isotopeLabelled = structure.IsIsotopeLabelled;
             }
             else {
                 var libraryFormula = isUnknown ? null : ParseLibraryFormula(molecule.Formula?.FormulaString);
                 if (libraryFormula != null) {
                     formula = libraryFormula.Formula;
                     exactMass = libraryFormula.MonoisotopicMass;
+                    isotopeLabelled = libraryFormula.IsIsotopeLabelled;
                 }
                 else {
                     formula = NotAvailable;
@@ -327,6 +357,7 @@ namespace CompMs.Common.Parser
                     if (!IsPositiveNumber(exactMass)) {
                         return Refuse("there is no formula, and the neutral mass cannot be derived from the precursor m/z and adduct");
                     }
+                    inferredFrom = adduct.AdductIonName;
                     notes.Add("CH$EXACT_MASS is the neutral mass inferred from the precursor m/z and adduct");
                 }
             }
@@ -339,29 +370,40 @@ namespace CompMs.Common.Parser
             Line($"ACCESSION: {accession}");
 
             var titleSuffix = $"; {InstrumentType}; {MSType}";
+            if (titleSuffix.Length + 1 > MaxRecordTitleLength) {
+                return Refuse($"the instrument type is too long for RECORD_TITLE ({MaxRecordTitleLength.ToString(INVARIANT)} characters)");
+            }
             var titleName = name;
             if (titleName.Length + titleSuffix.Length > MaxRecordTitleLength) {
-                titleName = titleName.Substring(0, Math.Max(1, MaxRecordTitleLength - titleSuffix.Length)).TrimEnd();
+                titleName = Cut(titleName, MaxRecordTitleLength - titleSuffix.Length).TrimEnd();
+                if (titleName.Length == 0) {
+                    titleName = name.Substring(0, 1);
+                }
                 notes.Add("RECORD_TITLE was shortened to 600 characters");
             }
             Line($"RECORD_TITLE: {titleName}{titleSuffix}");
             Line($"DATE: {_now.ToString("yyyy.MM.dd", INVARIANT)}");
-            Line($"AUTHORS: {Authors.Trim()}");
+            Line($"AUTHORS: {CleanLine(Authors)}");
             Line($"LICENSE: {License}");
 
+            // The project comment comes first; the handler's own comments follow it.
             foreach (var comment in SplitComment(Comment)) {
                 Line($"COMMENT: {comment}");
             }
             if (nameChanged) {
-                var original = "Original name: " + Regex.Replace(originalName, @"[\r\n]+", " ").Trim();
-                if (original.Length > MaxCommentLength) {
-                    original = original.Substring(0, MaxCommentLength).TrimEnd();
-                }
-                Line($"COMMENT: {original}");
-                notes.Add("the name was changed to characters MassBank accepts");
+                Line($"COMMENT: {Cut("Original name: " + CleanLine(originalName), MaxCommentLength).TrimEnd()}");
+                notes.Add(prefixRemoved && string.Equals(name, nameSource.Trim(), StringComparison.Ordinal)
+                    ? "the suggestion prefix was removed from CH$NAME"
+                    : "the name was changed to characters MassBank accepts");
             }
             if (annotationLevel == MassBankAnnotationLevel.Suggested) {
                 Line($"COMMENT: {SuggestedAnnotationComment}");
+            }
+            if (isotopeLabelled) {
+                Line($"COMMENT: {IsotopeLabelledComment}");
+            }
+            if (inferredFrom != null) {
+                Line($"COMMENT: {Cut($"CH$EXACT_MASS was calculated from PRECURSOR_M/Z and the adduct {CleanLine(inferredFrom)}; it is not a reference value", MaxCommentLength)}");
             }
 
             Line($"CH$NAME: {name}");
@@ -377,11 +419,11 @@ namespace CompMs.Common.Parser
                 Line($"CH$LINK: INCHIKEY {structure.InChIKey}");
             }
 
-            Line($"AC$INSTRUMENT: {Instrument.Trim()}");
+            Line($"AC$INSTRUMENT: {CleanLine(Instrument)}");
             Line($"AC$INSTRUMENT_TYPE: {InstrumentType}");
             Line($"AC$MASS_SPECTROMETRY: MS_TYPE {MSType}");
             Line($"AC$MASS_SPECTROMETRY: ION_MODE {(polarity == IonMode.Positive ? "POSITIVE" : "NEGATIVE")}");
-            var collisionEnergy = CollisionEnergy?.Trim() ?? string.Empty;
+            var collisionEnergy = CleanLine(CollisionEnergy);
             if (collisionEnergy.Length > 0) {
                 Line($"AC$MASS_SPECTROMETRY: COLLISION_ENERGY {collisionEnergy}");
             }
@@ -439,9 +481,10 @@ namespace CompMs.Common.Parser
 
             Line($"PK$NUM_PEAK: {peaks.Count.ToString(INVARIANT)}");
             Line("PK$PEAK: m/z int. rel.int.");
-            var maxIntensity = peaks.Max(p => p.Intensity);
+            // rel.int. from the intensities as printed, so that the two columns agree for a reader.
+            var maxIntensity = peaks.Max(p => p.PrintedIntensity);
             foreach (var p in peaks) {
-                var relative = (int)Math.Round(p.Intensity / maxIntensity * 999d, MidpointRounding.AwayFromZero);
+                var relative = (int)Math.Round(p.PrintedIntensity / maxIntensity * 999d, MidpointRounding.AwayFromZero);
                 Line($"  {p.MzText} {p.IntensityText} {relative.ToString(INVARIANT)}");
             }
             Line("//");
@@ -479,6 +522,27 @@ namespace CompMs.Common.Parser
             AnnotationName.LowScorePrefix, AnnotationName.NoMs2Prefix, AnnotationName.WithoutMs2Prefix, "Unsettled", "Putative",
         };
 
+        // "Unsettled: low score: Glycine" -> "Glycine".
+        private static string StripSuggestionPrefixes(string name) {
+            var value = name.Trim();
+            var stripped = true;
+            while (stripped) {
+                stripped = false;
+                foreach (var prefix in SUGGESTION_PREFIXES) {
+                    if (!value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
+                        continue;
+                    }
+                    var rest = value.Substring(prefix.Length).TrimStart();
+                    if (rest.StartsWith(":", StringComparison.Ordinal)) {
+                        value = rest.Substring(1).Trim();
+                        stripped = true;
+                        break;
+                    }
+                }
+            }
+            return value;
+        }
+
         // ---------------------------------------------------------------- peaks
 
         private sealed class PrintedPeak
@@ -486,6 +550,7 @@ namespace CompMs.Common.Parser
             public string MzText;
             public string IntensityText;
             public double Intensity;
+            public double PrintedIntensity;
             public SpectrumComment Comment;
         }
 
@@ -500,7 +565,14 @@ namespace CompMs.Common.Parser
                 if (intensityText == "0.00") {
                     continue;
                 }
-                var peak = new PrintedPeak { MzText = p.Mass.ToString("F5", INVARIANT), IntensityText = intensityText, Intensity = p.Intensity, Comment = p.SpectrumComment, };
+                var peak = new PrintedPeak
+                {
+                    MzText = p.Mass.ToString("F5", INVARIANT),
+                    IntensityText = intensityText,
+                    Intensity = p.Intensity,
+                    PrintedIntensity = double.Parse(intensityText, NumberStyles.Float, INVARIANT),
+                    Comment = p.SpectrumComment,
+                };
                 // Two peaks that print with the same m/z fail the Validator's strictly increasing check; keep the larger.
                 if (result.Count > 0 && result[result.Count - 1].MzText == peak.MzText) {
                     if (peak.Intensity > result[result.Count - 1].Intensity) {
@@ -536,13 +608,24 @@ namespace CompMs.Common.Parser
             public string InChIKey;
             public string Formula;
             public double MonoisotopicMass;
+            public bool IsIsotopeLabelled;
         }
 
         private sealed class FormulaAndMass
         {
+            /// <summary>Hill order, isotopes collapsed into their element, "[...]n+" when charged.</summary>
             public string Formula;
+            /// <summary>The mass with the isotopes as given (the labelled compound), less the electrons of the charge.</summary>
             public double MonoisotopicMass;
+            /// <summary>The mass of <see cref="Formula"/> with the most abundant isotope of each element.</summary>
+            public double CollapsedMass;
+
+            /// <summary>True when the isotopes given make the mass differ from that of <see cref="Formula"/>.</summary>
+            public bool IsIsotopeLabelled => Math.Abs(MonoisotopicMass - CollapsedMass) > 1e-6;
         }
+
+        /// <summary>The COMMENT written when CH$EXACT_MASS is that of an isotope-labelled compound.</summary>
+        private const string IsotopeLabelledComment = "CH$EXACT_MASS is the monoisotopic mass of the isotope-labelled compound; CH$FORMULA cannot show isotopes";
 
         private static readonly Regex INCHIKEY = new Regex(@"\A[A-Z]{14}-[A-Z]{10}-[A-Z]\z", RegexOptions.CultureInvariant);
 
@@ -574,6 +657,12 @@ namespace CompMs.Common.Parser
                     note = "the structure was written as N/A: the SMILES has wildcard atoms";
                     return null;
                 }
+                // The formula and the mass of the structure as the SMILES gives it, with its isotopes.
+                var fromSmiles = FormulaOf(container, useMassNumbers: true);
+                if (fromSmiles is null) {
+                    note = "the structure was written as N/A: the formula of the structure could not be determined";
+                    return null;
+                }
                 var generator = InChIGeneratorFactory.Instance.GetInChIGenerator(container);
                 if ((generator.ReturnStatus != InChIReturnCode.Ok && generator.ReturnStatus != InChIReturnCode.Warning)
                     || string.IsNullOrEmpty(generator.InChI)
@@ -587,31 +676,57 @@ namespace CompMs.Common.Parser
                     note = "the structure was written as N/A: no InChIKey could be generated";
                     return null;
                 }
-                // The formula and mass of the structure the InChI describes, which is what the Validator compares
-                // CH$FORMULA with. Isotopes are collapsed in the formula, which has no isotope notation, and kept in
-                // the mass, so a labelled standard has the mass of the labelled compound.
+                // The formula of the structure the InChI describes, which is what the Validator compares CH$FORMULA
+                // with. Its element symbols are used, not its mass numbers, which NCDK gets wrong for isotopes lighter
+                // than the element's average mass ([79Br], [18F]); the mass, with the isotopes, comes from the SMILES.
                 var toStructure = InChIGeneratorFactory.Instance.GetInChIToStructure(inchi, CDK.Builder);
                 if ((toStructure.ReturnStatus != InChIReturnCode.Ok && toStructure.ReturnStatus != InChIReturnCode.Warning) || toStructure.AtomContainer is null) {
                     note = $"the structure was written as N/A: the InChI could not be read back ({toStructure.ReturnStatus})";
                     return null;
                 }
-                var formulaAndMass = FormulaOf(toStructure.AtomContainer);
-                if (formulaAndMass is null) {
+                var fromInChI = FormulaOf(toStructure.AtomContainer, useMassNumbers: false);
+                if (fromInChI is null) {
                     note = "the structure was written as N/A: the formula of the structure could not be determined";
                     return null;
                 }
-                return new Structure { Smiles = text, InChI = inchi, InChIKey = key, Formula = formulaAndMass.Formula, MonoisotopicMass = formulaAndMass.MonoisotopicMass, };
+                if (!string.Equals(fromInChI.Formula, fromSmiles.Formula, StringComparison.Ordinal)) {
+                    // e.g. an explicit [1H], which the InChI leaves out of its formula.
+                    note = "the structure was written as N/A: its InChI does not keep the formula of the SMILES";
+                    return null;
+                }
+                // CH$SMILES is NCDK's own SMILES of the structure the InChI was made from, not the library text: for
+                // some double bonds (imines, conjugated rings) NCDK and the Validator's CDK read the stereo of the
+                // library text differently, and the Validator requires the InChIKey of CH$SMILES to equal CH$IUPAC's.
+                var smilesOut = new SmilesGenerator(SmiFlavors.Isomeric).Create(container);
+                if (string.IsNullOrEmpty(smilesOut) || smilesOut.Length > MaxSmilesLength || smilesOut.Any(char.IsWhiteSpace)) {
+                    note = "the structure was written as N/A: the SMILES written for it would be too long";
+                    return null;
+                }
+                return new Structure
+                {
+                    Smiles = smilesOut,
+                    InChI = inchi,
+                    InChIKey = key,
+                    Formula = fromInChI.Formula,
+                    MonoisotopicMass = fromSmiles.MonoisotopicMass,
+                    IsIsotopeLabelled = fromSmiles.IsIsotopeLabelled,
+                };
             }
             catch (Exception ex) when (!(ex is OutOfMemoryException || ex is DllNotFoundException || ex is BadImageFormatException || ex is EntryPointNotFoundException)) {
-                // One unusual structure must not stop the export of the others.
-                note = $"the structure was written as N/A: {ex.GetType().Name}: {ex.Message}";
+                // One unusual structure must not stop the export of the others. The note names the exception type
+                // only, so that the export summary counts such structures together.
+                note = $"the structure was written as N/A: NCDK could not process the SMILES ({ex.GetType().Name})";
                 return null;
             }
         }
 
-        private static FormulaAndMass FormulaOf(IAtomContainer container) {
+        /// <param name="useMassNumbers">
+        /// True to take each atom's mass number for the mass; false to take the most abundant isotope throughout.
+        /// </param>
+        private static FormulaAndMass FormulaOf(IAtomContainer container, bool useMassNumbers) {
             var counts = new Dictionary<string, int>(StringComparer.Ordinal);
             var mass = 0d;
+            var collapsedMass = 0d;
             var charge = 0;
             var hydrogenMass = IsotopeMass("H", null);
             if (!hydrogenMass.HasValue) {
@@ -622,23 +737,31 @@ namespace CompMs.Common.Parser
                 if (string.IsNullOrEmpty(symbol) || !ELEMENTS.Contains(symbol)) {
                     return null;
                 }
-                var atomMass = IsotopeMass(symbol, atom.MassNumber);
-                if (!atomMass.HasValue) {
+                var majorMass = IsotopeMass(symbol, null);
+                var atomMass = useMassNumbers ? IsotopeMass(symbol, atom.MassNumber) : majorMass;
+                if (!atomMass.HasValue || !majorMass.HasValue) {
                     return null;
                 }
                 Add(counts, symbol, 1);
                 mass += atomMass.Value;
+                collapsedMass += majorMass.Value;
                 var hydrogens = atom.ImplicitHydrogenCount ?? 0;
                 if (hydrogens > 0) {
                     Add(counts, "H", hydrogens);
                     mass += hydrogens * hydrogenMass.Value;
+                    collapsedMass += hydrogens * hydrogenMass.Value;
                 }
                 charge += atom.FormalCharge ?? 0;
             }
             if (counts.Count == 0) {
                 return null;
             }
-            return new FormulaAndMass { Formula = HillFormula(counts, charge), MonoisotopicMass = mass - charge * ElectronMass, };
+            return new FormulaAndMass
+            {
+                Formula = HillFormula(counts, charge),
+                MonoisotopicMass = mass - charge * ElectronMass,
+                CollapsedMass = collapsedMass - charge * ElectronMass,
+            };
         }
 
         private static void Add(Dictionary<string, int> counts, string symbol, int count) {
@@ -695,6 +818,7 @@ namespace CompMs.Common.Parser
             }
             var counts = new Dictionary<string, int>(StringComparer.Ordinal);
             var mass = 0d;
+            var collapsedMass = 0d;
             var i = 0;
             while (i < text.Length) {
                 string symbol;
@@ -737,16 +861,18 @@ namespace CompMs.Common.Parser
                     return null;
                 }
                 var atomMass = IsotopeMass(symbol, massNumber);
-                if (!atomMass.HasValue) {
+                var majorMass = IsotopeMass(symbol, null);
+                if (!atomMass.HasValue || !majorMass.HasValue) {
                     return null;
                 }
                 Add(counts, symbol, count);
                 mass += count * atomMass.Value;
+                collapsedMass += count * majorMass.Value;
             }
             if (counts.Values.All(c => c <= 0)) {
                 return null;
             }
-            return new FormulaAndMass { Formula = HillFormula(counts, 0), MonoisotopicMass = mass, };
+            return new FormulaAndMass { Formula = HillFormula(counts, 0), MonoisotopicMass = mass, CollapsedMass = collapsedMass, };
         }
 
         // The 118 element symbols of the CH$FORMULA grammar.
@@ -953,12 +1079,12 @@ namespace CompMs.Common.Parser
                 if (char.IsWhiteSpace(c) || char.IsControl(c)) {
                     builder.Append(' ');
                 }
-                else if (char.IsLetterOrDigit(c) || c == '_' || punctuation.IndexOf(c) >= 0) {
+                else if (IsLetterOrDigitForValidator(c) || c == '_' || punctuation.IndexOf(c) >= 0) {
                     builder.Append(c);
                 }
                 else if (REPLACEMENTS.TryGetValue(c, out var replacement)) {
                     foreach (var r in replacement) {
-                        if (char.IsLetterOrDigit(r) || punctuation.IndexOf(r) >= 0) {
+                        if (IsLetterOrDigitForValidator(r) || punctuation.IndexOf(r) >= 0) {
                             builder.Append(r);
                         }
                     }
@@ -973,15 +1099,79 @@ namespace CompMs.Common.Parser
             return result;
         }
 
+        /// <summary>
+        /// A letter or digit for the Validator's word(), which is Java's Character.isLetterOrDigit(char). .NET follows
+        /// another Unicode version: .NET Framework calls U+1885 and U+1886 letters, which Unicode 9 made marks, and
+        /// .NET 8 and later know letters that Java 17 (Unicode 13) does not. Those are refused here; surrogates, which
+        /// neither calls letters, already are.
+        /// </summary>
+        private static bool IsLetterOrDigitForValidator(char c) {
+            return char.IsLetterOrDigit(c) && !IsNewerUnicodeLetter(c);
+        }
+
+        // BMP characters that .NET Framework 4.8, .NET 8 or .NET 10 counts as letters or digits and Java 17 does not,
+        // found by comparing char.IsLetterOrDigit with Character.isLetterOrDigit over U+0000 to U+FFFF.
+        private static bool IsNewerUnicodeLetter(char c) {
+            return (c >= 'ࡰ' && c <= 'ࢇ') || (c >= 'ࢉ' && c <= 'ࢎ') || c == 'ࢵ' || c == 'ࣈ' || c == 'ࣉ'
+                || c == 'ౝ' || c == 'ೝ' || c == 'ᜍ' || c == 'ᜟ' || c == 'ᢅ' || c == 'ᢆ' || c == 'ᭌ'
+                || c == 'Ᲊ' || c == 'ᲊ' || c == 'Ⱟ' || c == 'ⱟ' || (c >= '鿽' && c <= '鿿')
+                || c == 'Ꟁ' || c == 'ꟁ' || (c >= 'Ɤ' && c <= 'ꟍ') || c == 'Ꟑ' || c == 'ꟑ' || c == 'ꟓ'
+                || (c >= 'ꟕ' && c <= 'Ƛ') || (c >= 'ꟲ' && c <= 'ꟴ');
+        }
+
+        /// <summary>
+        /// A one-line value as the record writes it: line breaks and other control characters become spaces, and the
+        /// ends are trimmed as Java's String.trim() and .NET's Trim() both would.
+        /// </summary>
+        private static string CleanLine(string value) {
+            if (string.IsNullOrEmpty(value)) {
+                return string.Empty;
+            }
+            var builder = new StringBuilder(value.Length);
+            foreach (var c in value) {
+                builder.Append(c < ' ' || c == '\u007F' ? ' ' : c);
+            }
+            return JavaTrim(builder.ToString().Trim());
+        }
+
+        // Java's String.trim(): every character up to U+0020 at either end.
+        private static string JavaTrim(string value) {
+            var start = 0;
+            var end = value.Length;
+            while (start < end && value[start] <= ' ') {
+                start++;
+            }
+            while (end > start && value[end - 1] <= ' ') {
+                end--;
+            }
+            return value.Substring(start, end - start);
+        }
+
+        /// <summary>At most <paramref name="length"/> UTF-16 units of <paramref name="value"/>, never half a surrogate pair.</summary>
+        private static string Cut(string value, int length) {
+            if (value.Length <= length) {
+                return value;
+            }
+            if (length <= 0) {
+                return string.Empty;
+            }
+            return value.Substring(0, char.IsHighSurrogate(value[length - 1]) ? length - 1 : length);
+        }
+
         private static IEnumerable<string> SplitComment(string comment) {
             if (string.IsNullOrWhiteSpace(comment)) {
                 yield break;
             }
             foreach (var rawLine in comment.Split(new[] { "\r\n", "\r", "\n", }, StringSplitOptions.None)) {
-                var line = rawLine.Trim();
-                for (var start = 0; start < line.Length; start += MaxCommentLength) {
-                    var chunk = line.Substring(start, Math.Min(MaxCommentLength, line.Length - start)).Trim();
-                    // The Validator refuses an empty COMMENT and one that is only "CONFIDENCE".
+                var rest = CleanLine(rawLine);
+                while (rest.Length > 0) {
+                    var chunk = Cut(rest, MaxCommentLength);
+                    if (chunk.Length == 0) {
+                        chunk = rest.Substring(0, Math.Min(2, rest.Length));
+                    }
+                    rest = rest.Substring(chunk.Length);
+                    chunk = CleanLine(chunk);
+                    // The Validator refuses an empty COMMENT and one that is only "CONFIDENCE" after Java's trim().
                     if (chunk.Length > 0 && chunk != "CONFIDENCE") {
                         yield return chunk;
                     }
