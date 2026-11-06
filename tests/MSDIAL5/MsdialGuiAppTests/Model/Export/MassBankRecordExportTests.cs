@@ -99,6 +99,11 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             CollectionAssert.Contains(lines, "COMMENT: MassBank export test");
             Assert.IsTrue(lines.Any(l => l.StartsWith("MS$DATA_PROCESSING: WHOLE MS-DIAL ")));
             StringAssert.StartsWith(Path.GetFileName(records[0]), $"MSBNK-{Contributor}-MSDIAL");
+            // PK$SPLASH is recomputed from the printed PK$PEAK lines, as the Validator does.
+            var printed = string.Join(" ", lines.SkipWhile(l => l != "PK$PEAK: m/z int. rel.int.").Skip(1).TakeWhile(l => l != "//")
+                .Select(l => l.Trim().Split(' ')).Select(f => f[0] + ":" + f[1]));
+            Assert.AreEqual("56.04679:124.37 84.04584:1638.24 130.04871:378.55", printed);
+            CollectionAssert.Contains(lines, "PK$SPLASH: " + CompMs.MsdialCore.Export.MassBankSplash.Compute(printed));
 
             var summary = messages.Single();
             Assert.AreEqual(MessageSeverity.Information, summary.Severity);
