@@ -501,7 +501,7 @@ namespace CompMs.App.Msdial.Model.Export.Tests
 
             session.BeginExport();
             ((IMsdialAnalysisExport)model).Export(_output, file);
-            session.EndExport(_output);
+            var report = session.EndExport(_output);
 
             string Field(string[] lines, string tag) => lines.Single(l => l.StartsWith(tag + ": ")).Substring(tag.Length + 2);
             var records = Directory.GetFiles(Path.Combine(_output, "lipids"), "*.txt").Select(File.ReadAllLines).ToDictionary(lines => Field(lines, "CH$COMPOUND_CLASS"));
@@ -512,10 +512,26 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             Assert.AreEqual("PC 34:1; LC-ESI-QTOF; MS2", Field(records["suggested"], "RECORD_TITLE"));
             CollectionAssert.Contains(records["suggested"], "COMMENT: Original name: low score: PC 34:1|PC 16:0_18:1");
             CollectionAssert.Contains(records["class only"], "COMMENT: Original name: PC 34:1|PC 16:0_18:1");
+
+            // The structure, which is the compound a MassBank record identifies, goes with the name: POPC's InChIKey
+            // only where CH$NAME states its chains.
+            CollectionAssert.Contains(records["chains resolved"], "CH$LINK: INCHIKEY " + PopcInChIKey);
+            foreach (var key in new[] { "class only", "suggested", }) {
+                CollectionAssert.Contains(records[key], "CH$SMILES: N/A", key);
+                CollectionAssert.Contains(records[key], "CH$IUPAC: N/A", key);
+                Assert.IsFalse(records[key].Any(l => l.StartsWith("CH$LINK: INCHIKEY")), key);
+                CollectionAssert.Contains(records[key], "CH$FORMULA: C42H82NO8P", key);
+            }
+            StringAssert.Contains(report!.Content, "2  the structure was written as N/A: the reference structure states lipid chains that were not resolved");
         }
 
-        // A sample with three lipid peaks, all named "PC 34:1|PC 16:0_18:1": a reference match whose chains were resolved,
-        // one whose chains were not, and a low-score suggestion. CH$COMPOUND_CLASS tells the two matches apart.
+        // POPC (PC 16:0/18:1), the chain-specific structure an MSP reference named "PC 34:1|PC 16:0_18:1" carries.
+        private const string PopcSmiles = "O=C(OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COP(=O)([O-])OCC[N+](C)(C)C)CCCCCCCCCCCCCCC";
+        private const string PopcInChIKey = "WTJKGGKOPKCXLL-UHFFFAOYSA-N";
+
+        // A sample with three lipid peaks, all named "PC 34:1|PC 16:0_18:1" and carrying POPC's structure, as an MSP
+        // reference does: a reference match whose chains were resolved, one whose chains were not, and a low-score
+        // suggestion. CH$COMPOUND_CLASS tells the two matches apart.
         private AnalysisFileBeanModel SaveLipidFile() {
             var file = AnalysisFileBeanModelTestHelper.Create();
             file.AnalysisFileId = 5;
@@ -541,6 +557,8 @@ namespace CompMs.App.Msdial.Model.Export.Tests
                     Name = name,
                     Ontology = ontology,
                     Formula = FormulaStringParcer.OrganicElementsReader("C42H82NO8P"),
+                    SMILES = PopcSmiles,
+                    InChIKey = PopcInChIKey,
                 };
                 feature.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
                 feature.MatchResults.AddResult(result);

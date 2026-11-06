@@ -577,6 +577,89 @@ namespace CompMs.Common.Parser.Tests
             Assert.IsNull(Value(lines, "COMMENT"), "a name written as it is needs no original-name comment");
         }
 
+        // POPC (PC 16:0/18:1), the chain-specific structure an MSP lipid reference named "PC 34:1|PC 16:0_18:1" carries.
+        private const string PopcSmiles = "O=C(OCC(OC(=O)CCCCCCCC=CCCCCCCCC)COP(=O)([O-])OCC[N+](C)(C)C)CCCCCCCCCCCCCCC";
+        private const string PopcInChIKey = "WTJKGGKOPKCXLL-UHFFFAOYSA-N";
+
+        private static MoleculeMsReference LipidWithStructure(string name) {
+            var reference = Lipid(name);
+            reference.SMILES = PopcSmiles;
+            reference.InChIKey = PopcInChIKey;
+            return reference;
+        }
+
+        [DataTestMethod()]
+        [DataRow("PC 34:1|PC 16:0_18:1", MassBankAnnotationLevel.ReferenceMatched)]
+        [DataRow("PC 34:1|PC 16:0_18:1", MassBankAnnotationLevel.Unspecified)]
+        [DataRow("low score: PC 34:1|PC 16:0_18:1", MassBankAnnotationLevel.Suggested)]
+        [DataRow("no MS2: PC 34:1|PC 16:0_18:1", MassBankAnnotationLevel.Suggested)]
+        public void Structure_OfAClassLevelLipidNameIsNotAvailable(string name, MassBankAnnotationLevel level) {
+            // The reference's structure is POPC, one species of PC 34:1. In MassBank the InChIKey is the compound the
+            // record identifies, so a record named "PC 34:1" must not carry it.
+            var handler = CreateHandler();
+            var reference = LipidWithStructure(name);
+
+            var result = handler.BuildRecord(Peak(id: 1, mz: 760.5851), reference, reference, reference, level, lipidChainsResolved: false);
+            var lines = Lines(result);
+
+            Assert.AreEqual("PC 34:1", Value(lines, "CH$NAME"));
+            Assert.AreEqual("N/A", Value(lines, "CH$SMILES"));
+            Assert.AreEqual("N/A", Value(lines, "CH$IUPAC"));
+            Assert.IsNull(Value(lines, "CH$LINK"), "no InChIKey: it would name one species of the class");
+            Assert.IsFalse(lines.Any(l => l.Contains(PopcInChIKey) || l.Contains("InChI=")), "nothing of the species' structure is written");
+            // The library formula is the same for every species of the class.
+            Assert.AreEqual("C42H82NO8P", Value(lines, "CH$FORMULA"));
+            Assert.AreEqual("759.57781", Value(lines, "CH$EXACT_MASS"));
+            Assert.IsFalse(lines.Any(l => l.StartsWith("COMMENT: CH$EXACT_MASS was calculated")), "the mass is the library formula's, not inferred");
+            CollectionAssert.Contains(result.Notes.ToList(), MassBankRecordHandler.ClassLevelLipidStructureNote);
+            CollectionAssert.Contains(result.Notes.ToList(), "the dual lipid name was written at the level its evidence supports");
+        }
+
+        [TestMethod()]
+        public void Structure_OfAClassLevelLipidNameWithoutALibraryFormulaIsInferredFromThePrecursor() {
+            var handler = CreateHandler();
+            var reference = LipidWithStructure("PC 34:1|PC 16:0_18:1");
+            reference.Formula = new Formula();
+
+            var result = handler.BuildRecord(Peak(id: 1, mz: 760.5851), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched, lipidChainsResolved: false);
+            var lines = Lines(result);
+
+            Assert.AreEqual("PC 34:1", Value(lines, "CH$NAME"));
+            Assert.AreEqual("N/A", Value(lines, "CH$FORMULA"));
+            Assert.AreEqual("N/A", Value(lines, "CH$SMILES"));
+            Assert.IsNull(Value(lines, "CH$LINK"));
+            Assert.AreEqual("759.57782", Value(lines, "CH$EXACT_MASS"), "760.5851 less the proton");
+            CollectionAssert.Contains(lines, "COMMENT: CH$EXACT_MASS was calculated from PRECURSOR_M/Z and the adduct [M+H]+; it is not a reference value");
+        }
+
+        [TestMethod()]
+        public void Structure_OfAChainLevelLipidNameIsWritten() {
+            var handler = CreateHandler();
+
+            var dual = LipidWithStructure("PC 34:1|PC 16:0_18:1");
+            var result = handler.BuildRecord(Peak(id: 1, mz: 760.5851), dual, dual, dual, MassBankAnnotationLevel.ReferenceMatched, lipidChainsResolved: true);
+            var lines = Lines(result);
+            Assert.AreEqual("PC 16:0_18:1", Value(lines, "CH$NAME"));
+            Assert.AreEqual("INCHIKEY " + PopcInChIKey, Value(lines, "CH$LINK"));
+            Assert.AreNotEqual("N/A", Value(lines, "CH$SMILES"));
+            CollectionAssert.DoesNotContain(result.Notes.ToList(), MassBankRecordHandler.ClassLevelLipidStructureNote);
+
+            // A name that is not dual is written with its structure whatever the chain verdict: nothing was cut from it.
+            var chains = LipidWithStructure("PC 16:0_18:1");
+            result = handler.BuildRecord(Peak(id: 2, mz: 760.5851), chains, chains, chains, MassBankAnnotationLevel.ReferenceMatched, lipidChainsResolved: false);
+            Assert.AreEqual("INCHIKEY " + PopcInChIKey, Value(Lines(result), "CH$LINK"));
+            CollectionAssert.DoesNotContain(result.Notes.ToList(), MassBankRecordHandler.ClassLevelLipidStructureNote);
+        }
+
+        [TestMethod()]
+        public void Structure_OfAClassLevelLipidNameWithoutAReferenceStructureIsNotNoted() {
+            // Nothing was withheld, so the export summary has nothing to count.
+            var reference = Lipid("PC 34:1|PC 16:0_18:1");
+            var result = CreateHandler().BuildRecord(Peak(mz: 760.5851), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched, lipidChainsResolved: false);
+            Assert.AreEqual("N/A", Value(Lines(result), "CH$SMILES"));
+            CollectionAssert.DoesNotContain(result.Notes.ToList(), MassBankRecordHandler.ClassLevelLipidStructureNote);
+        }
+
         // The rule of every other MS-DIAL export (NIST/MSP, SDF, MGF, tables, mzTab-M): AnnotationName.Canonical.
         [DataTestMethod()]
         [DataRow("PC 34:1|PC 16:0_18:1", false)]

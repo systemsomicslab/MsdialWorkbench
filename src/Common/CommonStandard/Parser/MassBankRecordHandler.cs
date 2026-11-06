@@ -77,7 +77,9 @@ namespace CompMs.Common.Parser
     /// The structure fields (CH$SMILES, CH$IUPAC, CH$LINK: INCHIKEY, CH$FORMULA, CH$EXACT_MASS) are derived together
     /// from the SMILES: the InChI and InChIKey come from one NCDK InChI generator, and the formula and mass from the
     /// structure that InChI describes, which is what the Validator compares them against. When there is no usable
-    /// structure, SMILES and IUPAC are N/A and no InChIKey is written; the library InChIKey is never copied.
+    /// structure, SMILES and IUPAC are N/A and no InChIKey is written; the library InChIKey is never copied. A record
+    /// whose CH$NAME is the class-level half of a dual lipid name takes no structure either (see
+    /// <see cref="BuildRecord"/>), because the reference's structure names one species of that class.
     ///
     /// ACCESSION is "{Identifier}-{ContributorIdentifier}-{record ID}", and the record ID has one of two layouts:
     /// <list type="bullet">
@@ -321,7 +323,8 @@ namespace CompMs.Common.Parser
         /// <param name="lipidChainsResolved">
         /// MS-DIAL's chain verdict for the annotation (<c>MsScanMatchResult.IsLipidChainsMatch</c> of the representative
         /// match), which decides the half of a dual lipid name ("PC 34:1|PC 16:0_18:1") CH$NAME is: the chain-level one
-        /// when true, the class-level one when false. False is the safe reading when the verdict is not known.
+        /// when true, the class-level one, written without a structure, when false. False is the safe reading when the
+        /// verdict is not known.
         /// </param>
         /// <remarks>
         /// A record that is built takes its accession for good: a later record of this handler with the same accession
@@ -332,6 +335,12 @@ namespace CompMs.Common.Parser
         /// name reduced to the level the evidence supports. A suggestion also loses the markers "Unsettled:" and
         /// "Putative:", because the record states its level in COMMENT. Whenever the written name differs from the
         /// spot's own, "COMMENT: Original name:" keeps the latter whole.
+        ///
+        /// When CH$NAME is the class-level half of a dual lipid name, CH$SMILES and CH$IUPAC are N/A and no InChIKey is
+        /// written, as for a reference without a structure: the reference's SMILES is that of one species ("PC 16:0_18:1"
+        /// for "PC 34:1"), and in MassBank the structure, not the name, is the compound a record identifies, so writing
+        /// it would state the chains the name leaves out. CH$FORMULA and CH$EXACT_MASS come from the library formula,
+        /// which every species of the class shares.
         /// </remarks>
         public MassBankRecordResult BuildRecord(IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel = MassBankAnnotationLevel.Unspecified, int? analysisFileId = null, bool lipidChainsResolved = false) {
             if (peak is null) {
@@ -393,9 +402,16 @@ namespace CompMs.Common.Parser
             }
             var nameChanged = !isUnknown && !string.IsNullOrWhiteSpace(originalName) && !string.Equals(name, originalName, StringComparison.Ordinal);
 
-            // Structure.
+            // Structure. A class-level lipid name takes none: the reference's structure is one species of the class, and
+            // the InChIKey would identify the record as that species while CH$NAME leaves its chains out.
             Structure structure = null;
-            if (!isUnknown) {
+            var classLevelLipidName = dualNameReduced && !lipidChainsResolved;
+            if (!isUnknown && classLevelLipidName) {
+                if (HasStructureText(molecule.SMILES)) {
+                    notes.Add(ClassLevelLipidStructureNote);
+                }
+            }
+            else if (!isUnknown) {
                 structure = ResolveStructure(molecule.SMILES, out var structureNote);
                 if (structureNote != null) {
                     notes.Add(structureNote);
@@ -612,6 +628,12 @@ namespace CompMs.Common.Parser
         private const string DualNameNote = "the dual lipid name was written at the level its evidence supports";
 
         /// <summary>
+        /// The note a record carries when CH$NAME is the class-level half of a dual lipid name and the reference had a
+        /// structure, which was not written.
+        /// </summary>
+        internal const string ClassLevelLipidStructureNote = "the structure was written as N/A: the reference structure states lipid chains that were not resolved";
+
+        /// <summary>
         /// The name CH$NAME and RECORD_TITLE are made from, before sanitising: <see cref="AnnotationName.Canonical"/>, the
         /// name every MS-DIAL export shows, of the name without its <see cref="SUGGESTION_PREFIXES"/> for a suggestion.
         /// </summary>
@@ -748,6 +770,12 @@ namespace CompMs.Common.Parser
         private const string IsotopeLabelledComment = "CH$EXACT_MASS is the monoisotopic mass of the isotope-labelled compound; CH$FORMULA cannot show isotopes";
 
         private static readonly Regex INCHIKEY = new Regex(@"\A[A-Z]{14}-[A-Z]{10}-[A-Z]\z", RegexOptions.CultureInvariant);
+
+        /// <summary>True when <paramref name="smiles"/> is text <see cref="ResolveStructure"/> would try, not empty or N/A.</summary>
+        private static bool HasStructureText(string smiles) {
+            var text = smiles?.Trim() ?? string.Empty;
+            return text.Length > 0 && !text.Equals(NotAvailable, StringComparison.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         /// The structure fields from <paramref name="smiles"/>, or null, with the reason, when it gives no usable structure.
