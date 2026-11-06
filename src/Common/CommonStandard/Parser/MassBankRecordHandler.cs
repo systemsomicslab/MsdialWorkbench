@@ -565,12 +565,15 @@ namespace CompMs.Common.Parser
                 if (intensityText == "0.00") {
                     continue;
                 }
+                // Near double.MaxValue the printed text rounds out of range (.NET Framework cannot parse it back); such a
+                // spectrum is refused when its SPLASH cannot be computed from the same text.
+                var printedIntensity = double.TryParse(intensityText, NumberStyles.Float, INVARIANT, out var parsed) && IsPositiveNumber(parsed) ? parsed : p.Intensity;
                 var peak = new PrintedPeak
                 {
                     MzText = p.Mass.ToString("F5", INVARIANT),
                     IntensityText = intensityText,
                     Intensity = p.Intensity,
-                    PrintedIntensity = double.Parse(intensityText, NumberStyles.Float, INVARIANT),
+                    PrintedIntensity = printedIntensity,
                     Comment = p.SpectrumComment,
                 };
                 // Two peaks that print with the same m/z fail the Validator's strictly increasing check; keep the larger.

@@ -143,6 +143,26 @@ namespace CompMs.Common.Parser.Tests
             Assert.IsFalse(lines.Any(l => l.StartsWith("PK$ANNOTATION")), "PK$ANNOTATION is omitted when no peak is annotated.");
         }
 
+        [TestMethod()]
+        public void Peaks_NearDoubleMaxValueAreRefusedNotThrown() {
+            // Reads the printed peaks back as MassBankSplash does; double.MaxValue printed with two decimals does not fit.
+            string ParsingSplash(string printed) {
+                foreach (var pair in printed.Split(' ')) {
+                    double.Parse(pair.Split(':')[1], NumberStyles.Float, CultureInfo.InvariantCulture);
+                }
+                return FakeSplash(printed);
+            }
+            var handler = CreateHandler(ParsingSplash);
+            var reference = Pyroglutamic();
+            reference.Spectrum = new List<SpectrumPeak> { new SpectrumPeak(56.04679, double.MaxValue), new SpectrumPeak(84.04584, 100d), };
+
+            var result = handler.BuildRecord(Peak(), reference, reference, reference);
+
+            if (!result.IsSuccess) {
+                StringAssert.Contains(result.SkipReason, "SPLASH");
+            }
+        }
+
         [DataTestMethod()]
         [DataRow("de-DE")]
         [DataRow("th-TH")]
