@@ -78,6 +78,15 @@ namespace CompMs.Common.Parser.Tests
             return lines.SkipWhile(l => l != "PK$PEAK: m/z int. rel.int.").Skip(1).TakeWhile(l => l != "//").ToArray();
         }
 
+        // The yyMMddHHmmss block of an accession "<prefix>yyMMddHHmmss<suffix>", read in the Gregorian calendar.
+        private static DateTime AccessionTime(string accession, string prefix, string suffix) {
+            StringAssert.StartsWith(accession, prefix);
+            StringAssert.EndsWith(accession, suffix);
+            var time = accession.Substring(prefix.Length, accession.Length - prefix.Length - suffix.Length);
+            Assert.IsTrue(DateTime.TryParseExact(time, "yyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed), $"{accession}: \"{time}\" is not yyMMddHHmmss");
+            return parsed;
+        }
+
         [TestMethod()]
         public void WriteRecordTest_InChIKeyLinkHasNoColonAfterDatabaseName() {
             var handler = CreateHandler(_ => "NA");
@@ -180,7 +189,9 @@ namespace CompMs.Common.Parser.Tests
                 var date = Value(lines, "DATE");
                 Assert.IsTrue(DateTime.TryParseExact(date, "yyyy.MM.dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed), date);
                 Assert.IsTrue(Math.Abs((parsed - DateTime.Now.Date).TotalDays) <= 1, $"DATE {date} is not the Gregorian date of today.");
-                Assert.AreEqual($"MSBNK-{Contributor}-MSDIAL{parsed.ToString("yyMMdd", CultureInfo.InvariantCulture)}00001101", Value(lines, "ACCESSION"));
+                var accession = Value(lines, "ACCESSION");
+                var time = AccessionTime(accession, $"MSBNK-{Contributor}-MSDIAL", "00001101");
+                Assert.AreEqual(parsed, time.Date, $"The accession {accession} does not carry the Gregorian date of DATE {date}.");
                 Assert.AreEqual("129.04259", Value(lines, "CH$EXACT_MASS"));
                 CollectionAssert.Contains(lines, "MS$FOCUSED_ION: PRECURSOR_M/Z 130.04990");
                 CollectionAssert.Contains(lines, "AC$CHROMATOGRAPHY: RETENTION_TIME 0.636 min");
@@ -190,6 +201,88 @@ namespace CompMs.Common.Parser.Tests
             finally {
                 Thread.CurrentThread.CurrentCulture = previous;
             }
+        }
+
+        [TestMethod()]
+        public void Accession_OfAnAlignmentSpotIsTheExportTimeAndTheSpotId() {
+            var before = DateTime.Now;
+            var handler = CreateHandler();
+            var after = DateTime.Now;
+            var reference = Pyroglutamic();
+
+            var lines = Lines(handler.BuildRecord(Peak(id: 42), reference, reference, reference));
+
+            var accession = Value(lines, "ACCESSION");
+            Assert.AreEqual(accession, handler.GetAccession(Peak(id: 42)));
+            var time = AccessionTime(accession, $"MSBNK-{Contributor}-MSDIAL", "00000042");
+            Assert.IsTrue(time >= before.AddTicks(-(before.Ticks % TimeSpan.TicksPerSecond)) && time <= after, $"{accession} is not the time the handler was created");
+            Assert.AreEqual(time.ToString("yyyy.MM.dd", CultureInfo.InvariantCulture), Value(lines, "DATE"));
+            Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(accession.Substring($"MSBNK-{Contributor}-".Length), @"\A[A-Z0-9_]{1,64}\z"));
+        }
+
+        [TestMethod()]
+        public void Accession_OfAPeakCarriesTheAnalysisFileId() {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+
+            // Peak IDs start at 0 in every analysis file: peak 42 of file 3 and peak 42 of file 12 are different peaks.
+            var first = handler.BuildRecord(Peak(id: 42), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched, analysisFileId: 3);
+            var second = handler.BuildRecord(Peak(id: 42), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched, analysisFileId: 12);
+            var spot = handler.BuildRecord(Peak(id: 42), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched);
+
+            var firstTime = AccessionTime(Value(Lines(first), "ACCESSION"), $"MSBNK-{Contributor}-MSDIAL", "F0003P00000042");
+            var secondTime = AccessionTime(Value(Lines(second), "ACCESSION"), $"MSBNK-{Contributor}-MSDIAL", "F0012P00000042");
+            var spotTime = AccessionTime(Value(Lines(spot), "ACCESSION"), $"MSBNK-{Contributor}-MSDIAL", "00000042");
+            Assert.AreEqual(firstTime, secondTime, "one handler, one time for all its records");
+            Assert.AreEqual(firstTime, spotTime);
+            Assert.AreEqual(first.FileName, first.Accession + ".txt");
+            Assert.AreEqual(first.Accession, handler.GetAccession(Peak(id: 42), 3));
+            Assert.AreEqual(3, new[] { first.Accession, second.Accession, spot.Accession, }.Distinct().Count());
+
+            var negative = handler.BuildRecord(Peak(id: 43), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched, analysisFileId: -1);
+            Assert.IsFalse(negative.IsSuccess);
+            StringAssert.Contains(negative.SkipReason, "analysis file ID");
+        }
+
+        [TestMethod()]
+        public void Accession_IsNeverIssuedTwiceByOneHandler() {
+            var handler = CreateHandler();
+            var reference = Pyroglutamic();
+            var empty = Pyroglutamic();
+            empty.Spectrum = new List<SpectrumPeak>();
+
+            // A refused record takes no accession.
+            Assert.IsFalse(handler.BuildRecord(Peak(id: 7), empty, empty, empty).IsSuccess);
+            var first = handler.BuildRecord(Peak(id: 7), reference, reference, reference);
+            Assert.IsTrue(first.IsSuccess, first.SkipReason);
+
+            var again = handler.BuildRecord(Peak(id: 7), reference, reference, reference);
+            Assert.IsFalse(again.IsSuccess);
+            Assert.AreEqual(MassBankRecordHandler.DuplicateAccessionReason, again.SkipReason);
+            Assert.AreEqual(first.Accession, again.Accession);
+            using (var stream = new MemoryStream()) {
+                Assert.IsFalse(handler.TryWriteRecord(stream, Peak(id: 7), reference, reference, reference, out var reason));
+                Assert.AreEqual(MassBankRecordHandler.DuplicateAccessionReason, reason);
+                Assert.AreEqual(0, stream.Length, "a refused record writes nothing");
+            }
+
+            // The same peak of another analysis file, and the same spot of a new export, are other records.
+            Assert.IsTrue(handler.BuildRecord(Peak(id: 7), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched, analysisFileId: 1).IsSuccess);
+            Assert.IsTrue(CreateHandler().BuildRecord(Peak(id: 7), reference, reference, reference).IsSuccess);
+        }
+
+        [TestMethod()]
+        public void Accession_SoftwareCodeMustLeaveRoomForTheRecordId() {
+            var handler = CreateHandler();
+            handler.Software = new string('S', MassBankRecordHandler.MaxSoftwareCodeLength);
+            Assert.AreEqual(0, handler.ValidateMetadata().Count, string.Join(Environment.NewLine, handler.ValidateMetadata()));
+            var reference = Pyroglutamic();
+            var result = handler.BuildRecord(new ChromatogramPeak(int.MaxValue, 130.0499021411, 1000d, new ChromXs(0.6358123779)), reference, reference, reference, MassBankAnnotationLevel.ReferenceMatched, analysisFileId: int.MaxValue);
+            Assert.IsTrue(result.IsSuccess, result.SkipReason);
+            Assert.AreEqual(MassBankRecordHandler.MaxRecordIdLength, result.Accession.Length - $"MSBNK-{Contributor}-".Length);
+
+            handler.Software += "S";
+            Assert.AreEqual(1, handler.ValidateMetadata().Count);
         }
 
         [TestMethod()]
@@ -628,21 +721,22 @@ namespace CompMs.Common.Parser.Tests
             var comments = lines.Where(l => l.StartsWith("COMMENT: ")).Select(l => l.Substring("COMMENT: ".Length)).ToArray();
             CollectionAssert.AreEqual(new[] { "First line", "Second line", new string('x', 600), new string('x', 100), }, comments);
 
+            // Each record of one handler needs a peak ID of its own: the handler never issues an accession twice.
             // Java's trim(), which the Validator's CONFIDENCE check uses, strips every control character too.
             handler.Comment = "CONFIDENCE\u0001\n\u001FCONFIDENCE\n\u0000\nA\u0007B\n" + new string('e', 599) + "\U0001F600tail";
-            lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+            lines = Lines(handler.BuildRecord(Peak(id: 1102), reference, reference, reference));
             comments = lines.Where(l => l.StartsWith("COMMENT: ")).Select(l => l.Substring("COMMENT: ".Length)).ToArray();
             CollectionAssert.AreEqual(new[] { "A B", new string('e', 599), "\U0001F600tail", }, comments);
 
             handler.CollisionEnergy = string.Empty;
             handler.Comment = string.Empty;
             handler.MsdialVersion = string.Empty;
-            lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+            lines = Lines(handler.BuildRecord(Peak(id: 1103), reference, reference, reference));
             Assert.IsFalse(lines.Any(l => l.Contains("COLLISION_ENERGY") || l.StartsWith("COMMENT") || l.StartsWith("MS$DATA_PROCESSING")));
 
             handler.Authors = "Tsugawa H,\tRIKEN\u0001";
             handler.Instrument = "\u0002Orbitrap";
-            lines = Lines(handler.BuildRecord(Peak(), reference, reference, reference));
+            lines = Lines(handler.BuildRecord(Peak(id: 1104), reference, reference, reference));
             Assert.AreEqual("Tsugawa H, RIKEN", Value(lines, "AUTHORS"));
             Assert.AreEqual("Orbitrap", Value(lines, "AC$INSTRUMENT"));
         }

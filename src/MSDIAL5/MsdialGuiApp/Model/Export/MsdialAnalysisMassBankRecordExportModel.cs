@@ -22,8 +22,10 @@ namespace CompMs.App.Msdial.Model.Export
     /// <remarks>
     /// Peaks are chosen by <see cref="MassBankExportPolicy"/>, as in the alignment export: by default only
     /// reference-matched peaks with at least one MS/MS peak; suggested annotations and unknowns are opt-in. The records
-    /// are built by <see cref="MassBankRecordHandler"/> from the project metadata, with one handler per export so that
-    /// DATE is the time of the export.
+    /// are built by <see cref="MassBankRecordHandler"/> from the project metadata, with one handler for all the files of
+    /// an export session, so that DATE and the time in every accession are the time of the export. Peak IDs start at 0
+    /// in every file, so each accession also carries the ID of the analysis file, and the handler refuses an accession
+    /// it has already issued: the records of one session never share an accession, whatever folder they are written to.
     /// </remarks>
     internal sealed class MsdialAnalysisMassBankRecordExportModel : BindableBase, IMsdialAnalysisExport, IMsdialAnalysisExportSession
     {
@@ -150,7 +152,7 @@ namespace CompMs.App.Msdial.Model.Export
                     continue;
                 }
                 // Built in memory first: a peak that cannot become a valid record leaves no file behind.
-                var result = handler.BuildRecord(feature, feature, msdec, feature, level);
+                var result = handler.BuildRecord(feature, feature, msdec, feature, level, analysisFileId: fileBeanModel.AnalysisFileId);
                 if (!result.IsSuccess) {
                     summary.AddSkipped($"refused: {result.SkipReason}");
                     continue;

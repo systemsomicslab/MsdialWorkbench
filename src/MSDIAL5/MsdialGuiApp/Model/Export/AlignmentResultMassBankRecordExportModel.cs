@@ -117,7 +117,9 @@ namespace CompMs.App.Msdial.Model.Export
             if (!IsSelected) {
                 return;
             }
-            // A new handler per export, so that DATE and the accession date are the time of this export.
+            // A new handler per export, so that DATE and the time in every accession are the time of this export: two
+            // alignment results, or the positive and the negative project of a study, exported on one day do not share
+            // accessions.
             var handler = CreateHandler();
             var problems = handler.ValidateMetadata();
             if (problems.Count > 0) {

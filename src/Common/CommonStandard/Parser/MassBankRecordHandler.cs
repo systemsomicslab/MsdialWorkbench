@@ -78,6 +78,19 @@ namespace CompMs.Common.Parser
     /// from the SMILES: the InChI and InChIKey come from one NCDK InChI generator, and the formula and mass from the
     /// structure that InChI describes, which is what the Validator compares them against. When there is no usable
     /// structure, SMILES and IUPAC are N/A and no InChIKey is written; the library InChIKey is never copied.
+    ///
+    /// ACCESSION is "{Identifier}-{ContributorIdentifier}-{record ID}", and the record ID has one of two layouts:
+    /// <list type="bullet">
+    /// <item>an alignment spot: {Software}{yyMMddHHmmss}{spot ID:D8}, e.g. MSBNK-RIKEN_IMS-MSDIAL26110614302500000042;</item>
+    /// <item>a peak of an analysis file (pass the file ID): {Software}{yyMMddHHmmss}F{file ID:D4}P{peak ID:D8},
+    /// e.g. MSBNK-RIKEN_IMS-MSDIAL261106143025F0003P00000042.</item>
+    /// </list>
+    /// yyMMddHHmmss is the local time the handler was created, in the Gregorian calendar, the same for every record of
+    /// the handler; create one handler per export (one per peak list session of several files). The time keeps two
+    /// exports apart (the positive and the negative project of a study, two alignment results), and the file ID keeps
+    /// apart the peaks of different files, whose peak IDs all start at 0. F and P mark where the file ID and the peak
+    /// ID start, so the record ID still reads unambiguously when an ID is wider than its padding. A handler never
+    /// issues an accession twice: a record whose accession it has already given to another is refused.
     /// </remarks>
     public sealed class MassBankRecordHandler
     {
@@ -98,6 +111,23 @@ namespace CompMs.Common.Parser
         public const string NoPeaksReason = "no MS/MS peaks";
 
         /// <summary>
+        /// The reason <see cref="BuildRecord"/> gives for a record whose accession this handler has already issued; a set
+        /// of records with one accession twice fails the Validator as a whole.
+        /// </summary>
+        public const string DuplicateAccessionReason = "its accession was already given to another record of this export";
+
+        /// <summary>The longest record ID (the third block of ACCESSION) the MassBank record format accepts.</summary>
+        public const int MaxRecordIdLength = 64;
+
+        /// <summary>
+        /// The longest <see cref="Software"/> code that leaves room in the record ID for the time and the widest IDs:
+        /// 12 digits of time, F, P and two IDs of up to 10 digits each.
+        /// </summary>
+        public const int MaxSoftwareCodeLength = MaxRecordIdLength - 12 - 2 - 10 - 10;
+
+        private const string AccessionTimeFormat = "yyMMddHHmmss";
+
+        /// <summary>
         /// The longest AC$INSTRUMENT_TYPE that still leaves RECORD_TITLE ("name; type; MSn") within
         /// <see cref="MaxRecordTitleLength"/> for a one-character name.
         /// </summary>
@@ -113,6 +143,7 @@ namespace CompMs.Common.Parser
 
         private readonly Func<string, string> _splashCalculator;
         private readonly DateTime _now;
+        private readonly HashSet<string> _issuedAccessions = new HashSet<string>(StringComparer.Ordinal);
 
         /// <param name="ionMode">The polarity used when a spot's adduct does not tell its own.</param>
         /// <param name="instrumentType">AC$INSTRUMENT_TYPE, e.g. "LC-ESI-QTOF".</param>
@@ -124,7 +155,8 @@ namespace CompMs.Common.Parser
             IonMode = ionMode;
             InstrumentType = instrumentType ?? throw new ArgumentNullException(nameof(instrumentType));
             _splashCalculator = splashCalculator ?? throw new ArgumentNullException(nameof(splashCalculator));
-            // The local date: DATE is the day the person exported, which in JST before 09:00 is not the UTC date.
+            // The local time: DATE is the day the person exported, which in JST before 09:00 is not the UTC date, and the
+            // accession carries the same time to the second.
             _now = DateTime.Now;
         }
 
@@ -167,12 +199,24 @@ namespace CompMs.Common.Parser
         /// <summary>MS_TYPE: MS for MS1, MS2 to MS5, MSn beyond.</summary>
         public string MSType => _msLevel == 1 ? "MS" : _msLevel <= 5 ? "MS" + _msLevel.ToString(INVARIANT) : "MSn";
 
-        public string GetAccession(IChromatogramPeak peak) {
+        /// <summary>
+        /// The ACCESSION of the record of <paramref name="peak"/>: an alignment spot's when
+        /// <paramref name="analysisFileId"/> is null, otherwise that of a peak of the analysis file with this ID. See the
+        /// remarks of <see cref="MassBankRecordHandler"/> for the layouts.
+        /// </summary>
+        public string GetAccession(IChromatogramPeak peak, int? analysisFileId = null) {
             if (peak is null) {
                 throw new ArgumentNullException(nameof(peak));
             }
+            return $"{Identifier}-{ContributorIdentifier}-{GetRecordId(peak.ID, analysisFileId)}";
+        }
+
+        private string GetRecordId(int peakId, int? analysisFileId) {
             // The invariant culture formats dates with the Gregorian calendar; th-TH would otherwise give 2569.
-            return $"{Identifier}-{ContributorIdentifier}-{Software}{_now.ToString("yyMMdd", INVARIANT)}{peak.ID.ToString("D8", INVARIANT)}";
+            var time = _now.ToString(AccessionTimeFormat, INVARIANT);
+            return analysisFileId.HasValue
+                ? $"{Software}{time}F{analysisFileId.Value.ToString("D4", INVARIANT)}P{peakId.ToString("D8", INVARIANT)}"
+                : $"{Software}{time}{peakId.ToString("D8", INVARIANT)}";
         }
 
         /// <summary>
@@ -225,6 +269,9 @@ namespace CompMs.Common.Parser
             if (string.IsNullOrEmpty(Software) || !Software.All(c => (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')) {
                 problems.Add($"Accession software code \"{Software}\" is not valid.");
             }
+            else if (Software.Length > MaxSoftwareCodeLength) {
+                problems.Add($"Accession software code \"{Software}\" is longer than {MaxSoftwareCodeLength.ToString(INVARIANT)} characters.");
+            }
             if (!string.IsNullOrEmpty(MsdialVersion) && MsdialVersion.IndexOfAny(LINE_BREAKS) >= 0) {
                 problems.Add("MS-DIAL version must be on one line.");
             }
@@ -266,7 +313,15 @@ namespace CompMs.Common.Parser
         /// <summary>
         /// Builds the record in memory. Nothing is written; a refused record carries its reason.
         /// </summary>
-        public MassBankRecordResult BuildRecord(IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel = MassBankAnnotationLevel.Unspecified) {
+        /// <param name="analysisFileId">
+        /// The ID of the analysis file <paramref name="peak"/> belongs to, for a record of a peak list; null for an
+        /// alignment spot. It selects the accession layout; see the remarks of <see cref="MassBankRecordHandler"/>.
+        /// </param>
+        /// <remarks>
+        /// A record that is built takes its accession for good: a later record of this handler with the same accession
+        /// is refused with <see cref="DuplicateAccessionReason"/>. A refused record takes nothing.
+        /// </remarks>
+        public MassBankRecordResult BuildRecord(IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel = MassBankAnnotationLevel.Unspecified, int? analysisFileId = null) {
             if (peak is null) {
                 throw new ArgumentNullException(nameof(peak));
             }
@@ -280,7 +335,7 @@ namespace CompMs.Common.Parser
                 throw new ArgumentNullException(nameof(ionProperty));
             }
 
-            var accession = GetAccession(peak);
+            var accession = GetAccession(peak, analysisFileId);
             var notes = new List<string>();
             MassBankRecordResult Refuse(string why) => new MassBankRecordResult(accession, null, why, notes);
 
@@ -290,6 +345,12 @@ namespace CompMs.Common.Parser
             }
             if (peak.ID < 0) {
                 return Refuse($"the peak ID {peak.ID.ToString(INVARIANT)} cannot form an accession");
+            }
+            if (analysisFileId < 0) {
+                return Refuse($"the analysis file ID {analysisFileId.Value.ToString(INVARIANT)} cannot form an accession");
+            }
+            if (IsIssued(accession)) {
+                return Refuse(DuplicateAccessionReason);
             }
 
             // Peaks: sorted, merged where they print the same, and only what PK$PEAK prints feeds SPLASH.
@@ -489,7 +550,24 @@ namespace CompMs.Common.Parser
             }
             Line("//");
 
+            // Taken only now that the record is complete, and checked again: the set a handler writes never holds an
+            // accession twice.
+            if (!TryIssue(accession)) {
+                return Refuse(DuplicateAccessionReason);
+            }
             return new MassBankRecordResult(accession, record.ToString(), null, notes);
+        }
+
+        private bool IsIssued(string accession) {
+            lock (_issuedAccessions) {
+                return _issuedAccessions.Contains(accession);
+            }
+        }
+
+        private bool TryIssue(string accession) {
+            lock (_issuedAccessions) {
+                return _issuedAccessions.Add(accession);
+            }
         }
 
         /// <summary>

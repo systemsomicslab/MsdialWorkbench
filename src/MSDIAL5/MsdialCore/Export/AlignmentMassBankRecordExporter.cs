@@ -13,7 +13,8 @@ namespace CompMs.MsdialCore.Export
     /// MassBank records of alignment spots, with the project metadata, as the GUI's alignment MassBank export writes them.
     /// </summary>
     /// <remarks>
-    /// Create one per export, so that DATE and the accession date are the export time. Check
+    /// Create one per export, so that DATE and the time in every accession are the export time; the accessions follow
+    /// the alignment layout of <see cref="MassBankRecordHandler"/>, {Software}{yyMMddHHmmss}{spot ID:D8}. Check
     /// <see cref="ValidateMetadata"/> before exporting and refuse to export while it reports anything.
     ///
     /// This is not an <see cref="IAlignmentSpectraExporter"/>: that contract writes every spot into a stream its caller

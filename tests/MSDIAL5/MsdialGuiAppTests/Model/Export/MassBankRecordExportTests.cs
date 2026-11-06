@@ -403,6 +403,42 @@ namespace CompMs.App.Msdial.Model.Export.Tests
         }
 
         [TestMethod()]
+        public void SingleFile_SamplesOfOneExportNeverShareAnAccession() {
+            // Three samples whose peaks share their IDs (0 to 3), exported together as Export > Peak list result does.
+            var broker = new MessageBroker();
+            var messages = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(messages.Add);
+            var files = new[] { SaveSingleFile("sample_a", 0), SaveSingleFile("sample_b", 1), SaveSingleFile("sample_c", 2), };
+            var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), broker)
+            {
+                ShouldExport = true,
+                ContributorID = Contributor,
+                IncludeSuggested = true,
+                IncludeUnknowns = true,
+            };
+            var collection = new AnalysisFileBeanModelCollection(files);
+            _disposables.Add(collection);
+            var export = new AnalysisResultExportModel(collection, _output, broker, model);
+            export.Selects(files);
+
+            export.Export();
+
+            var records = files.SelectMany(file => Directory.GetFiles(Path.Combine(_output, file.AnalysisFileName), "*.txt")).ToList();
+            Assert.AreEqual(9, records.Count, "three records per sample, each in the sample's own folder");
+            var accessions = records.Select(record => File.ReadLines(record).First()).ToList();
+            CollectionAssert.AllItemsAreUnique(accessions, "the Validator rejects the whole set when two records share an accession");
+            for (var i = 0; i < records.Count; i++) {
+                Assert.AreEqual("ACCESSION: " + Path.GetFileNameWithoutExtension(records[i]), accessions[i], "the file is named after its accession");
+            }
+            foreach (var file in files) {
+                var folder = Directory.GetFiles(Path.Combine(_output, file.AnalysisFileName), "*.txt").Select(Path.GetFileNameWithoutExtension).ToList();
+                Assert.IsTrue(folder.All(accession => accession.Contains($"F{file.AnalysisFileId:D4}P")), string.Join(", ", folder));
+            }
+            StringAssert.Contains(messages.Single(m => m.Caption == "MassBank export").Content, "9 MassBank records were written");
+        }
+
+        [TestMethod()]
         public void SingleFile_IsRefusedWithoutAContributorId() {
             var broker = new MessageBroker();
             var messages = new List<MessageRequest>();
@@ -448,13 +484,15 @@ namespace CompMs.App.Msdial.Model.Export.Tests
         }
 
         // One sample whose peak list has an unannotated peak with two MS/MS peaks, an unannotated one with none, a
-        // reference-matched peak and a low-score suggestion, both with MS/MS peaks.
-        private AnalysisFileBeanModel SaveSingleFile() {
+        // reference-matched peak and a low-score suggestion, both with MS/MS peaks. Its peak IDs are 0 to 3, as those of
+        // every sample saved here: MS-DIAL numbers the peaks of each file from 0.
+        private AnalysisFileBeanModel SaveSingleFile(string sampleName = "sample", int fileId = 0) {
             var file = AnalysisFileBeanModelTestHelper.Create();
-            file.AnalysisFileName = "sample";
-            file.AnalysisFilePath = Path.Combine(_folder, "sample.mzML");
-            file.File.PeakAreaBeanInformationFilePath = Path.Combine(_folder, "sample.pai");
-            file.File.DeconvolutionFilePath = Path.Combine(_folder, "sample.dcl");
+            file.AnalysisFileId = fileId;
+            file.AnalysisFileName = sampleName;
+            file.AnalysisFilePath = Path.Combine(_folder, sampleName + ".mzML");
+            file.File.PeakAreaBeanInformationFilePath = Path.Combine(_folder, sampleName + ".pai");
+            file.File.DeconvolutionFilePath = Path.Combine(_folder, sampleName + ".dcl");
             var features = Enumerable.Range(0, 2).Select(id => {
                 var feature = new ChromatogramPeakFeature
                 {
