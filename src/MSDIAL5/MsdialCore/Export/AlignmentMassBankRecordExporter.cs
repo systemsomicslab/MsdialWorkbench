@@ -15,8 +15,13 @@ namespace CompMs.MsdialCore.Export
     /// <remarks>
     /// Create one per export, so that DATE and the accession date are the export time. Check
     /// <see cref="ValidateMetadata"/> before exporting and refuse to export while it reports anything.
+    ///
+    /// This is not an <see cref="IAlignmentSpectraExporter"/>: that contract writes every spot into a stream its caller
+    /// has already opened (SingleAlignmentSpotExporter opens the file first), so a spot that cannot become a valid
+    /// record would leave an empty file behind, and it has no way to pass the annotation level, so suggestions would
+    /// bypass the export policy. Use <see cref="TryExport"/>, which writes nothing for such a spot and says why.
     /// </remarks>
-    internal sealed class AlignmentMassBankRecordExporter : IAlignmentSpectraExporter
+    internal sealed class AlignmentMassBankRecordExporter
     {
         private readonly MassBankRecordHandler _handler;
 
@@ -46,14 +51,6 @@ namespace CompMs.MsdialCore.Export
         /// <summary>Writes the record of <paramref name="spot"/>, or nothing, returning false with the reason.</summary>
         public bool TryExport(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult, MassBankAnnotationLevel annotationLevel, out string reason) {
             return _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, annotationLevel, out reason);
-        }
-
-        /// <summary>
-        /// Writes the record of <paramref name="spot"/>, or nothing for a spot that cannot become a valid record, so that
-        /// one such spot does not stop the export of the others. <see cref="TryExport"/> also says why.
-        /// </summary>
-        void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
-            _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, out _);
         }
     }
 }
