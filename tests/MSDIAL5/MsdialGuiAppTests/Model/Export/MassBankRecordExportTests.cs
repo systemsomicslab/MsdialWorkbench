@@ -439,6 +439,49 @@ namespace CompMs.App.Msdial.Model.Export.Tests
         }
 
         [TestMethod()]
+        public void SingleFile_ReportsWhatWasWrittenWhenAnotherExportFails() {
+            var broker = new MessageBroker();
+            var messages = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(messages.Add);
+            var files = new[] { SaveSingleFile("sample_a", 0), SaveSingleFile("sample_b", 1), SaveSingleFile("sample_c", 2), };
+            var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), broker)
+            {
+                ShouldExport = true,
+                ContributorID = Contributor,
+            };
+            var collection = new AnalysisFileBeanModelCollection(files);
+            _disposables.Add(collection);
+            // MassBank, then an export that fails on the second sample, after MassBank has written that sample's record.
+            var export = new AnalysisResultExportModel(collection, _output, broker, model, new FailingExport("sample_b"));
+            export.Selects(files);
+
+            export.Export();
+
+            Assert.AreEqual(1, Directory.GetFiles(Path.Combine(_output, "sample_a"), "*.txt").Length);
+            Assert.AreEqual(1, Directory.GetFiles(Path.Combine(_output, "sample_b"), "*.txt").Length);
+            Assert.IsFalse(Directory.Exists(Path.Combine(_output, "sample_c")), "the export stops at the failure");
+            CollectionAssert.AreEqual(new[] { "Export failed", "MassBank export", }, messages.Select(m => m.Caption).ToArray());
+            StringAssert.Contains(messages[1].Content, "2 MassBank records were written");
+            Assert.IsNull(((IMsdialAnalysisExportSession)model).EndExport(_output), "the session was ended, so nothing of it lingers");
+        }
+
+        private sealed class FailingExport : IMsdialAnalysisExport
+        {
+            private readonly string _failOn;
+
+            public FailingExport(string failOn) {
+                _failOn = failOn;
+            }
+
+            public void Export(string destinationFolder, AnalysisFileBeanModel fileBeanModel) {
+                if (fileBeanModel.AnalysisFileName == _failOn) {
+                    throw new IOException($"{fileBeanModel.AnalysisFileName} could not be written.");
+                }
+            }
+        }
+
+        [TestMethod()]
         public void SingleFile_NamesALipidAtTheLevelItsMatchSupports() {
             // CH$NAME takes the chain verdict of the peak's match result, as the other exports' names do.
             var file = SaveLipidFile();

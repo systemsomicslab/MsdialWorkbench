@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Notifiers;
@@ -67,11 +68,13 @@ namespace CompMs.App.Msdial.Model.Export
 
         public void Export() {
             var publisher = new TaskProgressPublisher(_broker, "Exporting analysis result");
+            var begun = new List<IMsdialAnalysisExportSession>();
+            var reports = new List<MessageRequest>();
             using (publisher.Start()) {
                 try {
-                    var sessions = AnalysisExports.OfType<IMsdialAnalysisExportSession>().ToArray();
-                    foreach (var session in sessions) {
+                    foreach (var session in AnalysisExports.OfType<IMsdialAnalysisExportSession>()) {
                         session.BeginExport();
+                        begun.Add(session);
                     }
                     double all = SelectedFiles.Count;
                     var counter = 0;
@@ -81,16 +84,30 @@ namespace CompMs.App.Msdial.Model.Export
                             exporter.Export(DestinationFolder, file);
                         }
                     }
-                    foreach (var session in sessions) {
-                        var report = session.EndExport(DestinationFolder);
-                        if (report is not null) {
-                            _broker.Publish(report);
-                        }
-                    }
                 }
                 catch (Exception e) {
                     ExportFailure.Report(_broker, e);
                 }
+                finally {
+                    // Every session that began is ended, also when an exporter threw on a later file: what was already
+                    // written is reported (MassBank records of the earlier files), and no session keeps its state.
+                    foreach (var session in begun) {
+                        try {
+                            var report = session.EndExport(DestinationFolder);
+                            if (report is not null) {
+                                reports.Add(report);
+                            }
+                        }
+                        catch (Exception e) {
+                            ExportFailure.Report(_broker, e);
+                        }
+                    }
+                }
+            }
+            // The sessions' reports come after the progress has ended, as in the alignment export: a message box shown
+            // in the middle would hold the progress entry up until it was closed.
+            foreach (var report in reports) {
+                _broker.Publish(report);
             }
         }
     }
