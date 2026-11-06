@@ -1,3 +1,4 @@
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings;
@@ -79,6 +80,45 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             Assert.AreEqual("EB", composer.Analyzer.Value?.Analyzer);
             Assert.IsFalse(composer.Analyzers.Any(p => p.Analyzer == "QQTOF"), "one entered analyzer at a time");
             Assert.AreEqual(MassBankVocabulary.AnalyzerPresets.Count + 1, composer.Analyzers.Count);
+        }
+
+        [TestMethod]
+        public void TheEnteredAnalyzerLeavesTheListWithItsValue() {
+            var instrumentType = new ReactivePropertySlim<string>("LC-ESI-QQTOF");
+            using var composer = new MassBankInstrumentTypeViewModel(instrumentType, Observable.Return(false));
+            Assert.AreEqual(MassBankVocabulary.AnalyzerPresets.Count + 1, composer.Analyzers.Count);
+
+            composer.Analyzer.Value = composer.Analyzers.Single(p => p.Analyzer == "QTOF");
+            Assert.AreEqual("LC-ESI-QTOF", instrumentType.Value);
+            CollectionAssert.AreEqual(MassBankVocabulary.AnalyzerPresets.ToArray(), composer.Analyzers.ToArray(), "a preset was chosen");
+
+            instrumentType.Value = "LC-ESI-QQTOF";
+            Assert.AreEqual(MassBankInstrumentTypeViewModel.AsEntered, composer.Analyzer.Value?.Description);
+            instrumentType.Value = "LC-MS/MS";
+            Assert.IsNull(composer.Analyzer.Value);
+            CollectionAssert.AreEqual(MassBankVocabulary.AnalyzerPresets.ToArray(), composer.Analyzers.ToArray(), "the value no longer parses");
+        }
+
+        [TestMethod]
+        public void AValueThatDoesNotParseStartsFromTheDefaultSeparation() {
+            var instrumentType = new ReactivePropertySlim<string>("LC-MS/MS");
+            using var composer = new MassBankInstrumentTypeViewModel(instrumentType, Observable.Return(true), "LC");
+
+            Assert.AreEqual("LC", composer.Separation.Value);
+            Assert.AreEqual("LC-MS/MS", instrumentType.Value, "a preselected separation writes nothing");
+            composer.Ionisation.Value = "ESI";
+            composer.Analyzer.Value = composer.Analyzers.Single(p => p.Analyzer == "QTOF");
+            Assert.AreEqual("LC-ESI-QTOF", instrumentType.Value);
+
+            instrumentType.Value = "ESI-QTOF";
+            Assert.AreEqual(string.Empty, composer.Separation.Value, "a value that parses keeps its own separation");
+
+            Assert.AreEqual("LC", MassBankInstrumentTypeViewModel.SeparationFor(MachineCategory.LCMS));
+            Assert.AreEqual("LC", MassBankInstrumentTypeViewModel.SeparationFor(MachineCategory.LCIMMS));
+            Assert.AreEqual("GC", MassBankInstrumentTypeViewModel.SeparationFor(MachineCategory.GCMS));
+            Assert.AreEqual(string.Empty, MassBankInstrumentTypeViewModel.SeparationFor(MachineCategory.IFMS));
+            Assert.AreEqual(string.Empty, MassBankInstrumentTypeViewModel.SeparationFor(MachineCategory.IMMS));
+            Assert.ThrowsException<System.ArgumentException>(() => new MassBankInstrumentTypeViewModel(instrumentType, Observable.Return(false), "HPLC"));
         }
 
         [TestMethod]

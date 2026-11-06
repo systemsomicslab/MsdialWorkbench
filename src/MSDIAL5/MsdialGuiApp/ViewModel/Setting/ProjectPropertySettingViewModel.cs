@@ -49,7 +49,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             InstrumentType = studyContext.ToReactivePropertyAsSynchronized(m => m.InstrumentType)
                 .SetValidateNotifyError(v => IsConstrained ? MassBankInstrumentTypeViewModel.Validate(v) : null)
                 .AddTo(Disposables);
-            InstrumentTypeComposer = new MassBankInstrumentTypeViewModel(InstrumentType, ConstrainToMassBankFormat).AddTo(Disposables);
+            InstrumentTypeComposer = new MassBankInstrumentTypeViewModel(
+                InstrumentType,
+                ConstrainToMassBankFormat,
+                MassBankInstrumentTypeViewModel.SeparationFor(studyContext.MachineCategory)).AddTo(Disposables);
             CollisionEnergy = studyContext.ToReactivePropertyAsSynchronized(m => m.CollisionEnergy)
                 .SetValidateNotifyError(v => IsConstrained && !string.IsNullOrEmpty(v) && !MassBankVocabulary.IsValidCollisionEnergy(v) ? CollisionEnergyInvalid : null)
                 .AddTo(Disposables);

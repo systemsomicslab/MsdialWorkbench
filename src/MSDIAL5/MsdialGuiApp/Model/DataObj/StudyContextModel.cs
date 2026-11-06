@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.Enum;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using System;
 
@@ -73,6 +74,9 @@ namespace CompMs.App.Msdial.Model.DataObj
             set => SetProperty(ref _massBankContributorId, value ?? string.Empty);
         }
         private string _massBankContributorId = string.Empty;
+
+        /// <summary>The kind of instrument the project was created for; it does not change after the project is created.</summary>
+        public MachineCategory MachineCategory => _parameter.MachineCategory;
 
         public void Commit() {
             _parameter.Authors = _authors;

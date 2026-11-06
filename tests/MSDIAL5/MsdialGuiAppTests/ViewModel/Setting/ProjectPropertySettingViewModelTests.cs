@@ -1,4 +1,5 @@
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -91,6 +92,32 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             Assert.IsNull(vm.InstrumentTypeComposer.Analyzer.Value);
             Assert.AreEqual("CC-BY", vm.License.Value);
             Assert.IsNull(vm.SelectedLicense.Value);
+        }
+
+        [TestMethod]
+        public void TheSeparationStartsFromTheProjectsMachineCategory() {
+            var lcms = FreeTextProject();
+            lcms.MachineCategory = MachineCategory.LCMS;
+            using (var vm = new ProjectPropertySettingViewModel(new StudyContextModel(lcms))) {
+                Assert.AreEqual("LC", vm.InstrumentTypeComposer.Separation.Value);
+                Assert.AreEqual("LC-MS/MS", vm.InstrumentType.Value, "a preselected separation writes nothing");
+            }
+
+            var gcms = FreeTextProject();
+            gcms.MachineCategory = MachineCategory.GCMS;
+            using (var vm = new ProjectPropertySettingViewModel(new StudyContextModel(gcms))) {
+                Assert.AreEqual("GC", vm.InstrumentTypeComposer.Separation.Value);
+                vm.ConstrainToMassBankFormat.Value = true;
+                vm.InstrumentTypeComposer.Ionisation.Value = "EI";
+                vm.InstrumentTypeComposer.Analyzer.Value = Preset(vm.InstrumentTypeComposer, "TOF");
+                Assert.AreEqual("GC-EI-TOF", vm.InstrumentType.Value);
+            }
+
+            var infusion = FreeTextProject();
+            infusion.MachineCategory = MachineCategory.IFMS;
+            using (var vm = new ProjectPropertySettingViewModel(new StudyContextModel(infusion))) {
+                Assert.AreEqual(string.Empty, vm.InstrumentTypeComposer.Separation.Value);
+            }
         }
 
         [TestMethod]

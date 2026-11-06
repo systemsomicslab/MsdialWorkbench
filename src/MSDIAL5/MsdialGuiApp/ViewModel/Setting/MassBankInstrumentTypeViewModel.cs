@@ -1,4 +1,5 @@
 using CompMs.App.Msdial.Utility;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -41,6 +42,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     /// <paramref name="isRequired"/> decides whether a missing ionisation or analyzer is a validation error: true
     /// in Project property setting when the project is constrained to MassBank format, never in the project
     /// wizard, where the choices only help to fill the text box.
+    ///
+    /// <paramref name="defaultSeparation"/> is the separation preselected when the value does not parse, e.g. "LC"
+    /// for an LC-MS project. It is only a starting choice: nothing is written until an ionisation and an analyzer
+    /// are chosen, and the preview shows the result first.
     /// </remarks>
     internal sealed class MassBankInstrumentTypeViewModel : ViewModelBase
     {
@@ -54,14 +59,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .ToArray();
 
         private readonly IReactiveProperty<string> _instrumentType;
+        private readonly string _defaultSeparation;
         private MassBankAnalyzerPreset? _enteredAnalyzer;
         private bool _synchronizing;
 
-        public MassBankInstrumentTypeViewModel(IReactiveProperty<string> instrumentType, IObservable<bool> isRequired) {
+        public MassBankInstrumentTypeViewModel(IReactiveProperty<string> instrumentType, IObservable<bool> isRequired, string defaultSeparation = "") {
             _instrumentType = instrumentType ?? throw new ArgumentNullException(nameof(instrumentType));
             if (isRequired is null) {
                 throw new ArgumentNullException(nameof(isRequired));
             }
+            defaultSeparation ??= string.Empty;
+            if (defaultSeparation.Length > 0 && !MassBankVocabulary.Separations.Contains(defaultSeparation)) {
+                throw new ArgumentException($"\"{defaultSeparation}\" is not a MassBank separation.", nameof(defaultSeparation));
+            }
+            _defaultSeparation = defaultSeparation;
 
             Analyzers = new ObservableCollection<MassBankAnalyzerPreset>(MassBankVocabulary.AnalyzerPresets);
             IsRequired = isRequired.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -133,6 +144,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 : $"\"{value}\" is not a MassBank instrument type. Choose the separation, ionisation and analyzer.";
         }
 
+        /// <summary>
+        /// The separation to preselect for a project of <paramref name="machineCategory"/>: "LC" for LC-MS and LC-IM-MS,
+        /// "GC" for GC-MS, none for infusion, imaging and ion mobility without chromatography. CE-MS projects are LC-MS
+        /// projects in MS-DIAL, so "CE" has to be chosen by hand.
+        /// </summary>
+        public static string SeparationFor(MachineCategory machineCategory) {
+            switch (machineCategory) {
+                case MachineCategory.LCMS:
+                case MachineCategory.LCIMMS:
+                    return "LC";
+                case MachineCategory.GCMS:
+                    return "GC";
+                default:
+                    return string.Empty;
+            }
+        }
+
         private static string DescribeValue(string? value) {
             return Validate(value) ?? $"AC$INSTRUMENT_TYPE: {value}";
         }
@@ -146,13 +174,23 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     Analyzer.Value = FindOrAddAnalyzer(analyzer);
                 }
                 else {
-                    Separation.Value = string.Empty;
+                    Separation.Value = _defaultSeparation;
                     Ionisation.Value = null;
                     Analyzer.Value = null;
                 }
+                DropEnteredAnalyzerUnlessSelected();
             }
             finally {
                 _synchronizing = false;
+            }
+        }
+
+        // The "as entered" entry belongs to the value it was parsed from; once the value has another analyzer, or
+        // none, it leaves the list.
+        private void DropEnteredAnalyzerUnlessSelected() {
+            if (_enteredAnalyzer is not null && !ReferenceEquals(Analyzer.Value, _enteredAnalyzer)) {
+                Analyzers.Remove(_enteredAnalyzer);
+                _enteredAnalyzer = null;
             }
         }
 
