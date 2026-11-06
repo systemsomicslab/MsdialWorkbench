@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
     {
         internal const string Header = "MassBank records cannot be exported until these are set in Option > Project property setting:";
 
-        internal const string ConstrainSuggestion = "Turn on \"Constrain to MassBank format\" there to choose the instrument type and the licence from MassBank's lists and to have every value checked before it is saved.";
+        internal const string ConstrainSuggestion = "Turn on \"Constrain to MassBank format\" there to choose the instrument type and the license from MassBank's lists and to have every value checked before it is saved.";
 
         /// <summary>
         /// The problems as a list under <see cref="Header"/>, followed by <see cref="ConstrainSuggestion"/> when the

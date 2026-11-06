@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     /// </remarks>
     internal sealed class MassBankInstrumentTypeViewModel : ViewModelBase
     {
-        internal const string IonisationRequired = "Choose the ionisation.";
+        internal const string IonisationRequired = "Choose the ionization.";
         internal const string AnalyzerRequired = "Choose the analyzer.";
         internal const string AsEntered = "as entered";
 
@@ -140,8 +140,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 return null;
             }
             return string.IsNullOrEmpty(value)
-                ? "Choose the ionisation and the analyzer (the separation may be none)."
-                : $"\"{value}\" is not a MassBank instrument type. Choose the separation, ionisation and analyzer.";
+                ? "Choose the ionization and the analyzer (the separation may be none)."
+                : $"\"{value}\" is not a MassBank instrument type. Choose the separation, ionization and analyzer.";
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         internal const string AuthorsRequired = "Enter the authors, on one line.";
         internal const string InstrumentRequired = "Enter the instrument, on one line, e.g. TripleTOF 6600, SCIEX.";
-        internal const string LicenseRequired = "Choose the licence.";
+        internal const string LicenseRequired = "Choose the license.";
         internal const string CollisionEnergyInvalid = "Write the collision energy on one line, without leading or trailing spaces, or leave it empty.";
         internal const string ContributorIdInvalid = "MassBank contributor IDs are 1 to 32 of A-Z, 0-9 and _. Leave it empty until MassBank has assigned one.";
 
@@ -131,7 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private static string DescribeLicenseProblem(string? license) {
             return string.IsNullOrEmpty(license)
                 ? LicenseRequired
-                : $"\"{license}\" is not a licence MassBank accepts. Choose one from the list.";
+                : $"\"{license}\" is not a license MassBank accepts. Choose one from the list.";
         }
 
         private void Finish() {
