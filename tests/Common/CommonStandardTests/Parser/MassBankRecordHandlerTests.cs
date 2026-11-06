@@ -167,9 +167,11 @@ namespace CompMs.Common.Parser.Tests
 
             var result = handler.BuildRecord(Peak(), reference, reference, reference);
 
-            if (!result.IsSuccess) {
-                StringAssert.Contains(result.SkipReason, "SPLASH");
-            }
+            // On .NET Framework, which this project targets, "F2" prints 15 significant digits, so the printed intensity
+            // rounds above double.MaxValue and cannot be read back.
+            Assert.IsFalse(result.IsSuccess, "the record must be refused, not built from an intensity its SPLASH cannot read");
+            StringAssert.Contains(result.SkipReason, "SPLASH");
+            Assert.IsNull(result.Text);
         }
 
         [DataTestMethod()]
