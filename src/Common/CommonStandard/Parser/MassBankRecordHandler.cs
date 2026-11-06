@@ -36,6 +36,46 @@ namespace CompMs.Common.Parser
     }
 
     /// <summary>
+    /// The molecular formula assigned to one product ion peak, for PK$ANNOTATION.
+    /// </summary>
+    public sealed class MassBankPeakAnnotation
+    {
+        /// <param name="mz">The m/z of the peak as the spectrum holds it; it is matched to the peak that PK$PEAK prints for it.</param>
+        /// <param name="formula">The elemental composition of the ion, without its charge, e.g. "C5H5" for C5H5+.</param>
+        /// <param name="charge">The charge of the ion, +1 or -1.</param>
+        public MassBankPeakAnnotation(double mz, string formula, int charge) {
+            Mz = mz;
+            Formula = formula ?? string.Empty;
+            Charge = charge;
+        }
+
+        public double Mz { get; }
+
+        /// <summary>The elemental composition of the ion, without its charge.</summary>
+        public string Formula { get; }
+
+        public int Charge { get; }
+    }
+
+    /// <summary>
+    /// The product ion formulas a formula assignment gave the peaks of a spectrum, under one candidate formula of the
+    /// precursor, for PK$ANNOTATION.
+    /// </summary>
+    public sealed class MassBankFormulaAnnotation
+    {
+        /// <param name="precursorFormula">The neutral formula of the compound the product ion formulas were assigned under.</param>
+        /// <param name="peaks">The product ion formulas.</param>
+        public MassBankFormulaAnnotation(string precursorFormula, IReadOnlyList<MassBankPeakAnnotation> peaks) {
+            PrecursorFormula = precursorFormula ?? string.Empty;
+            Peaks = peaks ?? Array.Empty<MassBankPeakAnnotation>();
+        }
+
+        public string PrecursorFormula { get; }
+
+        public IReadOnlyList<MassBankPeakAnnotation> Peaks { get; }
+    }
+
+    /// <summary>
     /// A record built in memory: its text when it could be built, otherwise why it was not.
     /// </summary>
     public sealed class MassBankRecordResult
@@ -183,8 +223,17 @@ namespace CompMs.Common.Parser
         /// <summary>Free text written as one COMMENT line per text line; empty lines are skipped.</summary>
         public string Comment { get; set; } = string.Empty;
 
-        /// <summary>The MS-DIAL version, written as "MS$DATA_PROCESSING: WHOLE MS-DIAL &lt;version&gt;" when not empty.</summary>
+        /// <summary>
+        /// The version of <see cref="ProcessingSoftware"/>, written as "MS$DATA_PROCESSING: WHOLE MS-DIAL &lt;version&gt;"
+        /// (or the program <see cref="ProcessingSoftware"/> names) when not empty.
+        /// </summary>
         public string MsdialVersion { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The software MS$DATA_PROCESSING: WHOLE names before <see cref="MsdialVersion"/>; MS-DIAL unless another program,
+        /// such as MS-FINDER, writes the records.
+        /// </summary>
+        public string ProcessingSoftware { get; set; } = "MS-DIAL";
 
         public IonMode IonMode { get; set; }
 
@@ -275,7 +324,10 @@ namespace CompMs.Common.Parser
                 problems.Add($"Accession software code \"{Software}\" is longer than {MaxSoftwareCodeLength.ToString(INVARIANT)} characters.");
             }
             if (!string.IsNullOrEmpty(MsdialVersion) && MsdialVersion.IndexOfAny(LINE_BREAKS) >= 0) {
-                problems.Add("MS-DIAL version must be on one line.");
+                problems.Add($"{ProcessingSoftware} version must be on one line.");
+            }
+            if (!string.IsNullOrWhiteSpace(MsdialVersion) && (string.IsNullOrWhiteSpace(ProcessingSoftware) || ProcessingSoftware.IndexOfAny(LINE_BREAKS) >= 0)) {
+                problems.Add("The processing software must be named, on one line.");
             }
             return problems;
         }
@@ -326,6 +378,14 @@ namespace CompMs.Common.Parser
         /// when true, the class-level one, written without a structure, when false. False is the safe reading when the
         /// verdict is not known.
         /// </param>
+        /// <param name="formulaAnnotations">
+        /// The product ion formulas of a formula assignment (MS-FINDER's), one set per candidate formula of the precursor,
+        /// best candidate first; null when there are none. The set whose precursor formula is CH$FORMULA is written as
+        /// "PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)", so that the fragments never contradict the
+        /// compound the record states; when CH$FORMULA is N/A, the first set is written, and a COMMENT names its precursor
+        /// formula. When no set matches CH$FORMULA, PK$ANNOTATION is left out. An annotation whose m/z PK$PEAK does not
+        /// print is left out.
+        /// </param>
         /// <remarks>
         /// A record that is built takes its accession for good: a later record of this handler with the same accession
         /// is refused with <see cref="DuplicateAccessionReason"/>. A refused record takes nothing.
@@ -342,7 +402,7 @@ namespace CompMs.Common.Parser
         /// it would state the chains the name leaves out. CH$FORMULA and CH$EXACT_MASS come from the library formula,
         /// which every species of the class shares.
         /// </remarks>
-        public MassBankRecordResult BuildRecord(IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel = MassBankAnnotationLevel.Unspecified, int? analysisFileId = null, bool lipidChainsResolved = false) {
+        public MassBankRecordResult BuildRecord(IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel = MassBankAnnotationLevel.Unspecified, int? analysisFileId = null, bool lipidChainsResolved = false, IReadOnlyList<MassBankFormulaAnnotation> formulaAnnotations = null) {
             if (peak is null) {
                 throw new ArgumentNullException(nameof(peak));
             }
@@ -448,6 +508,9 @@ namespace CompMs.Common.Parser
                 }
             }
 
+            // PK$ANNOTATION from a formula assignment, under the precursor formula the record states.
+            var formulaAnnotationLines = FormulaAnnotationLines(formulaAnnotations, formula, peaks, notes, out var tentativePrecursorFormula);
+
             var record = new StringBuilder();
             void Line(string text) {
                 record.Append(text).Append(LineFeed);
@@ -496,6 +559,9 @@ namespace CompMs.Common.Parser
             }
             if (inferredFrom != null) {
                 Line($"COMMENT: {Cut($"CH$EXACT_MASS was calculated from PRECURSOR_M/Z and the adduct {CleanLine(inferredFrom)}; it is not a reference value", MaxCommentLength)}");
+            }
+            if (tentativePrecursorFormula != null) {
+                Line($"COMMENT: {TentativePrecursorFormulaComment}{tentativePrecursorFormula}");
             }
 
             Line($"CH$NAME: {name}");
@@ -546,7 +612,7 @@ namespace CompMs.Common.Parser
             }
 
             if (!string.IsNullOrWhiteSpace(MsdialVersion)) {
-                Line($"MS$DATA_PROCESSING: WHOLE MS-DIAL {MsdialVersion.Trim()}");
+                Line($"MS$DATA_PROCESSING: WHOLE {ProcessingSoftware.Trim()} {MsdialVersion.Trim()}");
             }
 
             var printedPeaks = string.Join(" ", peaks.Select(p => p.MzText + ":" + p.IntensityText));
@@ -562,9 +628,16 @@ namespace CompMs.Common.Parser
             }
             Line($"PK$SPLASH: {splash.Trim()}");
 
-            // PK$ANNOTATION is optional; it is written only when some peak carries an annotation, one token per peak.
+            // PK$ANNOTATION is optional; it is written only when some peak carries an annotation: the formulas of a formula
+            // assignment when there are any, otherwise MS-DIAL's peak comments, one token per peak.
             var annotated = peaks.Select(p => (p.MzText, Token: AnnotationToken(p.Comment))).Where(p => p.Token != null).ToList();
-            if (annotated.Count > 0) {
+            if (formulaAnnotationLines.Count > 0) {
+                Line(FormulaAnnotationHeader);
+                foreach (var line in formulaAnnotationLines) {
+                    Line(line);
+                }
+            }
+            else if (annotated.Count > 0) {
                 Line("PK$ANNOTATION: m/z type");
                 foreach (var (mz, token) in annotated) {
                     Line($"  {mz} {token}");
@@ -739,6 +812,102 @@ namespace CompMs.Common.Parser
                 }
             }
             return names.Count == 0 ? null : string.Join("+", names);
+        }
+
+        // ---------------------------------------------------------------- formula annotation
+
+        /// <summary>The PK$ANNOTATION header of the formula layout, as MassBank's own records spell it.</summary>
+        internal const string FormulaAnnotationHeader = "PK$ANNOTATION: m/z tentative_formula formula_count mass error(ppm)";
+
+        /// <summary>The start of the COMMENT that names the precursor formula PK$ANNOTATION was assigned under.</summary>
+        internal const string TentativePrecursorFormulaComment = "PK$ANNOTATION gives the product ion formulas assigned under the tentative precursor formula ";
+
+        /// <summary>The note a record carries when none of the formula sets it was given is that of CH$FORMULA.</summary>
+        internal const string NoMatchingFormulaAnnotationNote = "PK$ANNOTATION was left out: no candidate formula of the formula assignment is CH$FORMULA";
+
+        /// <summary>The note a record carries when a product ion formula could not be written.</summary>
+        internal const string UnreadableFormulaAnnotationNote = "a PK$ANNOTATION formula was left out: it is not a singly charged formula of known elements";
+
+        /// <summary>
+        /// <paramref name="formula"/> as CH$FORMULA writes it: Hill order, isotopes collapsed into their element; null when it
+        /// cannot be read. Use it to compare a formula with the CH$FORMULA of a record.
+        /// </summary>
+        public static string ToMassBankFormula(string formula) {
+            return ParseLibraryFormula(formula)?.Formula;
+        }
+
+        /// <summary>
+        /// The PK$ANNOTATION lines of the formula set that belongs to <paramref name="recordFormula"/> (CH$FORMULA, or N/A);
+        /// empty when there is none. <paramref name="tentativePrecursorFormula"/> is the precursor formula of the set written
+        /// for a record whose CH$FORMULA is N/A, and null otherwise.
+        /// </summary>
+        private static List<string> FormulaAnnotationLines(IReadOnlyList<MassBankFormulaAnnotation> sets, string recordFormula, List<PrintedPeak> peaks, List<string> notes, out string tentativePrecursorFormula) {
+            tentativePrecursorFormula = null;
+            var lines = new List<string>();
+            var candidates = sets?.Where(s => s != null).ToList() ?? new List<MassBankFormulaAnnotation>();
+            if (candidates.Count == 0) {
+                return lines;
+            }
+
+            // A charged CH$FORMULA, "[C5H12NO]+", is compared by its composition: a formula assignment states that of M.
+            var stated = recordFormula == NotAvailable ? null : Regex.Replace(recordFormula, @"\A\[(?<f>[^\]]+)\][0-9]*[+-]\z", "${f}", RegexOptions.CultureInvariant);
+            MassBankFormulaAnnotation chosen = null;
+            string chosenFormula = null;
+            foreach (var candidate in candidates) {
+                var hill = ToMassBankFormula(candidate.PrecursorFormula);
+                if (hill != null && (stated is null || string.Equals(hill, stated, StringComparison.Ordinal))) {
+                    chosen = candidate;
+                    chosenFormula = hill;
+                    break;
+                }
+            }
+            if (chosen is null) {
+                if (stated != null) {
+                    notes.Add(NoMatchingFormulaAnnotationNote);
+                }
+                return lines;
+            }
+
+            // The annotations of each printed peak, in PK$PEAK order; several formulas of one peak each take a line.
+            var byPeak = new Dictionary<string, List<(string Ion, double Mass)>>(StringComparer.Ordinal);
+            var unreadable = false;
+            foreach (var annotation in chosen.Peaks) {
+                if (annotation is null || !IsPositiveNumber(annotation.Mz)) {
+                    continue;
+                }
+                var parsed = Math.Abs(annotation.Charge) == 1 ? ParseLibraryFormula(annotation.Formula) : null;
+                var mass = parsed is null ? double.NaN : parsed.MonoisotopicMass - annotation.Charge * ElectronMass;
+                if (parsed is null || parsed.IsIsotopeLabelled || !IsPositiveNumber(mass)) {
+                    unreadable = true;
+                    continue;
+                }
+                var mzText = annotation.Mz.ToString("F5", INVARIANT);
+                if (!byPeak.TryGetValue(mzText, out var ions)) {
+                    ions = new List<(string Ion, double Mass)>();
+                    byPeak[mzText] = ions;
+                }
+                var ion = parsed.Formula + (annotation.Charge > 0 ? "+" : "-");
+                if (!ions.Any(i => i.Ion == ion)) {
+                    ions.Add((ion, mass));
+                }
+            }
+            if (unreadable) {
+                notes.Add(UnreadableFormulaAnnotationNote);
+            }
+            foreach (var peak in peaks) {
+                if (!byPeak.TryGetValue(peak.MzText, out var ions)) {
+                    continue;
+                }
+                var observed = double.Parse(peak.MzText, NumberStyles.Float, INVARIANT);
+                foreach (var (ion, mass) in ions) {
+                    var ppm = (observed - mass) / mass * 1e6;
+                    lines.Add($"  {peak.MzText} {ion} {ions.Count.ToString(INVARIANT)} {mass.ToString("F5", INVARIANT)} {ppm.ToString("F2", INVARIANT)}");
+                }
+            }
+            if (lines.Count > 0 && stated is null) {
+                tentativePrecursorFormula = chosenFormula;
+            }
+            return lines;
         }
 
         // ---------------------------------------------------------------- structure
