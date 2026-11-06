@@ -308,7 +308,7 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding HasProjectMetadataProblems, Mode=OneTime}" Value="False">
+                                            <DataTrigger Binding="{Binding ShowProjectMetadataProblems.Value}" Value="False">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                             </DataTrigger>
                                         </Style.Triggers>

@@ -9,6 +9,7 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Parser;
+using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -126,8 +127,45 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             CollectionAssert.Contains(unknown, "CH$SMILES: N/A");
             CollectionAssert.Contains(unknown, "CH$IUPAC: N/A");
             Assert.AreEqual(2, records.Count(r => r.Contains("COMMENT: MS-DIAL annotation level: suggested")));
-            var unsettled = records.Single(r => r.Contains("CH$NAME: Unsettled: L-Pyroglutamic acid"));
+            var unsettled = records.Single(r => r.Contains("COMMENT: Original name: Unsettled: L-Pyroglutamic acid"));
+            CollectionAssert.Contains(unsettled, "CH$NAME: L-Pyroglutamic acid", "CH$NAME is the compound name, without MS-DIAL's level prefix.");
             CollectionAssert.Contains(unsettled, "COMMENT: MS-DIAL annotation level: suggested");
+            var unknownComments = unknown.Where(l => l.StartsWith("COMMENT: ")).ToArray();
+            Assert.AreEqual("COMMENT: MassBank export test", unknownComments[0], "the project comment comes first");
+            CollectionAssert.Contains(unknownComments, "COMMENT: CH$EXACT_MASS was calculated from PRECURSOR_M/Z and the adduct [M+H]+; it is not a reference value");
+        }
+
+        [TestMethod()]
+        public void Alignment_ReportsOnlyWhenTheWholeExportHasEnded() {
+            var broker = new MessageBroker();
+            var messages = new List<MessageRequest>();
+            broker.Subscribe<MessageRequest>(messages.Add);
+            var (model, file) = CreateAlignmentExport(broker);
+            model.IsSelected = true;
+            model.ContributorID = Contributor;
+            var session = (IAlignmentResultExportSession)model;
+
+            session.BeginExport();
+            ((IAlignmentResultExportModel)model).Export(file, _output, _ => { });
+
+            Assert.AreEqual(0, messages.Count, "a message box in the middle would hold up the export groups after MassBank");
+            var report = session.EndExport();
+            Assert.IsNotNull(report);
+            StringAssert.Contains(report!.Content, "1 MassBank record was written");
+            Assert.IsNull(session.EndExport(), "the report is given once");
+            Assert.AreEqual(1, Directory.GetFiles(_output, "*.txt").Length);
+        }
+
+        [TestMethod()]
+        public void Alignment_CountsNothingWhileTheMetadataIsInvalid() {
+            var (model, file) = CreateAlignmentExport(new MessageBroker(), context => context.Authors = string.Empty);
+            model.IsSelected = true;
+            model.ContributorID = Contributor;
+            Assert.AreEqual(0, ((IAlignmentResultExportModel)model).CountExportFiles(file));
+
+            var (valid, validFile) = CreateAlignmentExport(new MessageBroker());
+            valid.IsSelected = true;
+            Assert.AreEqual(0, ((IAlignmentResultExportModel)valid).CountExportFiles(validFile), "no contributor ID");
         }
 
         [TestMethod()]
@@ -165,11 +203,41 @@ namespace CompMs.App.Msdial.Model.Export.Tests
         }
 
         [TestMethod()]
+        public void Alignment_ClassifiesWithMsDialsOwnEvaluator() {
+            // The evaluator the method models build from the project's databases, not a stand-in.
+            var evaluator = new FacadeMatchResultEvaluator();
+            evaluator.Add("MspDB", new MsScanMatchResultEvaluator(new MsRefSearchParameterBase()));
+            evaluator.Add("TextDB", new MsScanMatchResultEvaluator(new MsRefSearchParameterBase()));
+            AlignmentSpotProperty Spot(MsScanMatchResult result, bool textDb) {
+                var spot = new AlignmentSpotProperty { Name = result.Name, };
+                spot.MatchResults.AddResult(result);
+                if (textDb) {
+                    spot.TextDbBasedMatchResult = result;
+                    spot.MatchResults.AddTextDbResult(result);
+                }
+                return spot;
+            }
+
+            var msp = Spot(new MsScanMatchResult { Name = "Glycine", AnnotatorID = "MspDB", Source = SourceType.MspDB, IsReferenceMatched = true, IsSpectrumMatch = true, IsPrecursorMzMatch = true, TotalScore = 0.9f, }, textDb: false);
+            Assert.AreEqual(MassBankAnnotationLevel.ReferenceMatched, AlignmentResultMassBankRecordExportModel.Classify(msp, evaluator));
+
+            var suggestion = Spot(new MsScanMatchResult { Name = "low score: Glycine", AnnotatorID = "MspDB", Source = SourceType.MspDB, IsAnnotationSuggested = true, IsPrecursorMzMatch = true, TotalScore = 0.4f, }, textDb: false);
+            Assert.AreEqual(MassBankAnnotationLevel.Suggested, AlignmentResultMassBankRecordExportModel.Classify(suggestion, evaluator));
+
+            // A text library match (m/z and RT) is reference-matched in MS-DIAL's own sense.
+            var text = Spot(new MsScanMatchResult { Name = "Glycine", AnnotatorID = "TextDB", Source = SourceType.TextDB, IsPrecursorMzMatch = true, IsRtMatch = true, TotalScore = 0.8f, }, textDb: true);
+            Assert.AreEqual(MassBankAnnotationLevel.ReferenceMatched, AlignmentResultMassBankRecordExportModel.Classify(text, evaluator));
+
+            Assert.AreEqual(MassBankAnnotationLevel.Unknown, AlignmentResultMassBankRecordExportModel.Classify(new AlignmentSpotProperty(), evaluator));
+        }
+
+        [TestMethod()]
         public void AlignmentViewModel_BlocksExportUntilTheContributorIdAndMetadataAreValid() {
             var (model, _) = CreateAlignmentExport(new MessageBroker());
             using (var vm = new AlignmentResultMassBankRecordExportViewModel(model)) {
                 Assert.IsTrue(vm.CanExport.Value, "not selected, nothing to block");
                 Assert.IsFalse(vm.HasProjectMetadataProblems);
+                Assert.IsFalse(vm.ContributorID.HasErrors, "an option that is not chosen shows no error");
 
                 vm.IsSelected.Value = true;
                 Assert.IsFalse(vm.CanExport.Value, "the contributor ID is empty");
@@ -186,9 +254,11 @@ namespace CompMs.App.Msdial.Model.Export.Tests
 
             var (invalid, _) = CreateAlignmentExport(new MessageBroker(), context => context.License = "CC-BY");
             using (var vm = new AlignmentResultMassBankRecordExportViewModel(invalid)) {
+                Assert.IsFalse(vm.ShowProjectMetadataProblems.Value, "the problems show only while MassBank is chosen");
                 vm.IsSelected.Value = true;
                 vm.ContributorID.Value = Contributor;
                 Assert.IsTrue(vm.HasProjectMetadataProblems);
+                Assert.IsTrue(vm.ShowProjectMetadataProblems.Value);
                 StringAssert.Contains(vm.ProjectMetadataProblems, "License \"CC-BY\"");
                 Assert.IsFalse(vm.CanExport.Value);
             }
@@ -274,13 +344,13 @@ namespace CompMs.App.Msdial.Model.Export.Tests
         // ------------------------------------------------------------ single file
 
         [TestMethod()]
-        public void SingleFile_WritesEveryPeakWithMsMsAndReportsOnce() {
+        public void SingleFile_ByDefaultWritesOnlyReferenceMatchedPeaksAndReportsOnce() {
             var broker = new MessageBroker();
             var messages = new List<MessageRequest>();
             broker.Subscribe<MessageRequest>(messages.Add);
             var file = SaveSingleFile();
             var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
-            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), broker)
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), broker)
             {
                 ShouldExport = true,
                 ContributorID = Contributor,
@@ -295,12 +365,41 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             var records = Directory.GetFiles(Path.Combine(_output, "sample"), "*.txt");
             Assert.AreEqual(1, records.Length);
             var lines = File.ReadAllLines(records[0]);
-            CollectionAssert.Contains(lines, "CH$NAME: Unknown");
-            CollectionAssert.Contains(lines, "CH$SMILES: N/A");
-            CollectionAssert.Contains(lines, "PK$NUM_PEAK: 2");
+            CollectionAssert.Contains(lines, "CH$NAME: L-Pyroglutamic acid");
+            CollectionAssert.Contains(lines, "CH$LINK: INCHIKEY ODHCTXKNWHHXJC-VKHMYHEASA-N");
             Assert.IsNotNull(report);
             StringAssert.Contains(report!.Content, "1 MassBank record was written");
-            StringAssert.Contains(report.Content, "1  without MS/MS peaks");
+            StringAssert.Contains(report.Content, "3 peaks were not exported");
+            StringAssert.Contains(report.Content, "2  unknowns");
+            StringAssert.Contains(report.Content, "1  suggested annotations");
+        }
+
+        [TestMethod()]
+        public void SingleFile_IncludesSuggestionsAndUnknownsWhenAsked() {
+            var file = SaveSingleFile();
+            var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), new MessageBroker())
+            {
+                ShouldExport = true,
+                ContributorID = Contributor,
+                IncludeSuggested = true,
+                IncludeUnknowns = true,
+            };
+            var session = (IMsdialAnalysisExportSession)model;
+
+            session.BeginExport();
+            ((IMsdialAnalysisExport)model).Export(_output, file);
+            var report = session.EndExport(_output);
+
+            var records = Directory.GetFiles(Path.Combine(_output, "sample"), "*.txt").Select(File.ReadAllLines).ToList();
+            Assert.AreEqual(3, records.Count);
+            var unknown = records.Single(r => r.Contains("CH$NAME: Unknown"));
+            CollectionAssert.Contains(unknown, "CH$SMILES: N/A");
+            CollectionAssert.Contains(unknown, "PK$NUM_PEAK: 2");
+            var suggested = records.Single(r => r.Contains("COMMENT: MS-DIAL annotation level: suggested"));
+            CollectionAssert.Contains(suggested, "CH$NAME: L-Pyroglutamic acid");
+            CollectionAssert.Contains(suggested, "COMMENT: Original name: low score: L-Pyroglutamic acid");
+            StringAssert.Contains(report!.Content, "1  without MS/MS peaks");
         }
 
         [TestMethod()]
@@ -310,7 +409,7 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             broker.Subscribe<MessageRequest>(messages.Add);
             var file = SaveSingleFile();
             var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
-            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), broker) { ShouldExport = true, };
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), broker) { ShouldExport = true, };
             var session = (IMsdialAnalysisExportSession)model;
 
             session.BeginExport();
@@ -325,17 +424,31 @@ namespace CompMs.App.Msdial.Model.Export.Tests
         [TestMethod()]
         public void SingleFileViewModel_BlocksExportUntilTheContributorIdIsValid() {
             var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
-            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new MessageBroker());
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), new MessageBroker());
             using (var vm = new MsdialAnalysisMassBankRecordExportViewModel(model)) {
                 Assert.IsTrue(vm.CanExport.Value);
+                Assert.IsFalse(vm.ContributorID.HasErrors, "an option that is not chosen shows no error");
                 vm.ShouldExport.Value = true;
                 Assert.IsFalse(vm.CanExport.Value);
+                Assert.IsTrue(vm.ContributorID.HasErrors);
                 vm.ContributorID.Value = Contributor;
                 Assert.IsTrue(vm.CanExport.Value);
+                vm.IncludeUnknowns.Value = true;
+                Assert.IsTrue(model.IncludeUnknowns);
+            }
+
+            // Default project metadata is empty: the problems show only once MassBank is chosen.
+            var bare = new MsdialAnalysisMassBankRecordExportModel(parameter, new StudyContextModel(parameter), new FlagEvaluator(), new MessageBroker());
+            using (var vm = new MsdialAnalysisMassBankRecordExportViewModel(bare)) {
+                Assert.IsTrue(vm.HasProjectMetadataProblems);
+                Assert.IsFalse(vm.ShowProjectMetadataProblems.Value);
+                vm.ShouldExport.Value = true;
+                Assert.IsTrue(vm.ShowProjectMetadataProblems.Value);
             }
         }
 
-        // One sample whose peak list has an unannotated peak with two MS/MS peaks and one with none.
+        // One sample whose peak list has an unannotated peak with two MS/MS peaks, an unannotated one with none, a
+        // reference-matched peak and a low-score suggestion, both with MS/MS peaks.
         private AnalysisFileBeanModel SaveSingleFile() {
             var file = AnalysisFileBeanModelTestHelper.Create();
             file.AnalysisFileName = "sample";
@@ -356,12 +469,37 @@ namespace CompMs.App.Msdial.Model.Export.Tests
                 feature.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
                 return feature;
             }).ToList();
+            foreach (var (id, name, result) in new[] {
+                (2, "L-Pyroglutamic acid", new MsScanMatchResult { Name = "L-Pyroglutamic acid", Source = SourceType.MspDB, IsReferenceMatched = true, IsSpectrumMatch = true, IsPrecursorMzMatch = true, TotalScore = 0.9f, }),
+                (3, "low score: L-Pyroglutamic acid", new MsScanMatchResult { Name = "L-Pyroglutamic acid", Source = SourceType.MspDB, IsAnnotationSuggested = true, IsPrecursorMzMatch = true, TotalScore = 0.5f, }),
+            }) {
+                var feature = new ChromatogramPeakFeature
+                {
+                    PeakID = id,
+                    MasterPeakID = id,
+                    MS1RawSpectrumIdTop = 12,
+                    MS2RawSpectrumID = 13,
+                    PrecursorMz = 130.0499021411,
+                    ChromXs = new ChromXs(0.6358123779, ChromXType.RT, ChromXUnit.Min),
+                    IonMode = IonMode.Positive,
+                    Name = name,
+                    Formula = FormulaStringParcer.OrganicElementsReader("C5H7NO3"),
+                    SMILES = "C1CC(=O)N[C@@H]1C(=O)O",
+                    InChIKey = "ODHCTXKNWHHXJC-VKHMYHEASA-N",
+                };
+                feature.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
+                feature.MatchResults.AddResult(result);
+                features.Add(feature);
+            }
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakListFilePath, features);
-            var withPeaks = new MSDecResult { ScanID = 0, PrecursorMz = 300.1, RawSpectrumID = 13, };
-            withPeaks.Spectrum.Add(new SpectrumPeak(100.05, 1000d));
-            withPeaks.Spectrum.Add(new SpectrumPeak(150.07, 500d));
+            MSDecResult WithPeaks(int id) {
+                var msdec = new MSDecResult { ScanID = id, PrecursorMz = 300.1, RawSpectrumID = 13, };
+                msdec.Spectrum.Add(new SpectrumPeak(100.05, 1000d));
+                msdec.Spectrum.Add(new SpectrumPeak(150.07, 500d));
+                return msdec;
+            }
             var withoutPeaks = new MSDecResult { ScanID = 1, PrecursorMz = 300.1, RawSpectrumID = 13, };
-            MsdecResultsWriter.Write(file.File.DeconvolutionFilePath, new List<MSDecResult> { withPeaks, withoutPeaks, });
+            MsdecResultsWriter.Write(file.File.DeconvolutionFilePath, new List<MSDecResult> { WithPeaks(0), withoutPeaks, WithPeaks(2), WithPeaks(3), });
             return file;
         }
     }

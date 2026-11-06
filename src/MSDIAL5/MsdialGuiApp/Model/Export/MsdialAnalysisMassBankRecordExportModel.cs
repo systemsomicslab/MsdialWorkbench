@@ -1,8 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
@@ -18,26 +20,26 @@ namespace CompMs.App.Msdial.Model.Export
     /// Export &gt; Peak list result &gt; MassBank record: one MassBank record per peak of each selected sample.
     /// </summary>
     /// <remarks>
-    /// Every peak with at least one MS/MS peak is exported; an unannotated peak as "Unknown" with every structure
-    /// field N/A, and a suggestion with "COMMENT: MS-DIAL annotation level: suggested". The records are built by
-    /// <see cref="MassBankRecordHandler"/> from the project metadata, with one handler per export so that DATE is the
-    /// time of the export.
+    /// Peaks are chosen by <see cref="MassBankExportPolicy"/>, as in the alignment export: by default only
+    /// reference-matched peaks with at least one MS/MS peak; suggested annotations and unknowns are opt-in. The records
+    /// are built by <see cref="MassBankRecordHandler"/> from the project metadata, with one handler per export so that
+    /// DATE is the time of the export.
     /// </remarks>
     internal sealed class MsdialAnalysisMassBankRecordExportModel : BindableBase, IMsdialAnalysisExport, IMsdialAnalysisExportSession
     {
-        private const string SkippedNoSpectrum = "without a deconvoluted MS/MS spectrum";
-
         private readonly ProjectBaseParameter _parameter;
         private readonly StudyContextModel _studyContextModel;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _broker;
 
         private MassBankRecordHandler? _sessionHandler;
         private MassBankExportSummary? _sessionSummary;
         private bool _sessionRefused;
 
-        public MsdialAnalysisMassBankRecordExportModel(ProjectBaseParameter parameter, StudyContextModel studyContextModel, IMessageBroker? broker) {
+        public MsdialAnalysisMassBankRecordExportModel(ProjectBaseParameter parameter, StudyContextModel studyContextModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker? broker) {
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             _studyContextModel = studyContextModel ?? throw new ArgumentNullException(nameof(studyContextModel));
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _broker = broker ?? MessageBroker.Default;
         }
 
@@ -63,6 +65,20 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _shouldExport = false;
 
+        /// <summary>Also export suggestions (low score, no MS2, Unsettled, Putative), marked as such in COMMENT.</summary>
+        public bool IncludeSuggested {
+            get => _includeSuggested;
+            set => SetProperty(ref _includeSuggested, value);
+        }
+        private bool _includeSuggested = false;
+
+        /// <summary>Also export unannotated peaks, as "Unknown" with every structure field N/A.</summary>
+        public bool IncludeUnknowns {
+            get => _includeUnknowns;
+            set => SetProperty(ref _includeUnknowns, value);
+        }
+        private bool _includeUnknowns = false;
+
         /// <summary>
         /// What in the project metadata keeps the records from passing the MassBank Validator; empty when nothing does.
         /// </summary>
@@ -78,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Export
                 return;
             }
             _sessionHandler = CreateHandler();
-            _sessionSummary = new MassBankExportSummary();
+            _sessionSummary = new MassBankExportSummary("peak", "peaks");
             var problems = _sessionHandler.ValidateMetadata();
             if (problems.Count > 0) {
                 _sessionRefused = true;
@@ -108,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Export
                     _broker.Publish(MassBankExportSummary.MetadataProblems(problems));
                     return;
                 }
-                summary = new MassBankExportSummary();
+                summary = new MassBankExportSummary("peak", "peaks");
             }
 
             var features = ChromatogramPeakFeatureCollection.LoadAsync(fileBeanModel.PeakAreaBeanInformationFilePath).Result;
@@ -118,15 +134,25 @@ namespace CompMs.App.Msdial.Model.Export
             var encoding = new UTF8Encoding(false);
 
             foreach (var feature in features.Items) {
+                var level = Classify(feature, _evaluator);
+                var exclusion = MassBankExportPolicy.Exclusion(level, IncludeSuggested, IncludeUnknowns);
+                if (exclusion is not null) {
+                    summary.AddSkipped(exclusion);
+                    continue;
+                }
                 var msdec = loader.LoadMSDecResult(feature.GetMSDecResultID());
                 if (msdec is null) {
-                    summary.AddSkipped(SkippedNoSpectrum);
+                    summary.AddSkipped(MassBankExportPolicy.SkippedNoSpectrum);
+                    continue;
+                }
+                if (MassBankRecordHandler.CountExportablePeaks(msdec) == 0) {
+                    summary.AddSkipped(MassBankExportPolicy.SkippedNoPeaks);
                     continue;
                 }
                 // Built in memory first: a peak that cannot become a valid record leaves no file behind.
-                var result = handler.BuildRecord(feature, feature, msdec, feature, Classify(feature));
+                var result = handler.BuildRecord(feature, feature, msdec, feature, level);
                 if (!result.IsSuccess) {
-                    summary.AddSkipped(result.SkipReason == "no MS/MS peaks" ? "without MS/MS peaks" : $"refused: {result.SkipReason}");
+                    summary.AddSkipped($"refused: {result.SkipReason}");
                     continue;
                 }
                 Directory.CreateDirectory(folder);
@@ -152,12 +178,9 @@ namespace CompMs.App.Msdial.Model.Export
             };
         }
 
-        // The peak list has no match evaluator here, so the level is read from what annotation left on the peak.
-        private static MassBankAnnotationLevel Classify(ChromatogramPeakFeature feature) {
-            if (feature.IsUnknown || string.IsNullOrWhiteSpace(feature.Name)) {
-                return MassBankAnnotationLevel.Unknown;
-            }
-            return MassBankRecordHandler.IsSuggestionName(feature.Name) ? MassBankAnnotationLevel.Suggested : MassBankAnnotationLevel.Unspecified;
+        /// <summary>How far the annotation of <paramref name="feature"/> goes; see <see cref="MassBankExportPolicy"/>.</summary>
+        internal static MassBankAnnotationLevel Classify(ChromatogramPeakFeature feature, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            return MassBankExportPolicy.Classify(feature, evaluator);
         }
     }
 }

@@ -12,10 +12,17 @@ namespace CompMs.App.Msdial.Model.Export
     /// </summary>
     internal sealed class MassBankExportSummary
     {
-        private const string StructureNotAvailable = "the structure was written as N/A";
-
         private readonly Dictionary<string, int> _skipped = new Dictionary<string, int>();
         private readonly Dictionary<string, int> _adjusted = new Dictionary<string, int>();
+        private readonly string _item;
+        private readonly string _items;
+
+        /// <param name="item">What one record is made from, for the message: "spot" or "peak".</param>
+        /// <param name="items">The plural of <paramref name="item"/>.</param>
+        public MassBankExportSummary(string item = "spot", string items = "spots") {
+            _item = item;
+            _items = items;
+        }
 
         public int Written { get; private set; }
 
@@ -23,7 +30,8 @@ namespace CompMs.App.Msdial.Model.Export
 
         public void AddWritten(MassBankRecordResult result) {
             Written++;
-            foreach (var note in result.Notes.Select(Category).Distinct()) {
+            // The handler's notes are fixed sentences (an exception is named by its type only), so they group as they are.
+            foreach (var note in result.Notes.Distinct()) {
                 Increment(_adjusted, note);
             }
         }
@@ -38,13 +46,13 @@ namespace CompMs.App.Msdial.Model.Export
             content.Append(Written == 1 ? "1 MassBank record was written" : $"{Number(Written)} MassBank records were written");
             content.Append(string.IsNullOrEmpty(destination) ? "." : $" to {destination}.");
             if (_skipped.Count > 0) {
-                content.AppendLine().AppendLine().Append(Skipped == 1 ? "1 spot was not exported:" : $"{Number(Skipped)} spots were not exported:");
+                content.AppendLine().AppendLine().Append(Skipped == 1 ? $"1 {_item} was not exported:" : $"{Number(Skipped)} {_items} were not exported:");
                 foreach (var entry in _skipped.OrderByDescending(e => e.Value).ThenBy(e => e.Key)) {
                     content.AppendLine().Append($"  {Number(entry.Value)}  {entry.Key}");
                 }
             }
             if (_adjusted.Count > 0) {
-                content.AppendLine().AppendLine().Append("Written with changes so that the records pass the MassBank Validator:");
+                content.AppendLine().AppendLine().Append("Written with these adjustments for MassBank:");
                 foreach (var entry in _adjusted.OrderByDescending(e => e.Value).ThenBy(e => e.Key)) {
                     content.AppendLine().Append($"  {Number(entry.Value)}  {entry.Key}");
                 }
@@ -67,12 +75,6 @@ namespace CompMs.App.Msdial.Model.Export
                     + "\n\nSet the instrument type, instrument, authors, license and collision energy in Option > Project property setting, and the contributor ID in the export dialog.",
                 Severity = MessageSeverity.Error,
             };
-        }
-
-        private static string Category(string note) {
-            return note.StartsWith(StructureNotAvailable, System.StringComparison.Ordinal)
-                ? "the structure was written as N/A because the SMILES gave no usable InChI"
-                : note;
         }
 
         private static void Increment(Dictionary<string, int> counts, string key) {

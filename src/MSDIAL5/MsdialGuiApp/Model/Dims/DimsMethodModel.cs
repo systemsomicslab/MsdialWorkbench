@@ -42,6 +42,9 @@ namespace CompMs.App.Msdial.Model.Dims
         private FacadeMatchResultEvaluator _matchResultEvaluator;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
+        /// <summary>Tells reference-matched annotations from suggestions, for the exports that choose by annotation level.</summary>
+        internal FacadeMatchResultEvaluator MatchResultEvaluator => _matchResultEvaluator;
+
         public DimsMethodModel(
             IMsdialDataStorage<MsdialDimsParameter> storage,
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,

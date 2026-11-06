@@ -154,7 +154,7 @@ internal sealed class ImagingDimsMethodModel : MethodModelBase, IMethodModel
                 FileSuffix = "mgf",
                 Label = "MASCOT format (*.mgf)"
             },
-            new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext, _broker),
+            new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext, _evaluator, _broker),
         };
 
         return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);

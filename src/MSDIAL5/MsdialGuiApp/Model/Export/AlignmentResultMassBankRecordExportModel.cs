@@ -1,4 +1,5 @@
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parser;
@@ -21,23 +22,27 @@ namespace CompMs.App.Msdial.Model.Export
     /// Export &gt; Alignment result export &gt; MassBank: one MassBank record per alignment spot.
     /// </summary>
     /// <remarks>
-    /// By default only reference-matched spots (an accepted MSP or LBM match, not a suggestion) with at least one MS/MS
-    /// peak are exported; suggested annotations and unknowns are opt-in. CountExportFiles and Export select spots with
-    /// the same rule. The records are built by <see cref="MassBankRecordHandler"/> from the project metadata, and the
-    /// export reports what it wrote and what it skipped, with the reasons.
+    /// Spots are chosen by <see cref="MassBankExportPolicy"/>: by default only reference-matched spots with at least one
+    /// MS/MS peak; suggested annotations and unknowns are opt-in. CountExportFiles and Export select spots with the same
+    /// rule. The records are built by <see cref="MassBankRecordHandler"/> from the project metadata, and the export
+    /// reports what it wrote and what it skipped, with the reasons, once the whole alignment export has finished.
     /// </remarks>
-    internal sealed class AlignmentResultMassBankRecordExportModel : BindableBase, IAlignmentResultExportModel
+    internal sealed class AlignmentResultMassBankRecordExportModel : BindableBase, IAlignmentResultExportModel, IAlignmentResultExportSession
     {
-        internal const string SkippedSuggested = "suggested annotations (exported only with \"Include suggested annotations\")";
-        internal const string SkippedUnknown = "unknowns (exported only with \"Include unknowns\")";
-        internal const string SkippedNoSpectrum = "without a deconvoluted MS/MS spectrum";
-        internal const string SkippedNoPeaks = "without MS/MS peaks";
+        internal const string SkippedSuggested = MassBankExportPolicy.SkippedSuggested;
+        internal const string SkippedUnknown = MassBankExportPolicy.SkippedUnknown;
+        internal const string SkippedNoSpectrum = MassBankExportPolicy.SkippedNoSpectrum;
+        internal const string SkippedNoPeaks = MassBankExportPolicy.SkippedNoPeaks;
 
         private readonly AlignmentPeakSpotSupplyer _supplyer;
         private readonly ProjectBaseParameter _parameter;
         private readonly StudyContextModel _studyContextModel;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _broker;
+
+        // Within an export session the report is kept until EndExport; outside one it is published at once.
+        private bool _inSession;
+        private MessageRequest? _pendingReport;
 
         public AlignmentResultMassBankRecordExportModel(AlignmentPeakSpotSupplyer supplyer, ProjectBaseParameter parameter, StudyContextModel studyContextModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker? broker) {
             _supplyer = supplyer ?? throw new ArgumentNullException(nameof(supplyer));
@@ -88,8 +93,21 @@ namespace CompMs.App.Msdial.Model.Export
             return CreateHandler().ValidateProjectMetadata();
         }
 
+        void IAlignmentResultExportSession.BeginExport() {
+            _inSession = true;
+            _pendingReport = null;
+        }
+
+        MessageRequest? IAlignmentResultExportSession.EndExport() {
+            var report = _pendingReport;
+            _inSession = false;
+            _pendingReport = null;
+            return report;
+        }
+
         int IAlignmentResultExportModel.CountExportFiles(AlignmentFileBeanModel alignmentFile) {
-            if (!IsSelected) {
+            // Export writes nothing while the metadata is invalid, so nothing is counted either.
+            if (!IsSelected || CreateHandler().ValidateMetadata().Count > 0) {
                 return 0;
             }
             return SelectSpots(alignmentFile).Count(selection => selection.Scan is not null);
@@ -103,7 +121,7 @@ namespace CompMs.App.Msdial.Model.Export
             var handler = CreateHandler();
             var problems = handler.ValidateMetadata();
             if (problems.Count > 0) {
-                _broker.Publish(MassBankExportSummary.MetadataProblems(problems));
+                Report(MassBankExportSummary.MetadataProblems(problems));
                 return;
             }
 
@@ -126,7 +144,16 @@ namespace CompMs.App.Msdial.Model.Export
                     notification.Invoke($"Skipped {result.Accession}: {result.SkipReason}");
                 }
             }
-            _broker.Publish(summary.ToMessage(exportDirectory));
+            Report(summary.ToMessage(exportDirectory));
+        }
+
+        private void Report(MessageRequest message) {
+            if (_inSession) {
+                _pendingReport = message;
+            }
+            else {
+                _broker.Publish(message);
+            }
         }
 
         private MassBankRecordHandler CreateHandler() {
@@ -165,12 +192,9 @@ namespace CompMs.App.Msdial.Model.Export
         private IEnumerable<SpotSelection> SelectSpots(AlignmentFileBeanModel alignmentFile) {
             foreach (var spot in _supplyer.Supply(alignmentFile, default)) {
                 var level = Classify(spot, _evaluator);
-                if (level == MassBankAnnotationLevel.Suggested && !IncludeSuggested) {
-                    yield return new SpotSelection(spot, level, null, SkippedSuggested);
-                    continue;
-                }
-                if (level == MassBankAnnotationLevel.Unknown && !IncludeUnknowns) {
-                    yield return new SpotSelection(spot, level, null, SkippedUnknown);
+                var exclusion = MassBankExportPolicy.Exclusion(level, IncludeSuggested, IncludeUnknowns);
+                if (exclusion is not null) {
+                    yield return new SpotSelection(spot, level, null, exclusion);
                     continue;
                 }
                 var scan = alignmentFile.LoadMSDecResultByIndexAsync(spot.MasterAlignmentID).Result;
@@ -186,25 +210,9 @@ namespace CompMs.App.Msdial.Model.Export
             }
         }
 
-        /// <summary>
-        /// How far the annotation of <paramref name="spot"/> goes, from its match results.
-        /// </summary>
-        /// <remarks>
-        /// The match flags decide first. A spot set to Unsettled by hand, or renamed "Putative:" because another spot
-        /// kept the same reference, still carries the reference-matched flag, so the name tells those from an accepted
-        /// match. A named spot that is neither matched nor suggested is not taken as an identification.
-        /// </remarks>
+        /// <summary>How far the annotation of <paramref name="spot"/> goes; see <see cref="MassBankExportPolicy"/>.</summary>
         internal static MassBankAnnotationLevel Classify(AlignmentSpotProperty spot, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            if (spot.IsReferenceMatched(evaluator)) {
-                return MassBankRecordHandler.IsSuggestionName(spot.Name) ? MassBankAnnotationLevel.Suggested : MassBankAnnotationLevel.ReferenceMatched;
-            }
-            if (spot.IsAnnotationSuggested(evaluator)) {
-                return MassBankAnnotationLevel.Suggested;
-            }
-            if (spot.IsUnknown || string.IsNullOrWhiteSpace(spot.Name)) {
-                return MassBankAnnotationLevel.Unknown;
-            }
-            return MassBankAnnotationLevel.Suggested;
+            return MassBankExportPolicy.Classify(spot, evaluator);
         }
     }
 }
