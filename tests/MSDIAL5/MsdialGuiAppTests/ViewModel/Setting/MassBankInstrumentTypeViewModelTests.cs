@@ -122,6 +122,34 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         }
 
         [TestMethod]
+        public void ResynchronizeSelectsTheChoicesOfTheValueStillHeld() {
+            var instrumentType = new ReactivePropertySlim<string>("LC-MS/MS");
+            using var composer = new MassBankInstrumentTypeViewModel(instrumentType, Observable.Return(false), "LC");
+
+            composer.Separation.Value = "GC";
+            composer.Ionisation.Value = "EI";
+            Assert.AreEqual("LC-MS/MS", instrumentType.Value, "nothing is written before the analyzer is chosen");
+            instrumentType.Value = "LC-MS/MS";
+            Assert.AreEqual("GC", composer.Separation.Value, "setting the value it already holds raises no change");
+
+            composer.Resynchronize();
+
+            Assert.AreEqual("LC", composer.Separation.Value);
+            Assert.IsNull(composer.Ionisation.Value);
+            Assert.IsNull(composer.Analyzer.Value);
+            Assert.AreEqual("LC-MS/MS", instrumentType.Value, "selecting the choices again writes nothing");
+
+            // A valid value selects the same choices again, without a second "as entered" analyzer.
+            instrumentType.Value = "LC-ESI-QQTOF";
+            composer.Resynchronize();
+            Assert.AreEqual("LC", composer.Separation.Value);
+            Assert.AreEqual("ESI", composer.Ionisation.Value);
+            Assert.AreEqual(MassBankInstrumentTypeViewModel.AsEntered, composer.Analyzer.Value?.Description);
+            Assert.AreEqual(MassBankVocabulary.AnalyzerPresets.Count + 1, composer.Analyzers.Count, "one entered analyzer at a time");
+            Assert.AreEqual("LC-ESI-QQTOF", instrumentType.Value);
+        }
+
+        [TestMethod]
         public void MissingChoicesAreErrorsOnlyWhenRequired() {
             var required = new ReactivePropertySlim<bool>(false);
             var instrumentType = new ReactivePropertySlim<string>("LC-MS/MS");

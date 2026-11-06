@@ -140,6 +140,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         private void Cancel() {
             _model.Cancel();
+            // A separation or ionisation chosen without an analyzer writes nothing, so Cancel often puts back the
+            // instrument type still held and raises no change. Select the choices again from it, or the half-made
+            // choices would greet the next opening of the dialog (this view model lives as long as the dataset) and
+            // replace the project's separation.
+            InstrumentTypeComposer.Resynchronize();
         }
     }
 }

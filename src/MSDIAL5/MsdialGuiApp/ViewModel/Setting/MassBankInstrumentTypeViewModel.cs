@@ -161,6 +161,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
         }
 
+        /// <summary>
+        /// Selects the choices again from the instrument type property, as a change of its value would: a valid value
+        /// selects its separation, ionisation and analyzer, any other value the default separation and no ionisation or
+        /// analyzer.
+        /// </summary>
+        /// <remarks>
+        /// For a caller that puts the property back to a value it may still hold, e.g. Cancel: choices that did not
+        /// make a whole instrument type wrote nothing, so the value does not change, no change is raised, and those
+        /// choices would otherwise stay selected.
+        /// </remarks>
+        public void Resynchronize() {
+            SelectFrom(_instrumentType.Value);
+        }
+
         private static string DescribeValue(string? value) {
             return Validate(value) ?? $"AC$INSTRUMENT_TYPE: {value}";
         }

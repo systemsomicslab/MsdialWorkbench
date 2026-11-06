@@ -245,5 +245,57 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             Assert.IsTrue(vm.ConstrainToMassBankFormat.Value);
             Assert.IsTrue(vm.FinishCommand.CanExecute(null));
         }
+
+        [TestMethod]
+        public void CancelDropsChoicesThatComposedNothing() {
+            // An invalid stored value: a separation and an ionisation without an analyzer write nothing, so Cancel puts
+            // back the value the property still holds and no change is raised.
+            var parameter = FreeTextProject();
+            parameter.MachineCategory = MachineCategory.LCMS;
+            using var vm = new ProjectPropertySettingViewModel(new StudyContextModel(parameter));
+            var composer = vm.InstrumentTypeComposer;
+
+            composer.Separation.Value = "GC";
+            composer.Ionisation.Value = "EI";
+            Assert.AreEqual("LC-MS/MS", vm.InstrumentType.Value, "nothing is written before the analyzer is chosen");
+
+            vm.CancelCommand.Execute(null);
+
+            Assert.AreEqual("LC-MS/MS", parameter.InstrumentType);
+            Assert.AreEqual("LC-MS/MS", vm.InstrumentType.Value);
+            Assert.AreEqual("LC", composer.Separation.Value, "the project's separation again");
+            Assert.IsNull(composer.Ionisation.Value);
+            Assert.IsNull(composer.Analyzer.Value);
+
+            // The view model outlives the dialog: on the next opening an analyzer alone composes nothing, rather than
+            // GC-EI-QTOF for an LC-MS project.
+            composer.Analyzer.Value = Preset(composer, "QTOF");
+            Assert.AreEqual("LC-MS/MS", vm.InstrumentType.Value);
+        }
+
+        [TestMethod]
+        public void CancelDropsChoicesMadeForAnEmptyInstrumentType() {
+            var parameter = FreeTextProject();
+            parameter.InstrumentType = string.Empty;
+            parameter.MachineCategory = MachineCategory.GCMS;
+            using var vm = new ProjectPropertySettingViewModel(new StudyContextModel(parameter));
+            var composer = vm.InstrumentTypeComposer;
+
+            vm.ConstrainToMassBankFormat.Value = true;
+            composer.Separation.Value = string.Empty;
+            composer.Ionisation.Value = "ESI";
+            Assert.AreEqual(string.Empty, vm.InstrumentType.Value);
+
+            vm.CancelCommand.Execute(null);
+
+            Assert.IsFalse(vm.ConstrainToMassBankFormat.Value);
+            Assert.AreEqual(string.Empty, parameter.InstrumentType);
+            Assert.AreEqual(string.Empty, vm.InstrumentType.Value);
+            Assert.AreEqual("GC", composer.Separation.Value, "the project's separation again");
+            Assert.IsNull(composer.Ionisation.Value);
+            Assert.IsNull(composer.Analyzer.Value);
+            Assert.IsFalse(composer.ObserveHasErrors.Value, "nothing is required once the constraint is put back off");
+            Assert.IsTrue(vm.FinishCommand.CanExecute(null));
+        }
     }
 }
