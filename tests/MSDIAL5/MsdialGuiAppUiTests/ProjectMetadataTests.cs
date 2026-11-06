@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.UiTests
     public class ProjectMetadataTests
     {
         private const string PropertyDialogTitle = "Project property setting";
+        private const string MassBankSummaryTitle = "MassBank export";
 
         // The text box ids are the same on the measurement page of the project wizard and in the
         // project property dialog.
@@ -77,7 +78,9 @@ namespace CompMs.App.Msdial.UiTests
 
                 Workflow.BrowseResults(session, dataset);
                 var export = Path.Combine(work, "export");
-                Workflow.ExportAlignment(session, export, dialog => ChooseMassBankRecords(session, dialog));
+                // The MassBank export ends with a summary of what it wrote, once the whole export has finished.
+                var reports = Workflow.ExportAlignment(session, export, dialog => ChooseMassBankRecords(session, dialog), MassBankSummaryTitle);
+                StringAssert.Contains(reports[MassBankSummaryTitle], "MassBank record", "the MassBank export summary");
                 AssertMassBankRecordsCarry(export, Edited);
                 session.Close();
             }
@@ -143,6 +146,14 @@ namespace CompMs.App.Msdial.UiTests
             record.IsChecked = true;
             // MassBank refuses to export without a contributor ID in its format (A-Z, 0-9 and _).
             session.ById(massBank, "TextBox_MassBankContributorID", Workflow.ExportDialogTitle).AsTextBox().Enter("MSDIAL_UI_TEST");
+            // The project is processed without an annotation library, so no spot is reference-matched, and by
+            // default only reference-matched spots are exported: ask for the unknowns and suggestions too.
+            foreach (var option in new[] { "Include suggested annotations", "Include unknowns", }) {
+                session.WaitFor($"finding the '{option}' check box",
+                    () => massBank.FindFirstDescendant(cf => cf.ByName(option).And(cf.ByControlType(ControlType.CheckBox)))?.AsCheckBox(),
+                    Controls.FindTimeout,
+                    title => title == Workflow.ExportDialogTitle).IsChecked = true;
+            }
         }
 
         /// <summary>
