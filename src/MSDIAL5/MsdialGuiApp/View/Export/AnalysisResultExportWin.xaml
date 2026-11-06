@@ -108,7 +108,7 @@
                             <TextBlock Text="Contributor ID:" Margin="0,0,4,0" VerticalAlignment="Center"/>
                             <TextBox Text="{Binding ContributorID.Value, UpdateSourceTrigger=PropertyChanged}"
                                      AutomationProperties.AutomationId="TextBox_MassBankContributorID"
-                                     ToolTip="The contributor ID MassBank assigned to you (1 to 32 of A-Z, 0-9 and _). It is the second block of every accession."
+                                     ToolTip="The contributor ID MassBank assigned to you (1 to 32 of A-Z, 0-9 and _). It is the second block of every accession. Saved in Option &gt; Project property setting, it is filled in here."
                                      Width="160"/>
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Margin="16,0,0,0"

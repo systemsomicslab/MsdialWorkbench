@@ -326,6 +326,55 @@ namespace CompMs.App.Msdial.Model.Export.Tests
             }
         }
 
+        [TestMethod()]
+        public void AlignmentViewModel_StartsFromTheProjectContributorId() {
+            var (model, _) = CreateAlignmentExport(new MessageBroker(), context => context.MassBankContributorId = "PROJECT_ID");
+            using (var vm = new AlignmentResultMassBankRecordExportViewModel(model)) {
+                Assert.AreEqual("PROJECT_ID", vm.ContributorID.Value);
+                Assert.AreEqual("PROJECT_ID", model.ContributorID);
+                vm.IsSelected.Value = true;
+                Assert.IsTrue(vm.CanExport.Value);
+
+                vm.ContributorID.Value = "FOR_THIS_EXPORT";
+            }
+            Assert.AreEqual("FOR_THIS_EXPORT", model.ContributorID, "a different ID can be used for one export");
+            using (var vm = new AlignmentResultMassBankRecordExportViewModel(model)) {
+                Assert.AreEqual("PROJECT_ID", vm.ContributorID.Value, "the dialog opens with the project's ID again");
+            }
+
+            var (withoutProjectId, _) = CreateAlignmentExport(new MessageBroker());
+            withoutProjectId.ContributorID = "TYPED_BEFORE";
+            using (var vm = new AlignmentResultMassBankRecordExportViewModel(withoutProjectId)) {
+                Assert.AreEqual("TYPED_BEFORE", vm.ContributorID.Value, "without a project ID the last one entered is kept");
+            }
+        }
+
+        [TestMethod()]
+        public void AlignmentViewModel_SuggestsTheConstraintOnlyForAnUnconstrainedProject() {
+            var (unconstrained, _) = CreateAlignmentExport(new MessageBroker(), context => context.InstrumentType = "LC-MS/MS");
+            using (var vm = new AlignmentResultMassBankRecordExportViewModel(unconstrained)) {
+                Assert.IsTrue(vm.HasProjectMetadataProblems);
+                StringAssert.StartsWith(vm.ProjectMetadataProblems, MassBankProjectMetadataMessage.Header);
+                StringAssert.Contains(vm.ProjectMetadataProblems, "Instrument type \"LC-MS/MS\"");
+                StringAssert.Contains(vm.ProjectMetadataProblems, "Constrain to MassBank format");
+            }
+
+            // A constrained project cannot normally save invalid metadata; if it holds some anyway, the problems are
+            // listed without suggesting what is already on.
+            var (constrained, _) = CreateAlignmentExport(new MessageBroker(), context => { context.InstrumentType = "LC-MS/MS"; context.ConstrainToMassBankFormat = true; });
+            using (var vm = new AlignmentResultMassBankRecordExportViewModel(constrained)) {
+                Assert.IsTrue(vm.HasProjectMetadataProblems);
+                StringAssert.Contains(vm.ProjectMetadataProblems, "Instrument type \"LC-MS/MS\"");
+                Assert.IsFalse(vm.ProjectMetadataProblems.Contains("Constrain to MassBank format"));
+            }
+
+            var (valid, _) = CreateAlignmentExport(new MessageBroker());
+            using (var vm = new AlignmentResultMassBankRecordExportViewModel(valid)) {
+                Assert.IsFalse(vm.HasProjectMetadataProblems);
+                Assert.AreEqual(string.Empty, vm.ProjectMetadataProblems);
+            }
+        }
+
         // Four spots: reference matched; low-score suggestion; set to Unsettled by hand; unknown. A fifth, reference
         // matched, has no MS/MS peaks.
         private static List<AlignmentSpotProperty> Spots() {
@@ -723,6 +772,28 @@ namespace CompMs.App.Msdial.Model.Export.Tests
                 Assert.IsFalse(vm.ShowProjectMetadataProblems.Value);
                 vm.ShouldExport.Value = true;
                 Assert.IsTrue(vm.ShowProjectMetadataProblems.Value);
+            }
+        }
+
+        [TestMethod()]
+        public void SingleFileViewModel_StartsFromTheProjectContributorIdAndSuggestsTheConstraint() {
+            var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
+            var context = ValidStudyContext(parameter);
+            context.MassBankContributorId = "PROJECT_ID";
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, context, new FlagEvaluator(), new MessageBroker());
+            using (var vm = new MsdialAnalysisMassBankRecordExportViewModel(model)) {
+                Assert.AreEqual("PROJECT_ID", vm.ContributorID.Value);
+                vm.ShouldExport.Value = true;
+                Assert.IsTrue(vm.CanExport.Value);
+                Assert.IsFalse(vm.HasProjectMetadataProblems);
+            }
+
+            context.Authors = string.Empty;
+            var invalid = new MsdialAnalysisMassBankRecordExportModel(parameter, context, new FlagEvaluator(), new MessageBroker());
+            using (var vm = new MsdialAnalysisMassBankRecordExportViewModel(invalid)) {
+                Assert.IsTrue(vm.HasProjectMetadataProblems);
+                StringAssert.Contains(vm.ProjectMetadataProblems, "Authors must be given");
+                StringAssert.Contains(vm.ProjectMetadataProblems, MassBankProjectMetadataMessage.ConstrainSuggestion);
             }
         }
 

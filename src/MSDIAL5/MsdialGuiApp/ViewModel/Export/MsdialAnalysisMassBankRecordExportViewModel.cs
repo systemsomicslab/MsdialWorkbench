@@ -13,6 +13,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public MsdialAnalysisMassBankRecordExportViewModel(MsdialAnalysisMassBankRecordExportModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            // The dialog starts from the contributor ID saved with the project, when there is one.
+            model.UseProjectContributorID();
             ShouldExport = model.ToReactivePropertySlimAsSynchronized(m => m.ShouldExport).AddTo(Disposables);
             // The contributor ID is checked only while MassBank is chosen, so an unused option shows no error.
             ContributorID = model.ToReactivePropertyAsSynchronized(m => m.ContributorID)
@@ -25,7 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             // The project metadata cannot change while the export dialog is open, so it is checked once.
             var problems = model.ValidateProjectMetadata();
             HasProjectMetadataProblems = problems.Count > 0;
-            ProjectMetadataProblems = AlignmentResultMassBankRecordExportViewModel.FormatProjectMetadataProblems(problems);
+            ProjectMetadataProblems = MassBankProjectMetadataMessage.Describe(problems, model.IsProjectConstrainedToMassBankFormat);
             ShowProjectMetadataProblems = ShouldExport.Select(selected => selected && HasProjectMetadataProblems)
                 .ToReadOnlyReactivePropertySlim(ShouldExport.Value && HasProjectMetadataProblems)
                 .AddTo(Disposables);

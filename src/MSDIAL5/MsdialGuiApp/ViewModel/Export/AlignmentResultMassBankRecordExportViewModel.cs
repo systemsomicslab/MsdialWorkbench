@@ -4,8 +4,6 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Export
@@ -18,6 +16,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public AlignmentResultMassBankRecordExportViewModel(AlignmentResultMassBankRecordExportModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            // The dialog starts from the contributor ID saved with the project, when there is one.
+            model.UseProjectContributorID();
             IsSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelected).AddTo(Disposables);
             // The contributor ID is checked only while MassBank is chosen, so an unused option shows no error.
             ContributorID = model.ToReactivePropertyAsSynchronized(m => m.ContributorID)
@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             // The project metadata cannot change while the export dialog is open, so it is checked once.
             var problems = model.ValidateProjectMetadata();
             HasProjectMetadataProblems = problems.Count > 0;
-            ProjectMetadataProblems = FormatProjectMetadataProblems(problems);
+            ProjectMetadataProblems = MassBankProjectMetadataMessage.Describe(problems, model.IsProjectConstrainedToMassBankFormat);
             ShowProjectMetadataProblems = IsSelected.Select(selected => selected && HasProjectMetadataProblems)
                 .ToReadOnlyReactivePropertySlim(IsSelected.Value && HasProjectMetadataProblems)
                 .AddTo(Disposables);
@@ -39,12 +39,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 .CombineLatest(ContributorID, (selected, id) => !selected || (MassBankVocabulary.IsValidContributorId(id) && !HasProjectMetadataProblems))
                 .ToReadOnlyReactivePropertySlim(!IsSelected.Value || (MassBankVocabulary.IsValidContributorId(ContributorID.Value) && !HasProjectMetadataProblems))
                 .AddTo(Disposables);
-        }
-
-        internal static string FormatProjectMetadataProblems(IReadOnlyList<string> problems) {
-            return problems.Count > 0
-                ? "MassBank records cannot be exported until these are set in Option > Project property setting:\n" + string.Join("\n", problems.Select(p => "- " + p))
-                : string.Empty;
         }
 
         public bool IsExpanded {
