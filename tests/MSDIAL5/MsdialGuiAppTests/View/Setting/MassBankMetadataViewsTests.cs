@@ -1,6 +1,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility.Tests;
+using CompMs.App.Msdial.View.Core;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Parser;
 using CompMs.Graphics.UI;
@@ -25,7 +26,7 @@ namespace CompMs.App.Msdial.View.Setting.Tests
     /// <summary>
     /// The views of the MassBank format constraint: every binding resolves, the free-text and constrained controls
     /// swap with the toggle, and the lists show the saved values. Most are laid out without a window; the checks of
-    /// what the person sees (messages under the fields) show the view in a SettingDialog
+    /// what the person sees (messages under the fields, closing without Finish) show the view in a SettingDialog
     /// off screen, as MainWindow does.
     /// </summary>
     [TestClass]
@@ -167,6 +168,42 @@ namespace CompMs.App.Msdial.View.Setting.Tests
                     }
                 });
                 Assert.AreEqual(0, errors.Count, string.Join(Environment.NewLine, errors));
+            });
+            TestApplication.WaitForBackgroundWork();
+        }
+
+        [TestMethod]
+        public void ClosingTheDialogWithoutFinishThrowsTheEditsAway() {
+            TestApplication.Ensure();
+            Application.Current.Dispatcher.Invoke(() => {
+                var parameter = new ProjectBaseParameter { Authors = "Saved", MassBankContributorId = "SAVED_ID", };
+                var context = new StudyContextModel(parameter);
+                using var vm = new ProjectPropertySettingViewModel(context);
+
+                // The title-bar close button: the dialog closes with no result.
+                var dialog = OffscreenDialog(vm);
+                dialog.Loaded += (s, e) => dialog.Dispatcher.BeginInvoke(new Action(() => {
+                    vm.Authors.Value = "Edited";
+                    vm.ConstrainToMassBankFormat.Value = true;
+                    vm.MassBankContributorId.Value = "EDITED_ID";
+                    dialog.Close();
+                }), DispatcherPriority.ContextIdle);
+                Assert.AreNotEqual(true, dialog.ShowDialogAndCancelUnlessFinished());
+                Assert.AreEqual("Saved", context.Authors, "the export dialogs read this model, so an unfinished edit must not stay in it");
+                Assert.IsFalse(context.ConstrainToMassBankFormat);
+                Assert.AreEqual("SAVED_ID", context.MassBankContributorId);
+                Assert.AreEqual("Saved", vm.Authors.Value, "the dialog opens with the saved values next time");
+
+                // Finish keeps the edits.
+                var finished = OffscreenDialog(vm);
+                finished.Loaded += (s, e) => finished.Dispatcher.BeginInvoke(new Action(() => {
+                    vm.Authors.Value = "Edited";
+                    vm.FinishCommand.Execute(null);
+                    finished.DialogResult = true;
+                }), DispatcherPriority.ContextIdle);
+                Assert.AreEqual(true, finished.ShowDialogAndCancelUnlessFinished());
+                Assert.AreEqual("Edited", context.Authors);
+                Assert.AreEqual("Edited", parameter.Authors);
             });
             TestApplication.WaitForBackgroundWork();
         }

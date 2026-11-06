@@ -121,8 +121,9 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingView>("Analysis property setting", height: 700, width: 1000));
             broker.ToObservable<ProcessSettingViewModel>()
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
+            // The view model outlives the dialog, so closing it with the title-bar button must throw edits away as Cancel does.
             broker.ToObservable<ProjectPropertySettingViewModel>()
-                .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 600, width: 560));
+                .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 600, width: 560, cancelUnlessFinished: true));
             broker.ToObservable<ICompoundSearchViewModel>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
             broker.ToObservable<ExportMrmprobsViewModel>()
@@ -236,7 +237,7 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null, bool needDispose = false)
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null, bool needDispose = false, bool cancelUnlessFinished = false)
             where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
                 var dialog = new SettingDialog() {
@@ -250,7 +251,12 @@ namespace CompMs.App.Msdial.View.Core
                 if (finishCommandContent is not null) {
                     dialog.FinishCommandContent = finishCommandContent;
                 }
-                dialog.ShowDialog();
+                if (cancelUnlessFinished) {
+                    dialog.ShowDialogAndCancelUnlessFinished();
+                }
+                else {
+                    dialog.ShowDialog();
+                }
                 if (needDispose)
                 {
                     (viewmodel as IDisposable)?.Dispose();
