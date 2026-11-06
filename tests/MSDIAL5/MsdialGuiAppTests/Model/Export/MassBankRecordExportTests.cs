@@ -439,6 +439,76 @@ namespace CompMs.App.Msdial.Model.Export.Tests
         }
 
         [TestMethod()]
+        public void SingleFile_NamesALipidAtTheLevelItsMatchSupports() {
+            // CH$NAME takes the chain verdict of the peak's match result, as the other exports' names do.
+            var file = SaveLipidFile();
+            var parameter = new ProjectBaseParameter { IonMode = IonMode.Positive, };
+            var model = new MsdialAnalysisMassBankRecordExportModel(parameter, ValidStudyContext(parameter), new FlagEvaluator(), new MessageBroker())
+            {
+                ShouldExport = true,
+                ContributorID = Contributor,
+                IncludeSuggested = true,
+            };
+            var session = (IMsdialAnalysisExportSession)model;
+
+            session.BeginExport();
+            ((IMsdialAnalysisExport)model).Export(_output, file);
+            session.EndExport(_output);
+
+            string Field(string[] lines, string tag) => lines.Single(l => l.StartsWith(tag + ": ")).Substring(tag.Length + 2);
+            var records = Directory.GetFiles(Path.Combine(_output, "lipids"), "*.txt").Select(File.ReadAllLines).ToDictionary(lines => Field(lines, "CH$COMPOUND_CLASS"));
+            Assert.AreEqual(3, records.Count);
+            Assert.AreEqual("PC 16:0_18:1", Field(records["chains resolved"], "CH$NAME"));
+            Assert.AreEqual("PC 34:1", Field(records["class only"], "CH$NAME"));
+            Assert.AreEqual("PC 34:1", Field(records["suggested"], "CH$NAME"));
+            Assert.AreEqual("PC 34:1; LC-ESI-QTOF; MS2", Field(records["suggested"], "RECORD_TITLE"));
+            CollectionAssert.Contains(records["suggested"], "COMMENT: Original name: low score: PC 34:1|PC 16:0_18:1");
+            CollectionAssert.Contains(records["class only"], "COMMENT: Original name: PC 34:1|PC 16:0_18:1");
+        }
+
+        // A sample with three lipid peaks, all named "PC 34:1|PC 16:0_18:1": a reference match whose chains were resolved,
+        // one whose chains were not, and a low-score suggestion. CH$COMPOUND_CLASS tells the two matches apart.
+        private AnalysisFileBeanModel SaveLipidFile() {
+            var file = AnalysisFileBeanModelTestHelper.Create();
+            file.AnalysisFileId = 5;
+            file.AnalysisFileName = "lipids";
+            file.AnalysisFilePath = Path.Combine(_folder, "lipids.mzML");
+            file.File.PeakAreaBeanInformationFilePath = Path.Combine(_folder, "lipids.pai");
+            file.File.DeconvolutionFilePath = Path.Combine(_folder, "lipids.dcl");
+            var features = new[] {
+                (0, "PC 34:1|PC 16:0_18:1", "chains resolved", new MsScanMatchResult { Name = "PC 34:1|PC 16:0_18:1", Source = SourceType.MspDB, IsReferenceMatched = true, IsSpectrumMatch = true, IsPrecursorMzMatch = true, IsLipidClassMatch = true, IsLipidChainsMatch = true, TotalScore = 0.9f, }),
+                (1, "PC 34:1|PC 16:0_18:1", "class only", new MsScanMatchResult { Name = "PC 34:1|PC 16:0_18:1", Source = SourceType.MspDB, IsReferenceMatched = true, IsSpectrumMatch = true, IsPrecursorMzMatch = true, IsLipidClassMatch = true, IsLipidChainsMatch = false, TotalScore = 0.8f, }),
+                (2, "low score: PC 34:1|PC 16:0_18:1", "suggested", new MsScanMatchResult { Name = "PC 34:1|PC 16:0_18:1", Source = SourceType.MspDB, IsAnnotationSuggested = true, IsPrecursorMzMatch = true, TotalScore = 0.4f, }),
+            }.Select(entry => {
+                var (id, name, ontology, result) = entry;
+                var feature = new ChromatogramPeakFeature
+                {
+                    PeakID = id,
+                    MasterPeakID = id,
+                    MS1RawSpectrumIdTop = 12,
+                    MS2RawSpectrumID = 13,
+                    PrecursorMz = 760.5851,
+                    ChromXs = new ChromXs(12.345, ChromXType.RT, ChromXUnit.Min),
+                    IonMode = IonMode.Positive,
+                    Name = name,
+                    Ontology = ontology,
+                    Formula = FormulaStringParcer.OrganicElementsReader("C42H82NO8P"),
+                };
+                feature.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
+                feature.MatchResults.AddResult(result);
+                return feature;
+            }).ToList();
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakListFilePath, features);
+            MsdecResultsWriter.Write(file.File.DeconvolutionFilePath, Enumerable.Range(0, 3).Select(id => {
+                var msdec = new MSDecResult { ScanID = id, PrecursorMz = 760.5851, RawSpectrumID = 13, };
+                msdec.Spectrum.Add(new SpectrumPeak(184.0733214, 10000.2));
+                msdec.Spectrum.Add(new SpectrumPeak(760.5850813, 1200.9));
+                return msdec;
+            }).ToList());
+            return file;
+        }
+
+        [TestMethod()]
         public void SingleFile_IsRefusedWithoutAContributorId() {
             var broker = new MessageBroker();
             var messages = new List<MessageRequest>();

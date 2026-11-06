@@ -282,7 +282,7 @@ namespace CompMs.Common.Parser
         /// Writes the record, or throws <see cref="InvalidOperationException"/> with the reason when it cannot be built.
         /// </summary>
         public void WriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty) {
-            if (!TryWriteRecord(stream, peak, molecule, scan, ionProperty, MassBankAnnotationLevel.Unspecified, out var reason)) {
+            if (!TryWriteRecord(stream, peak, molecule, scan, ionProperty, MassBankAnnotationLevel.Unspecified, lipidChainsResolved: false, out var reason)) {
                 throw new InvalidOperationException($"MassBank record {GetAccession(peak)} was not written: {reason}");
             }
         }
@@ -291,15 +291,16 @@ namespace CompMs.Common.Parser
         /// Writes the record when it can be built; otherwise writes nothing, returns false and says why.
         /// </summary>
         public bool TryWriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, out string reason) {
-            return TryWriteRecord(stream, peak, molecule, scan, ionProperty, MassBankAnnotationLevel.Unspecified, out reason);
+            return TryWriteRecord(stream, peak, molecule, scan, ionProperty, MassBankAnnotationLevel.Unspecified, lipidChainsResolved: false, out reason);
         }
 
         /// <inheritdoc cref="TryWriteRecord(Stream, IChromatogramPeak, IMoleculeProperty, IMSScanProperty, IIonProperty, out string)"/>
-        public bool TryWriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel, out string reason) {
+        /// <param name="lipidChainsResolved">See <see cref="BuildRecord"/>.</param>
+        public bool TryWriteRecord(Stream stream, IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel, bool lipidChainsResolved, out string reason) {
             if (stream is null) {
                 throw new ArgumentNullException(nameof(stream));
             }
-            var result = BuildRecord(peak, molecule, scan, ionProperty, annotationLevel);
+            var result = BuildRecord(peak, molecule, scan, ionProperty, annotationLevel, lipidChainsResolved: lipidChainsResolved);
             if (!result.IsSuccess) {
                 reason = result.SkipReason;
                 return false;
@@ -317,11 +318,22 @@ namespace CompMs.Common.Parser
         /// The ID of the analysis file <paramref name="peak"/> belongs to, for a record of a peak list; null for an
         /// alignment spot. It selects the accession layout; see the remarks of <see cref="MassBankRecordHandler"/>.
         /// </param>
+        /// <param name="lipidChainsResolved">
+        /// MS-DIAL's chain verdict for the annotation (<c>MsScanMatchResult.IsLipidChainsMatch</c> of the representative
+        /// match), which decides the half of a dual lipid name ("PC 34:1|PC 16:0_18:1") CH$NAME is: the chain-level one
+        /// when true, the class-level one when false. False is the safe reading when the verdict is not known.
+        /// </param>
         /// <remarks>
         /// A record that is built takes its accession for good: a later record of this handler with the same accession
         /// is refused with <see cref="DuplicateAccessionReason"/>. A refused record takes nothing.
+        ///
+        /// CH$NAME and RECORD_TITLE carry the compound name every MS-DIAL export shows,
+        /// <see cref="AnnotationName.Canonical(string, bool)"/>: MS-DIAL's suggestion prefix removed and a dual lipid
+        /// name reduced to the level the evidence supports. A suggestion also loses the markers "Unsettled:" and
+        /// "Putative:", because the record states its level in COMMENT. Whenever the written name differs from the
+        /// spot's own, "COMMENT: Original name:" keeps the latter whole.
         /// </remarks>
-        public MassBankRecordResult BuildRecord(IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel = MassBankAnnotationLevel.Unspecified, int? analysisFileId = null) {
+        public MassBankRecordResult BuildRecord(IChromatogramPeak peak, IMoleculeProperty molecule, IMSScanProperty scan, IIonProperty ionProperty, MassBankAnnotationLevel annotationLevel = MassBankAnnotationLevel.Unspecified, int? analysisFileId = null, bool lipidChainsResolved = false) {
             if (peak is null) {
                 throw new ArgumentNullException(nameof(peak));
             }
@@ -367,17 +379,14 @@ namespace CompMs.Common.Parser
                 return Refuse($"the polarity is {polarity}, but a MassBank record is POSITIVE or NEGATIVE");
             }
 
-            // Name. A suggestion is named after its reference, without MS-DIAL's level prefix ("low score:", ...):
-            // CH$NAME is a compound name, and the level is stated in COMMENT.
+            // Name: the compound name every MS-DIAL export shows, so that CH$NAME never claims more than the other files
+            // of the run (a suggestion's prefix, or the sn-chains of a lipid whose chains nothing resolved).
             var isUnknown = annotationLevel == MassBankAnnotationLevel.Unknown;
             var originalName = molecule.Name ?? string.Empty;
             var prefixRemoved = false;
-            var nameSource = originalName;
-            if (annotationLevel == MassBankAnnotationLevel.Suggested && IsSuggestionName(originalName)) {
-                nameSource = StripSuggestionPrefixes(originalName);
-                prefixRemoved = true;
-            }
-            var name = isUnknown ? UnknownName : SanitizeName(nameSource);
+            var dualNameReduced = false;
+            var compoundName = isUnknown ? UnknownName : CompoundName(originalName, annotationLevel, lipidChainsResolved, out prefixRemoved, out dualNameReduced);
+            var name = isUnknown ? UnknownName : SanitizeName(compoundName);
             var hasName = name.Length > 0;
             if (!hasName) {
                 name = UnknownName;
@@ -453,9 +462,15 @@ namespace CompMs.Common.Parser
             }
             if (nameChanged) {
                 Line($"COMMENT: {Cut("Original name: " + CleanLine(originalName), MaxCommentLength).TrimEnd()}");
-                notes.Add(prefixRemoved && string.Equals(name, nameSource.Trim(), StringComparison.Ordinal)
-                    ? "the suggestion prefix was removed from CH$NAME"
-                    : "the name was changed to characters MassBank accepts");
+                if (prefixRemoved) {
+                    notes.Add("the suggestion prefix was removed from CH$NAME");
+                }
+                if (dualNameReduced) {
+                    notes.Add(DualNameNote);
+                }
+                if (!string.Equals(name, compoundName.Trim(), StringComparison.Ordinal)) {
+                    notes.Add("the name was changed to characters MassBank accepts");
+                }
             }
             if (annotationLevel == MassBankAnnotationLevel.Suggested) {
                 Line($"COMMENT: {SuggestedAnnotationComment}");
@@ -596,29 +611,57 @@ namespace CompMs.Common.Parser
             return false;
         }
 
-        private static readonly string[] SUGGESTION_PREFIXES = {
-            AnnotationName.LowScorePrefix, AnnotationName.NoMs2Prefix, AnnotationName.WithoutMs2Prefix, "Unsettled", "Putative",
-        };
+        // MS-DIAL's markers of a suggestion that AnnotationName.Canonical leaves alone, because the other exports keep
+        // them in the name: "Unsettled:" (set by hand) and "Putative:" (another spot kept the same reference). A MassBank
+        // record states the level in COMMENT instead.
+        private static readonly string[] LEVEL_MARKERS = { "Unsettled", "Putative", };
 
-        // "Unsettled: low score: Glycine" -> "Glycine".
-        private static string StripSuggestionPrefixes(string name) {
+        private static readonly string[] SUGGESTION_PREFIXES = new[] {
+            AnnotationName.LowScorePrefix, AnnotationName.NoMs2Prefix, AnnotationName.WithoutMs2Prefix,
+        }.Concat(LEVEL_MARKERS).ToArray();
+
+        /// <summary>The note a record carries when CH$NAME is one half of a dual lipid name.</summary>
+        private const string DualNameNote = "the dual lipid name was written at the level its evidence supports";
+
+        /// <summary>
+        /// The name CH$NAME and RECORD_TITLE are made from, before sanitising: <see cref="AnnotationName.Canonical"/>, the
+        /// name every MS-DIAL export shows, and for a suggestion also without the <see cref="LEVEL_MARKERS"/>.
+        /// </summary>
+        private static string CompoundName(string name, MassBankAnnotationLevel level, bool lipidChainsResolved, out bool prefixRemoved, out bool dualNameReduced) {
+            var original = name.Trim();
+            var value = level == MassBankAnnotationLevel.Suggested ? WithoutSuggestionMarkers(original) : original;
+            // The suggestion prefixes themselves are AnnotationName's, so that the list cannot drift from the writers'.
+            var withoutPrefix = AnnotationName.WithoutPrefix(value);
+            var canonical = AnnotationName.Canonical(value, lipidChainsResolved);
+            prefixRemoved = !string.Equals(withoutPrefix, original, StringComparison.Ordinal);
+            dualNameReduced = !string.Equals(canonical, withoutPrefix, StringComparison.Ordinal);
+            return canonical;
+        }
+
+        // "Unsettled: low score: Glycine" and "Putative: low score: Glycine" -> "Glycine": the level markers and
+        // AnnotationName's suggestion prefixes, in whatever order MS-DIAL stacked them.
+        private static string WithoutSuggestionMarkers(string name) {
             var value = name.Trim();
-            var stripped = true;
-            while (stripped) {
-                stripped = false;
-                foreach (var prefix in SUGGESTION_PREFIXES) {
-                    if (!value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
-                        continue;
-                    }
-                    var rest = value.Substring(prefix.Length).TrimStart();
-                    if (rest.StartsWith(":", StringComparison.Ordinal)) {
-                        value = rest.Substring(1).Trim();
-                        stripped = true;
-                        break;
-                    }
+            while (true) {
+                var next = AnnotationName.WithoutPrefix(WithoutLevelMarker(value)).Trim();
+                if (string.Equals(next, value, StringComparison.Ordinal)) {
+                    return value;
+                }
+                value = next;
+            }
+        }
+
+        private static string WithoutLevelMarker(string name) {
+            foreach (var marker in LEVEL_MARKERS) {
+                if (!name.StartsWith(marker, StringComparison.OrdinalIgnoreCase)) {
+                    continue;
+                }
+                var rest = name.Substring(marker.Length).TrimStart();
+                if (rest.StartsWith(":", StringComparison.Ordinal)) {
+                    return rest.Substring(1).Trim();
                 }
             }
-            return value;
+            return name;
         }
 
         // ---------------------------------------------------------------- peaks

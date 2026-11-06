@@ -135,7 +135,8 @@ namespace CompMs.App.Msdial.Model.Export
                     continue;
                 }
                 // Built in memory first: a spot that cannot become a valid record leaves no file behind.
-                var result = handler.BuildRecord(selection.Spot, selection.Spot, selection.Scan, selection.Spot, selection.Level);
+                // CH$NAME takes the spot's chain verdict, as the name in every other export of the alignment does.
+                var result = handler.BuildRecord(selection.Spot, selection.Spot, selection.Scan, selection.Spot, selection.Level, lipidChainsResolved: selection.Spot.AreLipidChainsResolved());
                 if (result.IsSuccess) {
                     File.WriteAllText(Path.Combine(exportDirectory, result.FileName), result.Text, encoding);
                     summary.AddWritten(result);

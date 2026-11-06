@@ -152,7 +152,8 @@ namespace CompMs.App.Msdial.Model.Export
                     continue;
                 }
                 // Built in memory first: a peak that cannot become a valid record leaves no file behind.
-                var result = handler.BuildRecord(feature, feature, msdec, feature, level, analysisFileId: fileBeanModel.AnalysisFileId);
+                // CH$NAME takes the peak's chain verdict, as the name in every other export of the peak list does.
+                var result = handler.BuildRecord(feature, feature, msdec, feature, level, analysisFileId: fileBeanModel.AnalysisFileId, lipidChainsResolved: feature.AreLipidChainsResolved());
                 if (!result.IsSuccess) {
                     summary.AddSkipped($"refused: {result.SkipReason}");
                     continue;

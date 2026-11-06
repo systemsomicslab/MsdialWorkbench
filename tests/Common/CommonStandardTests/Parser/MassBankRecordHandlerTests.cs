@@ -504,6 +504,70 @@ namespace CompMs.Common.Parser.Tests
             Assert.AreEqual("INCHIKEY ODHCTXKNWHHXJC-VKHMYHEASA-N", Value(lines, "CH$LINK"));
         }
 
+        // PC 34:1 as MS-DIAL names a lipid it matched at two levels; no structure, so that only the name is at stake.
+        private static MoleculeMsReference Lipid(string name) {
+            return new MoleculeMsReference
+            {
+                Name = name,
+                Formula = FormulaStringParcer.OrganicElementsReader("C42H82NO8P"),
+                Ontology = "PC",
+                SMILES = string.Empty,
+                InChIKey = string.Empty,
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
+                Spectrum = new List<SpectrumPeak> { new SpectrumPeak(184.0733214, 10000.2), new SpectrumPeak(496.3397711, 150.1), new SpectrumPeak(760.5850813, 1200.9), },
+            };
+        }
+
+        [TestMethod()]
+        public void Name_OfASuggestedLipidWithUnresolvedChainsIsItsClassLevelName() {
+            // MsReferenceScorer names a lipid "<class level>|<chain level>" when the chains were not resolved, and the
+            // suggestion path prefixes "low score: ". Nothing measured the sn-chains, so CH$NAME must not state them.
+            var handler = CreateHandler();
+            var reference = Lipid("low score: PC 34:1|PC 16:0_18:1");
+
+            var result = handler.BuildRecord(Peak(mz: 760.5851), reference, reference, reference, MassBankAnnotationLevel.Suggested, lipidChainsResolved: false);
+            var lines = Lines(result);
+
+            Assert.AreEqual("PC 34:1", Value(lines, "CH$NAME"));
+            Assert.AreEqual("PC 34:1; LC-ESI-QTOF; MS2", Value(lines, "RECORD_TITLE"));
+            var comments = lines.Where(l => l.StartsWith("COMMENT: ")).ToArray();
+            CollectionAssert.AreEqual(new[] { "COMMENT: Original name: low score: PC 34:1|PC 16:0_18:1", "COMMENT: MS-DIAL annotation level: suggested", }, comments);
+            Assert.IsFalse(lines.Except(comments).Any(l => l.Contains("16:0_18:1")), "only the original-name comment may mention the chains");
+            CollectionAssert.Contains(result.Notes.ToList(), "the suggestion prefix was removed from CH$NAME");
+            CollectionAssert.Contains(result.Notes.ToList(), "the dual lipid name was written at the level its evidence supports");
+        }
+
+        [TestMethod()]
+        public void Name_OfAReferenceMatchedLipidWithResolvedChainsIsItsChainLevelName() {
+            var handler = CreateHandler();
+            var dual = Lipid("PC 34:1|PC 16:0_18:1");
+            var lines = Lines(handler.BuildRecord(Peak(id: 1, mz: 760.5851), dual, dual, dual, MassBankAnnotationLevel.ReferenceMatched, lipidChainsResolved: true));
+            Assert.AreEqual("PC 16:0_18:1", Value(lines, "CH$NAME"));
+            Assert.AreEqual("PC 16:0_18:1; LC-ESI-QTOF; MS2", Value(lines, "RECORD_TITLE"));
+            CollectionAssert.Contains(lines, "COMMENT: Original name: PC 34:1|PC 16:0_18:1");
+
+            var chains = Lipid("PC 16:0_18:1");
+            lines = Lines(handler.BuildRecord(Peak(id: 2, mz: 760.5851), chains, chains, chains, MassBankAnnotationLevel.ReferenceMatched, lipidChainsResolved: true));
+            Assert.AreEqual("PC 16:0_18:1", Value(lines, "CH$NAME"));
+            Assert.IsNull(Value(lines, "COMMENT"), "a name written as it is needs no original-name comment");
+        }
+
+        // The rule of every other MS-DIAL export (NIST/MSP, SDF, MGF, tables, mzTab-M): AnnotationName.Canonical.
+        [DataTestMethod()]
+        [DataRow("PC 34:1|PC 16:0_18:1", false)]
+        [DataRow("PC 34:1|PC 16:0_18:1", true)]
+        [DataRow("no MS2: PC 34:1|PC 16:0_18:1", false)]
+        [DataRow("w/o MS2: Glycine", false)]
+        [DataRow("low score: Glycine", true)]
+        [DataRow("Glycine", false)]
+        public void Name_IsTheCanonicalNameOfTheOtherExports(string name, bool chainsResolved) {
+            foreach (var level in new[] { MassBankAnnotationLevel.Unspecified, MassBankAnnotationLevel.ReferenceMatched, MassBankAnnotationLevel.Suggested, }) {
+                var reference = Lipid(name);
+                var lines = Lines(CreateHandler().BuildRecord(Peak(mz: 760.5851), reference, reference, reference, level, lipidChainsResolved: chainsResolved));
+                Assert.AreEqual(CompMs.Common.Utility.AnnotationName.Canonical(name, chainsResolved), Value(lines, "CH$NAME"), level.ToString());
+            }
+        }
+
         [TestMethod()]
         public void Suggested_WithOnlyAPrefixAndAStructureIsRefused() {
             var handler = CreateHandler();

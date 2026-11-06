@@ -51,7 +51,7 @@ namespace CompMs.MsdialCore.Export
 
         /// <summary>Writes the record of <paramref name="spot"/>, or nothing, returning false with the reason.</summary>
         public bool TryExport(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult, MassBankAnnotationLevel annotationLevel, out string reason) {
-            return _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, annotationLevel, out reason);
+            return _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, annotationLevel, spot.AreLipidChainsResolved(), out reason);
         }
     }
 }
