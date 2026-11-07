@@ -283,13 +283,41 @@
                                       ToolTip="One MassBank record per reference-matched spot with MS/MS peaks."
                                       HorizontalAlignment="Left" VerticalAlignment="Center"
                                       Margin="8,8,0,0" Width="180"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Grid.Row="1"
+                            <StackPanel Orientation="Vertical" Grid.Row="1" Margin="0,4,0,0"
                                         IsEnabled="{Binding IsSelected.Value}">
-                                <TextBlock Text="Contributor ID:" Margin="8,0" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding ContributorID.Value, UpdateSourceTrigger=PropertyChanged}"
-                                         AutomationProperties.AutomationId="TextBox_MassBankContributorID"
-                                         ToolTip="The contributor ID MassBank assigned to you (1 to 32 of A-Z, 0-9 and _). It is the second block of every accession. Saved in Option &gt; Project property setting, it is filled in here."
-                                         Width="160"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Contributor ID:" Margin="8,0" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="ContributorIdBox"
+                                             Text="{Binding ContributorID.Value, UpdateSourceTrigger=PropertyChanged}"
+                                             AutomationProperties.AutomationId="TextBox_MassBankContributorID"
+                                             ToolTip="The contributor ID MassBank assigned to you (1 to 32 of A-Z, 0-9 and _). It is the second block of every accession. Saved in Option &gt; Project property setting, it is filled in here."
+                                             Width="160">
+                                        <!-- The message is drawn in the layout below, not in the adorner layer, so it never covers the check boxes. -->
+                                        <Validation.ErrorTemplate>
+                                            <ControlTemplate>
+                                                <DockPanel>
+                                                    <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                                                    <AdornedElementPlaceholder/>
+                                                </DockPanel>
+                                            </ControlTemplate>
+                                        </Validation.ErrorTemplate>
+                                    </TextBox>
+                                </StackPanel>
+                                <TextBlock Text="{Binding (Validation.Errors)/ErrorContent, ElementName=ContributorIdBox}"
+                                           AutomationProperties.AutomationId="TextBlock_MassBankContributorIDError"
+                                           Foreground="Red" TextWrapping="Wrap" MaxWidth="360" HorizontalAlignment="Left"
+                                           Margin="8,2,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding (Validation.HasError), ElementName=ContributorIdBox}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </StackPanel>
                             <StackPanel Orientation="Vertical" Margin="8,4,0,0" Grid.Row="2"
                                         IsEnabled="{Binding IsSelected.Value}">
