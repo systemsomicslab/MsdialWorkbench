@@ -6997,9 +6997,10 @@ AdductIon adduct)
             { //negative ion mode only
                 if (adduct.AdductIonName == "[M-H]-")
                 {
+                    // seek 241.01188(C6H10O8P-) and 315.048656(C9H16O10P- (NL of SN1))
                     var diagnosticMz1 = C6H12O9P - H2O + Electron;  // seek C6H10O8P-
                     var threshold1 = 1.0;
-                    var diagnosticMz2 = C6H12O9P + C3H4O2 - MassDiffDictionary.OxygenMass + Electron;//315.048656; // seek C9H16O10P- (NL of SN1)
+                    var diagnosticMz2 = C6H12O9P + C3H4O2 - MassDiffDictionary.OxygenMass + Electron; // seek C9H16O10P- (NL of SN1)
                     var threshold2 = 1.0;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold3 = 10.0;
@@ -15138,7 +15139,7 @@ AdductIon adduct)
                         + MassDiffDictionary.HydrogenMass * 40
                         + MassDiffDictionary.OxygenMass * 4
                         - H2O * 2
-                        - Proton;
+                        + Proton;
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
 
@@ -19204,13 +19205,8 @@ AdductIon adduct)
             { //negative ion mode only
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek C3H6O5P-
-                    var diagnosticMz1 =
-                        MassDiffDictionary.CarbonMass * 3
-                        + MassDiffDictionary.HydrogenMass * 6
-                        + MassDiffDictionary.OxygenMass * 5
-                        + MassDiffDictionary.PhosphorusMass * 1
-                        + Electron;  // seek C3H6O5P-
+                    // seek 241.01188(C6H10O8P-) and 320 C9D5H11O10P-(NL of SN1)
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;  // seek C6H10O8P-
                     var threshold1 = 1.0;
                     var diagnosticMz2 = 
                         MassDiffDictionary.CarbonMass * 9
@@ -19218,8 +19214,7 @@ AdductIon adduct)
                         + MassDiffDictionary.HydrogenMass * 11
                         + MassDiffDictionary.OxygenMass * 10
                         + MassDiffDictionary.PhosphorusMass * 1 
-                        + Electron
-                        ; // seek C9D5H11O10P-
+                        + Electron; // seek C9D5H11O10P-(NL of SN1)
                     var threshold2 = 1.0;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold3 = 10.0;

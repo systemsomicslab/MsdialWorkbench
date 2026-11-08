@@ -1315,9 +1315,9 @@ namespace CompMs.Common.Lipidomics {
             {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    var diagnosticMz1 = C6H12O9P - H2O + Electron;  // seek C3H6O5P-
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;  // seek C6H10O8P-
                     var threshold1 = 1.0;
-                    var diagnosticMz2 = 315.048656; // seek C9H16O10P-
+                    var diagnosticMz2 = C6H12O9P + C3H4O2 - MassDiffDictionary.OxygenMass + Electron; // seek C9H16O10P- (NL of SN1)
                     var threshold2 = 1.0;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold3 = 10.0;
@@ -3414,8 +3414,8 @@ namespace CompMs.Common.Lipidomics {
             {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    var diagnosticMz1 = C6H12O9P - H2O + Electron;  // seek C3H6O5P-
-                    var threshold1 = 0;
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;  //  seek C6H10O8P-
+                    var threshold1 = 0.001;
                     var diagnosticMz2 =
                         MassDiffDictionary.CarbonMass * 9
                         + MassDiffDictionary.Hydrogen2Mass * 5
@@ -3424,9 +3424,9 @@ namespace CompMs.Common.Lipidomics {
                         + MassDiffDictionary.PhosphorusMass * 1
                         + Electron
                         ; // seek C9D5H11O10P- 320.087237;
-                    var threshold2 = 0;
+                    var threshold2 = 0.001;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
-                    var threshold3 = 0;
+                    var threshold3 = 0.001;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
