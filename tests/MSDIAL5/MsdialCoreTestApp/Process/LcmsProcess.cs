@@ -448,6 +448,9 @@ public sealed class LcmsProcess
     private static void ReportAutomaticRtCorrection(AutomaticAlignmentRetentionTimeCorrectionResult result) {
         var reference = result.Files.FirstOrDefault(file => file.FileId == result.Correction.ReferenceFileId);
         Console.WriteLine($"Automatic alignment RT correction reference file ID: {result.Correction.ReferenceFileId}{(reference is null ? string.Empty : $" ({reference.FileName})")}");
+        if (!string.IsNullOrEmpty(result.ReferenceSelection)) {
+            Console.WriteLine($"Automatic alignment RT correction reference selection: {result.ReferenceSelection}");
+        }
         var uncorrected = result.Files
             .Where(file => file.FileType != AnalysisFileType.Blank && file.ModelSource == AutomaticRtCorrectionModelSource.Uncorrected)
             .ToList();

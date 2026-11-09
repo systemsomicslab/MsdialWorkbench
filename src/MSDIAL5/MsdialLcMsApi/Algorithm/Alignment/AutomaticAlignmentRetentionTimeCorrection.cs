@@ -58,6 +58,15 @@ public sealed class AutomaticRtCorrectionFileAudit {
     /// kept out of the selection. Null on the other files and when the mode reads no exclusions.
     /// </summary>
     public int? ExcludedAutomaticCandidates { get; internal set; }
+    /// <summary>
+    /// How far the user anchors detected in this file lie from the RTs the anchor library gives
+    /// them: the median over the detected rows of |observed RT - library RT| / the row's RT
+    /// tolerance. With an automatic reference in UserOnly and Hybrid mode, the file with the most
+    /// user anchors detected and then the smallest value is the reference, so this is the number
+    /// that says why one file was chosen over another. Null when the mode reads no library or no
+    /// user anchor was detected in the file.
+    /// </summary>
+    public double? LibraryRtDeviation { get; internal set; }
 }
 
 public sealed class AutomaticRtCorrectionAnchorAudit {
@@ -282,13 +291,30 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
         IReadOnlyList<AutomaticRtCorrectionFileAudit> files,
         IReadOnlyList<AutomaticRtCorrectionAnchorAudit> anchors,
         AutomaticRtCorrectionAnchorMode anchorMode = AutomaticRtCorrectionAnchorMode.Automatic,
-        IReadOnlyList<AutomaticRtCorrectionExclusionAudit>? exclusions = null) {
+        IReadOnlyList<AutomaticRtCorrectionExclusionAudit>? exclusions = null,
+        string referenceSelection = "") {
         Correction = correction;
         Files = files;
         Anchors = anchors;
         AnchorMode = anchorMode;
         Exclusions = exclusions ?? Array.Empty<AutomaticRtCorrectionExclusionAudit>();
+        ReferenceSelection = referenceSelection ?? string.Empty;
     }
+
+    /// <summary>The reference file was the one the parameter's ReferenceFileId names.</summary>
+    public const string ReferenceSelectionRequested = "Requested";
+    /// <summary>
+    /// The reference file was chosen from the detected peaks by RT coverage and centrality:
+    /// Automatic mode, and Hybrid mode when no eligible file has a user anchor detected.
+    /// </summary>
+    public const string ReferenceSelectionAutomatic = "Automatic (coverage and centrality)";
+    /// <summary>
+    /// The reference file was the one with the most user anchors detected, then the one whose
+    /// anchors lie closest to the library's RTs: UserOnly and Hybrid mode with user anchors
+    /// detected. A library approved from a preview carries the RTs its anchors had in the
+    /// preview's reference file, so that file is chosen again.
+    /// </summary>
+    public const string ReferenceSelectionByLibraryRt = "Automatic (most user anchors, closest to library RT)";
 
     public const string SummaryFileName = "automatic_alignment_rt_correction_summary.tsv";
     public const string AnchorsFileName = "automatic_alignment_rt_correction_anchors.tsv";
@@ -300,6 +326,14 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
     public AutomaticRtCorrectionAnchorMode AnchorMode { get; }
     /// <summary>The anchor library's False rows in Hybrid mode; empty otherwise.</summary>
     public IReadOnlyList<AutomaticRtCorrectionExclusionAudit> Exclusions { get; }
+    /// <summary>
+    /// How the reference file was chosen: <see cref="ReferenceSelectionRequested"/>,
+    /// <see cref="ReferenceSelectionAutomatic"/> or <see cref="ReferenceSelectionByLibraryRt"/>.
+    /// A preview and the run after it can choose their references by different rules (an
+    /// Automatic preview by coverage and centrality, a UserOnly run by the approved library's
+    /// RTs), and this is what says so. Empty when no reference was chosen.
+    /// </summary>
+    public string ReferenceSelection { get; }
 
     /// <summary>
     /// Removes the audit files of an earlier run from <paramref name="outputFolder"/>, so that a run
@@ -332,7 +366,8 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
             // Columns after "Note" were added later; readers that address columns by name are unaffected.
             writer.WriteLine("File ID\tFile name\tFile type\tAnalytical order\tCandidate count\tMatched anchors\tUsed anchors\tModel source\tReference score\tMedian absolute offset (min)\tMaximum absolute offset (min)\tNote"
                 + "\tEstimated scan interval (min)\tFirst used anchor RT (min)\tLast used anchor RT (min)\tPeaks before first used anchor\tPeaks after last used anchor"
-                + "\tAnchor mode\tUser anchors detected\tExcluded automatic candidates\tRun\tAnchor library\tAnchor library SHA-256");
+                + "\tAnchor mode\tUser anchors detected\tExcluded automatic candidates\tRun\tAnchor library\tAnchor library SHA-256"
+                + "\tReference selection\tLibrary RT deviation (RT tolerances)");
             foreach (var file in Files.OrderBy(file => file.AnalyticalOrder).ThenBy(file => file.FileId)) {
                 writer.WriteLine(string.Join("\t",
                     file.FileId.ToString(CultureInfo.InvariantCulture),
@@ -357,7 +392,9 @@ public sealed class AutomaticAlignmentRetentionTimeCorrectionResult {
                     file.ExcludedAutomaticCandidates?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
                     Cell(run),
                     Cell(anchorLibrary),
-                    Cell(anchorLibrarySha256)));
+                    Cell(anchorLibrarySha256),
+                    Cell(ReferenceSelection),
+                    file.LibraryRtDeviation?.ToString("G17", CultureInfo.InvariantCulture) ?? string.Empty));
             }
         }
 
@@ -491,15 +528,27 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
     /// raw extracted ion chromatogram, within its own m/z tolerance, RT tolerance and minimum
     /// height, and its target RT is the RT it was detected at in the reference file; the
     /// library's RT only centres the search. The reference is the non-Blank file with the most
-    /// of them detected, at least the minimum anchor count, then the highest reference score, in
-    /// which the closeness of its anchors to their median RT over the files takes the place of
-    /// the automatic centrality.
+    /// of them detected, at least the minimum anchor count, then the one whose detections lie
+    /// closest to the library's RTs (<see cref="AutomaticRtCorrectionFileAudit.LibraryRtDeviation"/>),
+    /// then the highest reference score, in which the closeness of its anchors to their median RT
+    /// over the files takes the place of the automatic centrality.
     /// </para>
     /// <para>
-    /// Hybrid: the reference is chosen as in Automatic mode, the True rows detected in it are
-    /// anchors whatever their coverage, and the automatic selection fills the RT bins they leave
-    /// empty, up to the maximum anchor count in all; it never takes a candidate a False row
-    /// covers or one that is a user anchor's own peak.
+    /// Hybrid: a file is eligible as the reference as in Automatic mode, its user anchors counted
+    /// with its candidates; among the eligible files the one with the most user anchors detected
+    /// wins, then the one closest to the library's RTs, then the automatic reference score, so
+    /// that with no user anchor detected the reference is Automatic mode's. The True rows
+    /// detected in it are anchors whatever their coverage, and the automatic selection fills the
+    /// RT bins they leave empty, up to the maximum anchor count in all; it never takes a
+    /// candidate a False row covers or one that is a user anchor's own peak.
+    /// </para>
+    /// <para>
+    /// The library's RTs decide between files in both modes because a library approved from a
+    /// preview carries, for each anchor, the RT it had in the preview's reference file: that file
+    /// lies at deviation 0 and is the reference again, so the run maps onto the axis the person
+    /// reviewed rather than onto a file chosen by another rule. For a library written by hand,
+    /// the file closest to the RTs the person wrote is the reference. A ReferenceFileId of 0 or
+    /// more names the reference in every mode.
     /// </para>
     /// <para>
     /// A user anchor is never rejected by the outlier test, which marks it instead (Outlier
@@ -573,17 +622,31 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             // eligible file fails before any raw data is read, as it always did; the anchor modes
             // need the user anchors' detections to choose it.
             FileSummary reference;
+            string referenceSelection;
             if (mode == AutomaticRtCorrectionAnchorMode.Automatic) {
-                reference = SelectAutomaticReference(summaries, parameter, mzTolerance, _ => 0);
+                reference = SelectAutomaticReference(summaries, parameter, mzTolerance);
+                referenceSelection = AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionAutomatic;
                 ReadRawData();
             }
             else {
                 ReadRawData();
+                foreach (var summary in summaries) {
+                    summary.LibraryRtDeviation = LibraryRtDeviation(libraryAnchors, readings[summary.File.AnalysisFileId]);
+                }
                 reference = mode == AutomaticRtCorrectionAnchorMode.UserOnly
                     ? SelectUserReference(summaries, libraryAnchors, readings, parameter)
-                    : SelectAutomaticReference(summaries, parameter, mzTolerance, summary => DistinctUserAnchorsDetected(readings[summary.File.AnalysisFileId]));
+                    : SelectHybridReference(summaries, readings, parameter, mzTolerance);
+                // The most user anchors detected is the first key in both modes, so a Hybrid
+                // reference with none means no eligible file had any, and the automatic score chose.
+                referenceSelection = mode == AutomaticRtCorrectionAnchorMode.Hybrid
+                    && DistinctUserAnchorsDetected(readings[reference.File.AnalysisFileId]) == 0
+                    ? AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionAutomatic
+                    : AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionByLibraryRt;
             }
-            return BuildFromReadings(files, parameter, mzTolerance, peakLoader, mode, libraryAnchors, exclusions, readings, summaries, reference);
+            if (parameter.ReferenceFileId >= 0) {
+                referenceSelection = AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionRequested;
+            }
+            return BuildFromReadings(files, parameter, mzTolerance, peakLoader, mode, libraryAnchors, exclusions, readings, summaries, reference, referenceSelection);
         }
         catch (Exception ex) when (ex is (InvalidOperationException or ArgumentException) and not AutomaticRtCorrectionFailedException) {
             throw new AutomaticRtCorrectionFailedException(
@@ -603,7 +666,8 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         IReadOnlyList<MoleculeMsReference> exclusions,
         IReadOnlyDictionary<int, AutomaticRtCorrectionRawFileReading> readings,
         IReadOnlyList<FileSummary> summaries,
-        FileSummary reference) {
+        FileSummary reference,
+        string referenceSelection) {
         int UserAnchorsDetected(AnalysisFileBean file) => DistinctUserAnchorsDetected(readings[file.AnalysisFileId]);
 
         var referenceReading = readings[reference.File.AnalysisFileId];
@@ -771,6 +835,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 ExcludedAutomaticCandidates = mode == AutomaticRtCorrectionAnchorMode.Hybrid && file.AnalysisFileId == reference.File.AnalysisFileId
                     ? excludedCandidates.Count
                     : null,
+                LibraryRtDeviation = summary.LibraryRtDeviation,
             };
 
             if (file.AnalysisFileId == reference.File.AnalysisFileId) {
@@ -860,7 +925,8 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             fileAudits,
             anchorAudits,
             mode,
-            exclusionAudits);
+            exclusionAudits,
+            referenceSelection);
     }
 
     // What was read before the correction failed, for the person to see why: every file's row,
@@ -889,6 +955,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
                 UserAnchorsDetected = mode == AutomaticRtCorrectionAnchorMode.Automatic || ReadingOf(summary.File) is null
                     ? null
                     : DistinctUserAnchorsDetected(ReadingOf(summary.File)!),
+                LibraryRtDeviation = summary.LibraryRtDeviation,
                 Note = $"Not corrected: {reason}",
             })
             .ToList();
@@ -1148,10 +1215,19 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         return 1d - Math.Min(1d, Median(deviations) / parameter.MatchRtTolerance);
     }
 
-    // Automatic and Hybrid: a non-Blank file with enough anchor candidates, its own automatic
-    // candidates and, in Hybrid mode, the user anchors detected in it, scored by coverage and
-    // centrality.
+    // Automatic: a non-Blank file with enough anchor candidates, scored by coverage and centrality.
     private static FileSummary SelectAutomaticReference(
+        IReadOnlyList<FileSummary> summaries,
+        AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
+        double mzTolerance) {
+        var eligibleReferences = ScoreAutomaticReferences(summaries, parameter, mzTolerance, _ => 0);
+        return SelectReference(eligibleReferences, parameter.ReferenceFileId);
+    }
+
+    // Automatic and Hybrid: the non-Blank files with enough anchor candidates, their own
+    // automatic candidates and, in Hybrid mode, the user anchors detected in them, each given its
+    // reference score from coverage and centrality.
+    private static List<FileSummary> ScoreAutomaticReferences(
         IReadOnlyList<FileSummary> summaries,
         AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
         double mzTolerance,
@@ -1169,14 +1245,59 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
             var weight = Clamp01(parameter.ReferenceCentralityWeight);
             summary.ReferenceScore = summary.Coverage * (1d - weight) + summary.Centrality * weight;
         }
-        return SelectReference(eligibleReferences, parameter.ReferenceFileId);
+        return eligibleReferences;
+    }
+
+    // Hybrid: eligible and scored as in Automatic mode. Among the eligible files, the one with the
+    // most user anchors detected wins, as in UserOnly mode, because a user anchor missing from the
+    // reference has no target RT; then the one whose user anchors lie closest to the library's
+    // RTs, the file an approved library was measured in; then the automatic ordering. With no user
+    // anchor detected in any eligible file the first two keys tie everywhere and the reference is
+    // Automatic mode's.
+    private static FileSummary SelectHybridReference(
+        IReadOnlyList<FileSummary> summaries,
+        IReadOnlyDictionary<int, AutomaticRtCorrectionRawFileReading> readings,
+        AutomaticAlignmentRetentionTimeCorrectionParameter parameter,
+        double mzTolerance) {
+        int Detected(FileSummary summary) => DistinctUserAnchorsDetected(readings[summary.File.AnalysisFileId]);
+        var eligible = ScoreAutomaticReferences(summaries, parameter, mzTolerance, Detected);
+        if (parameter.ReferenceFileId >= 0) {
+            return SelectReference(eligible, parameter.ReferenceFileId);
+        }
+        var medianOrder = Median(eligible.Select(summary => (double)summary.File.AnalysisFileAnalyticalOrder));
+        return eligible
+            .OrderByDescending(Detected)
+            .ThenBy(summary => summary.LibraryRtDeviation ?? double.PositiveInfinity)
+            .ThenByDescending(summary => summary.ReferenceScore)
+            .ThenByDescending(summary => summary.Candidates.Count)
+            .ThenBy(summary => Math.Abs(summary.File.AnalysisFileAnalyticalOrder - medianOrder))
+            .ThenBy(summary => summary.File.AnalysisFileId)
+            .First();
+    }
+
+    // The median, over the library's True rows detected in the file, of |observed RT - library
+    // RT| / the row's RT tolerance; null when none was detected. Every detected row counts, a row
+    // that took an earlier row's peak included: both were written at that RT.
+    private static double? LibraryRtDeviation(IReadOnlyList<MoleculeMsReference> anchors, AutomaticRtCorrectionRawFileReading reading) {
+        var deviations = new List<double>();
+        for (var index = 0; index < anchors.Count; index++) {
+            if (reading.UserAnchorObservations[index] is { } observation) {
+                deviations.Add(Math.Abs(observation.Rt - anchors[index].ChromXs.RT.Value) / anchors[index].RetentionTimeTolerance);
+            }
+        }
+        return deviations.Count == 0 ? null : Median(deviations);
     }
 
     // UserOnly: a non-Blank file with at least the minimum anchor count of user anchors detected.
     // The most detected wins, because an anchor missing from the reference has no target RT and
-    // corrects no file; then the reference score, in which the share of anchors detected takes
-    // the place of RT coverage and the closeness of the file's anchor RTs to their median over the
-    // non-Blank files, in units of each anchor's RT tolerance, the place of centrality.
+    // corrects no file; then the file whose anchors lie closest to the library's RTs
+    // (LibraryRtDeviation), because a library approved from a preview carries the RTs its anchors
+    // had in the preview's reference file, and choosing that file again keeps the run on the axis
+    // that was reviewed. Ties go to the reference score, in which the share of anchors detected
+    // takes the place of RT coverage and the closeness of the file's anchor RTs to their median
+    // over the non-Blank files, in units of each anchor's RT tolerance, the place of centrality.
+    // The median over files is not the first test after the count: it moves with the files in
+    // the batch, so it need not land on the file the library was measured in.
     private static FileSummary SelectUserReference(
         IReadOnlyList<FileSummary> summaries,
         IReadOnlyList<MoleculeMsReference> anchors,
@@ -1221,6 +1342,7 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         var medianOrder = Median(eligible.Select(summary => (double)summary.File.AnalysisFileAnalyticalOrder));
         return eligible
             .OrderByDescending(Detected)
+            .ThenBy(summary => summary.LibraryRtDeviation ?? double.PositiveInfinity)
             .ThenByDescending(summary => summary.ReferenceScore)
             .ThenBy(summary => Math.Abs(summary.File.AnalysisFileAnalyticalOrder - medianOrder))
             .ThenBy(summary => summary.File.AnalysisFileId)
@@ -1708,6 +1830,8 @@ public static class AutomaticAlignmentRetentionTimeCorrection {
         public double Coverage { get; }
         public double Centrality { get; set; }
         public double ReferenceScore { get; set; }
+        /// <summary>UserOnly and Hybrid: see <see cref="AutomaticRtCorrectionFileAudit.LibraryRtDeviation"/>.</summary>
+        public double? LibraryRtDeviation { get; set; }
     }
 
     private sealed class PeakPoint {
