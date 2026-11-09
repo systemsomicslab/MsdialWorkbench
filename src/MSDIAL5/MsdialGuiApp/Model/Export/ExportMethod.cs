@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using System;
 using System.Collections.Generic;
@@ -46,12 +47,18 @@ namespace CompMs.App.Msdial.Model.Export
             var outMetaPath = Path.Combine(exportDirectory, outMetaFile);
             notification?.Invoke(outMetaFile);
             var exporter = Format.CreateLongExporter();
+            // One PeakMaster serves every value type in PeakValues, so it reports the normalized
+            // unit only when normalized values are among them.
+            var metaAccessor = accessPeakMeta.GetAccessor();
+            if (exportTypes.Any(type => type.IsNormalized)) {
+                metaAccessor = new NormalizedUnitCommentMetadataAccessorDecorator(metaAccessor);
+            }
             using (var outstream = File.Open(outMetaPath, FileMode.Create, FileAccess.Write)) {
                 exporter.ExportMeta(
                     outstream,
                     lazySpots.Value,
                     msdecResults,
-                    accessPeakMeta.GetAccessor());
+                    metaAccessor);
             }
 
             var outFileMetaName = string.Format(outNameTemplate, "FileMaster");
@@ -95,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Export
                     msdecResults,
                     _analysisFiles,
                     fileMetaAccessor,
-                    accessor,
+                    exportType.DecorateMetadata(accessor),
                     exportType.QuantValueAccessor,
                     exportType.Stats);
             }

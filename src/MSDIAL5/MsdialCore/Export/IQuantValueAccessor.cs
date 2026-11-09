@@ -32,6 +32,11 @@ namespace CompMs.MsdialCore.Export
         private readonly string exportType;
         private readonly ParameterBase parameter;
 
+        /// <summary>
+        /// Whether this accessor reads the normalized height or area rather than a raw value.
+        /// </summary>
+        public bool IsNormalized => exportType == "Normalized height" || exportType == "Normalized area";
+
         public List<string> GetQuantHeaders(IReadOnlyList<AnalysisFileBean> files) {
             return files.OrderBy(file => file.AnalysisFileId).Select(file => file.AnalysisFileName).ToList();
         }
