@@ -21,6 +21,11 @@
         <RibbonButton Label="MS-CleanR peak filtering" LargeImageSource="{StaticResource MsCleanR_icon_is}"
                       Command="{Binding ShowMscleanrFilterSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="C"/>
+        <RibbonButton Label="Re-run lipid RT check" LargeImageSource="{StaticResource LipidRtCheck_icon_is}"
+                      Command="{Binding ShowLipidRtCheckSettingCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                      ToolTipTitle="Re-run lipid RT check"
+                      ToolTipDescription="LC-MS lipidomics: checks the retention-time order of the lipid annotations of the loaded alignment result and sets or withdraws its own Confirmed tags."
+                      KeyTip="L"/>
         <RibbonButton Label="Tables for Proteomics" LargeImageSource="{StaticResource TreeForProteomics_icon_is}"
                       Command="{Binding ShowProteinGroupTableCommand, Mode=OneTime, FallbackValue={x:Static common:NeverCommand.Instance}}"
                       KeyTip="T"/>

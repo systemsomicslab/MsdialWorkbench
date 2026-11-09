@@ -103,6 +103,7 @@ public static class MethodFileTemplate
         Threads(w, p);
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: true);
         w.Section("Deconvolution");
         w.Value("Sigma window value", F(p.SigmaWindowValue));
         w.Value("Amplitude cut off", F(p.ChromDecBaseParam.AmplitudeCutoff));
@@ -157,6 +158,7 @@ public static class MethodFileTemplate
         Threads(w, p);
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: false);
         w.Value("Max charge number", I(p.MaxChargeNumber));
         Adducts(w, p);
         w.Section("Deconvolution");
@@ -181,6 +183,7 @@ public static class MethodFileTemplate
         w.Choice("RT correction peak selection mode", p.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode.ToString(), Enum.GetNames(typeof(RetentionTimeCorrectionPeakSelectionMode)));
         w.Comment("Between 0 and 1.");
         w.Value("RT correction peak selection RT weight", D(p.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight));
+        LipidRtCheck(w, p.LipidRtCheckParam);
         w.Section("Console output");
         w.Value("Alignment light mode", "False");
         w.Value("Detailed alignment provenance", "False");
@@ -218,6 +221,7 @@ public static class MethodFileTemplate
         IonMobility(w, p.IonMobilityType, p.DriftTimeBegin, p.DriftTimeEnd, p.DriftTimeAlignmentTolerance, p.DriftTimeAlignmentFactor);
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: false);
         w.Value("Max charge number", I(p.MaxChargeNumber));
         Adducts(w, p);
         w.Section("Deconvolution");
@@ -242,6 +246,7 @@ public static class MethodFileTemplate
         w.Value("Accumulate MS2 spectra", B(p.IsAccumulateMS2Spectra));
         w.Section("Peak detection");
         PeakDetection(w, p);
+        ExcludedMasses(w, gcms: false);
         w.Value("Max charge number", I(p.MaxChargeNumber));
         Adducts(w, p);
         w.Section("Deconvolution");
@@ -292,6 +297,19 @@ public static class MethodFileTemplate
         w.Value("Minimum peak height", D(p.MinimumAmplitude));
         w.Value("Average peak width", F(p.AveragePeakWidth));
         w.Value("Mass slice width", F(p.MassSliceWidth));
+    }
+
+    /// <summary>
+    /// The exclusion mass list, blank: the built-in list is empty. DIMS processing does not read it,
+    /// so its template leaves it out.
+    /// </summary>
+    private static void ExcludedMasses(Writer w, bool gcms) {
+        w.Comment("Peaks whose m/z lies within the tolerance of one of these masses are removed, as the GUI's exclusion mass list does.");
+        if (gcms) {
+            w.Comment("In GC-MS those ions are also left out of every deconvoluted spectrum.");
+        }
+        w.Comment("Every entry is an m/z and then its tolerance in Da, 0.0001 or more: 149 207 removes every peak within 207 of m/z 149.");
+        w.Blank("Exclude mass list", "m/z and tolerance pairs separated by semicolons, e.g. 149:0.5; 207:0.5; 281:0.5. Leave blank to keep every peak.");
     }
 
     private static void Adducts(Writer w, ParameterBase p) {
@@ -417,6 +435,26 @@ public static class MethodFileTemplate
         w.Value("MS1 tolerance for alignment", F(p.Ms1AlignmentTolerance));
         w.Value("MS1 factor for alignment", F(p.Ms1AlignmentFactor));
         w.Value("Force insert peaks in gap filling", B(p.IsForceInsertForGapFilling));
+    }
+
+    private static void LipidRtCheck(Writer w, LipidRtCheckParameter c) {
+        w.Section("Lipid retention-time check (Target omics: Lipidomics)");
+        w.Comment("Confirms a lipid annotation whose class, total carbons, double bonds and oxygens elute in reversed-phase order");
+        w.Comment("among the run's other MS/MS-backed annotations of the class. It only ever sets the Confirmed tag; conflicts go to");
+        w.Comment("<alignment>_lipidrt_review.tsv. Auto runs it when Target omics is Lipidomics; False turns it off.");
+        w.Choice("Lipid RT check", c.IsEnabled is bool enabled ? B(enabled) : "Auto", "Auto", "True", "False");
+        w.Comment("Strict also requires corroboration (in a single-polarity run, a second adduct of the same feature); Mid and Balanced accept weaker support.");
+        w.Choice("Lipid RT check operating point", c.OperatingPoint.ToString(), Enum.GetNames(typeof(LipidRtOperatingPoint)));
+        w.Comment("Other (HILIC, SFC, direct infusion) evaluates nothing; Auto and ReversedPhase both test the data for reversed-phase order.");
+        w.Choice("Lipid RT check chromatography", c.Chromatography.ToString(), Enum.GetNames(typeof(LipidRtChromatography)));
+        w.Comment("Mammalian adds the chain rules: no fatty chain with 7 or more double bonds; sphingolipid N-acyl and base limits. No lipid class is excluded.");
+        w.Choice("Lipid RT check plausibility profile", c.PlausibilityProfile.ToString(), Enum.GetNames(typeof(LipidRtPlausibilityProfileKind)));
+        w.Comment("A class-level-only match: Confirmed with its feature (Consistent), only when corroborated (Corroborated; in a single-polarity run, by a second adduct), or never (Never).");
+        w.Choice("Lipid RT check class-level matches", c.ClassLevelPolicy.ToString(), Enum.GetNames(typeof(LipidRtClassLevelPolicy)));
+        w.Comment("Block withholds a less intense feature of the same species name at another RT.");
+        w.Choice("Lipid RT check minor duplicates", c.MinorDuplicatePolicy.ToString(), Enum.GetNames(typeof(LipidRtMinorDuplicatePolicy)));
+        w.Comment("Block withholds a feature seen only as Na, K, Li or multiply charged ions.");
+        w.Choice("Lipid RT check secondary-only features", c.SecondaryOnlyPolicy.ToString(), Enum.GetNames(typeof(LipidRtSecondaryOnlyPolicy)));
     }
 
     private static void Filtering(Writer w, ParameterBase p) {

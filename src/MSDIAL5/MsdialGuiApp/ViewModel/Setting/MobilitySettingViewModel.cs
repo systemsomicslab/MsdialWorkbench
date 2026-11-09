@@ -21,6 +21,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public MobilitySettingViewModel(MobilitySettingModel model, IObservable<bool> isEnabled) {
             this.model = model;
+            // The settings are shown only when every raw data file is present, so the rows of files that were missing
+            // when the project was opened are read now, before they are shown and edited.
+            model.ReadCalibrationOfRestoredFiles();
             IsReadOnly = model.IsReadOnly;
             IonMobilityType = model.ToReactivePropertySlimAsSynchronized(m => m.IonMobilityType).AddTo(Disposables);
 

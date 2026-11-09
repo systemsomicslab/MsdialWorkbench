@@ -40,7 +40,21 @@ namespace CompMs.App.Msdial.Model.DataObj
         public int CountRawFiles => _analysisFiles.Count;
 
         public AlignmentResultContainer RunAlignment(PeakAligner aligner, ChromatogramSerializer<ChromatogramSpotInfo>? serializer) {
-            return aligner.Alignment(_analysisFiles, _alignmentFile, serializer);
+            var container = aligner.Alignment(_analysisFiles, _alignmentFile, serializer);
+            WriteRemovedIsotopeSpots(aligner.RemovedIsotopeSpots);
+            return container;
+        }
+
+        /// <summary>
+        /// Lists, beside the alignment result, the spots the alignment left out because their representative peak is an
+        /// isotope (M + n) of another ion, so that a feature missing from the result can be found.
+        /// </summary>
+        private void WriteRemovedIsotopeSpots(IReadOnlyList<RemovedIsotopeSpot>? spots) {
+            var folder = Path.GetDirectoryName(_alignmentFile.FilePath);
+            if (spots is null || string.IsNullOrEmpty(folder)) {
+                return;
+            }
+            RemovedIsotopeSpotWriter.Write(RemovedIsotopeSpotWriter.PathFor(folder, _alignmentFile.FileName), spots);
         }
 
         public async Task<AlignmentResultContainer> LoadAlignmentResultAsync(CancellationToken token = default) {

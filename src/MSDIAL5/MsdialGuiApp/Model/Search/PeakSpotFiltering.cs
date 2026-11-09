@@ -90,6 +90,8 @@ namespace CompMs.App.Msdial.Model.Search
             foreach (var keywordFilterManager in KeywordFilterManagers) {
                 keywordFilterManager.TryAttachFilter(this, view, status);
             }
+            // Filters already switched on (e.g. keywords typed while another file was open) apply from the start.
+            view.Refresh();
         }
 
         public void AttachFilter(ValueFilterModel filterModel, Func<T, double> convert, ICollectionView view) {

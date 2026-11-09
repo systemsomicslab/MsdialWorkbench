@@ -4,10 +4,13 @@ using CompMs.Common.Enum;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -110,7 +113,8 @@ namespace CompMs.MsdialCore.Export
             //SML Header
             var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
             var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2);
+            var hasLipidRt = HasLipidRtVerdicts(spots);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic,hasComment,hasMs2, hasLipidRt);
             //SML data
 
             foreach (var spot in spots)
@@ -118,13 +122,13 @@ namespace CompMs.MsdialCore.Export
                 var metadata = metaAccessor.GetContent(spot, msdecResults[spot.MasterAlignmentID]);
                 WriteSmlDataLine(
                     sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2
+                    database, SmlDataHeader, internalStandardDic, hasComment,hasMs2, hasLipidRt
                     );
                 foreach (var driftSpot in spot.AlignmentDriftSpotFeatures ?? Enumerable.Empty<AlignmentSpotProperty>())
                 {
                     WriteSmlDataLine(
                         sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                        database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                         );
                 }
             }
@@ -217,7 +221,8 @@ namespace CompMs.MsdialCore.Export
 
             var hasComment = spots.Any(s => !string.IsNullOrEmpty(s.Comment));
             var hasMs2 = spots.Any(n => n.IsMsmsAssigned);
-            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic, hasComment, hasMs2);
+            var hasLipidRt = HasLipidRtVerdicts(spots);
+            var SmlDataHeader = WriteSmlHeader(sw, meta, RawFileMetadataDic, AnalysisFileClassDic, hasComment, hasMs2, hasLipidRt);
 
             var smfTemp = Path.GetTempFileName();
             var smeTemp = Path.GetTempFileName();
@@ -235,7 +240,7 @@ namespace CompMs.MsdialCore.Export
                         var metadata = metaAccessor.GetContent(spot, msdec);
                         WriteSmlDataLine(
                             sw, spot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                            database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                            database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                             );
                         WriteSmfDataLine(
                             smfWriter, spot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
@@ -246,7 +251,7 @@ namespace CompMs.MsdialCore.Export
                         {
                             WriteSmlDataLine(
                                 sw, driftSpot, meta, metadata, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
-                                database, SmlDataHeader, internalStandardDic, hasComment, hasMs2
+                                database, SmlDataHeader, internalStandardDic, hasComment, hasMs2, hasLipidRt
                                 );
                             WriteSmfDataLine(
                                 smfWriter, driftSpot, meta, quantAccessor, stats, RawFileMetadataDic, AnalysisFileClassDic,
@@ -312,6 +317,17 @@ namespace CompMs.MsdialCore.Export
         /// than a substring, and it covers "w/o MS2" as well, because that spelling says the same
         /// thing. "low score" still passes there, as it always has, because for those projects
         /// there is no record that could tell a weak comparison from a failed one.
+        ///
+        /// A spectrum predicted from a structure or a sequence is citable only when the match was
+        /// accepted. The measured spectrum was compared against it as against an acquired one, so an
+        /// accepted match has the same thing to cite, and the row says where the reference came from:
+        /// database_identifier carries the prefix of the database[n] that declares the library -- an
+        /// in-silico MSP library for DataBaseSource.PredictedMsp -- and nothing in the row claims an
+        /// acquired reference spectrum. A comparison that was not accepted stays uncited, because
+        /// RecordSpectrumVerdict does not grade a predicted comparison: one that fell short and one
+        /// that explained nothing both still read BySpectrumPredictionTool, so the acceptance is the
+        /// only line the record can draw. A structure predicted from the spectrum -- MS-FINDER,
+        /// SIRIUS -- was compared by nothing in MS-DIAL and stays uncited.
         /// </remarks>
         private static bool HasCitableSpectralEvidence(AlignmentSpotProperty spot) {
             var result = spot.MatchResults.Representative;
@@ -321,11 +337,22 @@ namespace CompMs.MsdialCore.Export
                 case AnnotationEvidenceSource.RuleBased:
                 case AnnotationEvidenceSource.WeakSpectrumMatch:
                     return true;
+                case AnnotationEvidenceSource.BySpectrumPredictionTool:
+                    return !IsUnacceptedPrediction(result);
                 case AnnotationEvidenceSource.Unspecified:
                     return !AnnotationName.IsPrecursorOnlySuggestion(spot.Name);
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// A match against a spectrum predicted from a structure that was not accepted: nothing to
+        /// cite, for the spot (<see cref="HasCitableSpectralEvidence"/>) and for each of its
+        /// candidates (<see cref="Assign"/>).
+        /// </summary>
+        private static bool IsUnacceptedPrediction(MsScanMatchResult result) {
+            return result.EvidenceSource == AnnotationEvidenceSource.BySpectrumPredictionTool && !result.IsReferenceMatched;
         }
 
         /// <summary>
@@ -382,13 +409,34 @@ namespace CompMs.MsdialCore.Export
             return groups;
         }
 
+        /// <remarks>
+        /// The spot gate, <see cref="HasCitableSpectralEvidence"/>, reads only the representative, and
+        /// every candidate of a spot that passes it used to become a row. With suggestions allowed for
+        /// an in-silico library, a spot whose representative was an accepted match therefore cited
+        /// every predicted spectrum its precursor window held as well -- on real data 2,403 rows
+        /// against 146 accepted matches. A predicted spectrum is citable only when the match against it
+        /// was accepted (see the gate for why acceptance is the only line the record can draw), and
+        /// that holds for each candidate, not only for the one that represents the spot. So each
+        /// predicted candidate is held to it here, whatever the suggestions setting.
+        ///
+        /// Only that arm of the gate is applied per candidate. A candidate against an acquired
+        /// spectrum, or one from a project saved before the evidence record existed, is written as
+        /// before, weak matches included: the gate calls a weak match citable, and the rank and
+        /// scores of the row say how far it got. A peptide candidate, whose b/y ladder is recorded as
+        /// predicted, is held to the same acceptance, as the gate already held a peptide
+        /// representative.
+        ///
+        /// The representative of a spot that passed the gate is never removed by this, so the rank 1
+        /// row is the one it always was; a drift spot, which the gate does not read, can lose all its
+        /// rows and then references none, as a drift spot without candidates always has.
+        /// </remarks>
         private static int Assign(Dictionary<AlignmentSpotProperty, SmeGroup> groups, AlignmentSpotProperty spot, int nextSmeId) {
-            var candidates = AnnotationCandidates.Of(spot.MatchResults);
-            if (candidates.Count == 0) {
+            var candidates = AnnotationCandidates.Of(spot.MatchResults).Where(candidate => !IsUnacceptedPrediction(candidate)).ToArray();
+            if (candidates.Length == 0) {
                 return nextSmeId;
             }
             groups[spot] = new SmeGroup(candidates, nextSmeId);
-            return nextSmeId + candidates.Count;
+            return nextSmeId + candidates.Length;
         }
 
         private static SmeGroup? GroupOf(Dictionary<AlignmentSpotProperty, SmeGroup> groups, AlignmentSpotProperty spot)
@@ -424,7 +472,8 @@ namespace CompMs.MsdialCore.Export
             IReadOnlyList<string> SmlDataHeader,
             IReadOnlyDictionary<int, string> internalStandardDic,
             bool hasComment,
-            bool hasMs2
+            bool hasMs2,
+            bool hasLipidRt
             )
         {
             var matchResult = spot.MatchResults.Representative;
@@ -537,6 +586,10 @@ namespace CompMs.MsdialCore.Export
                 LineData.Add(string.IsNullOrEmpty(spot.Comment) ? "null" : spot.Comment);
             }
             LineData.AddRange(SetOntology(spot));  // add 20260127
+            if (hasLipidRt)
+            {
+                LineData.AddRange(SetLipidRtVerdict(spot));
+            }
             sw.WriteLine(string.Join(Separator, LineMetaData)
             + Separator
             + string.Join(Separator, LineData));
@@ -1072,7 +1125,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         private List<string> WriteSmlHeader(StreamWriter sw, ParameterBase meta, IReadOnlyDictionary<int, RawFileMetadata> RawFileMetadataDic,
-            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2)
+            Dictionary<int, string> AnalysisFileClassDic, bool hasComment, bool hasMs2, bool hasLipidRt)
         {
 
             var SmlHeaderMeta = new List<string>()
@@ -1124,6 +1177,14 @@ namespace CompMs.MsdialCore.Export
                 SmlDataHeader.Add("opt_global_user_comment");
             }
             SmlDataHeader.Add("opt_global_Ontology");
+            // The lipid RT check's verdict, after the ontology so that no existing column moves. Written when the check
+            // left a verdict on any spot; a spot it did not evaluate reads "null".
+            if (hasLipidRt)
+            {
+                SmlDataHeader.Add("opt_global_lipid_rt_outcome");
+                SmlDataHeader.Add("opt_global_lipid_rt_reason");
+                SmlDataHeader.Add("opt_global_lipid_rt_score");
+            }
 
             sw.WriteLine(string.Join(Separator, SmlHeaderMeta) + Separator + string.Join(Separator, SmlDataHeader));
             return SmlDataHeader;
@@ -1263,6 +1324,32 @@ namespace CompMs.MsdialCore.Export
         )
         {
             return new List<string>() { ValueOrNull(spot.Ontology) };
+        }
+
+        private static bool HasLipidRtVerdicts(IReadOnlyList<AlignmentSpotProperty> spots)
+        {
+            return spots.Any(s => s.LipidRtVerdict != null
+                || (s.AlignmentDriftSpotFeatures?.Any(d => d.LipidRtVerdict != null) ?? false));
+        }
+
+        /// <summary>
+        /// opt_global_lipid_rt_outcome, _reason and _score: the outcome and reason names of the lipid RT check
+        /// (e.g. "Confirmed", "ConfirmedRt") and its graded score, "null" where the spot was not evaluated.
+        /// </summary>
+        private static List<string> SetLipidRtVerdict(
+            AlignmentSpotProperty spot
+        )
+        {
+            var verdict = spot.LipidRtVerdict;
+            if (verdict is null)
+            {
+                return new List<string>() { "null", "null", "null" };
+            }
+            return new List<string>() {
+                verdict.Outcome.ToString(),
+                verdict.Reason.ToString(),
+                verdict.Score is double score ? score.ToString("R", CultureInfo.InvariantCulture) : "null",
+            };
         }
         private static IReadOnlyDictionary<int, string> SetStandardDic(
         IReadOnlyList<AlignmentSpotProperty> spots
@@ -1555,98 +1642,10 @@ namespace CompMs.MsdialCore.Export
                 var analysisFilePath = files[i].AnalysisFilePath;
                 var analysisFileExtention = Path.GetExtension(analysisFilePath).ToUpper();
 
-                var msRunFormat = ""; // analysed file format
-                var msRunIDFormat = ""; // analysed file Datapoint Number
-                switch (analysisFileExtention)
-                {
-                    case (".ABF"):
-                        msRunFormat = "[,, ABF(Analysis Base File) file, ]";
-                        msRunIDFormat = "[,, ABF file Datapoint Number, ]";
-                        break;
-                    case (".IBF"):
-                        msRunFormat = "[,, IBF file, ]";
-                        msRunIDFormat = "[,, IBF file Datapoint Number, ]";
-                        break;
-                    case (".WIFF"):
-                    case (".WIFF2"):
-                        msRunFormat = "[MS, MS:1000562, ABI WIFF format, ]";
-                        msRunIDFormat = "[MS, MS:1000770, WIFF nativeID format, ]";
-                        break;
-                    case (".D"):
-                        // Agilent and Bruker both write a ".d" folder. Bruker's holds analysis.baf
-                        // (BAF) or analysis.tdf / analysis.tsf (timsTOF); Agilent's holds AcqData.
-                        if (File.Exists(Path.Combine(analysisFilePath, "analysis.tdf")))
-                        {
-                            msRunFormat = "[MS, MS:1002817, Bruker TDF format, ]";
-                            msRunIDFormat = "[MS, MS:1002818, Bruker TDF nativeID format, ]";
-                        }
-                        else if (File.Exists(Path.Combine(analysisFilePath, "analysis.tsf")))
-                        {
-                            msRunFormat = "[MS, MS:1003282, Bruker TSF format, ]";
-                            msRunIDFormat = "[MS, MS:1003283, Bruker TSF nativeID format, ]";
-                        }
-                        else if (File.Exists(Path.Combine(analysisFilePath, "analysis.baf")))
-                        {
-                            msRunFormat = "[MS, MS:1000815, Bruker BAF format, ]";
-                            msRunIDFormat = "[MS, MS:1000772, Bruker BAF nativeID format, ]";
-                        }
-                        else if (Directory.Exists(Path.Combine(analysisFilePath, "AcqData")))
-                        {
-                            msRunFormat = "[MS, MS:1001509, Agilent MassHunter format, ]";
-                            msRunIDFormat = "[MS, MS:1001508, Agilent MassHunter nativeID format, ]";
-                        }
-                        else
-                        {
-                            msRunFormat = "[,, Unknown .d folder format, ]";
-                            msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
-                        }
-                        break;
-                    case (".CDF"):
-                        msRunFormat = "[EDAM, format:3650, netCDF, ]";
-                        msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
-                        break;
-                    case (".MZML"):
-                        msRunFormat = "[MS, MS:1000584, mzML format, ]";
-                        msRunIDFormat = "[MS, MS:1000776, scan number only nativeID format, ]";
-                        break;
-                    case (".RAW"):
-                        var isDirectory = System.IO.File.GetAttributes(analysisFilePath).HasFlag(FileAttributes.Directory);
-                        if (isDirectory)
-                        {
-                            msRunFormat = "[MS, MS:1000526, Waters raw format, ]";
-                            msRunIDFormat = "[MS, MS:1000769, Waters nativeID format, ]";
-                        }
-                        else
-                        {
-                            msRunFormat = "[MS, MS:1000563, Thermo RAW format, ]";
-                            msRunIDFormat = "[MS, MS:1000768, Thermo nativeID format, ]";
-                        }
-                        break;
-                    case (".LRP"):
-                        msRunFormat = "[,, LRP file, ]";
-                        msRunIDFormat = "[,, LRP file Datapoint Number, ]";
-                        break;
-                    case (".HMD"):
-                        msRunFormat = "[,, Hive HMD file, ]";
-                        msRunIDFormat = "[,, Hive HMD file Datapoint Number, ]";
-                        break;
-                    case (".MZB"):
-                        msRunFormat = "[,, Hive mzB file, ]";
-                        msRunIDFormat = "[,, Hive mzB file Datapoint Number, ]";
-                        break;
-                    case (".LCD"):
-                        msRunFormat = "[MS, MS:1003009, Shimadzu Biotech LCD format, ]";
-                        msRunIDFormat = "[MS, MS:1000929, Shimadzu Biotech nativeID format, ]";
-                        break;
-                    case (".QGD"):
-                        msRunFormat = "[,, Shimadzu GC/MS format, ]";
-                        msRunIDFormat = "[,, Shimadzu GC/MS format file Datapoint Number, ]";
-                        break;
-                    default:
-                        msRunFormat = "[,, Unknown file format, ]";
-                        msRunIDFormat = "[,, Unknown file format Datapoint Number, ]";
-                        break;
-                }
+                // A file on disk is described by what the disk shows, as before formats were recorded. A file whose raw
+                // data have since been deleted or moved is described by the format recorded while they were present; with
+                // nothing recorded (a project saved before formats were recorded) it gets the unknown terms.
+                var (msRunFormat, msRunIDFormat) = MsRunFormatTerms(RawFileFormatClassifier.Resolve(files[i]), analysisFileExtention);
                 msRunIDFormat = "[,, MS-DIAL set Datapoint Number, ]";
                 var id = files[i].AnalysisFileId + 1;
                 fileMetadataDic.Add(id, new RawFileMetadata()
@@ -1668,6 +1667,73 @@ namespace CompMs.MsdialCore.Export
                 });
             }
             return fileMetadataDic;
+        }
+
+        /// <summary>
+        /// The ms_run format and nativeID format terms for a raw data file of <paramref name="format"/>. An unknown
+        /// format is described by a user term that names only the extension (<paramref name="upperExtension"/>, upper case).
+        /// </summary>
+        /// <remarks>
+        /// These are the terms the exporter wrote when it told the format from the file on disk, kept as they were.
+        /// The nativeID format is not written: every run's id_format is "MS-DIAL set Datapoint Number", because
+        /// spectra_ref uses MS-DIAL's scan numbers. imzML has no term here and is written as an unknown file.
+        /// </remarks>
+        internal static (string Format, string IdFormat) MsRunFormatTerms(RawFileFormat format, string upperExtension)
+        {
+            switch (format)
+            {
+                case RawFileFormat.Abf:
+                    return ("[,, ABF(Analysis Base File) file, ]", "[,, ABF file Datapoint Number, ]");
+                case RawFileFormat.Ibf:
+                    return ("[,, IBF file, ]", "[,, IBF file Datapoint Number, ]");
+                case RawFileFormat.SciexWiff:
+                case RawFileFormat.SciexWiff2:
+                    return ("[MS, MS:1000562, ABI WIFF format, ]", "[MS, MS:1000770, WIFF nativeID format, ]");
+                // Agilent and Bruker both write a ".d" folder. Bruker's holds analysis.baf
+                // (BAF) or analysis.tdf / analysis.tsf (timsTOF); Agilent's holds AcqData.
+                case RawFileFormat.BrukerTdf:
+                    return ("[MS, MS:1002817, Bruker TDF format, ]", "[MS, MS:1002818, Bruker TDF nativeID format, ]");
+                case RawFileFormat.BrukerTsf:
+                    return ("[MS, MS:1003282, Bruker TSF format, ]", "[MS, MS:1003283, Bruker TSF nativeID format, ]");
+                case RawFileFormat.BrukerBaf:
+                    return ("[MS, MS:1000815, Bruker BAF format, ]", "[MS, MS:1000772, Bruker BAF nativeID format, ]");
+                case RawFileFormat.AgilentMassHunterD:
+                    return ("[MS, MS:1001509, Agilent MassHunter format, ]", "[MS, MS:1001508, Agilent MassHunter nativeID format, ]");
+                case RawFileFormat.NetCdf:
+                    return ("[EDAM, format:3650, netCDF, ]", "[MS, MS:1000776, scan number only nativeID format, ]");
+                case RawFileFormat.MzML:
+                    return ("[MS, MS:1000584, mzML format, ]", "[MS, MS:1000776, scan number only nativeID format, ]");
+                // A Waters .raw is a folder and a Thermo .raw a file.
+                case RawFileFormat.WatersRaw:
+                    return ("[MS, MS:1000526, Waters raw format, ]", "[MS, MS:1000769, Waters nativeID format, ]");
+                case RawFileFormat.ThermoRaw:
+                    return ("[MS, MS:1000563, Thermo RAW format, ]", "[MS, MS:1000768, Thermo nativeID format, ]");
+                case RawFileFormat.KanomaxLrp:
+                    return ("[,, LRP file, ]", "[,, LRP file Datapoint Number, ]");
+                case RawFileFormat.HiveHmd:
+                    return ("[,, Hive HMD file, ]", "[,, Hive HMD file Datapoint Number, ]");
+                case RawFileFormat.HiveMzb:
+                    return ("[,, Hive mzB file, ]", "[,, Hive mzB file Datapoint Number, ]");
+                case RawFileFormat.ShimadzuLcd:
+                    return ("[MS, MS:1003009, Shimadzu Biotech LCD format, ]", "[MS, MS:1000929, Shimadzu Biotech nativeID format, ]");
+                case RawFileFormat.ShimadzuQgd:
+                    return ("[,, Shimadzu GC/MS format, ]", "[,, Shimadzu GC/MS format file Datapoint Number, ]");
+                case RawFileFormat.ImzML:
+                case RawFileFormat.Unknown:
+                default:
+                    break;
+            }
+            // A .raw or .d whose format was never recorded and that is not on disk (or holds nothing recognisable)
+            // is neither vendor's, and is described as unknown rather than as a vendor it may not be.
+            switch (upperExtension)
+            {
+                case (".RAW"):
+                    return ("[,, Unknown .raw format, ]", "[,, Unknown file format Datapoint Number, ]");
+                case (".D"):
+                    return ("[,, Unknown .d folder format, ]", "[,, Unknown file format Datapoint Number, ]");
+                default:
+                    return ("[,, Unknown file format, ]", "[,, Unknown file format Datapoint Number, ]");
+            }
         }
 
         static string SetAdductTypeString(string adductIons)

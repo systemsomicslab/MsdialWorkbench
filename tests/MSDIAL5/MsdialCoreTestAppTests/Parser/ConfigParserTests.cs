@@ -7,6 +7,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -418,6 +419,98 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    [DataRow("Automatic", AutomaticRtCorrectionAnchorMode.Automatic)]
+    [DataRow("UserOnly", AutomaticRtCorrectionAnchorMode.UserOnly)]
+    [DataRow("user_only", AutomaticRtCorrectionAnchorMode.UserOnly)]
+    [DataRow("User only", AutomaticRtCorrectionAnchorMode.UserOnly)]
+    [DataRow("hybrid", AutomaticRtCorrectionAnchorMode.Hybrid)]
+    public void ReadCommonParameter_ReadsTheAnchorModeOfTheAutomaticRtCorrection(string value, AutomaticRtCorrectionAnchorMode expected)
+    {
+        var parameter = new MsdialLcmsParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "automatic rt correction anchor mode", value).IsApplied);
+
+        Assert.AreEqual(expected, parameter.AlignmentBaseParam.AutomaticRtCorrection.AnchorMode);
+    }
+
+    [TestMethod]
+    public void ReadCommonParameter_ReadsTheAnchorLibraryAndPeakSelectionOfTheAutomaticRtCorrection()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var settings = new[] {
+            ("automatic rt correction anchor library file path", "anchors/Anchor Library.txt"),
+            ("automatic rt correction anchor peak selection mode", "closesttoreferencert"),
+            ("automatic rt correction anchor peak selection rt weight", "0.25"),
+        };
+
+        foreach (var (key, value) in settings) {
+            Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsApplied, key);
+        }
+
+        var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
+        Assert.AreEqual("anchors/Anchor Library.txt", actual.AnchorLibraryFilePath, "the path keeps its letter case");
+        Assert.AreEqual(RetentionTimeCorrectionPeakSelectionMode.ClosestToReferenceRt, actual.AnchorPeakSelectionMode);
+        Assert.AreEqual(0.25f, actual.AnchorPeakSelectionRtWeight, 1e-7f);
+    }
+
+    [TestMethod]
+    [DataRow("automatic rt correction anchor mode", "manual")]
+    [DataRow("automatic rt correction anchor mode", "1")]
+    [DataRow("automatic rt correction anchor peak selection mode", "closest")]
+    [DataRow("automatic rt correction anchor peak selection mode", "2")]
+    [DataRow("automatic rt correction anchor peak selection rt weight", "1.5")]
+    [DataRow("automatic rt correction anchor peak selection rt weight", "-0.1")]
+    [DataRow("automatic rt correction anchor peak selection rt weight", "half")]
+    public void ReadCommonParameter_RefusesAnAnchorSettingItCannotUse(string key, string value)
+    {
+        var parameter = new MsdialLcmsParameter();
+        var defaults = new AutomaticAlignmentRetentionTimeCorrectionParameter();
+
+        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsUnusableValue);
+
+        var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
+        Assert.AreEqual(defaults.AnchorMode, actual.AnchorMode);
+        Assert.AreEqual(defaults.AnchorPeakSelectionMode, actual.AnchorPeakSelectionMode);
+        Assert.AreEqual(defaults.AnchorPeakSelectionRtWeight, actual.AnchorPeakSelectionRtWeight);
+    }
+
+    [TestMethod]
+    public void ReadForLcms_ReadsARelativeAnchorLibraryPathFromTheMethodFilesFolder()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            """);
+
+        var parameter = ConfigParser.ReadForLcmsParameter(methodFile);
+
+        Assert.AreEqual(Path.GetFullPath(library), parameter.AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath);
+        CollectionAssert.IsSubsetOf(
+            new[] { "Automatic RT correction anchor mode", "Automatic RT correction anchor library file path" },
+            RecordedKeys(methodFile, "applied"));
+    }
+
+    [TestMethod]
+    public void ReadAutomaticRtCorrectionPreviewOnly_IsOffUnlessTheMethodFileSaysTrue()
+    {
+        using var directory = new TemporaryDirectory();
+        var none = directory.CreateFile("none.txt", "Execute automatic RT correction for alignment: True\n");
+        var on = directory.CreateFile("on.txt", "Automatic RT correction preview only: True\n");
+        var unusable = directory.CreateFile("unusable.txt", "Automatic RT correction preview only: yes\n");
+
+        Assert.IsFalse(ConfigParser.ReadAutomaticRtCorrectionPreviewOnly(none));
+        Assert.IsTrue(ConfigParser.ReadAutomaticRtCorrectionPreviewOnly(on));
+        Assert.IsFalse(ConfigParser.ReadAutomaticRtCorrectionPreviewOnly(unusable));
+        ConfigParser.ReadForLcmsParameter(unusable);
+        CollectionAssert.AreEqual(new[] { "Automatic RT correction preview only: yes" }, RecordedKeys(unusable, "unusable"));
+    }
+
+    [TestMethod]
     public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
     {
         // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller
@@ -542,6 +635,7 @@ public sealed class ConfigParserTests
     [DataRow("Export detailed alignment provenance", "false")]
     [DataRow("Annotation candidates", "true")]
     [DataRow("Export annotation candidates", "false")]
+    [DataRow("Automatic RT correction preview only", "true")]
     public void ReadForLcms_KeyRecordAcceptsEverySpellingTheSideReadersAccept(string key, string value)
     {
         using var directory = new TemporaryDirectory();
@@ -855,6 +949,130 @@ public sealed class ConfigParserTests
     }
 
     /// <summary>
+    /// The automatic RT correction's settings and anchor library are checked before the analysis
+    /// files are read: each of these stops the run at once, with the reason.
+    /// </summary>
+    [TestMethod]
+    [DataRow("Automatic RT correction preview only: yes\n", "neither True nor False")]
+    [DataRow("Execute automatic RT correction for alignment: False\nAutomatic RT correction preview only: True\n", "preview only requires Execute automatic RT correction")]
+    [DataRow("Automatic RT correction minimum anchors: 1\n", "minimum anchor count must be 2 or more")]
+    [DataRow("Automatic RT correction anchor mode: UserOnly\n", "anchor library file path is required")]
+    [DataRow("Automatic RT correction anchor mode: Hybrid\nAutomatic RT correction anchor library file path: no-such-anchors.txt\n", "was not found")]
+    [DataRow("Automatic RT correction anchor mode: UserOnly\nAutomatic RT correction anchor library file path: flagged.txt\n", "line 3")]
+    public void LcmsProcess_RefusesAnAutomaticRtCorrectionItCannotRunBeforeReadingAnything(string lines, string reason)
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile(
+            "flagged.txt",
+            "Name\tRT(min)\tRT tol.(min)\tm/z\tm/z tol.\tMinimum height\tT/F\n"
+            + "A\t1\t1\t100\t0.01\t1000\tTrue\n"
+            + "B\t2\t1\t200\t0.01\t1000\tyes\n"
+            + "C\t3\t1\t300\t0.01\t1000\tTrue\n");
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            "Execute automatic RT correction for alignment: True\nTogether with alignment: True\n" + lines);
+
+        var (result, output, error) = RunLcms(directory, methodFile);
+
+        Assert.AreEqual(-1, result);
+        StringAssert.Contains(error, reason);
+        Assert.IsFalse(output.Contains("Start processing"), output);
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysWhatTheAnchorLibraryHoldsAndWarnsAboutRowsTheRunWillNotFind()
+    {
+        using var directory = new TemporaryDirectory();
+        var library = directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B", "Anchor C"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Together with alignment: True
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            Excluded mass list: 200 0.01
+            RT correction peak selection mode: ClosestToReferenceRt
+            """);
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        StringAssert.Contains(output, "anchor mode UserOnly: 3 user anchor(s) and 0 exclusion(s)");
+        using (var sha = System.Security.Cryptography.SHA256.Create()) {
+            var checksum = string.Concat(sha.ComputeHash(File.ReadAllBytes(library)).Select(value => value.ToString("x2")));
+            StringAssert.Contains(output, $"(SHA-256 {checksum})");
+        }
+        StringAssert.Contains(output, "user anchor Anchor B (m/z 200) lies within the excluded mass 200");
+        StringAssert.Contains(output, "User anchors: Anchor A, Anchor B, Anchor C.");
+        StringAssert.Contains(output, "'RT correction peak selection mode' is ClosestToReferenceRt, but user anchors are chosen by 'Automatic RT correction anchor peak selection mode', which is HighestIntensity");
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysAnAnchorLibraryTheAnchorModeDoesNotReadIsNotUsed()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B", "Anchor C"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Together with alignment: True
+            Automatic RT correction anchor library file path: anchors.txt
+            """);
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        StringAssert.Contains(output, "but the anchor mode is Automatic, so the library is not used");
+
+        var off = directory.CreateFile(
+            "off.txt",
+            """
+            Execute automatic RT correction for alignment: False
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            """);
+        var (_, offOutput, _) = RunLcms(directory, off);
+        StringAssert.Contains(offOutput, "but 'Execute automatic RT correction for alignment' is False, so the library is not used");
+    }
+
+    [TestMethod]
+    public void LcmsProcess_ARunThatStopsAtTheImportLeavesAnEarlierAuditAlone()
+    {
+        using var directory = new TemporaryDirectory();
+        var output = System.IO.Path.Combine(directory.Path, "output");
+        Directory.CreateDirectory(output);
+        var audit = System.IO.Path.Combine(output, "automatic_alignment_rt_correction_summary.tsv");
+        File.WriteAllText(audit, "an earlier run's summary");
+        var methodFile = directory.CreateFile("method.txt", "Execute automatic RT correction for alignment: True\nTogether with alignment: True\n");
+
+        var (result, _, _) = RunLcms(directory, methodFile);
+
+        Assert.AreEqual(-1, result, "the input folder is empty");
+        Assert.IsTrue(File.Exists(audit), "a run that produces nothing removes nothing");
+    }
+
+    [TestMethod]
+    public void LcmsProcess_SaysNothingAboutTheUserDefinedPeakSelectionKeysWhenTheMethodLeftThemAlone()
+    {
+        using var directory = new TemporaryDirectory();
+        directory.CreateFile("anchors.txt", AnchorLibrary("Anchor A", "Anchor B", "Anchor C"));
+        var methodFile = directory.CreateFile(
+            "method.txt",
+            """
+            Execute automatic RT correction for alignment: True
+            Together with alignment: True
+            Automatic RT correction anchor mode: UserOnly
+            Automatic RT correction anchor library file path: anchors.txt
+            Automatic RT correction anchor peak selection mode: Weighted
+            Automatic RT correction anchor peak selection rt weight: 0.3
+            """);
+
+        var (_, output, _) = RunLcms(directory, methodFile);
+
+        Assert.IsFalse(output.Contains("'RT correction peak selection mode' is"), output);
+    }
+
+    /// <summary>
     /// Run LC-MS on an empty input folder, so it stops at the analysis-file import.
     /// </summary>
     private static (int Result, string Output, string Error) RunLcms(TemporaryDirectory directory, string methodFile)
@@ -1157,6 +1375,41 @@ public sealed class ConfigParserTests
     }
 
     /// <summary>
+    /// A settings table saved from Excel on a PC with a decimal comma holds "0,05". Read with the
+    /// invariant culture and digit grouping allowed, that is 5, a tolerance a hundred times too
+    /// wide; the value must be refused instead, with a message, and the default kept.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_RefusesADecimalCommaAndKeepsTheDefault()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tms2_tolerance\n" +
+            $"comma\t{msp}\t0,05\n" +
+            $"blank\t{msp}\t\n");
+        var method = directory.CreateFile(
+            "method.txt",
+            $"Msp annotator settings file path: {settings}\n");
+
+        var output = new StringWriter();
+        var original = Console.Out;
+        List<MspAnnotatorSetting> parsed;
+        try {
+            Console.SetOut(output);
+            parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+        }
+        finally {
+            Console.SetOut(original);
+        }
+
+        Assert.AreEqual(2, parsed.Count);
+        Assert.AreEqual(parsed[1].SearchParameter.Ms2Tolerance, parsed[0].SearchParameter.Ms2Tolerance);
+        StringAssert.Contains(output.ToString(), "'0,05' is not a number written with a '.' decimal separator");
+    }
+
+    /// <summary>
     /// A run with no GUI can still say whether a library's spectra were acquired or computed.
     /// </summary>
     /// <remarks>
@@ -1232,6 +1485,127 @@ public sealed class ConfigParserTests
 
         Assert.AreEqual(1, parsed.Count);
         Assert.AreEqual(DataBaseSource.Msp, parsed[0].DataBaseSource);
+    }
+
+    /// <summary>
+    /// A settings file without the suggestions column, or with it left blank, suggests as before.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_SuggestsWhenTheColumnIsAbsentOrBlank()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var without = directory.CreateFile(
+            "without.tsv",
+            $"annotator_id\tmsp_file_path\n" +
+            $"strict\t{msp}\n");
+        var blank = directory.CreateFile(
+            "blank.tsv",
+            $"annotator_id\tmsp_file_path\tsuggestions\n" +
+            $"strict\t{msp}\t\n");
+
+        var parsedWithout = ConfigParser.ReadMspAnnotatorSettings(
+            directory.CreateFile("without.txt", $"Msp annotator settings file path: {without}\n"), new MsdialLcmsParameter());
+        var parsedBlank = ConfigParser.ReadMspAnnotatorSettings(
+            directory.CreateFile("blank.txt", $"Msp annotator settings file path: {blank}\n"), new MsdialLcmsParameter());
+
+        Assert.IsTrue(parsedWithout.Single().AllowsSuggestions);
+        Assert.IsTrue(parsedBlank.Single().AllowsSuggestions);
+    }
+
+    /// <summary>
+    /// The switch is read per annotator, in any letter case, and the run log states it beside the library kind.
+    /// </summary>
+    [TestMethod]
+    public void ReadMspAnnotatorSettings_ReadsTheSuggestionsSwitchAndStatesIt()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tlibrary_kind\tsuggestions\n" +
+            $"strict\t{msp}\tacquired\tTrue\n" +
+            $"glacier\t{msp}\tpredicted\tFALSE\n" +
+            $"broad\t{msp}\tacquired\ttrue\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var original = Console.Out;
+        var captured = new StringWriter();
+        List<MspAnnotatorSetting> parsed;
+        try {
+            Console.SetOut(captured);
+            parsed = ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter());
+        }
+        finally {
+            Console.SetOut(original);
+        }
+
+        CollectionAssert.AreEqual(new[] { true, false, true }, parsed.Select(setting => setting.AllowsSuggestions).ToArray());
+        var log = captured.ToString();
+        StringAssert.Contains(log, "MSP annotator strict: annotation suggestions enabled");
+        StringAssert.Contains(log, "MSP annotator glacier: annotation suggestions disabled");
+        StringAssert.Contains(log, "MSP annotator broad: annotation suggestions enabled");
+    }
+
+    /// <summary>
+    /// Anything other than true, false or blank refuses the run, and the message names the value and the annotator.
+    /// </summary>
+    /// <remarks>
+    /// Unlike library_kind, a typo is not read as the old meaning: here the old meaning is the behaviour the column exists
+    /// to switch off.
+    /// </remarks>
+    [DataTestMethod]
+    [DataRow("flase")]
+    [DataRow("no")]
+    [DataRow("0")]
+    [DataRow("off")]
+    public void ReadMspAnnotatorSettings_RefusesASuggestionsValueThatIsNeitherTrueNorFalse(string value)
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            $"annotator_id\tmsp_file_path\tsuggestions\n" +
+            $"glacier\t{msp}\t{value}\n");
+        var method = directory.CreateFile("method.txt", $"Msp annotator settings file path: {settings}\n");
+
+        var error = Assert.ThrowsException<FormatException>(() => ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter()));
+
+        StringAssert.Contains(error.Message, $"suggestions '{value}'");
+        StringAssert.Contains(error.Message, "'glacier'");
+        StringAssert.Contains(error.Message, "msp_annotator_settings.tsv");
+    }
+
+    /// <summary>
+    /// The phrase MS-DIAL Interactive looks for is in the compiled Console as one string.
+    /// </summary>
+    /// <remarks>
+    /// Interactive reports that a Console can switch an annotator's suggestions off only when it finds the text
+    /// "annotation suggestions disabled" in the Console's assembly, as UTF-8 or UTF-16 (msp_suggestions). The run log is
+    /// the same whether the phrase is one literal or built at run time from "annotation suggestions " and the state, so
+    /// the log tests above cannot see the difference; the assembly can. The search is Interactive's own.
+    /// </remarks>
+    [TestMethod]
+    public void TheConsoleAssemblyHoldsTheSuggestionsSwitchMarkerAsOneString()
+    {
+        var assembly = File.ReadAllBytes(typeof(ConfigParser).Assembly.Location);
+
+        Assert.IsTrue(Contains(assembly, Encoding.Unicode.GetBytes("annotation suggestions disabled")) || Contains(assembly, Encoding.UTF8.GetBytes("annotation suggestions disabled")),
+            "MS-DIAL Interactive would report that this Console has no per-annotator suggestions switch");
+        Assert.IsTrue(Contains(assembly, Encoding.Unicode.GetBytes("MSP annotator settings TSV requires a 'msp_file_path' column.")),
+            "the control: the search finds another literal of the same assembly");
+        Assert.IsFalse(Contains(assembly, Encoding.Unicode.GetBytes("annotation suggestions withheld")),
+            "the control: the search does not find a phrase the Console does not hold");
+
+        static bool Contains(byte[] haystack, byte[] needle)
+        {
+            for (var i = 0; i + needle.Length <= haystack.Length; i++) {
+                if (haystack.AsSpan(i, needle.Length).SequenceEqual(needle)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /// <summary>

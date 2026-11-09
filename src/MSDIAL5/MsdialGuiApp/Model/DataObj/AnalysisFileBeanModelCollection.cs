@@ -5,8 +5,10 @@ using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -93,6 +95,46 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public int Count => AnalysisFiles.Count;
+
+        /// <summary>
+        /// Checks again whether the raw data of every sample, excluded ones included, are present,
+        /// and returns the samples whose raw data are missing, in list order.
+        /// A folder that is gone is checked once for all of its samples, since a disconnected share can stall each check.
+        /// </summary>
+        public IReadOnlyList<AnalysisFileBeanModel> RefreshRawDataAvailability() {
+            var folderExists = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            var missing = new List<AnalysisFileBeanModel>();
+            foreach (var file in _observableAnalysisFiles) {
+                var folder = GetFolder(file.AnalysisFilePath);
+                if (folder is not null) {
+                    if (!folderExists.TryGetValue(folder, out var exists)) {
+                        folderExists[folder] = exists = Directory.Exists(folder);
+                    }
+                    if (!exists) {
+                        file.MarkRawDataMissing();
+                        missing.Add(file);
+                        continue;
+                    }
+                }
+                if (!file.RefreshRawDataAvailability()) {
+                    missing.Add(file);
+                }
+            }
+            return missing;
+        }
+
+        private static string? GetFolder(string path) {
+            if (string.IsNullOrEmpty(path)) {
+                return null;
+            }
+            try {
+                var folder = Path.GetDirectoryName(path);
+                return string.IsNullOrEmpty(folder) ? null : folder;
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is PathTooLongException) {
+                return null;
+            }
+        }
 
         public AnalysisFileBeanModel FindByID(int fileID) {
             if (AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == fileID) is AnalysisFileBeanModel file) {

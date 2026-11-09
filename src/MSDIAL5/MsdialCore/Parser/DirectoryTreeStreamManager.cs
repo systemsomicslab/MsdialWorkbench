@@ -37,7 +37,8 @@ namespace CompMs.MsdialCore.Parser
                 file = tmpFile;
             }
             if (!File.Exists(file)) {
-                throw new FileNotFoundException(file);
+                // FileName is set so that a caller can name the missing file; the message alone left it null.
+                throw new FileNotFoundException($"Could not find file '{file}'.", file);
             }
             var stream = File.Open(file, FileMode.Open, FileAccess.Read);
             return Task.FromResult<Stream>(stream);
