@@ -201,7 +201,7 @@ namespace CompMs.Common.Lipidomics
             var acyls = new List<int[]>() {
                 new int[] { sn1Carbon, sn1Double }, new int[] { sn2Carbon, sn2Double }
             };
-            acyls = acyls.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
+            //acyls = acyls.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
             var sn1CarbonCount = acyls[0][0];
             var sn1DbCount = acyls[0][1];
             var sn2CarbonCount = acyls[1][0];
@@ -1566,7 +1566,7 @@ namespace CompMs.Common.Lipidomics
                     if (acylCarbon < 8) return null;
 
                     var diagnosChain1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + C2H2N + Proton;
-                    var diagnosChain2 = diagnosChain1 + C5H14NO4P + Proton - MassDiffDictionary.HydrogenMass;
+                    var diagnosChain2 = diagnosChain1 + C5H14NO4P;
 
                     var query = new List<SpectrumPeak> {
                                 //new SpectrumPeak() { Mass = diagnosChain1, Intensity = 0.1 },

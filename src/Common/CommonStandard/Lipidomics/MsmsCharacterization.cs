@@ -9506,8 +9506,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 2 },
@@ -9777,8 +9777,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -9963,8 +9963,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -10155,8 +10155,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -10339,8 +10339,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -10521,8 +10521,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -11043,8 +11043,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -11863,8 +11863,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -12461,8 +12461,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -12767,9 +12767,9 @@ AdductIon adduct)
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
-
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+ 
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -13083,8 +13083,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -14114,8 +14114,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14189,8 +14189,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14324,8 +14324,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20230417
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20230417
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14405,8 +14405,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14483,8 +14483,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14566,8 +14566,8 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },

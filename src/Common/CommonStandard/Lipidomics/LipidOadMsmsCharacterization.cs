@@ -1417,7 +1417,7 @@ namespace CompMs.Common.Lipidomics {
                     if (acylCarbon < 8) return null;
 
                     var diagnosChain1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + C2H2N + Proton;
-                    var diagnosChain2 = diagnosChain1 + C5H14NO4P + Proton - MassDiffDictionary.HydrogenMass;
+                    var diagnosChain2 = diagnosChain1 + C5H14NO4P;
 
                     var query = new List<SpectrumPeak> {
                         new() { Mass = diagnosChain1, Intensity = 0.1 },
