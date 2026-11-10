@@ -1,4 +1,5 @@
 ﻿using CompMs.App.SpectrumViewer.Model;
+using CompMs.App.SpectrumViewer.ViewModel.LipidSpectrumXml;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -32,18 +33,18 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             var splitSpectrumViewModels = CollectionViewSource.GetDefaultView(SplitSpectrumViewModels) as IEditableCollectionView;
             splitSpectrumViewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
 
-            GeneratorEditorViewModels = model.GeneratorEditorModels.ToReadOnlyReactiveCollection(gm => new SpectrumGeneratorEditorViewModel(gm)).AddTo(Disposables);
-            GeneratorEditorViewModel = GeneratorEditorViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+            XmlEditorViewModels = model.XmlEditorModels.ToReadOnlyReactiveCollection(gm => new LipidSpectrumXmlEditorViewModel(gm)).AddTo(Disposables);
+            XmlEditorViewModel = XmlEditorViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
 
             ViewModels = new IObservable<ViewModelBase>[]
             {
                 SplitSpectrumViewModels.ToObservable(),
                 SplitSpectrumViewModels.ObserveAddChanged(),
-                GeneratorEditorViewModels.ToObservable(),
-                GeneratorEditorViewModels.ObserveAddChanged(),
+                XmlEditorViewModels.ToObservable(),
+                XmlEditorViewModels.ObserveAddChanged(),
             }.Merge().ToReactiveCollection().AddTo(Disposables);
             SplitSpectrumViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
-            GeneratorEditorViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
+            XmlEditorViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
             ViewModel = ViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
             var viewModels = CollectionViewSource.GetDefaultView(ViewModels) as IEditableCollectionView;
             viewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
@@ -72,13 +73,13 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .Subscribe(model.RemoveSpectrumModel)
                 .AddTo(Disposables);
 
-            NewGeneratorEditorCommand = new ReactiveCommand()
-                .WithSubscribe(model.AddSpectrumGeneratorEditorModel)
+            NewXmlEditorCommand = new ReactiveCommand()
+                .WithSubscribe(model.AddLipidSpectrumXmlEditorModel)
                 .AddTo(Disposables);
 
-            GeneratorEditorViewModels.ObserveElementObservableProperty(gv => gv.CloseCommand)
+            XmlEditorViewModels.ObserveElementObservableProperty(gv => gv.CloseCommand)
                 .Select(prop => prop.Instance.Model)
-                .Subscribe(model.RemoveSpectrumGeneratorEditorModel)
+                .Subscribe(model.RemoveLipidSpectrumXmlEditorModel)
                 .AddTo(Disposables);
 
             broker.ToObservable<FileOpenRequest>()
@@ -98,9 +99,9 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         public ReactiveProperty<SplitSpectrumsViewModel> SplitSpectrumViewModel { get; }
 
-        public ReadOnlyReactiveCollection<SpectrumGeneratorEditorViewModel> GeneratorEditorViewModels { get; }
+        public ReadOnlyReactiveCollection<LipidSpectrumXmlEditorViewModel> XmlEditorViewModels { get; }
 
-        public ReactiveProperty<SpectrumGeneratorEditorViewModel> GeneratorEditorViewModel { get; }
+        public ReactiveProperty<LipidSpectrumXmlEditorViewModel> XmlEditorViewModel { get; }
 
         public ReactiveCollection<ViewModelBase> ViewModels { get; }
 
@@ -108,7 +109,7 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         public ReactiveCommand NewSpectrumCommand { get; }
 
-        public ReactiveCommand NewGeneratorEditorCommand { get; }
+        public ReactiveCommand NewXmlEditorCommand { get; }
 
         public ReactiveCommand AddLipidReferenceCollectionCommand { get; }
 
