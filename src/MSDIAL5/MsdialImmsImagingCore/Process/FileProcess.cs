@@ -38,7 +38,7 @@ public sealed class FileProcess
 
         var chromPeakFeatures = await file.LoadChromatogramPeakFeatureCollectionAsync(token).ConfigureAwait(false);
         var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
-        var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
+        var pixels = await RetrieveRawSpectraOnPixelsAsync(file, _elements, true, token).ConfigureAwait(false);
     }
 
     public async Task RunAsyncTest(AnalysisFileBean file, IDataProvider provider, Action<int>? reportAction = null, CancellationToken token = default) {
@@ -46,15 +46,13 @@ public sealed class FileProcess
 
         var chromPeakFeatures = await file.LoadChromatogramPeakFeatureCollectionAsync(token).ConfigureAwait(false);
         var _elements = chromPeakFeatures.Items.Select(item => new Raw2DElement(item.PeakFeature.Mass, item.PeakFeature.ChromXsTop.Drift.Value)).ToList();
-        var pixels = RetrieveRawSpectraOnPixels(file, _elements, true);
-
+        var pixels = await RetrieveRawSpectraOnPixelsAsync(file, _elements, true, token).ConfigureAwait(false);
     }
 
-
-    private RawSpectraOnPixels RetrieveRawSpectraOnPixels(AnalysisFileBean file, List<Raw2DElement> targetElements, bool isNewFileProcess) {
+    private async Task<RawSpectraOnPixels> RetrieveRawSpectraOnPixelsAsync(AnalysisFileBean file, List<Raw2DElement> targetElements, bool isNewFileProcess, CancellationToken token = default) {
         if (targetElements.IsEmptyOrNull()) return null;
         using (RawDataAccess rawDataAccess = new RawDataAccess(file.AnalysisFilePath, 0, true, true, true, 10, 0.02, 0.015)) {
-            return rawDataAccess.GetRawPixelFeatures(targetElements, file.GetMaldiFrames(), isNewFileProcess)
+            return await rawDataAccess.GetRawPixelFeaturesAsync(targetElements, file.GetMaldiFrames(), isNewFileProcess, token).ConfigureAwait(false)
                 ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
         }
     }

@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.Common;
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
@@ -58,7 +59,7 @@ public sealed class LcimmsProcess {
             ]);
         }
         if (lbmDB is { Database.Count: > 0 }) {
-            var lbmAnnotator = new LcimmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, param.LbmFilePath, 1);
+            var lbmAnnotator = new LcimmsMspAnnotator(lbmDB, param.LbmSearchParam, param.TargetOmics, CommonProcess.LbmAnnotatorId(param.LbmFilePath), 1);
             dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
@@ -87,7 +88,15 @@ public sealed class LcimmsProcess {
         var providerFactory = new StandardDataProviderFactory(5, false);
         var accProviderFactory = new LcimmsAccumulateDataProviderFactory();
         var process = new FileProcess(providerFactory, accProviderFactory, annotationProcess, evaluator, storage, isGuiProcess: false);
-        var runner = new ProcessRunner(process, storage.Parameter.NumThreads / 2);
+        // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
+        // Math.Max(1, UsableNumThreads / 2)). Without it "number of threads: 1" -- a value
+        // ConfigParser accepts -- gives 1/2 = 0 workers, ProcessRunner builds an empty Task array,
+        // and RunAllAsync returns having peak-picked nothing. The export stage then either crashes
+        // on a missing .pai or, when the raw data already carries .pai files from an earlier run,
+        // SILENTLY EXPORTS THE PREVIOUS RUN'S PEAKS AND PEAK IDS under this run's parameters,
+        // library list and version string. That is the join-breaking case: the artifacts describe a
+        // run that never happened.
+        var runner = new ProcessRunner(process, Math.Max(1, storage.Parameter.NumThreads / 2));
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
@@ -116,7 +125,10 @@ public sealed class LcimmsProcess {
             });
         }
         await Task.WhenAll(tasks);
-        storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
+        // The identity of the build, without the host application's name: this field is the
+        // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
+        // 5.5.241113" said the application twice and the version once, staleness included.
+        storage.Parameter.ProjectParam.MsdialVersionNumber = MsdialBuildIdentity.FullIdentity;
         if (storage.Parameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
@@ -125,7 +137,7 @@ public sealed class LcimmsProcess {
             aligner.ProviderFactory = providerFactory;
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
-            var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
+            var align_decResults = LoadRepresentativeDeconvolutions(files, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             var align_accessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
@@ -172,29 +184,20 @@ public sealed class LcimmsProcess {
         return 0;
     }
 
-    private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcImMsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
-        var files = storage.AnalysisFiles;
-
-        var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-        foreach (var file in files) {
-            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-            pointerss.Add((version, pointers, isAnnotationInfo));
-        }
-
-        var streams = new List<FileStream>();
-        try {
-            streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
-            foreach (var spot in spots.OrEmptyIfNull()) {
-                var repID = spot.RepresentativeFileID;
-                var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
-                var decResult = MsdecResultsReader.ReadMSDecResult(
-                    streams[repID], pointerss[repID].pointers[peakID],
-                    pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                yield return decResult;
+    /// <summary>
+    /// One deconvolution result per alignment spot, indexed by MasterAlignmentID: each RT spot followed by its
+    /// drift spots, the order LcimmsAlignmentRefiner numbers them in and the GUI's
+    /// AlignmentFileBeanModel.LoadMSDecResultsFromEachFiles reads them in. AlignmentCSVExporter and
+    /// MztabFormatExporter index this list by the drift spots' MasterAlignmentID too, so a list of the RT
+    /// spots alone overflowed on the first drift spot.
+    /// </summary>
+    internal static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<AlignmentSpotProperty>? spots) {
+        using var reader = new RepresentativeDeconvolutionReader(files);
+        foreach (var spot in spots.OrEmptyIfNull()) {
+            yield return reader.Read(spot.AlignedPeakProperties[spot.RepresentativeFileID]);
+            foreach (var driftSpot in spot.AlignmentDriftSpotFeatures.OrEmptyIfNull()) {
+                yield return reader.Read(driftSpot.AlignedPeakProperties[driftSpot.RepresentativeFileID]);
             }
-        }
-        finally {
-            streams.ForEach(stream => stream.Close());
         }
     }
 }

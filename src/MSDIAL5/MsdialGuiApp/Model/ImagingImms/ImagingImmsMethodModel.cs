@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
 
         public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, FilePropertiesModel projectBaseParameter, StudyContextModel studyContext, IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, alignmentFileBeanModelCollection, projectBaseParameter, broker) {
             _storage = storage;
             _broker = broker;
             _projectBaseParameter = projectBaseParameter;
@@ -71,7 +71,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     var model = new ImagingImmsImageModel(file, _storage, _evaluator, _providerFactory, _projectBaseParameter, _broker);
                     ImageModels.Add(model);
                     if (option.HasFlag(ProcessOption.PeakSpotting)) {
-                        model.ImageResult.ResetRawSpectraOnPixels();
+                        await model.ImageResult.ResetRawSpectraOnPixelsAsync(token);
                     }
                 }
             }
@@ -81,6 +81,9 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             AutoParametersSave(starttimestamp, ts, parameter);
             await LoadAnalysisFileAsync(files.FirstOrDefault(), token).ConfigureAwait(false);
         }
+
+        // The ion images are drawn from the raw data.
+        public override BrowsingWithoutRawData BrowsingWithoutRawData => BrowsingWithoutRawData.NotSupported;
 
         public override Task LoadAsync(CancellationToken token) {
             foreach (var file in AnalysisFileModelCollection.AnalysisFiles) {
@@ -109,7 +112,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                 return Task.CompletedTask;
             }
 
-            return Image.ImageResult.SaveAsync();
+            return Task.WhenAll(ImageModels.Select(image => image.ImageResult.SaveAsync()));
         }
 
         public AnalysisResultExportModel CreateExportAnalysisModel() {
@@ -160,7 +163,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     FileSuffix = "sdf",
                     Label = "MDL SDfile (*.sdf)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext),
+                new MsdialAnalysisMassBankRecordExportModel(_storage.Parameter.ProjectParam, StudyContext, _evaluator, _broker),
             };
 
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);

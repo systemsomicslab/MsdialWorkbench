@@ -33,6 +33,7 @@ public class PeakDetectionResult {
     public float AreaAboveZero { get; set; } = -1.0F;
     public float EstimatedNoise { get; set; } = -1.0F;
     public float SignalToNoise { get; set; } = -1.0F;
+    public int DataPointCount => ScanNumAtRightPeakEdge - ScanNumAtLeftPeakEdge + 1;
 
     private static readonly double INTENSITY_FOLDCHANGE_THREASHOLD = .1d;
     public bool IsWeakCompareTo(double maxIntensityAtPeaks) {
@@ -125,6 +126,9 @@ public sealed class PeakDetection {
                     continue;
                 }
                 curateDatapoints(datapoints, averagePeakWidth, out var peaktopID);
+                if (datapoints.Count < minimumDatapointCriteria) {
+                    continue;
+                }
 
                 peakHeightFromBaseline(datapoints, peaktopID, out var maxPeakHeight, out var minPeakHeight);
                 if (maxPeakHeight < noise) continue;
@@ -133,6 +137,7 @@ public sealed class PeakDetection {
 
                 var result = GetPeakDetectionResult(datapoints, peaktopID);
                 if (result == null) continue;
+                if (result.DataPointCount < minimumDatapointCriteria) continue;
                 result.PeakID = peakCounter;
                 result.EstimatedNoise = (float)(noise / noiseFactor);
                 if (result.EstimatedNoise < 1.0) result.EstimatedNoise = 1.0F;

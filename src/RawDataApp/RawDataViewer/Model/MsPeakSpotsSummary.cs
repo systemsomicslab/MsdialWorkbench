@@ -1,5 +1,4 @@
 ﻿using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System;
@@ -17,8 +16,8 @@ namespace CompMs.App.RawDataViewer.Model
             Histogram = new DataPointCollection(histogram);
             AccumulatedHistogram = Histogram.Accumulate();
 
-            HorizontalAxis = new LogScaleAxisManager<double>(Histogram.Select(item => item.X).ToArray(), new ConstantMargin(30), base_: 2).AddTo(Disposables);
-            VerticalAxis = new ContinuousAxisManager<double>(AccumulatedHistogram.Select(item => item.Y).ToArray(), new ConstantMargin(0, 20), new AxisRange(0d, 0d)).AddTo(Disposables);
+            HorizontalAxis = Log2HistogramAxis.Create(Histogram.Select(item => item.X), new ConstantMargin(30)).AddTo(Disposables);
+            VerticalAxis = HistogramCountAxis.Create(AccumulatedHistogram.Select(item => item.Y), new ConstantMargin(0, 20)).AddTo(Disposables);
         }
 
         public DataPointCollection Histogram { get; }

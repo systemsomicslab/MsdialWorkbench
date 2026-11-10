@@ -6,6 +6,7 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialDimsCore.Algorithm
 {
@@ -152,6 +153,82 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
     }
 
+    public class DimsAccumulateDataProvider : BaseDataProvider
+    {
+        public DimsAccumulateDataProvider(IEnumerable<RawSpectrum> spectrums, double massTolerance, double timeBegin, double timeEnd)
+            : base(AccumulateRawSpectrums(
+                spectrums
+                    .Where(spec => timeBegin <= spec.ScanStartTime && spec.ScanStartTime <= timeEnd)
+                    .Select(spec => spec.ShallowCopy())
+                    .ToArray(),
+                massTolerance)) {
+
+        }
+
+        public DimsAccumulateDataProvider(RawMeasurement rawObj, double massTolerance, double timeBegin, double timeEnd)
+            : this(rawObj.SpectrumList, massTolerance, timeBegin, timeEnd) {
+
+        }
+
+        public DimsAccumulateDataProvider(AnalysisFileBean file, double massTolerance, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
+            : this(LoadMeasurement(file, true, false, isGuiProcess, retry).SpectrumList, massTolerance, timeBegin, timeEnd) {
+
+        }
+
+
+        private static List<RawSpectrum> AccumulateRawSpectrums(RawSpectrum[] spectrums, double massTolerance) {
+            var targetmz4ppmcalc = 500.0;
+            var binning = new Binning(targetmz4ppmcalc, massTolerance);
+            var ms1Spectrums = spectrums.Where(spectrum => spectrum.MsLevel == 1).ToList();
+            var groups = ms1Spectrums.SelectMany(spectrum => spectrum.Spectrum)
+                .GroupBy(peak => binning.BinningMz(peak.Mz));
+            var massBins = new Dictionary<int, double[]>();
+            foreach (var group in groups) {
+                var peaks = group.ToList();
+                var accIntensity = peaks.Sum(peak => peak.Intensity);
+                var basepeak = peaks.Argmax(peak => peak.Intensity);
+                massBins[group.Key] = new double[] { basepeak.Mz, accIntensity, basepeak.Intensity };
+            }
+            var result = ms1Spectrums.First().ShallowCopy();
+            SpectrumParser.setSpectrumProperties(result, massBins, isSortMz: true);
+            var results = new[] { result }.Concat(spectrums.Where(spectrum => spectrum.MsLevel != 1)).ToList();
+            for (int i = 0; i < results.Count; i++) {
+                results[i].Index = i;
+            }
+            return results;
+        }
+
+        class Binning
+        {
+            public double Pivot { get; }
+            public double Tolerance { get; }
+            public double Ppm { get; }
+            public double LogTolerance { get; }
+
+            public Binning(double pivot, double tolerance) {
+                Pivot = pivot;
+                Tolerance = tolerance;
+                Ppm = tolerance / Pivot * 1_000_000d;
+                LogTolerance = Math.Log(1 + Ppm / 1_000_000d);
+            }
+
+            /// <summary>
+            /// Calculates the bin index for a given m/z value.
+            /// </summary>
+            /// <param name="mz">The mass-to-charge (m/z) value.</param>
+            /// <returns>The bin index as an integer.</returns>
+            public int BinningMz(double mz) {
+                if (mz <= Pivot) {
+                    return (int)(mz / Tolerance);
+                }
+                else {
+                    int pivotbin = (int)(Pivot / Tolerance) + 1;
+                    return pivotbin + (int)(Math.Log(mz / Pivot) / LogTolerance);
+                }
+            }
+        }
+    }
+
     public class DimsBpiDataProviderFactory
         : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
     {
@@ -177,6 +254,45 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
         public IDataProvider Create(RawMeasurement source) {
             return new DimsBpiDataProvider(source, timeBegin, timeEnd);
+        }
+    }
+
+    /// <summary>
+    /// The spectra of an imaging run (MALDI .d, imzML) as one MS1 spectrum: the sum of every pixel's spectrum.
+    /// The summing is left to RawDataHandler, which reads the run as imaging data one pixel at a time, so no
+    /// pixel spectrum is held in memory here. Pixel intensities for ion images are read from the raw data
+    /// directly and do not go through this provider.
+    /// </summary>
+    public sealed class DimsImagingDataProvider : BaseDataProvider
+    {
+        public DimsImagingDataProvider(RawMeasurement rawObj)
+            : base(rawObj.SpectrumList) {
+
+        }
+
+        public DimsImagingDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5, CancellationToken token = default)
+            : base(LoadMeasurementAsync(file, isProfile: true, isImagingMs: true, isGuiProcess, retry, ignoreRtCorrection: true, token)) {
+
+        }
+    }
+
+    public sealed class DimsImagingDataProviderFactory
+        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    {
+        private readonly int _retry;
+        private readonly bool _isGuiProcess;
+
+        public DimsImagingDataProviderFactory(int retry = 5, bool isGuiProcess = false) {
+            _retry = retry;
+            _isGuiProcess = isGuiProcess;
+        }
+
+        public IDataProvider Create(AnalysisFileBean source) {
+            return new DimsImagingDataProvider(source, _isGuiProcess, _retry);
+        }
+
+        public IDataProvider Create(RawMeasurement source) {
+            return new DimsImagingDataProvider(source);
         }
     }
 
@@ -236,6 +352,37 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
         public IDataProvider Create(RawMeasurement source) {
             return new DimsAverageDataProvider(source, massTolerance, timeBegin, timeEnd);
+        }
+    }
+
+    public class DimsAccumulateDataProviderFactory
+        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    {
+        private readonly double massTolerance;
+        private readonly double timeBegin;
+        private readonly double timeEnd;
+        private readonly int retry;
+        private readonly bool isGuiProcess;
+
+        public DimsAccumulateDataProviderFactory(
+            double massTolerance,
+            double timeBegin = double.MinValue,
+            double timeEnd = double.MaxValue,
+            int retry = 5,
+            bool isGuiProcess = false) {
+            this.massTolerance = massTolerance;
+            this.timeBegin = timeBegin;
+            this.timeEnd = timeEnd;
+            this.retry = retry;
+            this.isGuiProcess = isGuiProcess;
+        }
+
+        public IDataProvider Create(AnalysisFileBean source) {
+            return new DimsAccumulateDataProvider(source, massTolerance, timeBegin, timeEnd, isGuiProcess, retry);
+        }
+
+        public IDataProvider Create(RawMeasurement source) {
+            return new DimsAccumulateDataProvider(source, massTolerance, timeBegin, timeEnd);
         }
     }
 }

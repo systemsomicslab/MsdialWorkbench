@@ -42,6 +42,9 @@ namespace CompMs.App.Msdial.Model.Dims
         private FacadeMatchResultEvaluator _matchResultEvaluator;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
+        /// <summary>Tells reference-matched annotations from suggestions, for the exports that choose by annotation level.</summary>
+        internal FacadeMatchResultEvaluator MatchResultEvaluator => _matchResultEvaluator;
+
         public DimsMethodModel(
             IMsdialDataStorage<MsdialDimsParameter> storage,
             AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
@@ -49,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Dims
             FilePropertiesModel fileProperties,
             StudyContextModel studyContext,
             IMessageBroker broker)
-            : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
+            : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties, broker) {
             Storage = storage;
             _fileProperties = fileProperties ?? throw new ArgumentNullException(nameof(fileProperties));
             StudyContext = studyContext;
@@ -184,17 +187,17 @@ namespace CompMs.App.Msdial.Model.Dims
 
 
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            IAnnotationProcess annotationProcess;
-            if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
-                (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD || Storage.Parameter.CollistionType == CollisionType.EID)) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess();
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess();
-            }
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
+                IAnnotationProcess annotationProcess;
+                if (Storage.Parameter.TargetOmics == TargetOmics.Lipidomics && 
+                    (Storage.Parameter.CollistionType == CollisionType.EIEIO || Storage.Parameter.CollistionType == CollisionType.OAD || Storage.Parameter.CollistionType == CollisionType.EID)) {
+                    annotationProcess = BuildEadLipidomicsAnnotationProcess();
+                }
+                else {
+                    annotationProcess = BuildAnnotationProcess();
+                }
                 var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                 var processor = new ProcessFile(ProviderFactory, Storage, annotationProcess, _matchResultEvaluator);
                 var runner = new ProcessRunner(processor, usable);
@@ -250,6 +253,8 @@ namespace CompMs.App.Msdial.Model.Dims
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
+                // Nothing stays bound to the disposed model if the next one cannot be built.
+                AnalysisModel = null;
             }
             return AnalysisModel = new DimsAnalysisModel(
                 analysisFile,
@@ -269,6 +274,7 @@ namespace CompMs.App.Msdial.Model.Dims
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
+                AlignmentModel = null;
             }
             return AlignmentModel = new DimsAlignmentModel(
                 alignmentFileModel,

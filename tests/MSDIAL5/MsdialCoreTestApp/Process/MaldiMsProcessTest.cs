@@ -209,7 +209,7 @@ namespace CompMs.App.MsdialConsole.Process
             var featureElements = features.Select(n => new Raw2DElement(n.PeakFeature.Mass, n.PeakFeature.ChromXsTop.Value)).ToList();
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
-                pixelData = access.GetRawPixelFeatures(featureElements, null);
+                pixelData = access.GetRawPixelFeaturesAsync(featureElements, null).Result;
             }
 
             //foreach (var (feature, pixel) in IEnumerableExtension.Zip(features, pixelData.PixelPeakFeaturesList)) {
@@ -304,7 +304,7 @@ namespace CompMs.App.MsdialConsole.Process
             var featureElements = features.Select(n => new Raw2DElement() { Mz = n.PeakFeature.Mass }).ToList();
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
-                pixelData = access.GetRawPixelFeatures(featureElements, null);
+                pixelData = access.GetRawPixelFeaturesAsync(featureElements, null).Result;
             }
 
             foreach (var (feature, pixel) in features.Zip(pixelData.PixelPeakFeaturesList, (feature, pixel) => (Feature: feature, Pixel: pixel))) {

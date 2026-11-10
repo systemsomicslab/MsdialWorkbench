@@ -301,8 +301,33 @@ namespace CompMs.MsdialCore.DataObj
             TextDbBasedMatchResults.AddRange(other.TextDbBasedMatchResults);
         }
 
-        private static Tuple<bool, bool, bool, int, float> ResultOrder(MsScanMatchResult result) {
-            return Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore);
+        /// <summary>
+        /// Which of a feature's stored candidates is THE annotation of that feature.
+        /// </summary>
+        /// <remarks>
+        /// The evidence rank is placed below Priority for the reason given in
+        /// FacadeMatchResultEvaluator.SelectTopHit -- it orders candidates within one annotator,
+        /// not across annotators -- and below the two verdicts for the reason given
+        /// in MsScanMatchResultEvaluator.SelectTopHit. IsManuallyModified stays first, so a person's
+        /// choice is still final.
+        ///
+        /// THIS ONE IS ALSO READ BACK FROM DISK. Representative is [IgnoreMember] and recomputed on
+        /// load, while the name it produced was stored -- AlignmentSpotProperty.Name is Key(12) and
+        /// ChromatogramPeakFeature.Name is Key(25). So reopening a project saved before this change
+        /// can pair a stored name with a different candidate's numbers, wherever the two orderings
+        /// disagree. They disagree only where an evidence source was recorded, which is to say only
+        /// in projects saved from this branch; the author accepted that on 2026-09-14 on the grounds
+        /// that no such project exists outside this development. Reanalysis, not migration, is the
+        /// remedy if one turns up.
+        ///
+        /// Internal rather than private because the choice of an alignment spot's representative
+        /// peak compares the peaks' own representatives by this same key
+        /// (DataObjConverter.CompareRepresentativePrecedence), so the file chosen to represent a spot
+        /// and the candidate chosen to represent a feature cannot disagree about which annotation is
+        /// the better one.
+        /// </remarks>
+        internal static Tuple<bool, bool, bool, int, int, float> ResultOrder(MsScanMatchResult result) {
+            return Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, AnnotationEvidence.Rank(result.EvidenceSource), result.TotalScore);
         }
     }
 }

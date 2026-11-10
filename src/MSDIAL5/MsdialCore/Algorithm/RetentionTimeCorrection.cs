@@ -27,7 +27,7 @@ namespace CompMs.MsdialCore.Algorithm {
             List<MoleculeMsReference> iStdLib, AnalysisFileBean property, RetentionTimeCorrectionParam rtParam) {
             System.Diagnostics.Debug.WriteLine("num lib: " + iStdLib.Count);
             
-            var stdList = GetStdPair(property, provider, param, iStdLib);
+            var stdList = GetStdPair(property, provider, param, iStdLib, rtParam);
 
             // original RT array
             var spectrumList = provider.LoadMsSpectrums();
@@ -40,7 +40,10 @@ namespace CompMs.MsdialCore.Algorithm {
         /// </summary>
         private static List<StandardPair> GetStdPair(
             AnalysisFileBean file,
-            IDataProvider provider, ParameterBase param, List<MoleculeMsReference> iStdLib) {
+            IDataProvider provider,
+            ParameterBase param,
+            List<MoleculeMsReference> iStdLib,
+            RetentionTimeCorrectionParam rtParam) {
             if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
 
             var targetList = new List<StandardPair>();
@@ -52,7 +55,11 @@ namespace CompMs.MsdialCore.Algorithm {
                 var startMass = i.PrecursorMz;
                 var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(startMass, i.MassTolerance), chromatogramRange);
                 var pabCollection = peakpickCore.GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, file.AcquisitionType);
-                var selection = RetentionTimeCorrectionPeakSelector.Select(i, pabCollection);
+                var selection = RetentionTimeCorrectionPeakSelector.Select(
+                    i,
+                    pabCollection,
+                    rtParam.PeakSelectionMode,
+                    rtParam.PeakSelectionRtWeight);
                 ChromatogramPeakFeature pab = selection.SelectedPeak ?? new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var peaklist = ((Chromatogram)chromatogram).AsPeakArray();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });

@@ -48,6 +48,14 @@ namespace CompMs.MsdialCore.Algorithm {
         /// Multiple candidates passed the filters, and the highest peak height was selected.
         /// </summary>
         SelectedByHighestPeakHeight = 3,
+        /// <summary>
+        /// Multiple candidates passed the filters, and the candidate closest to the reference RT was selected.
+        /// </summary>
+        SelectedByClosestReferenceRt = 4,
+        /// <summary>
+        /// Multiple candidates passed the filters, and the best weighted intensity/RT score was selected.
+        /// </summary>
+        SelectedByWeightedScore = 5,
     }
 
     /// <summary>
@@ -144,8 +152,26 @@ namespace CompMs.MsdialCore.Algorithm {
         public static RetentionTimeCorrectionPeakSelectionResult Select(
             MoleculeMsReference reference,
             IEnumerable<ChromatogramPeakFeature>? candidates) {
+            return Select(
+                reference,
+                candidates,
+                RetentionTimeCorrectionPeakSelectionMode.HighestIntensity,
+                0.5d);
+        }
+
+        /// <summary>
+        /// Evaluates all candidates and selects one using the configured ranking mode.
+        /// </summary>
+        public static RetentionTimeCorrectionPeakSelectionResult Select(
+            MoleculeMsReference reference,
+            IEnumerable<ChromatogramPeakFeature>? candidates,
+            RetentionTimeCorrectionPeakSelectionMode selectionMode,
+            double rtWeight) {
             if (reference is null) {
                 throw new ArgumentNullException(nameof(reference));
+            }
+            if (rtWeight < 0d || rtWeight > 1d) {
+                throw new ArgumentOutOfRangeException(nameof(rtWeight), "RT weight must be between 0 and 1.");
             }
 
             var evaluatedCandidates = (candidates ?? Enumerable.Empty<ChromatogramPeakFeature>())
@@ -160,16 +186,74 @@ namespace CompMs.MsdialCore.Algorithm {
                     RetentionTimeCorrectionPeakSelectionReason.NoCandidates);
             }
 
-            var selected = acceptedCandidates
-                .OrderByDescending(candidate => candidate.Peak.PeakFeature.PeakHeightTop)
-                .First();
+            var selected = SelectAcceptedCandidate(reference, acceptedCandidates, selectionMode, rtWeight);
             return new RetentionTimeCorrectionPeakSelectionResult(
                 reference,
                 selected.Peak,
                 evaluatedCandidates,
                 acceptedCandidates.Length == 1
                     ? RetentionTimeCorrectionPeakSelectionReason.SelectedSingleCandidate
-                    : RetentionTimeCorrectionPeakSelectionReason.SelectedByHighestPeakHeight);
+                    : SelectionReason(selectionMode));
+        }
+
+        private static RetentionTimeCorrectionPeakCandidateResult SelectAcceptedCandidate(
+            MoleculeMsReference reference,
+            IReadOnlyList<RetentionTimeCorrectionPeakCandidateResult> candidates,
+            RetentionTimeCorrectionPeakSelectionMode selectionMode,
+            double rtWeight) {
+            switch (selectionMode) {
+                case RetentionTimeCorrectionPeakSelectionMode.ClosestToReferenceRt:
+                    return candidates
+                        .OrderBy(candidate => candidate.RtDifference)
+                        .ThenByDescending(candidate => candidate.Peak.PeakFeature.PeakHeightTop)
+                        .First();
+                case RetentionTimeCorrectionPeakSelectionMode.Weighted:
+                    var maximumHeight = candidates.Max(candidate => candidate.Peak.PeakFeature.PeakHeightTop);
+                    return candidates
+                        .OrderByDescending(candidate => WeightedScore(reference, candidate, maximumHeight, rtWeight))
+                        .ThenBy(candidate => candidate.RtDifference)
+                        .ThenByDescending(candidate => candidate.Peak.PeakFeature.PeakHeightTop)
+                        .First();
+                default:
+                    return candidates
+                        .OrderByDescending(candidate => candidate.Peak.PeakFeature.PeakHeightTop)
+                        .ThenBy(candidate => candidate.RtDifference)
+                        .First();
+            }
+        }
+
+        public static double WeightedScore(
+            MoleculeMsReference reference,
+            RetentionTimeCorrectionPeakCandidateResult candidate,
+            double maximumHeight,
+            double rtWeight) {
+            if (reference is null) {
+                throw new ArgumentNullException(nameof(reference));
+            }
+            if (candidate is null) {
+                throw new ArgumentNullException(nameof(candidate));
+            }
+            if (rtWeight < 0d || rtWeight > 1d) {
+                throw new ArgumentOutOfRangeException(nameof(rtWeight));
+            }
+            var intensityScore = maximumHeight > 0d
+                ? candidate.Peak.PeakFeature.PeakHeightTop / maximumHeight
+                : 0d;
+            var rtScore = reference.RetentionTimeTolerance > 0d
+                ? Math.Max(0d, 1d - candidate.RtDifference / reference.RetentionTimeTolerance)
+                : candidate.RtDifference == 0d ? 1d : 0d;
+            return (1d - rtWeight) * intensityScore + rtWeight * rtScore;
+        }
+
+        private static RetentionTimeCorrectionPeakSelectionReason SelectionReason(
+            RetentionTimeCorrectionPeakSelectionMode selectionMode) {
+            return selectionMode switch {
+                RetentionTimeCorrectionPeakSelectionMode.ClosestToReferenceRt
+                    => RetentionTimeCorrectionPeakSelectionReason.SelectedByClosestReferenceRt,
+                RetentionTimeCorrectionPeakSelectionMode.Weighted
+                    => RetentionTimeCorrectionPeakSelectionReason.SelectedByWeightedScore,
+                _ => RetentionTimeCorrectionPeakSelectionReason.SelectedByHighestPeakHeight,
+            };
         }
 
         /// <summary>

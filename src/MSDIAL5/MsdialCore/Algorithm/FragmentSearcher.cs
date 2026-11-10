@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var maxIntensity = features.Max(n => n.PeakFeature.PeakHeightTop);
             var maxIntensityOnDrift = isIonMobility ? features.SelectMany(n => n.DriftChromFeatures).Max(n => n.PeakFeature.PeakHeightTop) : 0.0;
-            var isAllQueriesFocusOnMS1 = queries.Count() == queries.Where(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).Count();
+            var isAllQueriesFocusOnMS1 = queries.All(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1);
             foreach (var feature in features) {
                 var featureStatus = feature.FeatureFilterStatus;
                 featureStatus.IsFragmentExistFiltered = false;
@@ -120,7 +120,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var maxIntensity = features.Max(n => n.HeightAverage);
             var maxIntensityOnDrift = isIonMobility ? features.SelectMany(n => n.AlignmentDriftSpotFeatures).Max(n => n.HeightAverage) : 0.0;
-            var isAllQueriesFocusOnMS1 = queries.Count() == queries.Where(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1).Count();
+            var isAllQueriesFocusOnMS1 = queries.All(n => n.PeakFeatureQueryLevel == PeakFeatureQueryLevel.MS1);
 
             foreach (var feature in features) {
                 var featureStatus = feature.FeatureFilterStatus;

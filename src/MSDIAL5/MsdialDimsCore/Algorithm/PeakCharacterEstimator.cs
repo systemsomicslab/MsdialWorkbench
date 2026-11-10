@@ -51,7 +51,7 @@ public sealed class PeakCharacterEstimator {
                 peakCharacter.PeakGroupID = groupID;
             }
             else {
-                var crawledPeaks = new List<int>();
+                var crawledPeaks = new HashSet<int>();
                 peakCharacter.PeakGroupID = groupID;
                 recPeakGroupAssignment(peak, chromPeakFeatures, groupID, crawledPeaks);
             }
@@ -59,7 +59,7 @@ public sealed class PeakCharacterEstimator {
         }
     }
 
-    private void recPeakGroupAssignment(ChromatogramPeakFeature peak, IReadOnlyList<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
+    private void recPeakGroupAssignment(ChromatogramPeakFeature peak, IReadOnlyList<ChromatogramPeakFeature> peakSpots, int groupID, HashSet<int> crawledPeaks) {
         var peakCharacter = peak.PeakCharacter;
         if (peakCharacter.PeakLinks == null || peakCharacter.PeakLinks.Count == 0) return;
         foreach (var linkedPeak in peak.PeakCharacter.PeakLinks) {
@@ -74,16 +74,11 @@ public sealed class PeakCharacterEstimator {
         }
     }
 
-    private bool isCrawledPeaks(List<LinkedPeakFeature> peakLinks, List<int> crawledPeaks, int peakID) {
-        if (peakLinks.Count(n => n.LinkedPeakID != peakID) == 0) return true;
-        var frag = false;
-        foreach (var linkID in peakLinks.Select(n => n.LinkedPeakID)) {
-            if (crawledPeaks.Contains(linkID)) continue;
-            frag = true;
-            break;
+    private bool isCrawledPeaks(List<LinkedPeakFeature> peakLinks, HashSet<int> crawledPeaks, int peakID) {
+        foreach (var link in peakLinks) {
+            if (link.LinkedPeakID != peakID && !crawledPeaks.Contains(link.LinkedPeakID)) return false;
         }
-        if (frag == true) return false;
-        else return true;
+        return true;
     }
 
     private void SearchedAdductInitialize(ParameterBase param) {

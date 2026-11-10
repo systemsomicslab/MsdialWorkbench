@@ -1,7 +1,9 @@
-﻿using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.Common;
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -98,7 +100,15 @@ public sealed class ImmsProcess
         }
 
         var processor = new FileProcess(storage, providerFactory, mspAnnotator, txtDBAnnotator, evaluator);
-        var runner = new ProcessRunner(processor, storage.Parameter.NumThreads / 2);
+        // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
+        // Math.Max(1, UsableNumThreads / 2)). Without it "number of threads: 1" -- a value
+        // ConfigParser accepts -- gives 1/2 = 0 workers, ProcessRunner builds an empty Task array,
+        // and RunAllAsync returns having peak-picked nothing. The export stage then either crashes
+        // on a missing .pai or, when the raw data already carries .pai files from an earlier run,
+        // SILENTLY EXPORTS THE PREVIOUS RUN'S PEAKS AND PEAK IDS under this run's parameters,
+        // library list and version string. That is the join-breaking case: the artifacts describe a
+        // run that never happened.
+        var runner = new ProcessRunner(processor, Math.Max(1, storage.Parameter.NumThreads / 2));
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         IAnalysisExporter<ChromatogramPeakFeatureCollection> peak_MspExporter = new AnalysisMspExporter(storage.DataBaseMapper, storage.Parameter);
@@ -126,7 +136,10 @@ public sealed class ImmsProcess
             });
         }
         await Task.WhenAll(tasks);
-        storage.Parameter.ProjectParam.MsdialVersionNumber = $"Msdial console {Resources.VERSION}";
+        // The identity of the build, without the host application's name: this field is the
+        // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
+        // 5.5.241113" said the application twice and the version once, staleness included.
+        storage.Parameter.ProjectParam.MsdialVersionNumber = MsdialBuildIdentity.FullIdentity;
         if (storage.Parameter.TogetherWithAlignment) {
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
             var alignmentFile = storage.AlignmentFiles.First();
@@ -136,6 +149,11 @@ public sealed class ImmsProcess
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
             result.Save(alignmentFile);
+            if (aligner.RemovedIsotopeSpots is { } removedIsotopeSpots) {
+                var removedIsotopeFile = RemovedIsotopeSpotWriter.PathFor(outputFolder, alignmentFile.FileName);
+                RemovedIsotopeSpotWriter.Write(removedIsotopeFile, removedIsotopeSpots);
+                Console.WriteLine($"Alignment spots removed as isotopes: {removedIsotopeSpots.Count}, listed in {removedIsotopeFile}");
+            }
             var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 

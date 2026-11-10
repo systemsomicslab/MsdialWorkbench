@@ -233,7 +233,8 @@ namespace CompMs.App.Msdial.Model.Setting
                 parameter.ChromDecBaseParam.AccuracyType = AccuracyType.IsNominal;
                 parameter.ChromDecBaseParam.AmplitudeCutoff = 10;
                 parameter.RetentionType = RetentionType.RI;
-                parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance = 20;
+                // RiCompoundType starts on Alkanes; GcmsIdentificationSettingModel moves this if it changes.
+                parameter.RefSpecMatchBaseParam.MspSearchParam.RiTolerance = RetentionIndexToleranceDefault.Kovats;
                 parameter.RefSpecMatchBaseParam.MspSearchParam.RtTolerance = .5f;
                 parameter.RefSpecMatchBaseParam.MspSearchParam.Ms1Tolerance = .5f;
                 parameter.RefSpecMatchBaseParam.MspSearchParam.WeightedDotProductCutOff = .7f;

@@ -45,7 +45,8 @@ namespace CompMs.App.MsdialConsole.Process
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
 
             Console.WriteLine("Loading analysis files..");
-            analysisFiles = AnalysisFilesParser.ReadInput(input);
+            // Null when the person at the console declined the mixed formats: reported as no files.
+            analysisFiles = AnalysisFilesParser.ReadInput(input) ?? new List<AnalysisFileBean>();
             if (analysisFiles.IsEmptyOrNull()) {
                 alignmentFile = new AlignmentFileBean();
                 Console.WriteLine(CommonProcess.NoFileError());
@@ -90,6 +91,26 @@ namespace CompMs.App.MsdialConsole.Process
             }
             return true;
         }
+
+        /// <summary>
+        /// Names the LBM annotator for the exported Comment column.
+        /// </summary>
+        /// <remarks>
+        /// The annotator identifier is written into every exported row as
+        /// "Annotation method: ...". Passing the library's file path there put an
+        /// absolute local directory into an artifact meant for sharing, and told the
+        /// reader nothing a directory-free name does not. The file stem is kept because
+        /// a laboratory library is usually date-stamped and the reader needs to know
+        /// which one annotated the row; the checksum that pins it exactly belongs in the
+        /// run manifest, not in every cell.
+        /// </remarks>
+        public static string LbmAnnotatorId(string lbmFilePath) {
+            var stem = string.IsNullOrWhiteSpace(lbmFilePath)
+                ? string.Empty
+                : System.IO.Path.GetFileNameWithoutExtension(lbmFilePath);
+            return string.IsNullOrWhiteSpace(stem) ? "LbmDB" : "LbmDB: " + stem;
+        }
+
 
         public static void ParseLibraries(ParameterBase param, float targetMz,
             out IupacDatabase iupacDB, out MoleculeDataBase? mspDB, out MoleculeDataBase? txtDB,
@@ -178,7 +199,16 @@ namespace CompMs.App.MsdialConsole.Process
                 var dbId = mspFileGroups.Count == 1 && effectiveMspSettings.Count == 1 && effectiveMspSettings[0].AnnotatorId == param.MspFilePath
                     ? "MspDB"
                     : GetSafeDataBaseId("MspDB", mspFilePath, i + 1);
-                var mspDB = new MoleculeDataBase(mspList, dbId, DataBaseSource.Msp, SourceType.MspDB, mspFilePath);
+                // One file is one library, so the kind belongs to the group rather than to each
+                // annotator in it. Two annotators over the same file that disagree is a mistake in
+                // the settings file, and it is named rather than silently resolved.
+                var declaredKinds = group.Select(setting => setting.DataBaseSource).Distinct().ToList();
+                if (declaredKinds.Count > 1) {
+                    Console.WriteLine(
+                        $"Annotators over {Path.GetFileName(mspFilePath)} disagree about library_kind "
+                        + $"({string.Join(", ", declaredKinds)}); using {declaredKinds[0]}.");
+                }
+                var mspDB = new MoleculeDataBase(mspList, dbId, declaredKinds[0], SourceType.MspDB, mspFilePath);
                 if (mspError != string.Empty) {
                     Console.WriteLine(mspError);
                 }

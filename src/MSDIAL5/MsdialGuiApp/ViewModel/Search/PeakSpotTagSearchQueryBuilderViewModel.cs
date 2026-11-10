@@ -38,6 +38,15 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactivePropertySlim<bool> Overannotation { get; }
         public ReactivePropertySlim<bool> Excludes { get; }
 
+        public void Reset() {
+            Confirmed.Value = false;
+            LowQualitySpectrum.Value = false;
+            Misannotation.Value = false;
+            Coelution.Value = false;
+            Overannotation.Value = false;
+            Excludes.Value = false;
+        }
+
         public IObservable<Unit> ObserveChanged { get; }
     }
 }

@@ -28,6 +28,16 @@ namespace CompMs.App.Msdial.Model.Service
             Shrink(_redos, REDO_LIMIT);
         }
 
+        /// <summary>
+        /// Forgets every command to undo or redo. For an operation that changes the objects behind the commands' backs, such
+        /// as a re-run of a tool over the whole result, after which putting back what a command captured would no longer
+        /// agree with the objects.
+        /// </summary>
+        public void Clear() {
+            _undos.Clear();
+            _redos.Clear();
+        }
+
         public void Redo() {
             if (!_redos.Any()) {
                 return;

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj.Property;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -21,6 +22,13 @@ namespace CompMs.App.Msdial.Model.Information
         string? Ontology { get; }
         string? InChIKey { get; }
         string? Comment { get; }
+
+        /// <summary>The lipid RT check's verdict in one line; null when the check has none on this peak.</summary>
+        string? LipidRtCheck { get; }
+
+        /// <summary>The verdict in full, with who set or removed the Confirmed tag; null when there is nothing to say.</summary>
+        string? LipidRtCheckDetail { get; }
+
         ReadOnlyObservableCollection<IPeakPoint>? PeakPoints { get; }
         ReadOnlyObservableCollection<IPeakAmount>? PeakAmounts { get; }
     }
@@ -37,7 +45,9 @@ namespace CompMs.App.Msdial.Model.Information
                     (m?.ObserveProperty(m_ => m_.Formula) ?? Observable.Return(new Formula())).Subscribe(m_ => Formula = m_?.FormulaString),
                     (m?.ObserveProperty(m_ => m_.Ontology) ?? Observable.Return(string.Empty)).Subscribe(m_ => Ontology = m_),
                     (m?.ObserveProperty(m_ => m_.InChIKey) ?? Observable.Return(string.Empty)).Subscribe(m_ => InChIKey = m_),
-                    (m?.ObserveProperty(m_ => m_.Comment) ?? Observable.Return(string.Empty)).Subscribe(m_ => Comment = m_)
+                    (m?.ObserveProperty(m_ => m_.Comment) ?? Observable.Return(string.Empty)).Subscribe(m_ => Comment = m_),
+                    (m?.ObserveProperty(m_ => m_.LipidRtVerdict) ?? Observable.Return<LipidRtVerdict?>(null)).Subscribe(v => LipidRtCheck = LipidRtCheckDescription.Line(v)),
+                    (m?.ObserveProperty(m_ => m_.ConfirmedDetail) ?? Observable.Return<string?>(null)).Subscribe(d => LipidRtCheckDetail = d),
                 };
             }).DisposePreviousValue()
             .Subscribe()
@@ -96,6 +106,18 @@ namespace CompMs.App.Msdial.Model.Information
         }
         private string? _comment;
 
+        public string? LipidRtCheck {
+            get => _lipidRtCheck;
+            private set => SetProperty(ref _lipidRtCheck, value);
+        }
+        private string? _lipidRtCheck;
+
+        public string? LipidRtCheckDetail {
+            get => _lipidRtCheckDetail;
+            private set => SetProperty(ref _lipidRtCheckDetail, value);
+        }
+        private string? _lipidRtCheckDetail;
+
         ReadOnlyObservableCollection<IPeakPoint>? IPeakInformationModel.PeakPoints => _peakPoints;
         public ReadOnlyReactiveCollection<IPeakPoint>? PeakPoints {
             get => _peakPoints;
@@ -130,6 +152,10 @@ namespace CompMs.App.Msdial.Model.Information
         public PeakInformationAlignmentModel(IObservable<AlignmentSpotPropertyModel?> model) {
             model.Select(m => {
                 if (m is null) {
+                    // No spot, no verdict: the other fields keep their last values as before, but a verdict must not be
+                    // read as being about nothing.
+                    LipidRtCheck = null;
+                    LipidRtCheckDetail = null;
                     return null;
                 }
                 return new CompositeDisposable
@@ -139,7 +165,9 @@ namespace CompMs.App.Msdial.Model.Information
                     m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString),
                     m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_),
                     m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_),
-                    m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_)
+                    m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_),
+                    m.ObserveProperty(m_ => m_.LipidRtVerdict).Subscribe(v => LipidRtCheck = LipidRtCheckDescription.Line(v)),
+                    m.ObserveProperty(m_ => m_.ConfirmedDetail).Subscribe(d => LipidRtCheckDetail = d),
                 };
             }).DisposePreviousValue()
             .Subscribe()
@@ -197,6 +225,18 @@ namespace CompMs.App.Msdial.Model.Information
             private set => SetProperty(ref _comment, value);
         }
         private string? _comment;
+
+        public string? LipidRtCheck {
+            get => _lipidRtCheck;
+            private set => SetProperty(ref _lipidRtCheck, value);
+        }
+        private string? _lipidRtCheck;
+
+        public string? LipidRtCheckDetail {
+            get => _lipidRtCheckDetail;
+            private set => SetProperty(ref _lipidRtCheckDetail, value);
+        }
+        private string? _lipidRtCheckDetail;
 
         ReadOnlyObservableCollection<IPeakPoint> IPeakInformationModel.PeakPoints => _peakPoints;
         public ReadOnlyReactiveCollection<IPeakPoint> PeakPoints {
@@ -285,6 +325,10 @@ namespace CompMs.App.Msdial.Model.Information
             private set => SetProperty(ref _comment, value);
         }
         private string _comment = string.Empty;
+
+        /// <summary>GC-MS has no lipid RT check.</summary>
+        string? IPeakInformationModel.LipidRtCheck => null;
+        string? IPeakInformationModel.LipidRtCheckDetail => null;
 
         ReadOnlyObservableCollection<IPeakPoint>? IPeakInformationModel.PeakPoints => _peakPoints;
         public ReadOnlyReactiveCollection<IPeakPoint>? PeakPoints {

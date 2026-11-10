@@ -44,7 +44,7 @@ namespace CompMs.Common.Algorithm.Scoring
         private List<SpectrumPeak> ShrinkPeaks(List<SpectrumPeak> reference) {
             var result = new List<SpectrumPeak>(reference.Count);
             foreach (var peak in reference) {
-                if (result.Any() && peak.Mass - result[result.Count - 1].Mass <= _searchParameter.Ms2Tolerance) {
+                if (result.Count > 0 && peak.Mass - result[result.Count - 1].Mass <= _searchParameter.Ms2Tolerance) {
                     result[result.Count - 1].Intensity += peak.Intensity;
                     result[result.Count - 1].SpectrumComment |= peak.SpectrumComment;
                     if (string.IsNullOrEmpty(result[result.Count - 1].Comment)) {

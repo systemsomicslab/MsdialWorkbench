@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.MessagePack;
+using CompMs.Common.Utility;
 using Rfx.Riken.OsakaUniv;
 using Riken.Metabolomics.MsfinderCommon.Query;
 using Riken.Metabolomics.StructureFinder.Parser;
@@ -213,6 +214,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
 
             if (queries == null || queries.Count == 0) return;
             var inchikey2Rt = new Dictionary<string, float>();
+            // A decimal comma is read as one: these tables are often saved from a spreadsheet on a PC
+            // whose regional format uses it, and a retention time never needs digit grouping.
             using (var sr = new StreamReader(input, Encoding.ASCII)) { // [0] InChIKey [1] RT (min)
                 sr.ReadLine();
                 while (sr.Peek() > -1) {
@@ -225,7 +228,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     var shortinchikey = inchikey.Split('-')[0].Trim();
                     var rtString = lineArray[1];
                     float rt = 0.0F;
-                    if (float.TryParse(rtString, out rt) && shortinchikey.Length == 14) {
+                    if (DecimalText.TryParse(rtString, out rt) && shortinchikey.Length == 14) {
                         if (!inchikey2Rt.ContainsKey(shortinchikey)) {
                             inchikey2Rt[shortinchikey] = rt;
                         }
@@ -245,6 +248,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
 
             if (queries == null || queries.Count == 0) return;
             var inchikey2AdductCcsPair = new Dictionary<string, List<string>>();
+            // A decimal comma is read as one, as for the retention time table; a CCS never needs digit grouping.
             using (var sr = new StreamReader(input, Encoding.ASCII)) { // [0] InChIKey [1] Adduct [1] CCS
                 sr.ReadLine();
                 while (sr.Peek() > -1) {
@@ -260,7 +264,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     if (!adductObj.FormatCheck) continue;
                     var ccsString = lineArray[2];
                     float ccs = 0.0F;
-                    if (float.TryParse(ccsString, out ccs) && shortinchikey.Length == 14) {
+                    if (DecimalText.TryParse(ccsString, out ccs) && shortinchikey.Length == 14) {
 
                         var pairKey = String.Join("_", new string[] { adductObj.AdductIonName, ccsString });
                         if (!inchikey2AdductCcsPair.ContainsKey(shortinchikey)) {
@@ -282,7 +286,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                         var adduct = pair.Split('_')[0];
                         var ccs = pair.Split('_')[1];
                         if (query.AdductToCCS == null) query.AdductToCCS = new Dictionary<string, float>();
-                        query.AdductToCCS[adduct] = float.Parse(ccs);
+                        DecimalText.TryParse(ccs, out float ccsValue);
+                        query.AdductToCCS[adduct] = ccsValue;
                     }
                 }
             }

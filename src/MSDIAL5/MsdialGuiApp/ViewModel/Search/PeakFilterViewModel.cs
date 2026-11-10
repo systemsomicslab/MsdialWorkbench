@@ -18,7 +18,10 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
             EnabledFilter = model.EnabledFilter;
             CheckedFilter = model.ObserveProperty(m => m.CheckedFilter).ToReactiveProperty().AddTo(Disposables);
-            CheckedFilter.Subscribe(filter => model.CheckedFilter = filter).AddTo(Disposables);
+            CheckedFilter.Subscribe(filter => {
+                model.CheckedFilter = filter;
+                OnPropertyChanged("");
+            }).AddTo(Disposables);
         }
 
         public PeakFilterViewModel(params PeakFilterModel[] models) {
@@ -29,6 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 foreach (var m in models) {
                     m.CheckedFilter = filter;
                 }
+                OnPropertyChanged("");
             }).AddTo(Disposables);
         }
 
@@ -110,6 +114,10 @@ namespace CompMs.App.Msdial.ViewModel.Search
             set => WriteFilter(DisplayFilter.MscleanrRmd, value);
         }
         public bool EnableMscleanrRmd => EnabledFilter.All(DisplayFilter.MscleanrRmd);
+
+        public void Reset() {
+            CheckedFilter.Value = DisplayFilter.Unset;
+        }
 
         private bool ReadFilter(DisplayFilter flag) {
             return (flag & CheckedFilter.Value & EnabledFilter) != 0;

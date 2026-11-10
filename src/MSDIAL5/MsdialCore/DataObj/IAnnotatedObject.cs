@@ -35,5 +35,32 @@ namespace CompMs.MsdialCore.DataObj
         public static T? Refer<T>(this IAnnotatedObject? self, IMatchResultRefer<T?, MsScanMatchResult?> refer) {
             return refer.Refer(self?.MatchResults.Representative);
         }
+
+        /// <summary>
+        /// <paramref name="name"/> as every export must show it: see
+        /// <see cref="CompMs.Common.Utility.AnnotationName.Canonical(string, bool)"/>.
+        /// </summary>
+        /// <remarks>
+        /// Takes the feature rather than the flag so that a caller cannot pair one feature's name
+        /// with another's chain verdict, or forget the verdict and silently publish an sn-chain
+        /// composition that nothing measured. The exporters that have a match result in hand
+        /// already -- the metadata accessors, mzTab-M -- pass it directly instead, so that the name
+        /// agrees with the rest of the row they are building.
+        /// </remarks>
+        public static string CanonicalName(this IAnnotatedObject? self, string name) {
+            return CompMs.Common.Utility.AnnotationName.Canonical(name, self.AreLipidChainsResolved());
+        }
+
+        /// <summary>
+        /// The chain verdict <see cref="CanonicalName"/> reduces a dual lipid name by: whether the representative match
+        /// resolved the lipid chains. False when there is no match.
+        /// </summary>
+        /// <remarks>
+        /// For a writer that canonicalises the name itself, such as the MassBank record handler in CommonStandard,
+        /// which cannot see this type, so that it reads the verdict exactly as the other exports do.
+        /// </remarks>
+        public static bool AreLipidChainsResolved(this IAnnotatedObject? self) {
+            return self?.MatchResults?.Representative?.IsLipidChainsMatch ?? false;
+        }
     }
 }

@@ -43,6 +43,29 @@ namespace CompMs.MsdialCore.Utility {
             return false;
         }
 
+        /// <summary>
+        /// Whether the raw data of a sample are present: a file, or a vendor folder (Agilent or Bruker .d, Waters .raw).
+        /// An imzML file also needs its .ibd beside it. Present does not mean readable.
+        /// </summary>
+        public static bool RawDataExists(string filepath) {
+            if (string.IsNullOrEmpty(filepath)) {
+                return false;
+            }
+            if (System.IO.Directory.Exists(filepath)) {
+                return true;
+            }
+            if (!System.IO.File.Exists(filepath)) {
+                return false;
+            }
+            try {
+                return !string.Equals(System.IO.Path.GetExtension(filepath), ".imzML", StringComparison.OrdinalIgnoreCase)
+                    || System.IO.File.Exists(System.IO.Path.ChangeExtension(filepath, ".ibd"));
+            }
+            catch (ArgumentException) {
+                return false;
+            }
+        }
+
         // raw data access
         public static List<RawSpectrum> GetAllSpectra(string filepath) {
             List<RawSpectrum> rawSpectra = null;
@@ -237,22 +260,11 @@ namespace CompMs.MsdialCore.Utility {
 
         // index access
         public static int GetScanStartIndexByRt(float focusedRt, float rtTol, IReadOnlyList<RawSpectrum> spectrumList) {
-
             var targetRt = focusedRt - rtTol;
-            int startIndex = 0, endIndex = spectrumList.Count - 1;
-
-            int counter = 0;
-            int limit = spectrumList.Count > 50000 ? 20 : 10;
-            while (counter < limit) {
-                if (spectrumList[startIndex].ScanStartTime <= targetRt && targetRt < spectrumList[(startIndex + endIndex) / 2].ScanStartTime) {
-                    endIndex = (startIndex + endIndex) / 2;
-                }
-                else if (spectrumList[(startIndex + endIndex) / 2].ScanStartTime <= targetRt && targetRt < spectrumList[endIndex].ScanStartTime) {
-                    startIndex = (startIndex + endIndex) / 2;
-                }
-                counter++;
-            }
-            return startIndex;
+            return SearchCollection.LowerBound(
+                spectrumList,
+                targetRt,
+                (spectrum, rt) => spectrum.ScanStartTime.CompareTo(rt));
         }
 
         public static int GetTargetCEIndexForMS2RawSpectrum(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
@@ -267,6 +279,49 @@ namespace CompMs.MsdialCore.Utility {
                     }
                 }
                 if (!isTargetCEFound) Console.WriteLine("Target CE cannot be found.");
+            }
+            return targetSpecID;
+        }
+
+        /// <summary>
+        /// The product-ion scan at the target collision energy that is nearest the MS1 peak top.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="ChromatogramPeakFeature.MS2RawSpectrumID2CE"/> of an AIF feature holds every scan that was,
+        /// while it was being filled, the closest so far at its energy, and it can be filled more than once over
+        /// different scan ranges. <see cref="GetTargetCEIndexForMS2RawSpectrum"/> takes the last matching entry
+        /// in enumeration order, which is then not always the nearest one: on a single-energy Thermo AIF file
+        /// (ST004304 QC-D2-B) it chose a scan farther from the apex than the nearest one for 841 of 2,346 peaks.
+        /// Returns <see cref="ChromatogramPeakFeature.MS2RawSpectrumID"/>, the product-ion scan of any energy nearest
+        /// the peak top, when no scan has the target energy, as <see cref="GetTargetCEIndexForMS2RawSpectrum"/> does.
+        /// Unlike it, this writes nothing to the console: the caller counts such features through the overload with
+        /// <c>isTargetCEMissing</c> and reports one summary per file and energy.
+        /// </remarks>
+        public static int GetTargetCEIndexNearestPeakTop(ChromatogramPeakFeature chromPeakFeature, double targetCE) {
+            return GetTargetCEIndexNearestPeakTop(chromPeakFeature, targetCE, out _);
+        }
+
+        /// <param name="isTargetCEMissing">
+        /// True when a target energy is set (<paramref name="targetCE"/> &gt;= 0) and no product-ion scan of the feature has it,
+        /// so that the returned scan, if any, is of another energy.
+        /// </param>
+        public static int GetTargetCEIndexNearestPeakTop(ChromatogramPeakFeature chromPeakFeature, double targetCE, out bool isTargetCEMissing) {
+            var targetSpecID = chromPeakFeature.MS2RawSpectrumID;
+            isTargetCEMissing = false;
+            if (targetCE >= 0) {
+                var top = chromPeakFeature.MS1RawSpectrumIdTop;
+                var nearest = chromPeakFeature.MS2RawSpectrumID2CE
+                    .Where(pair => Math.Abs(pair.Value - targetCE) < 0.01)
+                    .OrderBy(pair => Math.Abs(pair.Key - top))
+                    .ThenBy(pair => pair.Key)
+                    .Select(pair => (int?)pair.Key)
+                    .FirstOrDefault();
+                if (nearest is int id) {
+                    targetSpecID = id;
+                }
+                else {
+                    isTargetCEMissing = true;
+                }
             }
             return targetSpecID;
         }
@@ -343,11 +398,10 @@ namespace CompMs.MsdialCore.Utility {
             int startScanID, int endScanID, IReadOnlyList<double> pMzValues, ParameterBase param, AcquisitionType acquisitionType,
             double targetCE = -1, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
 
-            var counter = 0;
-            var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param, acquisitionType);
-            var valuePeakArrayList = new List<ValuePeak[]>(pMzValues.Count);
-            valuePeakArrayList.AddRange(pMzValues.Select(_ => new ValuePeak[arrayLength]));
-
+var valuePeakLists = new List<ValuePeak>[pMzValues.Count];
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    valuePeakLists[j] = new List<ValuePeak>();
+}
             for (int i = startScanID; i <= endScanID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
@@ -359,27 +413,16 @@ namespace CompMs.MsdialCore.Utility {
                         var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
 
                         for (int j = 0; j < pMzValues.Count; j++) { 
-                            valuePeakArrayList[j][counter] = new ValuePeak(id, chromX, pMzValues[j], intensities[j]);
+                            valuePeakLists[j].Add(new ValuePeak(id, chromX, pMzValues[j], intensities[j]));
                         }
-                        counter++;
                     }
                 }
             }
-            return valuePeakArrayList;
-        }
-
-        private static int GetTargetArrayLength(IDataProvider provider, int startScanID, int endScanID, double precursorMz, double targetCE, ParameterBase param, AcquisitionType type) {
-            var counter = 0;
-            for (int i = startScanID; i <= endScanID; i++) {
-                var spec = provider.LoadMsSpectrumFromIndex(i);
-                if (spec.MsLevel == 2 && spec.Precursor != null) {
-                    if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
-                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, type)) {
-                        counter++;
-                    }
-                }
-            }
-            return counter;
+var results = new List<ValuePeak[]>(valuePeakLists.Length);
+for (int j = 0; j < valuePeakLists.Length; j++) {
+    results.Add(valuePeakLists[j].ToArray());
+}
+return results;
         }
 
         public static double[] RetrieveIntensitiesFromMzValues(
@@ -1055,14 +1098,14 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 foreach (var s in massSpectra) {
                     var massBin = (int)(s.Mz * 1000);
-                    if (!spectrumBin.ContainsKey(massBin)) {
+                    if (!spectrumBin.TryGetValue(massBin, out var binnedSpectrum)) {
                         spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
                     }
                     else {
-                        spectrumBin[massBin][1] += s.Intensity;
-                        if (spectrumBin[massBin][2] < s.Intensity) {
-                            spectrumBin[massBin][0] = s.Mz;
-                            spectrumBin[massBin][2] = s.Intensity;
+                        binnedSpectrum[1] += s.Intensity;
+                        if (binnedSpectrum[2] < s.Intensity) {
+                            binnedSpectrum[0] = s.Mz;
+                            binnedSpectrum[2] = s.Intensity;
                         }
                     }
                 }
@@ -1083,15 +1126,15 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 foreach (var s in massSpectra) {
                     var massBin = (int)(s.Mz * 1000);
-                    if (!spectrumBin.ContainsKey(massBin)) {
+                    if (!spectrumBin.TryGetValue(massBin, out var binnedSpectrum)) {
                         // [accurate mass, intensity, max intensity]
                         spectrumBin[massBin] = new double[3] { s.Mz, s.Intensity, s.Intensity };
                     }
                     else {
-                        spectrumBin[massBin][1] += s.Intensity;
-                        if (spectrumBin[massBin][2] < s.Intensity) {
-                            spectrumBin[massBin][0] = s.Mz;
-                            spectrumBin[massBin][2] = s.Intensity;
+                        binnedSpectrum[1] += s.Intensity;
+                        if (binnedSpectrum[2] < s.Intensity) {
+                            binnedSpectrum[0] = s.Mz;
+                            binnedSpectrum[2] = s.Intensity;
                         }
                     }
                 }
@@ -1208,7 +1251,7 @@ namespace CompMs.MsdialCore.Utility {
             var type = AdductIon.GetAdductIon(adductString);
 
             feature.SetAdductType(type);
-            feature.Name = "w/o MS2: " + result.Name;
+            feature.Name = AnnotationName.AsWithoutMs2(result.Name);
         }
 
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
@@ -1229,10 +1272,10 @@ namespace CompMs.MsdialCore.Utility {
             SetMoleculePropertyCore(feature, reference);
             feature.SetAdductType(reference.AdductType);
             if (feature.MS2RawSpectrumID < 0) {
-                feature.Name = "no MS2: " + result.Name;
+                feature.Name = AnnotationName.AsNoMs2(result.Name);
             }
             else {
-                feature.Name = "low score: " + result.Name;
+                feature.Name = AnnotationName.AsLowScore(result.Name);
             }
         }
 
@@ -1273,6 +1316,49 @@ namespace CompMs.MsdialCore.Utility {
             property.InChIKey = string.Empty;
         }
 
+        /// <summary>
+        /// The "Annotation tag (VS1.0)" of a match result: MS-DIAL's compound identification
+        /// confidence code, written as the reliability of mzTab-M (MS:1003032) and in every text export.
+        /// </summary>
+        /// <remarks>
+        /// The first digit is what supports the match besides m/z, the second what the spectrum
+        /// established:
+        ///
+        /// <code>
+        /// 1x0  RT + CCS + MS/MS (ion mobility)      500  RT + CCS + m/z (ion mobility)
+        /// 2x0  CCS + MS/MS (ion mobility)           510  CCS + m/z (ion mobility)
+        /// 3x0  RT (or RI) + MS/MS                   520  RT + m/z
+        /// 340  RT/RI + EI-MS (GC-MS)                530  m/z
+        /// 4x0  MS/MS                                999  unknown
+        /// 440  EI-MS (GC-MS)
+        /// 450  MS/MS matched to an in-silico (predicted) reference spectrum
+        ///
+        /// x = 0 lipid acyl position resolved, 1 acyl chains resolved, 2 lipid class resolved,
+        ///     3 MS/MS matched to an acquired reference spectrum
+        /// </code>
+        ///
+        /// 450 is the author's decision of 2026-10-28 (D-C). A match against a spectrum that was
+        /// predicted from a structure is still an MS/MS match, so it stays in the 4xx series, but it
+        /// is not the same claim as a match against an acquired reference spectrum, which 430 makes;
+        /// 440 was already taken by EI-MS. The test is the evidence record the annotator wrote --
+        /// <see cref="AnnotationEvidenceSource.BySpectrumPredictionTool"/>, which ForDatabaseMatch
+        /// records for a library declared <see cref="DataBaseSource.PredictedMsp"/> -- applied
+        /// wherever a spectrum match is reported, so under exactly the conditions 430 is given.
+        ///
+        /// The author settled its boundaries on the same day:
+        ///
+        /// - Lipid levels do not apply. An in-silico hit on a lipid is 450 even when the lipid flags
+        ///   are set, and never falls into 400-420. Those codes belong to rule-based lipid annotation
+        ///   (the LBM's diagnostic-ion rules, recorded RuleBased), which is a different kind of
+        ///   evidence from matching a predicted MS/MS spectrum, and the two are kept apart. So the
+        ///   in-silico test comes before the lipid levels, and a RuleBased result never reaches it.
+        /// - RT or CCS support does not change it. An in-silico match with RT, CCS or both is 450,
+        ///   not 330/230/130, which would claim an acquired reference spectrum. Codes such as
+        ///   350/250/150 for those combinations are a possible future extension, not defined now.
+        /// - Peptides are out of scope and keep 430, although LcmsFastaAnnotator records their b/y
+        ///   ladder as predicted too; see <see cref="IsInSilicoMsmsMatch"/>.
+        /// - GC-MS is out of scope: an in-silico EI match keeps 440/340.
+        /// </remarks>
         public static int GetAnnotationCode(MsScanMatchResult result, MachineCategory category) {
             var code = 999; // unknown
             if (result == null) return code;
@@ -1282,8 +1368,11 @@ namespace CompMs.MsdialCore.Utility {
                 return code;
             }
             else if (category == MachineCategory.LCIMMS || category == MachineCategory.IMMS) {
-                if (result.IsPrecursorMzMatch) code = 530; // 430: m/z+MS/MS matched
+                if (result.IsPrecursorMzMatch) code = 530; // 530: m/z matched
                 if (result.IsSpectrumMatch) code = 430; // 430: m/z+MS/MS matched
+                if (code == 430 && IsInSilicoMsmsMatch(result)) {
+                    return 450; // 450: MS/MS matched to an in-silico (predicted) reference spectrum, whatever the lipid level, RT or CCS
+                }
                 if (code == 430) {
                     if (result.IsLipidPositionMatch) {
                         code = 400; // 400: MS/MS matched, lipid acyl position resolved
@@ -1341,6 +1430,9 @@ namespace CompMs.MsdialCore.Utility {
             else {
                 if (result.IsPrecursorMzMatch) code = 530; // 530: m/z matched
                 if (result.IsSpectrumMatch) code = 430; // 430: m/z+MS/MS matched
+                if (code == 430 && IsInSilicoMsmsMatch(result)) {
+                    return 450; // 450: MS/MS matched to an in-silico (predicted) reference spectrum, whatever the lipid level, RT or CCS
+                }
                 if (code == 430) {
                     if (result.IsLipidPositionMatch) {
                         code = 400; // 400: MS/MS matched, lipid acyl position resolved
@@ -1373,6 +1465,60 @@ namespace CompMs.MsdialCore.Utility {
 
         public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {
             return GetAnnotationCode(result, param.MachineCategory);
+        }
+
+        /// <summary>
+        /// Whether a spectrum match was made against a reference spectrum predicted in silico from a
+        /// structure, as opposed to an acquired one.
+        /// </summary>
+        /// <remarks>
+        /// The peptide carve-out is explicit: a FASTA result is excluded although LcmsFastaAnnotator
+        /// records its b/y ladder as BySpectrumPredictionTool, because peptides are outside the
+        /// author's decision on 450 and keep 430.
+        ///
+        /// Public because the QA matrix splits its "Reference matched" cells by the same test (see
+        /// <see cref="IsQaReferenceMatched"/>), so that a cell it calls "In-silico matched" is one
+        /// whose annotation the exports code 450. A null result is no match.
+        /// </remarks>
+        public static bool IsInSilicoMsmsMatch(MsScanMatchResult? result) {
+            return result != null
+                && result.EvidenceSource == AnnotationEvidenceSource.BySpectrumPredictionTool
+                && (result.Source & SourceType.FastaDB) == 0;
+        }
+
+        /// <summary>The QA matrix column of the cells whose accepted annotation is an in-silico match.</summary>
+        public const string QaInSilicoMatchedColumn = "In-silico matched";
+
+        /// <summary>
+        /// Whether the QA matrix (*.qa.tsv) marks one file's peak of an alignment spot "Reference
+        /// matched": its name reads as an accepted annotation, and that annotation -- the peak's own
+        /// representative match result -- is not an in-silico match.
+        /// </summary>
+        /// <remarks>
+        /// The author's decision of 2026-10-28: an MS/MS match against a spectrum predicted in silico
+        /// is never an identification, so the QA's reference-match count must not count it. Such a
+        /// cell is "In-silico matched" instead (<see cref="IsQaInSilicoMatched"/>); the two are
+        /// disjoint, and together they are the cells a Console before this change marked "Reference
+        /// matched". Acquired-spectrum and LBM rule-based matches are unchanged.
+        ///
+        /// The test is the cell's own peak, as the column always was: the matrix is per injection, and
+        /// a spot's representative is the annotation of one of its peaks. Among the peaks with a
+        /// product-ion spectrum, <see cref="DataObjConverter.CompareRepresentativePrecedence"/> ranks an
+        /// accepted acquired or rule-based match above an in-silico one, so a spot an in-silico match
+        /// represents has no such peak; a cell of it that stays "Reference matched" is one whose own
+        /// peak, with no product-ion spectrum, carries another kind of accepted match.
+        /// </remarks>
+        public static bool IsQaReferenceMatched(AlignmentChromPeakFeature peak) {
+            return IsReferenceMatchedName(peak.Name) && !IsInSilicoMsmsMatch(peak.MatchResults?.Representative);
+        }
+
+        /// <summary>
+        /// Whether the QA matrix marks one file's peak of an alignment spot "In-silico matched": its
+        /// name reads as an accepted annotation, and that annotation is an in-silico match
+        /// (<see cref="IsInSilicoMsmsMatch"/>). Never true where <see cref="IsQaReferenceMatched"/> is.
+        /// </summary>
+        public static bool IsQaInSilicoMatched(AlignmentChromPeakFeature peak) {
+            return IsReferenceMatchedName(peak.Name) && IsInSilicoMsmsMatch(peak.MatchResults?.Representative);
         }
 
         // Alignment result
@@ -1414,6 +1560,8 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return Math.Round(spotProperty.Mass, 5).ToString();
                 case "SN": return Math.Round(spotProperty.PeakShape.SignalToNoise, 1).ToString();
                 case "MSMS": return spotProperty.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
+                case "Reference matched": return IsQaReferenceMatched(spotProperty) ? "TRUE" : "FALSE";
+                case QaInSilicoMatchedColumn: return IsQaInSilicoMatched(spotProperty) ? "TRUE" : "FALSE";
                 default: return string.Empty;
             }
         }
@@ -1432,8 +1580,14 @@ namespace CompMs.MsdialCore.Utility {
                 case "MZ": return spotProperty.Mass;
                 case "SN": return spotProperty.PeakShape.SignalToNoise;
                 case "MSMS": return spotProperty.MS2RawSpectrumID;
+                case "Reference matched": return IsQaReferenceMatched(spotProperty) ? 1d : 0d;
+                case QaInSilicoMatchedColumn: return IsQaInSilicoMatched(spotProperty) ? 1d : 0d;
                 default: return -1;
             }
+        }
+
+        public static bool IsReferenceMatchedName(string name) {
+            return AnnotationName.IsReferenceMatched(name);
         }
 
         public static List<ChromatogramPeakFeature> GetChromPeakFeatureObjectsIntegratingRtAndDriftData(List<ChromatogramPeakFeature> features) {

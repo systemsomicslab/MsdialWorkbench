@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public KeywordFilterModel(string label, KeywordFilteringType type = KeywordFilteringType.IgnoreIfWordIsNull) {
             _sem = new SemaphoreSlim(1, 1).AddTo(Disposables);
-            _keywords = new List<string>();
+            _keywords = [];
             Keywords = _keywords.AsReadOnly();
             switch (type) {
                 case KeywordFilteringType.ExactMatch:
@@ -33,6 +34,7 @@ namespace CompMs.App.Msdial.Model.Search
                     _method = new KeepIfWordIsNull();
                     break;
                 case KeywordFilteringType.IgnoreIfWordIsNull:
+                case KeywordFilteringType.None:
                 default:
                     _method = new IgnoreIfWordIsNull();
                     break;
@@ -56,10 +58,21 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
+public void ClearKeywords() {
+    _sem.Wait();
+    try {
+        SetKeywords([]);
+    }
+    finally {
+        _sem.Release();
+    }
+}
+
         private void SetKeywords(IEnumerable<string> keywords) {
             _keywords.Clear();
             _keywords.AddRange(keywords);
             IsEnabled = _keywords.Count > 0;
+            OnPropertyChanged(nameof(Keywords));
         }
 
         public bool Match(string word) {
@@ -77,25 +90,29 @@ namespace CompMs.App.Msdial.Model.Search
             bool Match(string word, List<string> keywords);
         }
 
+        // Keywords keep the case the user typed, because they are shown back in the filter box.
+        // Only the comparison ignores case.
+        private static bool ContainsIgnoreCase(string word, string keyword) {
+            return word.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         sealed class IgnoreIfWordIsNull : IKeywordFiltering {
             public IEnumerable<string> Filter(IEnumerable<string> keywords) {
-                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower());
+                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword));
             }
 
             public bool Match(string? word, List<string> keywords) {
-                word = word?.ToLower();
-                return keywords.All(keyword => word?.Contains(keyword) ?? false);
+                return keywords.All(keyword => word is not null && ContainsIgnoreCase(word, keyword));
             }
         }
 
         sealed class KeepIfWordIsNull : IKeywordFiltering {
             public IEnumerable<string> Filter(IEnumerable<string> keywords) {
-                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower());
+                return keywords.Where(keyword => !string.IsNullOrEmpty(keyword));
             }
 
             public bool Match(string? word, List<string> keywords) {
-                word = word?.ToLower();
-                return word is null || keywords.All(keyword => word.Contains(keyword));
+                return word is null || keywords.All(keyword => ContainsIgnoreCase(word, keyword));
             }
         }
 

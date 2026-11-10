@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -13,6 +14,7 @@ using CompMs.MsdialCore.Properties;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -88,6 +90,10 @@ namespace CompMs.MsdialCore.Parameter
         public string License { get => ProjectParam.License; set => ProjectParam.License = value; }
         [IgnoreMember]
         public string Comment { get => ProjectParam.Comment; set => ProjectParam.Comment = value; }
+        [IgnoreMember]
+        public bool ConstrainToMassBankFormat { get => ProjectParam.ConstrainToMassBankFormat; set => ProjectParam.ConstrainToMassBankFormat = value; }
+        [IgnoreMember]
+        public string MassBankContributorId { get => ProjectParam.MassBankContributorId; set => ProjectParam.MassBankContributorId = value; }
 
 
         // Annotation
@@ -318,8 +324,10 @@ namespace CompMs.MsdialCore.Parameter
         [IgnoreMember]
         public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get => PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange; set => PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = value; }
         [IgnoreMember]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average.")]
         public float SampleMaxOverBlankAverage { get => PostProcessBaseParam.SampleMaxOverBlankAverage; set => PostProcessBaseParam.SampleMaxOverBlankAverage = value; }
         [IgnoreMember]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average.")]
         public float SampleAverageOverBlankAverage { get => PostProcessBaseParam.SampleAverageOverBlankAverage; set => PostProcessBaseParam.SampleAverageOverBlankAverage = value; }
         [IgnoreMember]
         public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get => PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking; set => PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking = value; }
@@ -507,11 +515,35 @@ namespace CompMs.MsdialCore.Parameter
         [Key(17)]
         public PostCuratorParameter PostCurationParameter { get; set; } = new PostCuratorParameter();
 
+        /// <summary>
+        /// The lipid retention-time order check. LC-MS only in this version: hook A per analysis file and hook B after
+        /// alignment, both when <see cref="LipidRtCheckParameter.IsEnabledFor"/> and the target omics is lipidomics.
+        /// </summary>
+        /// <remarks>
+        /// Key 18 is the next free key of this class (MsdialDimsParameter uses 20, the other modes 150 and up). A project
+        /// written before it has no element here, and MessagePack then assigns null rather than the initializer, so the
+        /// getter hands out the defaults instead of null: an older lipidomics project runs the check with the defaults.
+        /// The defaults are put in place once, atomically, because hook A reads this from the per-file parallel loop.
+        /// </remarks>
+        [Key(18)]
+        public LipidRtCheckParameter LipidRtCheckParam {
+            get {
+                var parameter = _lipidRtCheckParam;
+                if (parameter is null) {
+                    System.Threading.Interlocked.CompareExchange(ref _lipidRtCheckParam, new LipidRtCheckParameter(), null);
+                    parameter = _lipidRtCheckParam;
+                }
+                return parameter;
+            }
+            set => _lipidRtCheckParam = value;
+        }
+        private LipidRtCheckParameter _lipidRtCheckParam = new LipidRtCheckParameter();
+
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
             pStrings.Add("# Project information");
-            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "MS-DIAL version number", MsdialVersionNumber.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project file path", Path.Combine(ProjectFolderPath, ProjectFileName).ToString() }));
@@ -535,6 +567,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Isotope text DB file path", IsotopeTextDBFilePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for target detection", CompoundListInTargetModePath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Compounds library file path for RT correction", CompoundListForRtCorrectionPath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection file path", ReferenceFileParam.RtCorrectionPeakSelectionFilePath?.ToString() ?? string.Empty }));
             pStrings.Add(String.Join(": ", new string[] { "Searched adduct ions", String.Join(",", SearchedAdductIons.Select(n => n.AdductIonName).ToArray()) }));
 
             pStrings.Add("\r\n");
@@ -671,6 +704,26 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for alignment", Ms1AlignmentTolerance.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS1 factor for alignment", Ms1AlignmentFactor.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Force insert peaks in gap filling", IsForceInsertForGapFilling.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Execute automatic RT correction for alignment", AlignmentBaseParam.AutomaticRtCorrection.Execute.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference file ID", AlignmentBaseParam.AutomaticRtCorrection.ReferenceFileId.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction RT bin width", AlignmentBaseParam.AutomaticRtCorrection.RtBinWidth.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction match RT tolerance", AlignmentBaseParam.AutomaticRtCorrection.MatchRtTolerance.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum anchors", AlignmentBaseParam.AutomaticRtCorrection.MinimumAnchorCount.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction maximum anchors", AlignmentBaseParam.AutomaticRtCorrection.MaximumAnchorCount.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum sample coverage", AlignmentBaseParam.AutomaticRtCorrection.MinimumSampleCoverage.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction intensity quantile", AlignmentBaseParam.AutomaticRtCorrection.IntensityQuantile.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction maximum peak width quantile", AlignmentBaseParam.AutomaticRtCorrection.MaximumPeakWidthQuantile.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum signal to noise", AlignmentBaseParam.AutomaticRtCorrection.MinimumSignalToNoise.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum Gaussian similarity", AlignmentBaseParam.AutomaticRtCorrection.MinimumGaussianSimilarity.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction minimum ideal slope", AlignmentBaseParam.AutomaticRtCorrection.MinimumIdealSlope.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction outlier MAD threshold", AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference centrality weight", AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction interpolate blanks by analytical order", AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction local support RT window", AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor mode", AlignmentBaseParam.AutomaticRtCorrection.AnchorMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor library file path", AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor peak selection mode", AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor peak selection RT weight", AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionRtWeight.ToString(CultureInfo.InvariantCulture) }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Filtering");
@@ -678,8 +731,7 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "N percent detected in one group", NPercentDetectedInOneGroup.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Remove feature based on peak height fold-change", IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Blank filtering", BlankFiltering.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Sample max / blank average", SampleMaxOverBlankAverage.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Sample average / blank average", SampleAverageOverBlankAverage.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Fold change for blank filtering", FoldChangeForBlankFiltering.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Keep reference matched metabolites", IsKeepRefMatchedMetaboliteFeatures.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep suggested metabolites", IsKeepSuggestedMetaboliteFeatures.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Keep removable features and assigned tag for checking", IsKeepRemovableFeaturesAndAssignedTagForChecking.ToString() }));
@@ -694,6 +746,8 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Interpolation method", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.InterpolationMethod.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (begin)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodBegin.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Extrapolation method (end)", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExtrapolationMethodEnd.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection mode", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "RT correction peak selection RT weight", RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.PeakSelectionRtWeight.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Internal standards for RT alignment", String.Join(",", RetentionTimeCorrectionCommon.StandardLibrary.Where(n => n.IsTargetMolecule).Select(n => n.Name).ToArray()) }));
 
             pStrings.Add("\r\n");
@@ -808,7 +862,21 @@ namespace CompMs.MsdialCore.Parameter
         [Key(1)]
         public DateTime FinalSavedDate { get; set; } = DateTime.Now;
         [Key(2)]
-        public string MsdialVersionNumber { get; set; } = Resources.VERSION;
+        /// <summary>
+        /// Which build of MS-DIAL produced this project.
+        /// </summary>
+        /// <remarks>
+        /// The default used to be MsdialCore's own Resources.VERSION, which was the literal "4.24" --
+        /// a leftover nobody had looked at in years. Any path that created a parameter and never
+        /// assigned this published "4.24" as the MS-DIAL version, including into mzTab-M's software
+        /// entry. The GUI and the Console both assign it, so the literal was not reaching a normal
+        /// run, but a default that is quietly wrong is a trap waiting for the next caller.
+        ///
+        /// Now the running build, which is the true answer for a parameter this build just created.
+        /// A parameter DESERIALIZED from a project keeps the stored value, as it must: that says
+        /// which build made the project, not which one is reading it.
+        /// </remarks>
+        public string MsdialVersionNumber { get; set; } = MsdialBuildIdentity.FullIdentity;
 
 
         // Project container
@@ -890,6 +958,35 @@ namespace CompMs.MsdialCore.Parameter
         public string License { get; set; } = string.Empty;
         [Key(22)]
         public string Comment { get; set; } = string.Empty;
+
+        // Key 23 is SpectrumCommentToColorBytes, declared with the project container above.
+
+        /// <summary>
+        /// When true, Option &gt; Project property setting only accepts project metadata that makes valid MassBank
+        /// records: the instrument type and licence are chosen from MassBank's vocabularies, and authors and
+        /// instrument are required. The values themselves stay in the members above, which every export reads.
+        /// </summary>
+        /// <remarks>
+        /// A project written before this key has no element for it and reads back false, the free-text behaviour
+        /// every older project had.
+        /// </remarks>
+        [Key(24)]
+        public bool ConstrainToMassBankFormat { get; set; } = false;
+
+        /// <summary>
+        /// The contributor ID MassBank assigned (the second block of every accession), which the MassBank export
+        /// dialogs start from. Empty when none was entered; never null.
+        /// </summary>
+        /// <remarks>
+        /// A project written before this key has no element for it, and MessagePack then assigns null rather than
+        /// the initializer, so the setter keeps empty instead.
+        /// </remarks>
+        [Key(25)]
+        public string MassBankContributorId {
+            get => _massBankContributorId;
+            set => _massBankContributorId = value ?? string.Empty;
+        }
+        private string _massBankContributorId = string.Empty;
     }
     [MessagePackObject]
     public class ProteomicsParameter {
@@ -1007,6 +1104,8 @@ namespace CompMs.MsdialCore.Parameter
         public List<AdductIon> SearchedAdductIons { get; set; } = new List<AdductIon>();
         [Key(6)]
         public string LbmFilePath { get; set; } = string.Empty;
+        [Key(7)]
+        public string RtCorrectionPeakSelectionFilePath { get; set; } = string.Empty;
     }
 
     [MessagePackObject]
@@ -1159,6 +1258,155 @@ namespace CompMs.MsdialCore.Parameter
         public bool TogetherWithAlignment { get; set; } = true;
         [Key(9)]
         public bool UseRefMatchedPeaksOnly { get; set; } = false;
+        /// <remarks>
+        /// Key 10 was added after projects with keys 0-9 were saved. Such a project has no element here, and MessagePack
+        /// then assigns null rather than the initializer, so the getter hands out the defaults instead of null: an older
+        /// project opens, exports its parameters and aligns with automatic RT correction off, as it was saved. The
+        /// defaults are put in place once, atomically, as for <see cref="ParameterBase.LipidRtCheckParam"/>.
+        /// </remarks>
+        [Key(10)]
+        public AutomaticAlignmentRetentionTimeCorrectionParameter AutomaticRtCorrection {
+            get {
+                var parameter = _automaticRtCorrection;
+                if (parameter is null) {
+                    System.Threading.Interlocked.CompareExchange(ref _automaticRtCorrection, new AutomaticAlignmentRetentionTimeCorrectionParameter(), null);
+                    parameter = _automaticRtCorrection;
+                }
+                return parameter;
+            }
+            set => _automaticRtCorrection = value;
+        }
+        private AutomaticAlignmentRetentionTimeCorrectionParameter _automaticRtCorrection = new AutomaticAlignmentRetentionTimeCorrectionParameter();
+    }
+
+    /// <summary>
+    /// Controls LC-MS retention-time correction that is learned from detected features and is
+    /// applied only while alignment is running. Unlike the user-defined RT correction workflow,
+    /// this mode leaves raw spectra, peak picking, and annotation on the original RT axis.
+    /// </summary>
+    [MessagePackObject]
+    public sealed class AutomaticAlignmentRetentionTimeCorrectionParameter {
+        [Key(0)]
+        public bool Execute { get; set; } = false;
+        [Key(1)]
+        public int ReferenceFileId { get; set; } = -1;
+        [Key(2)]
+        public float RtBinWidth { get; set; } = 0.5F;
+        [Key(3)]
+        public float MatchRtTolerance { get; set; } = 0.5F;
+        [Key(4)]
+        public int MinimumAnchorCount { get; set; } = 3;
+        [Key(5)]
+        public int MaximumAnchorCount { get; set; } = 6;
+        [Key(6)]
+        public float MinimumSampleCoverage { get; set; } = 0.5F;
+        [Key(7)]
+        public float IntensityQuantile { get; set; } = 0.75F;
+        [Key(8)]
+        public float MaximumPeakWidthQuantile { get; set; } = 0.5F;
+        [Key(9)]
+        public float MinimumSignalToNoise { get; set; } = 3F;
+        [Key(10)]
+        public float MinimumGaussianSimilarity { get; set; } = 0F;
+        [Key(11)]
+        public float MinimumIdealSlope { get; set; } = 0F;
+        [Key(12)]
+        public float OutlierMadThreshold { get; set; } = 3.5F;
+        [Key(13)]
+        public float ReferenceCentralityWeight { get; set; } = 0.35F;
+        [Key(14)]
+        public bool InterpolateBlankByAnalyticalOrder { get; set; } = true;
+        public const float DefaultLocalSupportRtWindow = 1.5F;
+
+        /// <summary>
+        /// Half-width (min) of the window in which an anchor's offset is compared with the offsets of
+        /// the other reference candidates matched in the same file. 0 judges every anchor against the
+        /// median of the file's anchors only. A project saved before this setting existed loads with
+        /// <see cref="DefaultLocalSupportRtWindow"/>, not 0.
+        /// </summary>
+        [IgnoreMember]
+        public float LocalSupportRtWindow {
+            get => SerializedLocalSupportRtWindow ?? DefaultLocalSupportRtWindow;
+            set => SerializedLocalSupportRtWindow = value;
+        }
+
+        /// <summary>
+        /// The stored form of <see cref="LocalSupportRtWindow"/>; use that property instead.
+        /// MessagePack 1.x sets a member whose key is absent from the data to its type's default,
+        /// not to the member's initialiser. For a float that is 0, which would turn the local test
+        /// off in every project saved before key 15 existed; for this nullable it is null, which
+        /// <see cref="LocalSupportRtWindow"/> reads as the default.
+        /// </summary>
+        [Key(15)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public float? SerializedLocalSupportRtWindow { get; set; } = DefaultLocalSupportRtWindow;
+
+        /// <summary>
+        /// The anchor library of <see cref="AnchorMode"/> UserOnly and Hybrid: the seven-column
+        /// text the user-defined RT correction reads (Name, RT, RT tolerance, m/z, m/z tolerance,
+        /// minimum height, T/F), read more strictly than it reads it (the T/F column must say
+        /// True, False, T or F; numbers take a decimal point). A True row is an anchor the user
+        /// names; a False row keeps the automatic selection from taking a candidate within its
+        /// m/z and RT tolerances. Empty when no library is used, and in a project saved before
+        /// key 16 existed.
+        /// </summary>
+        [Key(16)]
+        public string AnchorLibraryFilePath {
+            get => _anchorLibraryFilePath ?? string.Empty;
+            set => _anchorLibraryFilePath = value;
+        }
+        private string? _anchorLibraryFilePath = string.Empty;
+
+        /// <summary>
+        /// Where the anchors come from. A project saved before key 17 existed loads as
+        /// <see cref="AutomaticRtCorrectionAnchorMode.Automatic"/>, the type's default, which is
+        /// what it ran with.
+        /// </summary>
+        [Key(17)]
+        public AutomaticRtCorrectionAnchorMode AnchorMode { get; set; } = AutomaticRtCorrectionAnchorMode.Automatic;
+
+        /// <summary>
+        /// How a user anchor's peak is chosen when its m/z and RT window holds more than one peak,
+        /// as in the user-defined RT correction. A project saved before key 18 existed loads with
+        /// HighestIntensity, the type's default.
+        /// </summary>
+        [Key(18)]
+        public RetentionTimeCorrectionPeakSelectionMode AnchorPeakSelectionMode { get; set; } = RetentionTimeCorrectionPeakSelectionMode.HighestIntensity;
+
+        public const float DefaultAnchorPeakSelectionRtWeight = 0.5F;
+
+        /// <summary>
+        /// The weight of RT closeness against intensity when <see cref="AnchorPeakSelectionMode"/>
+        /// is Weighted, between 0 and 1.
+        /// </summary>
+        [IgnoreMember]
+        public float AnchorPeakSelectionRtWeight {
+            get => SerializedAnchorPeakSelectionRtWeight ?? DefaultAnchorPeakSelectionRtWeight;
+            set => SerializedAnchorPeakSelectionRtWeight = value;
+        }
+
+        /// <summary>
+        /// The stored form of <see cref="AnchorPeakSelectionRtWeight"/>; use that property instead.
+        /// Nullable for the reason <see cref="SerializedLocalSupportRtWindow"/> is.
+        /// </summary>
+        [Key(19)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public float? SerializedAnchorPeakSelectionRtWeight { get; set; } = DefaultAnchorPeakSelectionRtWeight;
+    }
+
+    /// <summary>
+    /// Where the anchors of the automatic alignment RT correction come from.
+    /// </summary>
+    public enum AutomaticRtCorrectionAnchorMode {
+        /// <summary>Anchors are chosen from the detected peaks; no anchor library is read.</summary>
+        Automatic = 0,
+        /// <summary>Only the anchor library's True rows are anchors.</summary>
+        UserOnly = 1,
+        /// <summary>
+        /// The library's True rows are anchors, its False rows are kept out of the automatic
+        /// selection, and automatic anchors fill the RT bins the True rows leave empty.
+        /// </summary>
+        Hybrid = 2,
     }
 
     [MessagePackObject]
@@ -1242,8 +1490,10 @@ namespace CompMs.MsdialCore.Parameter
         [Key(3)]
         public bool IsRemoveFeatureBasedOnBlankPeakHeightFoldChange { get; set; } = false;
         [Key(4)]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average. Kept so that MessagePack key 4 stays reserved and existing projects still load.")]
         public float SampleMaxOverBlankAverage { get; set; } = 5;
         [Key(5)]
+        [Obsolete("Blank filtering does not read this. Use FoldChangeForBlankFiltering for the threshold and BlankFiltering to choose sample max or sample average. Kept so that MessagePack key 5 stays reserved and existing projects still load.")]
         public float SampleAverageOverBlankAverage { get; set; } = 5;
         [Key(6)]
         public bool IsKeepRemovableFeaturesAndAssignedTagForChecking { get; set; } = true;

@@ -74,15 +74,20 @@ namespace CompMs.App.Msdial.ViewModel.Core
             SaveAsProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()
                 .WithSubscribe(Model.SaveAsAsync)
                 .AddTo(Disposables);
-            OpenProjectCommand = new AsyncReactiveCommand()
+            // Opening shares the state as well. A project is read off the UI thread, and the window keeps responding meanwhile:
+            // nothing may start on the project that is about to be replaced, and nothing is opened over a project being processed or saved.
+            OpenProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()
                 .WithSubscribe(Model.LoadAsync)
                 .AddTo(Disposables);
-            OpenPreviousProjectCommand = new AsyncReactiveCommand<ProjectCrumb>()
+            OpenPreviousProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand<ProjectCrumb>()
                 .WithSubscribe(Model.LoadProjectAsync)
                 .AddTo(Disposables);
             DeletePreviousProjectCommand = new AsyncReactiveCommand<ProjectCrumb>()
                 .WithSubscribe(Model.DeleteProjectAsync)
                 .AddTo(Disposables);
+
+            // The views of the open project are disabled too while another is read, since they are disposed when it opens.
+            IsNotLoading = Model.NowLoading.Inverse().ToReadOnlyReactivePropertySlim(initialValue: true).AddTo(Disposables);
 
             _taskProgressCollection = new TaskProgressCollection();
             _taskProgressCollection.ShowWhileSwitchOn(Model.NowSaving, "Saving...").AddTo(Disposables);
@@ -99,6 +104,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReadOnlyReactivePropertySlim<ProjectViewModel?> ProjectViewModel { get; }
         public ReadOnlyReactivePropertySlim<DatasetViewModel?> DatasetViewModel { get; }
         public ReadOnlyReactivePropertySlim<MethodViewModel?> MethodViewModel { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsNotLoading { get; }
 
         private readonly TaskProgressCollection _taskProgressCollection;
         public ReadOnlyObservableCollection<ProgressBarVM> TaskProgressCollection => _taskProgressCollection.ProgressBars;
@@ -123,11 +130,20 @@ namespace CompMs.App.Msdial.ViewModel.Core
             }
         }
 
-        private async Task RunProcess(ProcessSettingViewModel viewmodel) {
+        /// <param name="processed">
+        /// The project the process works on, which is the one saved afterwards. Null when the process creates the project,
+        /// which is then the current one.
+        /// </param>
+        private async Task RunProcess(ProcessSettingViewModel viewmodel, IProjectModel? processed = null) {
             _broker.Publish(viewmodel);
             if (viewmodel.DialogResult.Value) {
                 await viewmodel.Model.RunProcessAsync().ConfigureAwait(false);
-                await Model.SaveAsync().ConfigureAwait(false);
+                if (processed is null) {
+                    await Model.SaveAsync().ConfigureAwait(false);
+                }
+                else {
+                    await Model.SaveProjectAsync(processed).ConfigureAwait(false);
+                }
             }
         }
 
@@ -139,43 +155,53 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 return;
             }
             using var vm = new ProcessSettingViewModel(project, _broker);
-            await RunProcess(vm);
+            await RunProcess(vm, project);
         }
 
         public AsyncReactiveCommand ExecuteAllMethodProcessCommand { get; }
 
         private async Task ExecuteAllMethodProcess() {
-            if (Model.CurrentProject?.CurrentDataset is not IDatasetModel dataset) {
+            if (Model.CurrentProject is not IProjectModel project || project.CurrentDataset is not IDatasetModel dataset) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
                 return;
             }
-            using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.AllProcessMethodSettingModel, _broker);
+            // Said before the settings dialog: processing reads the raw data of every sample.
+            if (!RawDataGuard.EnsureAll(dataset.AnalysisFiles.AnalysisFiles, _broker, "All processing")) {
+                return;
+            }
+            using var vm = new ProcessSettingViewModel(project, dataset, dataset.AllProcessMethodSettingModel, _broker);
             vm.MoveToDataCollectionSetting();
-            await RunProcess(vm);
+            await RunProcess(vm, project);
         }
 
         public AsyncReactiveCommand ExecuteIdentificationMethodProcessCommand { get; }
 
         private async Task ExecuteIdentificationMethodProcess() {
-            if (Model.CurrentProject?.CurrentDataset is not IDatasetModel dataset) {
+            if (Model.CurrentProject is not IProjectModel project || project.CurrentDataset is not IDatasetModel dataset) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
                 return;
             }
-            using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.IdentificationProcessMethodSettingModel, _broker);
+            if (!RawDataGuard.EnsureAll(dataset.AnalysisFiles.AnalysisFiles, _broker, "Identification")) {
+                return;
+            }
+            using var vm = new ProcessSettingViewModel(project, dataset, dataset.IdentificationProcessMethodSettingModel, _broker);
             vm.MoveToIdentificationSetting();
-            await RunProcess(vm);
+            await RunProcess(vm, project);
         }
 
         public AsyncReactiveCommand ExecuteAlignmentMethodProcessCommand { get; }
 
         private async Task ExecuteAlignmentMethodProcess() {
-            if (Model.CurrentProject?.CurrentDataset is not IDatasetModel dataset) {
+            if (Model.CurrentProject is not IProjectModel project || project.CurrentDataset is not IDatasetModel dataset) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.DatasetIsNotSelected));
                 return;
             }
-            using var vm = new ProcessSettingViewModel(Model.CurrentProject, dataset, dataset.AlignmentProcessMethodSettingModel, _broker);
+            if (!RawDataGuard.EnsureAll(dataset.AnalysisFiles.AnalysisFiles, _broker, "Alignment")) {
+                return;
+            }
+            using var vm = new ProcessSettingViewModel(project, dataset, dataset.AlignmentProcessMethodSettingModel, _broker);
             vm.MoveToAlignmentSetting();
-            await RunProcess(vm);
+            await RunProcess(vm, project);
         }
 
         public AsyncReactiveCommand OpenProjectCommand { get; }

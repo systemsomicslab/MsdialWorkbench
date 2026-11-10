@@ -28,7 +28,9 @@ internal sealed class ImagingDimsImageViewModel : ViewModelBase
         AddRoiCommand = new AsyncReactiveCommand().WithSubscribe(model.AddRoiAsync).AddTo(Disposables);
         RemoveRoiCommand = new ReactiveCommand<ImagingRoiModel>().WithSubscribe(model.RemoveRoi).AddTo(Disposables);
         SaveIntensitiesCommand = new AsyncReactiveCommand().WithSubscribe(() => model.SaveIntensitiesAsync()).AddTo(Disposables);
+        SaveRoiCommand = new AsyncReactiveCommand().WithSubscribe(() => model.SaveRoisAsync()).AddTo(Disposables);
         LoadRoiCommand = new ReactiveCommand().WithSubscribe(model.LoadRoi).AddTo(Disposables);
+        ExportIntensitiesCommand = new AsyncReactiveCommand().WithSubscribe(() => model.ExportIntensitiesAsync()).AddTo(Disposables);
     }
 
     public string ImageTitle => _model.File.AnalysisFileName;
@@ -41,5 +43,7 @@ internal sealed class ImagingDimsImageViewModel : ViewModelBase
     public AsyncReactiveCommand AddRoiCommand { get; }
     public ReactiveCommand<ImagingRoiModel> RemoveRoiCommand { get; }
     public AsyncReactiveCommand SaveIntensitiesCommand { get; }
+    public AsyncReactiveCommand SaveRoiCommand { get; }
     public ReactiveCommand LoadRoiCommand { get; }
+    public AsyncReactiveCommand ExportIntensitiesCommand { get; }
 }

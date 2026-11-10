@@ -35,6 +35,10 @@ namespace CompMs.MsdialCore.DataObj
         [Key(0)]
         public int FileID { get; set; }
         [Key(1)]
+        /// <summary>
+        /// The file name captured when the alignment result was created; it can differ from
+        /// the current analysis file name after a file property edit.
+        /// </summary>
         public string FileName { get; set; } = string.Empty;
         [Key(2)]
         public int MasterPeakID { get; set; } // sequential IDs parsing all peak features extracted from an MS data

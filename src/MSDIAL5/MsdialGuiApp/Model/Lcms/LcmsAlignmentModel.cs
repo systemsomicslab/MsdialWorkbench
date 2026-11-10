@@ -207,14 +207,17 @@ namespace CompMs.App.Msdial.Model.Lcms
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter).AddTo(Disposables),
+                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter,
+                    useOriginalRtPeakBounds: parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute).AddTo(Disposables),
                 files,
                 parameter,
                 projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
-            AlignmentEicModel.Elements.HorizontalTitle = "Retention time [min]";
+            AlignmentEicModel.Elements.HorizontalTitle = parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute
+                ? "Original retention time [min] (before alignment correction)"
+                : "Retention time [min]";
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);

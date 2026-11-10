@@ -34,10 +34,17 @@ namespace CompMs.App.Msdial.Model.Loader
                         return null;
                     }
                     var rep = ((IAnnotatedObject)prop).MatchResults.Representative;
-                    if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
-                        return loader.LoadMSDecResult(prop.MSDecResultID);
+                    try {
+                        if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
+                            return loader.LoadMSDecResult(prop.MSDecResultID);
+                        }
+                        return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID);
                     }
-                    return _file.MSDecLoader.LoadMSDecResult(prop.MSDecResultID);
+                    catch (ArgumentException) {
+                        // An index the file does not have, or no .dcl for this sample at all (MSDecLoader says so with an ArgumentException).
+                        // A loader that could not open is not cached, so the spectrum is back once the file is.
+                        return null;
+                    }
                 });
         }
 
@@ -54,10 +61,15 @@ namespace CompMs.App.Msdial.Model.Loader
                 return null;
             }
             var rep = ((IAnnotatedObject)target).MatchResults.Representative;
-            if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
-                return loader.LoadMSDecResult(target.MSDecResultIDUsedForAnnotation);
+            try {
+                if (!rep.IsUnknown && _file.GetMSDecLoader(rep.CollisionEnergy) is { } loader) {
+                    return loader.LoadMSDecResult(target.MSDecResultIDUsedForAnnotation);
+                }
+                return _file.MSDecLoader.LoadMSDecResult(target.MSDecResultIDUsedForAnnotation);
             }
-            return _file.MSDecLoader.LoadMSDecResult(target.MSDecResultIDUsedForAnnotation);
+            catch (ArgumentException) {
+                return null;
+            }
         }
     }
 }

@@ -42,6 +42,15 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private bool _excludes;
 
+        public void Reset() {
+            Confirmed = false;
+            LowQualitySpectrum = false;
+            Misannotation = false;
+            Coelution = false;
+            Overannotation = false;
+            Excludes = false;
+        }
+
         public PeakSpotTagSearchQuery CreateQuery() {
             var tags = new List<PeakSpotTag>();
             if (Confirmed) {

@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Minimum blank ratio must be a numerical value between 0 and 1.")]
         [Range(0.0, 1.0, ErrorMessage = "Minimum blank ratio must be a numerical value between 0 and 1.")]
-        [RegularExpression(@"\d*.?\d+", ErrorMessage = "Minimum blank ratio must be a numerical value between 0 and 1.")]
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Minimum blank ratio must be a numerical value between 0 and 1.")]
         public string BlankRatioMinimum {
             get => _blankRatioMinimum;
             set
@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Maximum RSD must be a positive number value.")]
         [Range(0.0, double.MaxValue, ErrorMessage = "Maximum RSD must be a positive number value.")]
-        [RegularExpression(@"\d*.?\d+", ErrorMessage = "Maximum RSD must be a positive number value.")]
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Maximum RSD must be a positive number value.")]
         public string RSDMaximum {
             get => _RSDMaximum;
             set
@@ -115,7 +115,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Minimum RMD must be a positive number value.")]
         [Range(0.0, double.MaxValue, ErrorMessage = "Minimum RMD must be a positive number value.")]
-        [RegularExpression(@"\d*.?\d+", ErrorMessage = "Minimum RMD must be a positive number value.")]
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Minimum RMD must be a positive number value.")]
         public string RMDMinimum {
             get => _RMDMinimum;
             set
@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         [Required(ErrorMessage = "Maximum RMD must be a positive number value.")]
         [Range(0.0, double.MaxValue, ErrorMessage = "Maximum RMD must be a positive number value.")]
-        [RegularExpression(@"\d*.?\d+", ErrorMessage = "Maximum RMD must be a positive number value.")]
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Maximum RMD must be a positive number value.")]
         public string RMDMaximum {
             get => _RMDMaximum;
             set
