@@ -5012,7 +5012,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + (MassDiffDictionary.OxygenMass * sn2Oxidized);
                                 var sn2_H2Oloss = sn2 - (H2O);
                                 var sn2_xH2Oloss = sn2 - (H2O * sn2Oxidized);
-                                var nl_sn2 = diagnosticMz - sn2 - Proton;
+                                var nl_sn2 = diagnosticMz - sn2 + MassDiffDictionary.HydrogenMass;
                                 var nl_sn2H2O = nl_sn2 + H2O;
 
                                 var query1 = new List<SpectrumPeak> {
