@@ -39,6 +39,17 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 this.Label_RtLeft.Content = "RI left";
                 this.Label_RtRight.Content = "RI right";
             }
+            else if (this.VM.IsOnMeasuredAxis) {
+                // The chromatogram and every value shown are on this file's measured RT; Update writes
+                // the aligned peak on the aligned (reference file) axis.
+                this.Label_RtTop.Content = "Original RT (min): ";
+                this.Label_RtLeft.Content = "Original RT left:";
+                this.Label_RtRight.Content = "Original RT right: ";
+                this.Title += " (original RT of this file)";
+                if (!string.IsNullOrEmpty(this.VM.AxisNote)) {
+                    this.Title += " - read only: " + this.VM.AxisNote;
+                }
+            }
             else if (isDrift) {
                 this.Label_RtTop.Content = "Mobility";
                 this.Label_RtLeft.Content = "Mobility left";
@@ -51,9 +62,10 @@ namespace CompMs.App.Msdial.View.PeakCuration
         }
 
         private void Button_Update_Click(object sender, RoutedEventArgs e) {
-            this.DialogResult = true;
-
-            VM?.UpdateAlignedProp();
+            // False when nothing was written (an unchanged peak of an alignment that corrected RTs),
+            // so that the sample table does not recompute the spot from it either.
+            var written = VM?.UpdateAlignedProp() ?? false;
+            this.DialogResult = written;
 
             this.Close();
         }
@@ -74,6 +86,20 @@ namespace CompMs.App.Msdial.View.PeakCuration
         //Ion mobility
         public bool IsIonMobility { get; set; }
         public bool IsRi { get; set; }
+
+        /// <summary>
+        /// True when the alignment corrected RTs: the chromatogram, and every RT shown and picked here,
+        /// are on the file's measured RT axis, and the aligned peak is written on the aligned axis.
+        /// </summary>
+        public bool IsOnMeasuredAxis { get; }
+
+        /// <summary>True once the person has changed the peak: picked another or moved its edges.</summary>
+        public bool IsEdited { get; private set; }
+
+        /// <summary>Why Update writes nothing for this peak, or empty when it writes.</summary>
+        public string AxisNote { get; } = string.Empty;
+
+        private readonly bool _initialized;
 
         #region
         public int? ScanTop {
@@ -193,6 +219,18 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 rtleft = this.SelectedData.AlignedPeakProperty.ChromXsLeft.Drift.Value;
                 rtRight = this.SelectedData.AlignedPeakProperty.ChromXsRight.Drift.Value;
             }
+            else if (this.SelectedData.RtAxis.IsCorrected) {
+                // The chromatogram is on the file's measured RT axis, the aligned peak on the aligned
+                // axis: the peak is integrated where it lies on the chromatogram.
+                IsOnMeasuredAxis = true;
+                var rtAxis = this.SelectedData.RtAxis;
+                rttop = rtAxis.ToOriginal(rttop);
+                rtleft = rtAxis.ToOriginal(rtleft);
+                rtRight = rtAxis.ToOriginal(rtRight);
+                if (!rtAxis.CanWrite) {
+                    AxisNote = rtAxis.Note;
+                }
+            }
 
 
             var dv = getChromatogramDrawingVisual(filename, peaklist, rttop, rtleft, rtRight, noise, sn, areaFactore);
@@ -200,10 +238,14 @@ namespace CompMs.App.Msdial.View.PeakCuration
             dv.CalculateChromPeakProperties(dv.SeriesList.Series[0]);
 
             this.ChromUC = new PeakModUCLegacy(dv, true);
+            _initialized = true;
         }
 
         private void DrawVisual_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == "IsPeakPropertyChanged") {
+                if (_initialized) {
+                    IsEdited = true;
+                }
                 var dv = (DrawVisualManualPeakModification)sender;
                 if (dv != null) {
                     var prop = dv.ChromPeakProperty;
@@ -238,6 +280,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
             var xTitle = "Retention time (min)";
             if (areaFactor != 1.0F)
                 xTitle = "Retention index";
+            else if (IsOnMeasuredAxis)
+                xTitle = "Original retention time (min; this file's measured RT)";
 
             var area = new Area() {
                 AxisX = new AxisX() { AxisLabel = xTitle },
@@ -266,9 +310,21 @@ namespace CompMs.App.Msdial.View.PeakCuration
             return new DrawVisualManualPeakModification(area, title, slist);
         }
 
-        public void UpdateAlignedProp() {
+        /// <summary>
+        /// Writes the picked peak into the aligned peak; false when nothing is written. For an alignment
+        /// that corrected RTs, an unchanged peak, or one whose place on the measured axis is unknown,
+        /// is not written.
+        /// </summary>
+        public bool UpdateAlignedProp() {
             if (this.ChromUC.drawing?.ChromPeakProperty is null) {
-                return;
+                // The dialog has always closed as updated here; kept for alignments without the correction.
+                return !IsOnMeasuredAxis;
+            }
+            if (IsOnMeasuredAxis && (!IsEdited || !this.SelectedData.RtAxis.CanWrite)) {
+                // Nothing was changed, so nothing is written: re-integrating the unchanged peak with this
+                // dialog's integrator would replace the alignment's values and mark them as curated.
+                // And a peak whose place on the measured axis is unknown is never written.
+                return false;
             }
             var prop = this.ChromUC.drawing.ChromPeakProperty;
             var type = this.SelectedData.AlignedPeakProperty.ChromXsTop.Type;
@@ -279,6 +335,13 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 this.SelectedData.AlignedPeakProperty.ChromXsTop = new ChromXs(centralTime, type, unit);
                 this.SelectedData.AlignedPeakProperty.ChromXsLeft = new ChromXs(centralTime, type, unit);
                 this.SelectedData.AlignedPeakProperty.ChromXsRight = new ChromXs(centralTime, type, unit);
+            }
+            else if (IsOnMeasuredAxis) {
+                // Picked on the measured axis; the aligned peak's fields are on the aligned axis.
+                var rtAxis = this.SelectedData.RtAxis;
+                this.SelectedData.AlignedPeakProperty.ChromXsTop = new ChromXs(rtAxis.ToAligned(prop.RtTop), type, unit);
+                this.SelectedData.AlignedPeakProperty.ChromXsLeft = new ChromXs(rtAxis.ToAligned(prop.RtLeft), type, unit);
+                this.SelectedData.AlignedPeakProperty.ChromXsRight = new ChromXs(rtAxis.ToAligned(prop.RtRight), type, unit);
             }
             else {
                 this.SelectedData.AlignedPeakProperty.ChromXsTop = new ChromXs(prop.RtTop, type, unit);
@@ -323,6 +386,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             var isPeakDetected = prop.RtTop > 0;
             this.SelectedData.ChromVM.setInitialValuesByChromatogramBeanCollection(this.SelectedData.ChromVM.ChromatogramBean, prop.RtTop, isPeakDetected);
             this.SelectedData.UpdateDrawing();
+            return true;
         }
     }
 }

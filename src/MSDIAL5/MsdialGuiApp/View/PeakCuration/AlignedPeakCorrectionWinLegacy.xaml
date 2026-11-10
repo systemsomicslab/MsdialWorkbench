@@ -48,6 +48,20 @@
         <Grid Grid.Row="2">
             <TextBox Name="TextBox_Picking" Text="Modified mass chromatogram; (3) Check modified peak area and click update button" Height="25" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20, 0, 0, 0" IsReadOnly="True" BorderThickness="0"/>
             <local:PeakModUCLegacy x:Name="PickingUC" Content="{Binding Path=PickingUC}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="3, 25, 3, 5"/>
+            <!-- Shown when the alignment corrected RTs: which axis the panels are on, and any file not written. -->
+            <TextBlock Text="{Binding AxisNote.Value}"
+                       TextWrapping="Wrap" FontSize="11" Foreground="DarkRed" Background="#E0FFFFFF"
+                       HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="20,0,40,4">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </Grid>
         <Button Name="Button_UpdatePeakInfo" Click="Button_UpdatePeakInfo_Click" Grid.Row="2" Width="100" Height="20" Content="Update" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,13,0" />
 
