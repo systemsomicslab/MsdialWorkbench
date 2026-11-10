@@ -312,7 +312,6 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         //[Key(50)]
-        [IgnoreMember]
         private MsScanMatchResultContainer matchResults;
 
         [IgnoreMember]
@@ -532,25 +531,21 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         // ISpectrumPeak
-        [IgnoreMember]
         double ISpectrumPeak.Intensity {
             get => PeakFeature.PeakHeightTop;
             set => PeakFeature.PeakHeightTop = value;
         }
 
-        [IgnoreMember]
         double ISpectrumPeak.Mass {
             get => PrecursorMz;
             set => PrecursorMz = value;
         }
 
         // IChromatogramPeak
-        [IgnoreMember]
         int IChromatogramPeak.ID {
             get => MasterPeakID;
         }
 
-        [IgnoreMember]
         ChromXs IChromatogramPeak.ChromXs {
             get => PeakFeature.ChromXsTop;
             set => PeakFeature.ChromXsTop = value;

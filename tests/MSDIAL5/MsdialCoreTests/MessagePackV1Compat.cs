@@ -83,12 +83,12 @@ namespace CompMs.MsdialCore
             return MessagePackSerializer.Deserialize<Raw>(bytes, options).Bytes;
         }
 
-        private sealed class Raw
+        internal sealed class Raw
         {
             public byte[] Bytes { get; set; } = Array.Empty<byte>();
         }
 
-        private sealed class RawFormatter : IMessagePackFormatter<Raw>
+        internal sealed class RawFormatter : IMessagePackFormatter<Raw>
         {
             public Raw Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
                 return new Raw { Bytes = System.Buffers.BuffersExtensions.ToArray(reader.ReadRaw()), };

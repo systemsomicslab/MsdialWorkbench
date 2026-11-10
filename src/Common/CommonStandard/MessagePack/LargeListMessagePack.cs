@@ -172,7 +172,7 @@ namespace CompMs.Common.MessagePack {
         }
 
 #pragma warning disable MsgPack009, MsgPack010
-        private sealed class ChunkFormatter<T> : IMessagePackFormatter<Chunk<T>> {
+        private sealed class ChunkFormatter<T> : IMessagePackFormatter<Chunk<T>?> {
             private readonly int? _index;
 
             public ChunkFormatter(int? index) {
@@ -202,7 +202,7 @@ namespace CompMs.Common.MessagePack {
                 return new Chunk<T>(items, count);
             }
 
-            public void Serialize(ref MessagePackWriter writer, Chunk<T> value, MessagePackSerializerOptions options) {
+            public void Serialize(ref MessagePackWriter writer, Chunk<T>? value, MessagePackSerializerOptions options) {
                 throw new NotSupportedException();
             }
         }

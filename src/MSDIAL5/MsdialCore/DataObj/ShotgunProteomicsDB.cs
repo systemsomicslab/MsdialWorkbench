@@ -17,7 +17,6 @@ using System.IO;
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ShotgunProteomicsDB : IDisposable, IReferenceDataBase, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
-        [IgnoreMember]
         private bool disposedValue;
 
         [Key(1)]
@@ -72,7 +71,6 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public Stream DecoyMsStream { get; set; }
 
-        [IgnoreMember]
         string IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Key => Id;
 
         //[Key(16)]
