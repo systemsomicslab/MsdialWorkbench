@@ -1,4 +1,5 @@
 ﻿using CompMs.Common;
+using CompMs.Common.Utility;
 using System;
 using System.IO;
 using System.Text;
@@ -12,6 +13,18 @@ namespace CompMs.App.Msdial
     /// </summary>
     public partial class App : Application
     {
+        /// <remarks>
+        /// The culture is set here, before Run. The base constructor has already queued the startup
+        /// operation, and WPF runs it and every later dispatcher operation with the culture the UI
+        /// thread has at that moment, setting it on the thread explicitly. Setting the thread culture
+        /// and the process default here puts the invariant culture in place for OnStartup, the main
+        /// window and the new-project dialog, which reads the IUPAC table. A process default set only
+        /// inside OnStartup would not reach the UI thread.
+        /// </remarks>
+        public App() {
+            ProcessCulture.UseInvariantCulture();
+        }
+
         protected override void OnStartup(StartupEventArgs e) {
             base.OnStartup(e);
 
@@ -81,6 +94,7 @@ namespace CompMs.App.Msdial
                 .AppendLine($"Process        : {(Environment.Is64BitProcess ? "64-bit" : "32-bit")} on {(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")} Windows")
                 .AppendLine($"OS             : {Environment.OSVersion}")
                 .AppendLine($"CLR            : {Environment.Version}")
+                .AppendLine($"Regional format: {ProcessCulture.Describe()}")
                 .AppendLine($"Working set    : {Environment.WorkingSet / (1024 * 1024)} MB")
                 .AppendLine($"Executable     : {TryGetExecutablePath()}")
                 .AppendLine()

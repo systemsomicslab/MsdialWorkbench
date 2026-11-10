@@ -90,6 +90,10 @@ namespace CompMs.MsdialCore.Parameter
         public string License { get => ProjectParam.License; set => ProjectParam.License = value; }
         [IgnoreMember]
         public string Comment { get => ProjectParam.Comment; set => ProjectParam.Comment = value; }
+        [IgnoreMember]
+        public bool ConstrainToMassBankFormat { get => ProjectParam.ConstrainToMassBankFormat; set => ProjectParam.ConstrainToMassBankFormat = value; }
+        [IgnoreMember]
+        public string MassBankContributorId { get => ProjectParam.MassBankContributorId; set => ProjectParam.MassBankContributorId = value; }
 
 
         // Annotation
@@ -538,8 +542,8 @@ namespace CompMs.MsdialCore.Parameter
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
             pStrings.Add("# Project information");
-            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "MS-DIAL version number", MsdialVersionNumber.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project file path", Path.Combine(ProjectFolderPath, ProjectFileName).ToString() }));
@@ -954,6 +958,35 @@ namespace CompMs.MsdialCore.Parameter
         public string License { get; set; } = string.Empty;
         [Key(22)]
         public string Comment { get; set; } = string.Empty;
+
+        // Key 23 is SpectrumCommentToColorBytes, declared with the project container above.
+
+        /// <summary>
+        /// When true, Option &gt; Project property setting only accepts project metadata that makes valid MassBank
+        /// records: the instrument type and licence are chosen from MassBank's vocabularies, and authors and
+        /// instrument are required. The values themselves stay in the members above, which every export reads.
+        /// </summary>
+        /// <remarks>
+        /// A project written before this key has no element for it and reads back false, the free-text behaviour
+        /// every older project had.
+        /// </remarks>
+        [Key(24)]
+        public bool ConstrainToMassBankFormat { get; set; } = false;
+
+        /// <summary>
+        /// The contributor ID MassBank assigned (the second block of every accession), which the MassBank export
+        /// dialogs start from. Empty when none was entered; never null.
+        /// </summary>
+        /// <remarks>
+        /// A project written before this key has no element for it, and MessagePack then assigns null rather than
+        /// the initializer, so the setter keeps empty instead.
+        /// </remarks>
+        [Key(25)]
+        public string MassBankContributorId {
+            get => _massBankContributorId;
+            set => _massBankContributorId = value ?? string.Empty;
+        }
+        private string _massBankContributorId = string.Empty;
     }
     [MessagePackObject]
     public class ProteomicsParameter {

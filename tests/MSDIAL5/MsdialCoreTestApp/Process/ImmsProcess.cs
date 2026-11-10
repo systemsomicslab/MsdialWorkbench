@@ -3,6 +3,7 @@ using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -148,6 +149,11 @@ public sealed class ImmsProcess
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
             result.Save(alignmentFile);
+            if (aligner.RemovedIsotopeSpots is { } removedIsotopeSpots) {
+                var removedIsotopeFile = RemovedIsotopeSpotWriter.PathFor(outputFolder, alignmentFile.FileName);
+                RemovedIsotopeSpotWriter.Write(removedIsotopeFile, removedIsotopeSpots);
+                Console.WriteLine($"Alignment spots removed as isotopes: {removedIsotopeSpots.Count}, listed in {removedIsotopeFile}");
+            }
             var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 

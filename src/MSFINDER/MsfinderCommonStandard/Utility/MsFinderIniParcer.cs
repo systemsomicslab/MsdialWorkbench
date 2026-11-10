@@ -1,6 +1,8 @@
-﻿using Rfx.Riken.OsakaUniv;
+﻿using CompMs.Common.Utility;
+using Rfx.Riken.OsakaUniv;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +12,12 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
     public sealed class MsFinderIniParcer {
         private MsFinderIniParcer() { }
 
+        /// <remarks>
+        /// Numbers are read with a point, or with a decimal comma: MS-FINDER wrote this file with the
+        /// PC's regional format before it fixed the culture of its process, so a settings file kept
+        /// from a PC with a decimal comma has "Ms1Tolerance=0,001". Read as digit grouping, that would
+        /// be a tolerance of 1.
+        /// </remarks>
         public static AnalysisParamOfMsfinder Read(string filepath = null) {
             var param = new AnalysisParamOfMsfinder();
             param.LipidQueryBean = new LipidQueryBean() { LbmQueries = FileStorageUtility.GetLbmQueries() };
@@ -54,11 +62,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "Ms1Tolerance=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.Mass1Tolerance = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.Mass1Tolerance = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "IsotopicAbundanceTolerance=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.IsotopicAbundanceTolerance = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.IsotopicAbundanceTolerance = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "CommonRange=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -129,11 +137,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "MinimumTmsCount=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (int.TryParse(ans, out intValue)) param.MinimumTmsCount = intValue;
+                        if (int.TryParse(ans, NumberStyles.Integer, CultureInfo.InvariantCulture, out intValue)) param.MinimumTmsCount = intValue;
                     }
                     else if (Regex.IsMatch(line, "MinimumMeoxCount=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (int.TryParse(ans, out intValue)) param.MinimumMeoxCount = intValue;
+                        if (int.TryParse(ans, NumberStyles.Integer, CultureInfo.InvariantCulture, out intValue)) param.MinimumMeoxCount = intValue;
                     }
                     else if (Regex.IsMatch(line, "CanExcuteMS2AdductSearch=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -143,23 +151,23 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "FormulaMaximumReportNumber=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (int.TryParse(ans, out intValue)) param.FormulaMaximumReportNumber = intValue;
+                        if (int.TryParse(ans, NumberStyles.Integer, CultureInfo.InvariantCulture, out intValue)) param.FormulaMaximumReportNumber = intValue;
                     }
                     else if (Regex.IsMatch(line, "TreeDepth=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (int.TryParse(ans, out intValue)) param.TreeDepth = intValue;
+                        if (int.TryParse(ans, NumberStyles.Integer, CultureInfo.InvariantCulture, out intValue)) param.TreeDepth = intValue;
                     }
                     else if (Regex.IsMatch(line, "Ms2Tolerance=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.Mass2Tolerance = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.Mass2Tolerance = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "RelativeAbundanceCutOff=", RegexOptions.IgnoreCase) && !line.Contains("Fsea")) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.RelativeAbundanceCutOff = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.RelativeAbundanceCutOff = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "StructureMaximumReportNumber=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (int.TryParse(ans, out intValue)) param.StructureMaximumReportNumber = intValue;
+                        if (int.TryParse(ans, NumberStyles.Integer, CultureInfo.InvariantCulture, out intValue)) param.StructureMaximumReportNumber = intValue;
                     }
                     else if (Regex.IsMatch(line, "IsUseEiFragmentDB=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -346,7 +354,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "TryTopNMolecularFormulaSearch=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (int.TryParse(ans, out intValue)) param.TryTopNmolecularFormulaSearch = intValue;
+                        if (int.TryParse(ans, NumberStyles.Integer, CultureInfo.InvariantCulture, out intValue)) param.TryTopNmolecularFormulaSearch = intValue;
                     }
                     else if (Regex.IsMatch(line, "IsRunSpectralDbSearch=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -390,11 +398,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "MassRangeMin=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.MassRangeMin = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.MassRangeMin = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "MassRangeMax=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.MassRangeMax = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.MassRangeMax = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "IsUsePredictedRtForStructureElucidation=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -425,15 +433,15 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "Coeff_RtPrediction=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.Coeff_RtPrediction = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.Coeff_RtPrediction = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "Intercept_RtPrediction=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.Intercept_RtPrediction = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.Intercept_RtPrediction = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "RtToleranceForStructureElucidation=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.RtToleranceForStructureElucidation = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.RtToleranceForStructureElucidation = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "IsUseExperimentalRtForSpectralSearching=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -447,11 +455,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "RtToleranceForSpectralSearching=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.RtToleranceForSpectralSearching = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.RtToleranceForSpectralSearching = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "FseaRelativeAbundanceCutOff=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.FseaRelativeAbundanceCutOff = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.FseaRelativeAbundanceCutOff = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "FseanonsignificantDef=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -464,7 +472,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "FseaPvalueCutOff=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.FseaPvalueCutOff = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.FseaPvalueCutOff = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "IsMmnLocalCytoscape=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -493,23 +501,23 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "MmnMassTolerance=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.MmnMassTolerance = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.MmnMassTolerance = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "MmnRelativeCutoff=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.MmnRelativeCutoff = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.MmnRelativeCutoff = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "MmnMassSimilarityCutOff=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.MmnMassSimilarityCutOff = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.MmnMassSimilarityCutOff = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "MmnRtTolerance=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.MmnRtTolerance = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.MmnRtTolerance = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "MmnOntologySimilarityCutOff=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.MmnOntologySimilarityCutOff = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.MmnOntologySimilarityCutOff = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "MmnOutputFolderPath=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -532,11 +540,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "FormulaPredictionTimeOut=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.FormulaPredictionTimeOut = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.FormulaPredictionTimeOut = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "StructurePredictionTimeOut=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.StructurePredictionTimeOut = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.StructurePredictionTimeOut = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "IsUseRtForFilteringCandidates=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -565,11 +573,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "CcsToleranceForStructureElucidation=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.CcsToleranceForStructureElucidation = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.CcsToleranceForStructureElucidation = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "CcsToleranceForSpectralSearching=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.CcsToleranceForSpectralSearching = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.CcsToleranceForSpectralSearching = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "CcsAdductInChIKeyDictionaryFilepath=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
@@ -577,11 +585,11 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     }
                     else if (Regex.IsMatch(line, "StructureScoreCutOff=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.StructureScoreCutOff = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.StructureScoreCutOff = doubleValue;
                     }
                     else if (Regex.IsMatch(line, "ScoreCutOffForSpectralMatch=", RegexOptions.IgnoreCase)) {
                         ans = line.Substring(line.Split('=')[0].Length + 1).Trim();
-                        if (double.TryParse(ans, out doubleValue)) param.ScoreCutOffForSpectralMatch = doubleValue;
+                        if (DecimalText.TryParse(ans, out doubleValue)) param.ScoreCutOffForSpectralMatch = doubleValue;
                     }
                     #endregion
                 }

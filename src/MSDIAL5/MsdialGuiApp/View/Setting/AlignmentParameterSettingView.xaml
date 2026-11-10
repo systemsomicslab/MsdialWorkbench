@@ -169,6 +169,7 @@
 
                 <ui:LabeledContent PrependLabel="Remove features based on blank information:">
                     <CheckBox IsChecked="{Binding Path=IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.Value}"
+                              AutomationProperties.AutomationId="CheckBox_RemoveFeatureBasedOnBlank"
                               IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                               Height="24"
                               VerticalContentAlignment="Center"/>

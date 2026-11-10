@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
@@ -111,7 +112,17 @@ internal sealed class LcmsAlignmentLightRunner {
             acc.ApplySpotSummary();
         }
 
-        kept = RefineLightSpots(kept);
+        var removedAsIsotopes = new List<LightSpotAccumulator>();
+        var beforeRefinement = kept;
+        kept = RefineLightSpots(kept, removedAsIsotopes);
+        // Copied before the isotope labels of the kept spots are reset below. In light mode the aligned peaks are not
+        // held, so a parent is found only when it is the representative peak of another spot.
+        var representatives = removedAsIsotopes.ToDictionary(acc => acc.Spot, acc => acc.RepresentativePeak);
+        var removedIsotopeSpots = RemovedIsotopeSpot.Collect(
+            removedAsIsotopes.Select(acc => acc.Spot),
+            spot => representatives.TryGetValue(spot, out var peak) ? peak : null,
+            beforeRefinement.Select(acc => acc.RepresentativePeak!).Where(peak => peak is not null));
+        Console.WriteLine($"Alignment light mode: {removedIsotopeSpots.Count} alignment spots removed as isotopes (M + n) of another ion.");
         kept = AssignLightAlignmentIds(kept, peakStore);
         SetLightIsotopeAnalysis(kept);
         Console.WriteLine($"Alignment light mode: {kept.Count} alignment spots retained after spot-level LC-MS refinement.");
@@ -131,7 +142,7 @@ internal sealed class LcmsAlignmentLightRunner {
         // objects are not saved, so the verdicts and the Confirmed tags reach only this run's exports (the Comment
         // column, the mzTab-M columns and the review list) and are not persisted.
         var lipidRt = RunLipidRtCheck(container.AlignmentSpotProperties, _storage);
-        return new LcmsAlignmentLightResult(container, msdecResults, lipidRt);
+        return new LcmsAlignmentLightResult(container, msdecResults, lipidRt, removedIsotopeSpots);
     }
 
     /// <summary>
@@ -244,7 +255,7 @@ internal sealed class LcmsAlignmentLightRunner {
         return acc.IsDetectedEnoughInAnyClass(classFileCounts, classThreshold);
     }
 
-    private List<LightSpotAccumulator> RefineLightSpots(IReadOnlyList<LightSpotAccumulator> accumulators) {
+    private List<LightSpotAccumulator> RefineLightSpots(IReadOnlyList<LightSpotAccumulator> accumulators, List<LightSpotAccumulator> removedAsIsotopes) {
         var cleaned = new List<LightSpotAccumulator>();
         var done = new HashSet<int>();
 
@@ -265,6 +276,7 @@ internal sealed class LcmsAlignmentLightRunner {
                 continue;
             }
             if (acc.Spot.PeakCharacter.IsotopeWeightNumber > 0) {
+                removedAsIsotopes.Add(acc);
                 continue;
             }
             TryMergeToMaster(acc, cleaned, done);
@@ -532,11 +544,15 @@ internal sealed class LcmsAlignmentLightRunner {
 }
 
 internal sealed class LcmsAlignmentLightResult {
-    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults, LipidRtUnitRun? lipidRtRun = null) {
+    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults, LipidRtUnitRun? lipidRtRun = null, IReadOnlyList<RemovedIsotopeSpot>? removedIsotopeSpots = null) {
         Container = container;
         MsdecResults = msdecResults;
         LipidRtRun = lipidRtRun;
+        RemovedIsotopeSpots = removedIsotopeSpots ?? Array.Empty<RemovedIsotopeSpot>();
     }
+
+    /// <summary>The spots the refinement removed as isotopes of another ion.</summary>
+    public IReadOnlyList<RemovedIsotopeSpot> RemovedIsotopeSpots { get; }
 
     public AlignmentResultContainer Container { get; }
     public IReadOnlyList<MSDecResult> MsdecResults { get; }

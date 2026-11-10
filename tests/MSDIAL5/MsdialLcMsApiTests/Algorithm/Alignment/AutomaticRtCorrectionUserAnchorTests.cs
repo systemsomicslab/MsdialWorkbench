@@ -30,9 +30,9 @@ public class AutomaticRtCorrectionUserAnchorTests {
             File(3, "blank", AnalysisFileType.Blank, 4),
         };
         var library = new[] {
-            Anchor(0, "A", 150d, 2.3d),
-            Anchor(1, "B", 250d, 6.3d),
-            Anchor(2, "C", 350d, 10.3d),
+            Anchor(0, "A", 150d, 1.95d),
+            Anchor(1, "B", 250d, 5.95d),
+            Anchor(2, "C", 350d, 9.95d),
             Anchor(3, "D", 450d, 14d),
             Anchor(4, "not an anchor", 550d, 8d, use: false),
         };
@@ -48,7 +48,7 @@ public class AutomaticRtCorrectionUserAnchorTests {
 
         var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, AutomaticPeaks, library, Observed(observed));
 
-        Assert.AreEqual(1, result.Correction.ReferenceFileId, "the non-Blank file with the most anchors, then the anchor RTs closest to their medians");
+        Assert.AreEqual(1, result.Correction.ReferenceFileId, "the non-Blank file with the most anchors, then the anchor RTs closest to the library's");
         Assert.AreEqual(AutomaticRtCorrectionAnchorMode.UserOnly, result.AnchorMode);
         Assert.AreEqual(2.0d, result.Correction.Correct(0, 2.1d), 1e-9);
         Assert.AreEqual(6.0d, result.Correction.Correct(0, 6.2d), 1e-9);
@@ -61,7 +61,7 @@ public class AutomaticRtCorrectionUserAnchorTests {
         CollectionAssert.AreEqual(new[] { "A", "B", "C" }, anchors.Select(anchor => anchor.AnchorName).ToArray());
         Assert.IsTrue(anchors.All(anchor => anchor.Source == AutomaticRtCorrectionAnchorSource.User));
         CollectionAssert.AreEqual(new[] { 2.0d, 6.0d, 10.0d }, anchors.Select(anchor => anchor.ReferenceRt).ToArray());
-        CollectionAssert.AreEqual(new double?[] { 2.3d, 6.3d, 10.3d }, anchors.Select(anchor => anchor.LibraryRt).ToArray());
+        CollectionAssert.AreEqual(new double?[] { 1.95d, 5.95d, 9.95d }, anchors.Select(anchor => anchor.LibraryRt).ToArray());
         Assert.IsTrue(result.Anchors.All(anchor => anchor.AnchorName != "not an anchor"), "a False row is no anchor");
 
         var missing = result.Anchors.Single(anchor => anchor.FileId == 2 && anchor.AnchorName == "C");
@@ -123,6 +123,83 @@ public class AutomaticRtCorrectionUserAnchorTests {
         Assert.AreEqual(0, result.Correction.ReferenceFileId, "an anchor missing from the reference corrects no file");
         Assert.IsTrue(result.Files.Single(file => file.FileId == 1).ReferenceScore > result.Files.Single(file => file.FileId == 0).ReferenceScore,
             "file 1 scores higher, and loses on the count");
+        Assert.AreEqual(0d, result.Files.Single(file => file.FileId == 1).LibraryRtDeviation!.Value, 1e-12);
+        Assert.AreEqual(0.5d, result.Files.Single(file => file.FileId == 0).LibraryRtDeviation!.Value, 1e-12,
+            "file 1 lies on the library's RTs, and still loses on the count");
+    }
+
+    // Demo data1 pos: an Automatic preview chose one file as the reference, its approved anchors
+    // were written at their RTs in that file, and the UserOnly run, every anchor detected in every
+    // file, chose another: the one closest to the anchors' median RTs over the batch.
+    [TestMethod]
+    public void UserOnly_WithEveryAnchorDetectedEverywhere_TheFileClosestToTheLibraryRtsIsTheReference() {
+        var files = Enumerable.Range(0, 4).Select(id => File(id, $"f{id}", AnalysisFileType.Sample, id + 1)).ToArray();
+        // The library holds file 2's RTs, as an approved preview's library holds its reference's.
+        var library = new[] { Anchor(0, "A", 150d, 2.2d), Anchor(1, "B", 250d, 6.2d), Anchor(2, "C", 350d, 10.2d) };
+        var observed = new Dictionary<int, double?[]> {
+            [0] = new double?[] { 1.9d, 5.9d, 9.9d },
+            [1] = new double?[] { 2.0d, 6.0d, 10.0d },
+            [2] = new double?[] { 2.2d, 6.2d, 10.2d },
+            [3] = new double?[] { 2.05d, 6.05d, 10.05d },
+        };
+        var parameter = UserOnly(minimumAnchorCount: 3);
+        parameter.ReferenceCentralityWeight = 1f;
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, AutomaticPeaks, library, Observed(observed));
+
+        Assert.AreEqual(2, result.Correction.ReferenceFileId, "the file the library's RTs were measured in");
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionByLibraryRt, result.ReferenceSelection);
+        var byFile = result.Files.ToDictionary(file => file.FileId);
+        Assert.AreEqual(0d, byFile[2].LibraryRtDeviation!.Value, 1e-12);
+        Assert.AreEqual(0.3d, byFile[0].LibraryRtDeviation!.Value, 1e-12);
+        Assert.AreEqual(0.15d, byFile[3].LibraryRtDeviation!.Value, 1e-12);
+        Assert.IsTrue(byFile[1].ReferenceScore > byFile[2].ReferenceScore && byFile[3].ReferenceScore > byFile[2].ReferenceScore,
+            "closer to the median over the files, the score the reference was chosen by before; it now only breaks ties");
+        Assert.AreEqual(2.2d, result.Correction.Correct(1, 2.0d), 1e-9, "every file is mapped onto the library's axis");
+        Assert.AreEqual(6.2d, result.Correction.Correct(0, 5.9d), 1e-9);
+    }
+
+    [TestMethod]
+    public void UserOnly_FilesEquallyCloseToTheLibraryRts_FallBackToTheReferenceScore() {
+        var files = Enumerable.Range(0, 3).Select(id => File(id, $"f{id}", AnalysisFileType.Sample, id + 1)).ToArray();
+        var library = new[] { Anchor(0, "A", 150d, 2d), Anchor(1, "B", 250d, 6d), Anchor(2, "C", 350d, 10d) };
+        // Files 0 and 2 lie 0.125 min from every library RT, on either side, and file 1 0.375 min
+        // after it. The library cannot tell files 0 and 2 apart; the score can, file 2 being the
+        // median file.
+        var observed = new Dictionary<int, double?[]> {
+            [0] = new double?[] { 1.875d, 5.875d, 9.875d },
+            [1] = new double?[] { 2.375d, 6.375d, 10.375d },
+            [2] = new double?[] { 2.125d, 6.125d, 10.125d },
+        };
+        var parameter = UserOnly(minimumAnchorCount: 3);
+        parameter.ReferenceCentralityWeight = 1f;
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, AutomaticPeaks, library, Observed(observed));
+
+        var byFile = result.Files.ToDictionary(file => file.FileId);
+        Assert.AreEqual(byFile[0].LibraryRtDeviation!.Value, byFile[2].LibraryRtDeviation!.Value);
+        Assert.IsTrue(byFile[1].LibraryRtDeviation!.Value > byFile[2].LibraryRtDeviation!.Value);
+        Assert.IsTrue(byFile[2].ReferenceScore > byFile[0].ReferenceScore);
+        Assert.AreEqual(2, result.Correction.ReferenceFileId);
+    }
+
+    [TestMethod]
+    public void UserOnly_ARequestedReferenceWinsOverTheFileClosestToTheLibraryRts() {
+        var files = Enumerable.Range(0, 3).Select(id => File(id, $"f{id}", AnalysisFileType.Sample, id + 1)).ToArray();
+        var library = new[] { Anchor(0, "A", 150d, 2.2d), Anchor(1, "B", 250d, 6.2d), Anchor(2, "C", 350d, 10.2d) };
+        var observed = new Dictionary<int, double?[]> {
+            [0] = new double?[] { 1.9d, 5.9d, 9.9d },
+            [1] = new double?[] { 2.0d, 6.0d, 10.0d },
+            [2] = new double?[] { 2.2d, 6.2d, 10.2d },
+        };
+        var parameter = UserOnly(minimumAnchorCount: 3);
+        parameter.ReferenceFileId = 0;
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, AutomaticPeaks, library, Observed(observed));
+
+        Assert.AreEqual(0, result.Correction.ReferenceFileId);
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionRequested, result.ReferenceSelection);
+        Assert.AreEqual(1.9d, result.Correction.Correct(2, 2.2d), 1e-9, "every file is mapped onto the requested file's axis");
     }
 
     [TestMethod]
@@ -621,8 +698,9 @@ public class AutomaticRtCorrectionUserAnchorTests {
             var summary = System.IO.File.ReadAllLines(Path.Combine(folder, AutomaticAlignmentRetentionTimeCorrectionResult.SummaryFileName));
             var summaryHeader = summary[0].Split('\t');
             CollectionAssert.AreEqual(
-                new[] { "Anchor mode", "User anchors detected", "Excluded automatic candidates", "Run", "Anchor library", "Anchor library SHA-256" },
+                new[] { "Anchor mode", "User anchors detected", "Excluded automatic candidates", "Run", "Anchor library", "Anchor library SHA-256", "Reference selection", "Library RT deviation (RT tolerances)" },
                 summaryHeader.Skip(17).ToArray());
+            Assert.IsTrue(summary.Skip(1).All(line => line.Split('\t').Length == summaryHeader.Length));
             var summaryColumn = summaryHeader.Select((name, index) => (name, index)).ToDictionary(pair => pair.name, pair => pair.index);
             var summaryRows = summary.Skip(1).Select(line => line.Split('\t')).ToDictionary(cells => cells[summaryColumn["File ID"]]);
             Assert.AreEqual("Hybrid", summaryRows["0"][summaryColumn["Anchor mode"]]);
@@ -630,6 +708,11 @@ public class AutomaticRtCorrectionUserAnchorTests {
             Assert.AreEqual("2", summaryRows["1"][summaryColumn["User anchors detected"]]);
             Assert.AreEqual("0", summaryRows["0"][summaryColumn["Excluded automatic candidates"]]);
             Assert.AreEqual(string.Empty, summaryRows["1"][summaryColumn["Excluded automatic candidates"]]);
+            Assert.IsTrue(summaryRows.Values.All(cells => cells[summaryColumn["Reference selection"]] == AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionRequested),
+                "the run's choice, in every row as the anchor mode is");
+            Assert.AreEqual(0d, double.Parse(summaryRows["0"][summaryColumn["Library RT deviation (RT tolerances)"]], CultureInfo.InvariantCulture), 1e-12);
+            // File 1: U 0.1 min and V 0.1 min from the library's RTs, tolerance 0.5 min.
+            Assert.AreEqual(0.2d, double.Parse(summaryRows["1"][summaryColumn["Library RT deviation (RT tolerances)"]], CultureInfo.InvariantCulture), 1e-12);
             Assert.IsFalse(System.IO.File.Exists(Path.Combine(folder, AutomaticAlignmentRetentionTimeCorrectionResult.ExclusionsFileName)), "no False rows, no exclusions file");
         }
         finally {
@@ -707,7 +790,81 @@ public class AutomaticRtCorrectionUserAnchorTests {
     }
 
     [TestMethod]
-    public void Hybrid_WithoutAReferenceFileId_ChoosesTheReferenceAsAutomaticModeDoes() {
+    public void Hybrid_WithoutAReferenceFileId_PrefersTheFileClosestToTheLibraryRts_OverTheAutomaticScore() {
+        var (files, Peaks) = ThreeShiftedFiles();
+        var library = new[] { Anchor(0, "U", 555d, 5.3d, rtTolerance: 1d) };
+        var observed = new Dictionary<int, double?[]> {
+            [0] = new double?[] { 5.3d },
+            [1] = new double?[] { 5.5d },
+            [2] = new double?[] { 5.7d },
+        };
+
+        var withUser = AutomaticAlignmentRetentionTimeCorrection.Build(files, CentralHybrid(), 0.01d, Peaks, library, Observed(observed));
+        var withoutUser = AutomaticAlignmentRetentionTimeCorrection.Build(files, CentralHybrid(AutomaticRtCorrectionAnchorMode.Automatic), 0.01d, Peaks, _ => Ms1CycleProfile.Empty);
+
+        Assert.AreEqual(1, withoutUser.Correction.ReferenceFileId, "Automatic mode takes the central file");
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionAutomatic, withoutUser.ReferenceSelection);
+        Assert.AreEqual(0, withUser.Correction.ReferenceFileId, "the file the library's RT was measured in");
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionByLibraryRt, withUser.ReferenceSelection);
+        Assert.IsTrue(withUser.Files.Single(file => file.FileId == 1).ReferenceScore > withUser.Files.Single(file => file.FileId == 0).ReferenceScore,
+            "the automatic score still prefers the central file");
+    }
+
+    [TestMethod]
+    public void Hybrid_TheFileWithMoreUserAnchorsDetectedWinsBeforeTheLibraryRts() {
+        var (files, Peaks) = ThreeShiftedFiles();
+        var library = new[] { Anchor(0, "U", 555d, 5.5d, rtTolerance: 1d), Anchor(1, "V", 666d, 7.5d, rtTolerance: 1d) };
+        var observed = new Dictionary<int, double?[]> {
+            [0] = new double?[] { 5.3d, null },
+            [1] = new double?[] { 5.5d, null },
+            [2] = new double?[] { 5.7d, 7.7d },
+        };
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, CentralHybrid(), 0.01d, Peaks, library, Observed(observed));
+
+        Assert.AreEqual(2, result.Correction.ReferenceFileId, "a user anchor missing from the reference has no target RT");
+        Assert.IsTrue(result.Files.Single(file => file.FileId == 1).LibraryRtDeviation < result.Files.Single(file => file.FileId == 2).LibraryRtDeviation);
+    }
+
+    [TestMethod]
+    public void Hybrid_WithNoUserAnchorDetected_ChoosesTheReferenceAsAutomaticModeDoes() {
+        var (files, Peaks) = ThreeShiftedFiles();
+        var library = new[] { Anchor(0, "U", 555d, 5.3d, rtTolerance: 1d) };
+        var observed = new Dictionary<int, double?[]> {
+            [0] = new double?[] { null },
+            [1] = new double?[] { null },
+            [2] = new double?[] { null },
+        };
+
+        var withUser = AutomaticAlignmentRetentionTimeCorrection.Build(files, CentralHybrid(), 0.01d, Peaks, library, Observed(observed));
+        var withoutUser = AutomaticAlignmentRetentionTimeCorrection.Build(files, CentralHybrid(AutomaticRtCorrectionAnchorMode.Automatic), 0.01d, Peaks, _ => Ms1CycleProfile.Empty);
+
+        Assert.AreEqual(withoutUser.Correction.ReferenceFileId, withUser.Correction.ReferenceFileId);
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionAutomatic, withUser.ReferenceSelection);
+        Assert.IsTrue(withUser.Files.All(file => file.LibraryRtDeviation is null));
+    }
+
+    [TestMethod]
+    public void Hybrid_ARequestedReferenceWinsOverTheFileClosestToTheLibraryRts() {
+        var (files, Peaks) = ThreeShiftedFiles();
+        var library = new[] { Anchor(0, "U", 555d, 5.3d, rtTolerance: 1d) };
+        var observed = new Dictionary<int, double?[]> {
+            [0] = new double?[] { 5.3d },
+            [1] = new double?[] { 5.5d },
+            [2] = new double?[] { 5.7d },
+        };
+        var parameter = CentralHybrid();
+        parameter.ReferenceFileId = 2;
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, Peaks, library, Observed(observed));
+
+        Assert.AreEqual(2, result.Correction.ReferenceFileId);
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionRequested, result.ReferenceSelection);
+    }
+
+    // Three files whose ten candidates are shifted by -0.2, 0 and +0.2 min: by coverage and
+    // centrality the middle one is the automatic reference.
+    private static (AnalysisFileBean[] Files, Func<AnalysisFileBean, List<ChromatogramPeakFeature>> Peaks) ThreeShiftedFiles() {
         var files = new[] {
             File(0, "early", AnalysisFileType.Sample, 1),
             File(1, "middle", AnalysisFileType.Sample, 2),
@@ -717,27 +874,16 @@ public class AutomaticRtCorrectionUserAnchorTests {
             var shift = file.AnalysisFileId switch { 0 => -0.2d, 2 => 0.2d, _ => 0d };
             return Enumerable.Range(1, 10).Select(index => Peak(index, 100d + 10d * index, index + shift, 10000d + 1000d * index)).ToList();
         }
-        var hybrid = Hybrid();
-        hybrid.ReferenceFileId = -1;
-        hybrid.MatchRtTolerance = 0.5f;
-        hybrid.ReferenceCentralityWeight = 0.9f;
-        var automatic = Hybrid();
-        automatic.ReferenceFileId = -1;
-        automatic.MatchRtTolerance = 0.5f;
-        automatic.ReferenceCentralityWeight = 0.9f;
-        automatic.AnchorMode = AutomaticRtCorrectionAnchorMode.Automatic;
-        var library = new[] { Anchor(0, "U", 555d, 5.5d, rtTolerance: 1d) };
-        var observed = new Dictionary<int, double?[]> {
-            [0] = new double?[] { 5.3d },
-            [1] = new double?[] { 5.5d },
-            [2] = new double?[] { 5.7d },
-        };
+        return (files, Peaks);
+    }
 
-        var withUser = AutomaticAlignmentRetentionTimeCorrection.Build(files, hybrid, 0.01d, Peaks, library, Observed(observed));
-        var withoutUser = AutomaticAlignmentRetentionTimeCorrection.Build(files, automatic, 0.01d, Peaks, _ => Ms1CycleProfile.Empty);
-
-        Assert.AreEqual(1, withoutUser.Correction.ReferenceFileId, "the central file");
-        Assert.AreEqual(withoutUser.Correction.ReferenceFileId, withUser.Correction.ReferenceFileId);
+    private static AutomaticAlignmentRetentionTimeCorrectionParameter CentralHybrid(AutomaticRtCorrectionAnchorMode mode = AutomaticRtCorrectionAnchorMode.Hybrid) {
+        var parameter = Hybrid();
+        parameter.AnchorMode = mode;
+        parameter.ReferenceFileId = -1;
+        parameter.MatchRtTolerance = 0.5f;
+        parameter.ReferenceCentralityWeight = 0.9f;
+        return parameter;
     }
 
     [TestMethod]
@@ -920,8 +1066,13 @@ public class AutomaticRtCorrectionUserAnchorTests {
 
         CollectionAssert.AreEqual(new[] { 0, 0, 0 }, anchorsAsked, "each file is read once, and for no anchors");
         Assert.IsTrue(result.Anchors.All(anchor => anchor.Source == AutomaticRtCorrectionAnchorSource.Automatic));
-        Assert.IsTrue(result.Files.All(file => file.UserAnchorsDetected is null && file.ExcludedAutomaticCandidates is null));
+        Assert.IsTrue(result.Files.All(file => file.UserAnchorsDetected is null && file.ExcludedAutomaticCandidates is null && file.LibraryRtDeviation is null));
         Assert.AreEqual(0, result.Exclusions.Count);
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionRequested, result.ReferenceSelection, "Hybrid() names file 0");
+        parameter.ReferenceFileId = -1;
+        var automaticReference = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, HybridPeaks, library,
+            (file, anchors) => new AutomaticRtCorrectionRawFileReading(Ms1CycleProfile.Empty, Array.Empty<AutomaticRtCorrectionUserAnchorObservation>()));
+        Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionResult.ReferenceSelectionAutomatic, automaticReference.ReferenceSelection);
         var withoutLibrary = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, HybridPeaks, _ => Ms1CycleProfile.Empty);
         CollectionAssert.AreEqual(
             withoutLibrary.Anchors.Select(anchor => (anchor.FileId, anchor.AnchorId, anchor.ReferenceRt, anchor.OriginalRt, anchor.Status)).ToArray(),

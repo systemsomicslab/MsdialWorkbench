@@ -1,34 +1,57 @@
-﻿using CompMs.Common.Enum;
-using CompMs.Common.Extension;
+﻿using CompMs.Common;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace CompMs.MsdialCore.Export
 {
-    internal sealed class AlignmentMassBankRecordExporter : IAlignmentSpectraExporter
+    /// <summary>
+    /// MassBank records of alignment spots, with the project metadata, as the GUI's alignment MassBank export writes them.
+    /// </summary>
+    /// <remarks>
+    /// Create one per export, so that DATE and the time in every accession are the export time; the accessions follow
+    /// the alignment layout of <see cref="MassBankRecordHandler"/>, {Software}{yyMMddHHmmss}{spot ID:D8}. Check
+    /// <see cref="ValidateMetadata"/> before exporting and refuse to export while it reports anything.
+    ///
+    /// This is not an <see cref="IAlignmentSpectraExporter"/>: that contract writes every spot into a stream its caller
+    /// has already opened (SingleAlignmentSpotExporter opens the file first), so a spot that cannot become a valid
+    /// record would leave an empty file behind, and it has no way to pass the annotation level, so suggestions would
+    /// bypass the export policy. Use <see cref="TryExport"/>, which writes nothing for such a spot and says why.
+    /// </remarks>
+    internal sealed class AlignmentMassBankRecordExporter
     {
         private readonly MassBankRecordHandler _handler;
 
-        public AlignmentMassBankRecordExporter(IonMode ionMode, string instrumentType) {
-            var splash = new NSSplash.Splash();
-            _handler = new MassBankRecordHandler(ionMode, instrumentType, scan => CreateSplash(scan, splash));
+        public AlignmentMassBankRecordExporter(ProjectBaseParameter project, string contributorId) {
+            if (project is null) {
+                throw new ArgumentNullException(nameof(project));
+            }
+            _handler = new MassBankRecordHandler(project.IonMode, project.InstrumentType ?? string.Empty, MassBankSplash.Compute)
+            {
+                Authors = project.Authors ?? string.Empty,
+                License = project.License ?? string.Empty,
+                Instrument = project.Instrument ?? string.Empty,
+                CollisionEnergy = project.CollisionEnergy ?? string.Empty,
+                Comment = project.Comment ?? string.Empty,
+                ContributorIdentifier = contributorId ?? string.Empty,
+                MsdialVersion = MsdialBuildIdentity.FullIdentity,
+            };
         }
+
+        /// <summary>The problems with the project metadata or contributor ID; empty when records can be written.</summary>
+        public IReadOnlyList<string> ValidateMetadata() => _handler.ValidateMetadata();
 
         public string CreateExportFileName(AlignmentSpotProperty spot) {
             return _handler.GetAccession(spot) + ".txt";
         }
 
-        void IAlignmentSpectraExporter.Export(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult) {
-            _handler.WriteRecord(stream, spot, spot, msdecResult, spot);
-        }
-
-        private static string CreateSplash(Common.Interfaces.IMSScanProperty scan, NSSplash.Splash splash) {
-            return scan.Spectrum.IsEmptyOrNull()
-                ? "NA"
-                : splash.splashIt(new NSSplash.impl.MSSpectrum(string.Join(" ", scan.Spectrum.Select(p => $"{p.Mass}:{p.Intensity}"))));
+        /// <summary>Writes the record of <paramref name="spot"/>, or nothing, returning false with the reason.</summary>
+        public bool TryExport(Stream stream, AlignmentSpotProperty spot, MSDecResult msdecResult, MassBankAnnotationLevel annotationLevel, out string reason) {
+            return _handler.TryWriteRecord(stream, spot, spot, msdecResult, spot, annotationLevel, spot.AreLipidChainsResolved(), out reason);
         }
     }
 }

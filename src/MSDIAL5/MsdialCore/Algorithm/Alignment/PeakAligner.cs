@@ -36,6 +36,12 @@ public class PeakAligner {
     public LipidRtUnitRun? LipidRtRun { get; private set; }
 
     /// <summary>
+    /// The spots the last alignment removed because their representative peak is an isotope and they are not
+    /// reference-matched. Null when this kind of project does not remove isotope spots.
+    /// </summary>
+    public IReadOnlyList<RemovedIsotopeSpot>? RemovedIsotopeSpots => (Refiner as AlignmentRefiner)?.RemovedIsotopeSpots;
+
+    /// <summary>
     /// The annotators that search a library of predicted spectra, whose matches the lipid RT check does not evaluate
     /// (<see cref="LipidRtInputBuilder.PredictedLibraryAnnotators"/>). Null when the factory does not know them.
     /// </summary>

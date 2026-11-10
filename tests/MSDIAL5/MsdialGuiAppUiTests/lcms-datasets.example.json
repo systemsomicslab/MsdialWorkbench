@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Sciex WIFF",
+    "folder": "sciex\\wiff",
+    "polarity": "Negative",
+    "minimumPeakHeight": 1000,
+    "files": [ "sample_1.wiff", "sample_2.wiff", "sample_3.wiff" ]
+  },
+  {
+    "name": "Agilent D",
+    "folder": "agilent",
+    "polarity": "Positive",
+    "minimumPeakHeight": 1000,
+    "files": [ "sample.d" ]
+  }
+]

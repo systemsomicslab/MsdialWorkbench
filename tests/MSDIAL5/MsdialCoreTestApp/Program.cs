@@ -1,4 +1,5 @@
 ﻿using CompMs.Common;
+using CompMs.Common.Utility;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.Properties;
 using System.CommandLine;
@@ -9,6 +10,10 @@ using System.Threading.Tasks;
 namespace CompMs.App.MsdialConsole;
 class Program {
     public static Task<int> Main(string[] args) {
+        // Before anything reads a number: on a PC whose regional format uses a decimal comma, the
+        // libraries, the IUPAC table and every output would otherwise be read or written with it.
+        ProcessCulture.UseInvariantCulture();
+
         // gcms
         // args = new string[] {
         //     "gcms"
