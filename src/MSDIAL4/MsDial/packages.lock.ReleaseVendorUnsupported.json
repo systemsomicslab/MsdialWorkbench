@@ -163,9 +163,10 @@
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
-        "resolved": "1.0.8739.525",
-        "contentHash": "x1exfWDljPq9GzhEmLOuT3OifiY9dXXZG4+w1nRlaYbf9QlJne4mgKFm2OeWo5bN+AqXTAD7wAuYEteIttUHjg==",
+        "resolved": "1.3.9809.684",
+        "contentHash": "3tGjnK/g5cPoki/Bb9ncinWRvpIlgZk3zfa+67cTYIFL11NEzW6J++MJRFJgHljPZX/nlGoZunCHHfQ0A+adaA==",
         "dependencies": {
+          "System.Buffers": "4.5.1",
           "zlib.net": "1.0.3"
         }
       },
@@ -761,9 +762,12 @@
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
-        "resolved": "1.0.8739.525",
-        "contentHash": "x1exfWDljPq9GzhEmLOuT3OifiY9dXXZG4+w1nRlaYbf9QlJne4mgKFm2OeWo5bN+AqXTAD7wAuYEteIttUHjg==",
+        "resolved": "1.3.9809.684",
+        "contentHash": "3tGjnK/g5cPoki/Bb9ncinWRvpIlgZk3zfa+67cTYIFL11NEzW6J++MJRFJgHljPZX/nlGoZunCHHfQ0A+adaA==",
         "dependencies": {
+          "System.Buffers": "4.5.1",
+          "System.Memory": "4.5.5",
+          "ZstdSharp.Port": "0.8.1",
           "zlib.net": "1.0.3"
         }
       },
@@ -931,6 +935,15 @@
         "type": "Transitive",
         "resolved": "1.0.3",
         "contentHash": "LvG2IMi1sSsVK+AE/f2yiYh17tEIYWL3dNLuXXUJycAeAr8lrzm5Iuna34kP+NaZXFBBn6etHc2rgH1xQCc6YQ=="
+      },
+      "ZstdSharp.Port": {
+        "type": "Transitive",
+        "resolved": "0.8.1",
+        "contentHash": "19tNz33kn2EkyViFXuxfVn338UJaRmkwBphVqP2dVJIYQUQgFrgG5h061mxkRRg1Ax6r+6WOj1FxaFZ5qaWqqg==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "5.0.0",
+          "System.Memory": "4.5.5"
+        }
       },
       "barchart": {
         "type": "Project",
@@ -1359,9 +1372,12 @@
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
-        "resolved": "1.0.8739.525",
-        "contentHash": "x1exfWDljPq9GzhEmLOuT3OifiY9dXXZG4+w1nRlaYbf9QlJne4mgKFm2OeWo5bN+AqXTAD7wAuYEteIttUHjg==",
+        "resolved": "1.3.9809.684",
+        "contentHash": "3tGjnK/g5cPoki/Bb9ncinWRvpIlgZk3zfa+67cTYIFL11NEzW6J++MJRFJgHljPZX/nlGoZunCHHfQ0A+adaA==",
         "dependencies": {
+          "System.Buffers": "4.5.1",
+          "System.Memory": "4.5.5",
+          "ZstdSharp.Port": "0.8.1",
           "zlib.net": "1.0.3"
         }
       },
@@ -1529,6 +1545,15 @@
         "type": "Transitive",
         "resolved": "1.0.3",
         "contentHash": "LvG2IMi1sSsVK+AE/f2yiYh17tEIYWL3dNLuXXUJycAeAr8lrzm5Iuna34kP+NaZXFBBn6etHc2rgH1xQCc6YQ=="
+      },
+      "ZstdSharp.Port": {
+        "type": "Transitive",
+        "resolved": "0.8.1",
+        "contentHash": "19tNz33kn2EkyViFXuxfVn338UJaRmkwBphVqP2dVJIYQUQgFrgG5h061mxkRRg1Ax6r+6WOj1FxaFZ5qaWqqg==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "5.0.0",
+          "System.Memory": "4.5.5"
+        }
       },
       "barchart": {
         "type": "Project",

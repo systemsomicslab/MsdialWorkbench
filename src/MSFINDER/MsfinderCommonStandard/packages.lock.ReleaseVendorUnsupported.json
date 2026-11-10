@@ -99,9 +99,10 @@
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
-        "resolved": "1.0.8739.525",
-        "contentHash": "x1exfWDljPq9GzhEmLOuT3OifiY9dXXZG4+w1nRlaYbf9QlJne4mgKFm2OeWo5bN+AqXTAD7wAuYEteIttUHjg==",
+        "resolved": "1.3.9809.684",
+        "contentHash": "3tGjnK/g5cPoki/Bb9ncinWRvpIlgZk3zfa+67cTYIFL11NEzW6J++MJRFJgHljPZX/nlGoZunCHHfQ0A+adaA==",
         "dependencies": {
+          "System.Buffers": "4.5.1",
           "zlib.net": "1.0.3"
         }
       },
