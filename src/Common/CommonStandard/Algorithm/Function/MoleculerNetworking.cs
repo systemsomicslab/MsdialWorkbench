@@ -177,6 +177,10 @@ namespace CompMs.Common.Algorithm.Function
         private static double[] CalculateEdgeScore(IMSScanProperty prop1, IMSScanProperty prop2, MolecularNetworkingQuery query) {
             var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
             if (massDiff > query.MaxPrecursorDifference) return null;
+            // TODO: MaxPrecursorDifferenceAsPercent is shown in the GUI settings and passed in everywhere, but no
+            // networking path applies it. The disabled check below drops a pair when the smaller precursor is
+            // MORE than the given percent of the larger, so at the default 50 it would drop the closest pairs;
+            // the comparison looks inverted. Decide whether to fix and enable it or remove the parameter.
             // if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
             double[] scoreitem = new double[2];
             switch (query.MsmsSimilarityCalc) {
@@ -194,8 +198,8 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         public static EdgeData GetEdge(
-           IMoleculeMsProperty peak1,
-           IMoleculeMsProperty peak2,
+           IMSScanProperty peak1,
+           IMSScanProperty peak2,
            double massTolerance,
            double minimumPeakMatch,
            double matchThreshold,
@@ -281,57 +285,6 @@ namespace CompMs.Common.Algorithm.Function
                         scores = link.Score
                     };
                     edges.Add(edge);
-                }
-            }
-            return edges;
-        }
-
-        public static List<EdgeData> GenerateEdges<T>(
-           IReadOnlyList<T> spots1,
-           IReadOnlyList<IMSScanProperty> scans1,
-           IReadOnlyList<T> spots2,
-           IReadOnlyList<IMSScanProperty> scans2,
-           double massTolerance,
-           double minimumPeakMatch,
-           double matchThreshold,
-           double maxEdgeNumPerNode,
-           double maxPrecursorDiff,
-           double maxPrecursorDiff_Percent,
-           MsmsSimilarityCalc msmsSimilarityCalc,
-           Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
-            if (spots1.Count != scans1.Count || spots2.Count != scans2.Count) {
-                throw new ArgumentException("Each molecular peak must have exactly one corresponding scan.");
-            }
-
-            var edges = new List<EdgeData>();
-            var node2links = new Dictionary<int, List<(List<double> Score, int Index)>>();
-            var max = spots1.Count;
-            for (int i = 0; i < spots1.Count; i++) {
-                var scan1 = scans1[i];
-                if (scan1.Spectrum.Count <= 0) continue;
-                report?.Invoke((i + 1) / (double)Math.Max(1, max));
-                for (int j = 0; j < spots2.Count; j++) {
-                    var scan2 = scans2[j];
-                    if (scan2.Spectrum.Count <= 0) continue;
-                    if (Math.Abs(scan1.PrecursorMz - scan2.PrecursorMz) > maxPrecursorDiff) continue;
-                    var score = GetMsnScoreItems(scan1, scan2, massTolerance, msmsSimilarityCalc);
-                    if (score is null || score[1] < minimumPeakMatch || score[0] < matchThreshold * 0.01) continue;
-                    if (!node2links.TryGetValue(i, out var links)) {
-                        links = node2links[i] = new List<(List<double>, int)>();
-                    }
-                    links.Add((score, j));
-                }
-            }
-
-            foreach (var item in node2links) {
-                foreach (var link in item.Value.OrderByDescending(n => n.Score[0]).Take((int)maxEdgeNumPerNode)) {
-                    edges.Add(new EdgeData {
-                        score = link.Score[0],
-                        matchpeakcount = link.Score[1],
-                        source = spots1[item.Key].ID,
-                        target = spots2[link.Index].ID,
-                        scores = link.Score,
-                    });
                 }
             }
             return edges;

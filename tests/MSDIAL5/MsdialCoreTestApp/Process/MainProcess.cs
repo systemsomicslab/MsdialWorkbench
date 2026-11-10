@@ -464,8 +464,8 @@ public static class MainProcess
                         }
                         return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode);
                     }
-                    if (spectrumFile != null && spectrumFile.Exists) {
-                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode);
+                    if (spectrumFile != null) {
+                        throw new ArgumentException("--spectrum is only used with .pai, .pai2, .arf, or .arf2 input.");
                     }
                     if (targetFile != null && targetFile.Exists) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);

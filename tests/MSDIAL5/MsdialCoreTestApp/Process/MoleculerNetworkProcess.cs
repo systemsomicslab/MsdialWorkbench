@@ -3,6 +3,7 @@ using CompMs.Common.Algorithm.Function;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.NodeEdge;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Parameter;
@@ -62,12 +63,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
 
             using (var sw = new StreamWriter(outputfile)) {
-                if (param.MsmsSimilarityCalc == Common.Enum.MsmsSimilarityCalc.All) {
-                    sw.WriteLine("SourceID\tTargetID\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore");
-                }
-                else {
-                    sw.WriteLine("SourceID\tTargetID\tScore\tMatchPeakCount");
-                }
+                WriteEdgeHeader(sw, param.MsmsSimilarityCalc);
                 for (int i = 0; i < i_cRecords.Count; i++) {
                     for (int j = 0; j < t_cRecords.Count; j++) {
                         var edge = MoleculerNetworkingBase.GetEdge(i_cRecords[i], t_cRecords[j], param.MnMassTolerance,
@@ -102,12 +98,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             foreach (var record in cRecords)
                 record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
             using (var sw = new StreamWriter(outputfile)) {
-                if (param.MsmsSimilarityCalc == Common.Enum.MsmsSimilarityCalc.All) {
-                    sw.WriteLine("SourceID\tTargetID\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore");
-                }
-                else {
-                    sw.WriteLine("SourceID\tTargetID\tScore\tMatchPeakCount");
-                }
+                WriteEdgeHeader(sw, param.MsmsSimilarityCalc);
                 for (int i = 0; i < cRecords.Count; i++) {
                     for (int j = i + 1; j < cRecords.Count; j++) {
                         var edge = MoleculerNetworkingBase.GetEdge(cRecords[i], cRecords[j], param.MnMassTolerance,
@@ -146,35 +137,18 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
         public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string analysisFileName = null) {
             var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
             if (alignment && string.IsNullOrWhiteSpace(analysisFileName)) {
-                var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => File.Exists(file.FilePath));
+                var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => MolecularNetworkingInputLoader.StoredFileExists(file.FilePath));
                 if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
                 return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode);
             }
-            var analysisFiles = storage.AnalysisFiles
-                .Where(file => file.AnalysisFileIncluded && File.Exists(file.PeakAreaBeanInformationFilePath))
-                .ToList();
-            if (!string.IsNullOrWhiteSpace(analysisFileName)) {
-                analysisFiles = analysisFiles.Where(file =>
-                    string.Equals(file.AnalysisFileName, analysisFileName, StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(Path.GetFileNameWithoutExtension(file.PeakAreaBeanInformationFilePath), analysisFileName, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-            if (analysisFiles.Count == 0) {
-                throw new FileNotFoundException(string.IsNullOrWhiteSpace(analysisFileName)
-                    ? "No included analysis peak list was found in the project."
-                    : $"No included analysis peak list matched '{analysisFileName}'.", projectFile);
-            }
-            if (analysisFiles.Count > 1) {
-                var candidates = string.Join(", ", analysisFiles.Select(file => file.AnalysisFileName));
-                throw new InvalidOperationException($"Multiple analysis peak lists are available. Specify --analysis-file with one of: {candidates}");
-            }
-            var analysisFile = analysisFiles[0];
+            var analysisFile = MolecularNetworkingInputLoader.SelectAnalysisFile(storage.AnalysisFiles, analysisFileName, projectFile);
             return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode);
         }
 
         private static int RunInput<T>(MolecularNetworkingInput<T> input, string outputFile, MolecularSpectrumNetworkingBaseParameter parameter, string ionMode) where T : CompMs.Common.Interfaces.IMoleculeProperty, CompMs.Common.Interfaces.IChromatogramPeak {
+            var targetIonMode = ParseIonMode(ionMode);
             var selected = input.Spots.Select((spot, index) => (spot, scan: input.Scans[index]))
-                .Where(item => item.scan.IonMode.ToString() == ionMode && item.scan.Spectrum.Count > 0).ToList();
+                .Where(item => item.scan.IonMode == targetIonMode && item.scan.Spectrum.Count > 0).ToList();
             var spots = selected.Select(item => item.spot).ToList();
             var scans = selected.Select(item => item.scan).ToList();
             for (var i = 0; i < scans.Count; i++) {
@@ -182,16 +156,39 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     absoluteAbundanceCutOff: parameter.MnAbsoluteAbundanceCutOff,
                     relativeAbundanceCutOff: parameter.MnRelativeAbundanceCutOff);
             }
-            var edges = MoleculerNetworkingBase.GenerateEdges(spots, scans, spots, scans,
-                parameter.MnMassTolerance, parameter.MinimumPeakMatch, parameter.MnSpectrumSimilarityCutOff,
-                parameter.MaxEdgeNumberPerNode + 1, parameter.MaxPrecursorDifference,
-                parameter.MaxPrecursorDifferenceAsPercent, parameter.MsmsSimilarityCalc, null);
+
+            // Same pairing as the MSP path (Run4Onefile): every unordered pair is scored once.
             using var writer = new StreamWriter(outputFile, false);
-            writer.WriteLine("SourceID\tTargetID\tScore\tMatchPeakCount");
-            foreach (var edge in edges.Where(edge => edge.source != edge.target && edge.source < edge.target)) {
-                writer.WriteLine($"{edge.source}\t{edge.target}\t{String.Join("\t", edge.scores)}");
+            WriteEdgeHeader(writer, parameter.MsmsSimilarityCalc);
+            for (var i = 0; i < scans.Count; i++) {
+                for (var j = i + 1; j < scans.Count; j++) {
+                    var edge = MoleculerNetworkingBase.GetEdge(scans[i], scans[j], parameter.MnMassTolerance,
+                        parameter.MinimumPeakMatch, parameter.MnSpectrumSimilarityCutOff, parameter.MaxEdgeNumberPerNode,
+                        parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent,
+                        parameter.MsmsSimilarityCalc);
+                    if (edge != null) {
+                        writer.WriteLine($"{spots[i].ID}\t{spots[j].ID}\t{String.Join("\t", edge.scores)}");
+                    }
+                }
             }
             return 1;
+        }
+
+        private static IonMode ParseIonMode(string ionMode) {
+            if (Enum.TryParse<IonMode>(ionMode, ignoreCase: true, out var parsed)
+                && (parsed == IonMode.Positive || parsed == IonMode.Negative)) {
+                return parsed;
+            }
+            throw new ArgumentException($"Unknown ion mode '{ionMode}'. Use Positive or Negative.", nameof(ionMode));
+        }
+
+        private static void WriteEdgeHeader(TextWriter writer, MsmsSimilarityCalc similarityCalc) {
+            if (similarityCalc == MsmsSimilarityCalc.All) {
+                writer.WriteLine("SourceID\tTargetID\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore");
+            }
+            else {
+                writer.WriteLine("SourceID\tTargetID\tScore\tMatchPeakCount");
+            }
         }
 
         public int Run4AllEdgeGeneration(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite) {
