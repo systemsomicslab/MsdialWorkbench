@@ -20859,7 +20859,15 @@
           <IsDiagnostic>0</IsDiagnostic>
           </Precursor>
         </Precursors>
-      <ChainIons />
+      <ChainIons>
+        <ChainIon>
+          <MZ>SN1Acyl+O+Electron</MZ>
+          <Intensity>50</Intensity>
+          <Comment>SN1FA-</Comment>
+          <IsDiagnostic>0</IsDiagnostic>
+          <IsPositionDiagnostic>0</IsPositionDiagnostic>
+          </ChainIon>
+        </ChainIons>
       <ClassIons>
         <ClassIon>
           <MZ>PI+Electron</MZ>
@@ -22334,9 +22342,9 @@
           </ClassIon>
         <ClassIon>
           <MZ>PI+Electron</MZ>
-          <PI>C3H6O5P</PI>
+          <PI>C3D5HO5P</PI>
           <Intensity>999</Intensity>
-          <Comment>C3H6O5P-</Comment>
+          <Comment>C3D5HO5P-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <DiagnosticIonGroup>Class01</DiagnosticIonGroup>
           <DiagnosticIonCount>2</DiagnosticIonCount>
@@ -26972,7 +26980,7 @@
           <DiagnosticIonIntensity>10</DiagnosticIonIntensity>
           </ChainIon>
         <ChainIon>
-          <MZ>M-Proton-SN2Acyl-O-NL</MZ>
+          <MZ>M-Proton-SN2Acyl-O-NL+2H</MZ>
           <NL>C3H10N</NL>
           <Intensity>200</Intensity>
           <Comment>[M-H-C3H9N-SN2Acyl]-</Comment>
@@ -28167,9 +28175,9 @@
           <DiagnosticIonIntensity>10</DiagnosticIonIntensity>
           </ChainIon>
         <ChainIon>
-          <MZ>SN1Acyl+C5H9PO5+Electron</MZ>
+          <MZ>SN1Acyl+C5H5D4PO5+Electron</MZ>
           <Intensity>200</Intensity>
-          <Comment>SN1+C5H9PO5-</Comment>
+          <Comment>SN1+C5H5D4PO5-</Comment>
           <IsDiagnostic>1</IsDiagnostic>
           <IsPositionDiagnostic>1</IsPositionDiagnostic>
           <DiagnosticIonGroup>Chain02</DiagnosticIonGroup>
