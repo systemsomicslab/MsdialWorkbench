@@ -99,7 +99,8 @@ namespace CompMs.MsdialCore.Export
             if (!string.IsNullOrEmpty(spot.Comment)) {
                 comments = comments.Append(spot.Comment);
             }
-            comments = comments.Append($"Normalized unit: {spot.IonAbundanceUnit}");
+            // The normalized unit is added by NormalizedUnitCommentMetadataAccessorDecorator, and only to
+            // exports of normalized values: a raw height or area table is not in that unit.
             if (matchResult?.AnyMatched ?? false) {
                 comments = comments.Append($"Annotation method: {matchResult.AnnotatorID}");
             }

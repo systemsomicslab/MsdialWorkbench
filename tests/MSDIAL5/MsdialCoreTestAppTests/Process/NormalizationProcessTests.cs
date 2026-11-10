@@ -258,16 +258,18 @@ public sealed class NormalizationProcessTests
             "Total score", "Measured terms", "Evidence source", "Candidates found", "Candidates above threshold",
             "Candidates reference matched",
         };
-        foreach (var matrix in new[] { run.Raw, run.Normalized }) {
+        // The raw matrix holds peak heights, not concentrations, so only the normalized one names the unit.
+        foreach (var (matrix, comment) in new[] {
+            (run.Raw, "Annotation method: internal standard assignment"),
+            (run.Normalized, "Normalized unit: pmol_per_microL_plasma; Annotation method: internal standard assignment"),
+        }) {
             var assigned = matrix.Row(Pc);
             var unannotated = matrix.Row(Unknown);
             Assert.AreEqual("PE 15:0_18:1(d7)", assigned.Name);
             foreach (var column in columns) {
                 Assert.AreEqual(unannotated.Cell(column), assigned.Cell(column), column);
             }
-            Assert.AreEqual(
-                "Normalized unit: pmol_per_microL_plasma; Annotation method: internal standard assignment",
-                assigned.Comment);
+            Assert.AreEqual(comment, assigned.Comment);
             Assert.AreEqual(annotated.Cell("Average Mz"), assigned.Cell("Average Mz"), "what was measured stays");
         }
         Assert.AreEqual(50d, run.Normalized.Row(Pc).Value("s1"));
