@@ -363,18 +363,53 @@ namespace CompMs.App.Msdial.Model.Lcms
         /// <param name="lipidRtRuns">Receives what the lipid RT check did on the alignment (hook B), when not null.</param>
         private bool ProcessAlignment(IMsdialDataStorage<MsdialLcmsParameter> storage, List<(string Unit, LipidRtUnitRun? Run)>? lipidRtRuns) {
             (string Unit, LipidRtUnitRun? Run)? lipidRtRun = null;
+            // The automatic alignment RT correction is made here as the Console makes it, by the same
+            // library code: its settings and anchor library are checked before anything is read, and a
+            // run that cannot apply it stops rather than aligning without it.
+            var rtCorrectionReporter = new CollectingAutomaticRtCorrectionReporter();
+            AutomaticRtCorrectionInputs? rtCorrectionInputs = null;
+            if (storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
+                if (AutomaticAlignmentRtCorrectionWorkflow.ExclusiveWithLegacyRtCorrection(storage.Parameter) is string exclusive) {
+                    PublishRtCorrectionMessage(exclusive, MessageSeverity.Error);
+                    return false;
+                }
+                rtCorrectionInputs = AutomaticAlignmentRtCorrectionWorkflow.PrepareInputs(storage.Parameter, rtCorrectionReporter);
+                if (rtCorrectionInputs is null) {
+                    PublishRtCorrectionMessage(string.Join(Environment.NewLine, rtCorrectionReporter.Lines.Select(line => line.Line)), MessageSeverity.Error);
+                    return false;
+                }
+            }
+            var rtCorrectionFailed = false;
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
                 async vm =>
                 {
+                    var alignmentFileModel = AlignmentFiles.Files.Last();
+                    AlignmentRetentionTimeCorrectionCollection? rtCorrection = null;
+                    if (rtCorrectionInputs is not null) {
+                        vm.Label = "Automatic alignment RT correction..";
+                        var rtCorrectionResult = await Task.Run(() => AutomaticAlignmentRtCorrectionWorkflow.RunForAlignment(
+                            storage.AnalysisFiles, storage.Parameter, rtCorrectionInputs, alignmentFileModel.AlignmentFileBean, _providerFactory, rtCorrectionReporter)).ConfigureAwait(false);
+                        if (rtCorrectionResult is null) {
+                            rtCorrectionFailed = true;
+                            return;
+                        }
+                        rtCorrection = rtCorrectionResult.Correction;
+                        vm.Label = "Process alignment..";
+                    }
+                    else {
+                        // A map an earlier alignment left under this name must not describe this one.
+                        AutomaticAlignmentRtCorrectionWorkflow.RemoveMap(alignmentFileModel.AlignmentFileBean);
+                    }
+
                     var factory = new LcmsAlignmentProcessFactory(storage, _matchResultEvaluator)
                     {
-                        Progress = new Progress<int>(v => vm.CurrentValue = v)
+                        Progress = new Progress<int>(v => vm.CurrentValue = v),
+                        AlignmentRtCorrection = rtCorrection,
                     };
 
                     var aligner = factory.CreatePeakAligner();
                     aligner.ProviderFactory = _providerFactory; // TODO: I'll remove this later.
 
-                    var alignmentFileModel = AlignmentFiles.Files.Last();
                     var result = await Task.Run(() => alignmentFileModel.RunAlignment(aligner, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
                     lipidRtRun = (alignmentFileModel.FileName, aligner.LipidRtRun);
 
@@ -399,7 +434,28 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (lipidRtRun.HasValue) {
                 lipidRtRuns?.Add(lipidRtRun.Value);
             }
+            if (rtCorrectionFailed) {
+                PublishRtCorrectionMessage(
+                    "The alignment was not made: the automatic alignment RT correction failed." + Environment.NewLine + Environment.NewLine
+                    + string.Join(Environment.NewLine, rtCorrectionReporter.Lines.Select(line => line.Line)),
+                    MessageSeverity.Error);
+                return false;
+            }
+            if (rtCorrectionInputs is not null && (request.Result ?? false)) {
+                PublishRtCorrectionMessage(
+                    string.Join(Environment.NewLine, rtCorrectionReporter.Lines.Select(line => line.Line)),
+                    rtCorrectionReporter.HasWarnings ? MessageSeverity.Warning : MessageSeverity.Information);
+            }
             return request.Result ?? false;
+        }
+
+        private void PublishRtCorrectionMessage(string content, MessageSeverity severity) {
+            _broker.Publish(new MessageRequest
+            {
+                Caption = "Automatic alignment RT correction",
+                Content = content,
+                Severity = severity,
+            });
         }
 
         public AnalysisResultExportModel ExportAnalysis() {
