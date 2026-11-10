@@ -202,3 +202,19 @@ Columns are appended, never renamed, and nothing changes for a run without the c
 2. Should the GUI let the person keep their own alignment reference file while the
    automatic correction runs? The Console replaces it with the correction's reference; the
    GUI now does the same.
+
+## 10. Expected merge conflict with `fix/rt-correction-review-followups`
+
+That branch (commit ee64ba200) changes `LcmsProcess.cs` in three places this branch also
+touches:
+
+- the top of `Run` (it refuses unreadable automatic RT keys just before the exclusivity check,
+  which here calls `AutomaticAlignmentRtCorrectionWorkflow.ExclusiveWithLegacyRtCorrection`);
+- `ReportAutomaticRtCorrection`, where it prints `result.Warnings`: that method now lives in
+  `AutomaticAlignmentRtCorrectionWorkflow.Report`, and the loop belongs there so that the GUI
+  shows the warnings too;
+- `ExecuteAsync`, where it says which file replaced the alignment reference: this branch adds
+  the RT axis note on the next lines. `RunForAlignment` should say the same line for the GUI.
+
+`AutomaticAlignmentRetentionTimeCorrection.cs` is not touched here, so its new summary column
+("Analysis batch") reaches the GUI's audit through the shared `WriteAudit` unchanged.
