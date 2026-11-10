@@ -659,6 +659,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             CollectionAssert.AreEqual(
                 new[] { "Note", "Estimated scan interval (min)", "First used anchor RT (min)", "Last used anchor RT (min)", "Peaks before first used anchor", "Peaks after last used anchor" },
                 summaryHeader.Skip(11).Take(6).ToArray());
+            Assert.AreEqual("Analysis batch", summaryHeader[^1], "appended after every earlier column");
             Assert.IsTrue(summary.Skip(1).All(line => line.Split('\t').Length == summaryHeader.Length));
 
             var anchorLines = System.IO.File.ReadAllLines(Path.Combine(folder, "automatic_alignment_rt_correction_anchors.tsv"));
@@ -676,6 +677,41 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         finally {
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
         }
+    }
+
+    // CONF-23: with 47 non-Blank files and a minimum coverage of 0.5, 24 files are required, and
+    // 24 / 47 * 47 is 23.999999999999996 in floating point. A candidate detected in exactly 24
+    // files was dropped, here the third of three anchors, and the run failed.
+    [TestMethod]
+    public void Build_KeepsACandidateDetectedInExactlyTheRequiredNumberOfFiles() {
+        const int fileCount = 47;
+        Assert.IsTrue(24d / fileCount * fileCount < 24d, "the round trip this test is about");
+        var files = Enumerable.Range(0, fileCount).Select(id => File(id, $"f{id}", AnalysisFileType.Sample, id + 1)).ToArray();
+        List<ChromatogramPeakFeature> PeaksOf(AnalysisFileBean file) {
+            var peaks = new List<ChromatogramPeakFeature> { Peak(0, 100d, 1d, 10000d), Peak(1, 200d, 5d, 20000d) };
+            if (file.AnalysisFileId < 24) {
+                peaks.Add(Peak(2, 300d, 9d, 15000d));
+            }
+            return peaks;
+        }
+        var parameter = new AutomaticAlignmentRetentionTimeCorrectionParameter {
+            Execute = true,
+            ReferenceFileId = 0,
+            RtBinWidth = 0.5f,
+            MatchRtTolerance = 0.5f,
+            MinimumAnchorCount = 3,
+            MaximumAnchorCount = 3,
+            MinimumSampleCoverage = 0.5f,
+            IntensityQuantile = 0f,
+            MaximumPeakWidthQuantile = 1f,
+            MinimumSignalToNoise = 3f,
+        };
+
+        var result = AutomaticAlignmentRetentionTimeCorrection.Build(files, parameter, 0.01d, PeaksOf, _ => Ms1CycleProfile.Empty);
+
+        var reference = result.Anchors.Where(anchor => anchor.FileId == 0 && anchor.Used).OrderBy(anchor => anchor.ReferenceRt).ToList();
+        CollectionAssert.AreEqual(new[] { 100d, 200d, 300d }, reference.Select(anchor => anchor.Mass).ToArray());
+        Assert.AreEqual(24d / fileCount, reference[2].SampleCoverage, 1e-12);
     }
 
     private static List<AutomaticRtCorrectionAnchorAudit> AnchorsOf(AutomaticAlignmentRetentionTimeCorrectionResult result, int fileId) {

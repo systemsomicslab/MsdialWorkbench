@@ -77,11 +77,15 @@ public sealed class LcmsProcess
 
     public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
     {
-        var param = ConfigParser.ReadForLcmsParameter(methodFile);
+        var param = ConfigParser.ReadForLcmsParameter(methodFile, out var unusableKeys);
         var isAlignmentLightMode = ConfigParser.ReadAlignmentLightMode(methodFile);
         var exportDetailedAlignmentProvenance = ConfigParser.ReadDetailedAlignmentProvenance(methodFile);
         var exportAnnotationCandidates = ConfigParser.ReadAnnotationCandidateExport(methodFile);
         var automaticAlignmentRtCorrection = param.AlignmentBaseParam.AutomaticRtCorrection;
+        if (RefuseUnreadableAutomaticRtCorrectionKeys(unusableKeys, automaticAlignmentRtCorrection.Execute) is { } unreadable) {
+            Console.Error.WriteLine(unreadable);
+            return -1;
+        }
         if (automaticAlignmentRtCorrection.Execute
             && param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
             Console.Error.WriteLine("User-defined RT correction and automatic alignment RT correction cannot be enabled together because that would correct the RT axis twice.");
@@ -165,9 +169,16 @@ public sealed class LcmsProcess
                 return -1;
             }
         }
-        var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile);
+        var isCorrectlyImported = CommonProcess.SetProjectProperty(param, inputFolder, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile, out var orderProblems);
         if (!isCorrectlyImported) {
             return -1;
+        }
+        if (RefuseBlankInterpolationOnReplacedOrders(automaticAlignmentRtCorrection, analysisFiles, orderProblems) is { } replacedOrders) {
+            Console.Error.WriteLine(replacedOrders);
+            return -1;
+        }
+        if (!param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
+            IgnoreEarlierRtCorrectionResults(analysisFiles);
         }
 
         try {
@@ -325,6 +336,83 @@ public sealed class LcmsProcess
         }
     }
 
+    /// <summary>
+    /// Why the run must stop because a setting of the automatic alignment RT correction could
+    /// not be read; null when none must.
+    /// </summary>
+    /// <remarks>
+    /// A value the reader cannot read leaves the setting at its built-in default, and for most
+    /// settings the key report saying so is enough. Here it is not: "Automatic RT correction
+    /// anchor mode: User-Only" ran on automatic anchors the person never reviewed, with their
+    /// approved True and False rows ignored, and "Execute automatic RT correction for alignment:
+    /// yes" aligned with no correction at all, each after a line on stdout. So an unreadable
+    /// Execute stops every run, as an unreadable preview switch does, and once the correction
+    /// runs, an unreadable value of any of its settings stops it too. The preview switch has its
+    /// own refusal, with its own reason.
+    /// </remarks>
+    internal static string? RefuseUnreadableAutomaticRtCorrectionKeys(IReadOnlyList<string> unusableKeys, bool execute) {
+        var refused = unusableKeys
+            .Where(ConfigParser.IsAutomaticRtCorrectionKey)
+            .Where(key => !string.Equals(key.Trim(), "Automatic RT correction preview only", StringComparison.OrdinalIgnoreCase))
+            .Where(key => execute || string.Equals(key.Trim(), "Execute automatic RT correction for alignment", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (refused.Count == 0) {
+            return null;
+        }
+        return $"The value of {string.Join(", ", refused.Select(key => $"'{key}'"))} could not be read; the automatic alignment RT correction is refused rather than run on the built-in default. "
+            + "The method file report above names the value.";
+    }
+
+    /// <summary>
+    /// Why the run must stop because the Blanks would be interpolated on analytical orders the
+    /// analysis CSV did not give; null when it need not.
+    /// </summary>
+    /// <remarks>
+    /// The analysis file reader replaces an analytical_order it cannot read (2.5, 0, an empty
+    /// cell) with the row position, and a batch_order with 1, and says so. A Blank's RT model is
+    /// interpolated from the injections next to it by those numbers, so with a Blank in the
+    /// batch and interpolation on, a replaced number decides which files the Blank takes its
+    /// map from: the run is refused instead. Without a Blank, or with interpolation off, the
+    /// warnings are enough.
+    /// </remarks>
+    internal static string? RefuseBlankInterpolationOnReplacedOrders(
+        AutomaticAlignmentRetentionTimeCorrectionParameter correction,
+        IReadOnlyList<AnalysisFileBean> files,
+        IReadOnlyList<string> orderProblems) {
+        if (orderProblems.Count == 0
+            || !correction.Execute
+            || !correction.InterpolateBlankByAnalyticalOrder
+            || !files.Any(file => file.AnalysisFileType == AnalysisFileType.Blank)) {
+            return null;
+        }
+        return $"Automatic alignment RT correction interpolates each Blank's RT map from the injections next to it by analytical order, and the analysis file list gave {orderProblems.Count} file(s) an order the run had to replace: "
+            + string.Join("; ", orderProblems)
+            + ". Give every file a whole-number analytical_order from 1 (and batch_order), or set 'Automatic RT correction interpolate blanks by analytical order: False'.";
+    }
+
+    /// <summary>
+    /// Keeps a legacy RT correction result (.rtc) that lies beside the raw data under this run's
+    /// name from being read by a run that does not run the legacy correction.
+    /// </summary>
+    /// <remarks>
+    /// A file's raw data is read on the RTs of its .rtc whenever one is found at the path its
+    /// RetentionTimeCorrectionBean names, whether or not this run corrected anything: peak
+    /// picking, the automatic correction's anchors and both alignment paths then work on an
+    /// earlier run's legacy-corrected axis, and the automatic correction is fitted on top of it.
+    /// The run stamp in that name is unique to the minute, so such a file is an earlier run's
+    /// from the same minute. It is left where it is, said, and not read.
+    /// </remarks>
+    internal static void IgnoreEarlierRtCorrectionResults(IReadOnlyList<AnalysisFileBean> files) {
+        foreach (var file in files) {
+            var path = file.RetentionTimeCorrectionBean?.RetentionTimeCorrectionResultFilePath;
+            if (!string.IsNullOrEmpty(path) && File.Exists(path)) {
+                Console.WriteLine($"Warning: {path} holds an earlier run's legacy RT correction result under this run's name; this run does not run the legacy RT correction, so it is not read.");
+                file.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
+            }
+        }
+    }
+
     // Best effort: a virus scanner or the indexer can hold a file just written for a moment, and
     // a folder left behind must not turn the preview's result into a failure.
     private static void RemoveScratch(string scratch) {
@@ -469,6 +557,9 @@ public sealed class LcmsProcess
         foreach (var group in result.Anchors.Where(anchor => anchor.OutlierFlagged).GroupBy(anchor => anchor.AnchorName)) {
             Console.WriteLine($"Note: the outlier test disagrees with user anchor {group.Key} in {group.Count()} file(s); a user anchor is not rejected for that.");
         }
+        foreach (var warning in result.Warnings) {
+            Console.WriteLine($"Warning: {warning}");
+        }
         foreach (var exclusion in result.Exclusions.Where(exclusion => exclusion.ExcludedCandidates == 0)) {
             Console.WriteLine($"Warning: exclusion {exclusion.AnchorName} (m/z {exclusion.Mass.ToString(System.Globalization.CultureInfo.InvariantCulture)}, RT {exclusion.Rt.ToString(System.Globalization.CultureInfo.InvariantCulture)} min) matched no automatic candidate of reference file {exclusion.ReferenceFileName}.");
         }
@@ -590,7 +681,15 @@ public sealed class LcmsProcess
             if (automaticRtCorrectionResult is null) {
                 return -1;
             }
-            storage.Parameter.AlignmentReferenceFileID = automaticRtCorrectionResult.Correction.ReferenceFileId;
+            // The aligned RTs are on the correction reference's axis, so the alignment's master
+            // file must be that file. The method file's value, if any, was recorded as
+            // overridden; this says which file replaced it.
+            var declared = storage.Parameter.AlignmentReferenceFileID;
+            var correctionReference = automaticRtCorrectionResult.Correction.ReferenceFileId;
+            Console.WriteLine(declared == correctionReference
+                ? $"Alignment reference file ID: {correctionReference}, the automatic alignment RT correction's reference."
+                : $"Alignment reference file ID: {correctionReference}, the automatic alignment RT correction's reference, in place of {declared}; the alignment must use the reference of the corrected RT axis.");
+            storage.Parameter.AlignmentReferenceFileID = correctionReference;
         }
 
         // The identity of the build, without the host application's name: this field is the

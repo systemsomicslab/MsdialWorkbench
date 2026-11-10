@@ -364,7 +364,7 @@ internal sealed class LcmsAlignmentLightRunner {
                 continue;
             }
             var peak = CreateAlignmentPeak(file, acc.Spot.IonMode);
-            gapFiller.GapFill(ms1Spectra, peak, acc.GapFillCenter, acc.PeakWidth, acc.EstimatedNoise);
+            gapFiller.GapFill(ms1Spectra, peak, acc.GapFillCenter, acc.MaximumDetectedPeakWidth, acc.EstimatedNoise);
             peakStore.WriteSpotPeak(acc.Spot.MasterAlignmentID, peak);
         }
     }
@@ -429,6 +429,15 @@ internal sealed class LcmsAlignmentLightRunner {
         public int FileCount { get; }
         public int DetectedCount { get; private set; }
         public double PeakWidth { get; private set; } = 0.2d;
+        /// <summary>
+        /// The widest detected peak, with no floor: the width the standard path's gap filler
+        /// takes (LcmsGapFiller.GapFill from the spot). The gap filler floors the window at
+        /// 0.2 min itself, after an automatic RT correction has mapped the window back onto
+        /// the file's original RTs. <see cref="PeakWidth"/> starts at that floor, and handed
+        /// to the gap filler it was floored before the mapping, so a file whose map stretches
+        /// the axis got a wider window, and other areas, than the standard path gives it.
+        /// </summary>
+        public double MaximumDetectedPeakWidth { get; private set; }
         public float EstimatedNoise { get; private set; } = 1f;
         public AlignmentChromPeakFeature? RepresentativePeak { get; private set; }
 
@@ -457,6 +466,7 @@ internal sealed class LcmsAlignmentLightRunner {
             _snMin = Math.Min(_snMin, peak.PeakShape.SignalToNoise);
             _snMax = Math.Max(_snMax, peak.PeakShape.SignalToNoise);
             PeakWidth = Math.Max(PeakWidth, peak.PeakWidth(ChromXType.RT));
+            MaximumDetectedPeakWidth = Math.Max(MaximumDetectedPeakWidth, peak.PeakWidth(ChromXType.RT));
             EstimatedNoise = Math.Max(EstimatedNoise, peak.PeakShape.EstimatedNoise);
             if (peak.PeakHeightTop > _maxHeightForMass) {
                 _maxHeightForMass = peak.PeakHeightTop;
