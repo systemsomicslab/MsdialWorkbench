@@ -123,15 +123,40 @@ public static class AutomaticAlignmentRtCorrectionWorkflow {
     /// settings page that checks what the person typed before a run starts.
     /// </summary>
     public static string? CheckSettings(MsdialLcmsParameter parameter) {
-        var exclusive = ExclusiveWithLegacyRtCorrection(parameter);
-        if (exclusive is not null) {
-            return exclusive;
-        }
-        if (!parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
+        return CheckSettings(
+            parameter.AlignmentBaseParam.AutomaticRtCorrection,
+            parameter.Ms1AlignmentTolerance,
+            parameter.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection);
+    }
+
+    /// <summary>
+    /// <see cref="CheckSettings(MsdialLcmsParameter)"/> for settings not yet in a parameter: the
+    /// correction's own, the MS1 tolerance for alignment, and whether the user-defined RT
+    /// correction is on.
+    /// </summary>
+    public static string? CheckSettings(AutomaticAlignmentRetentionTimeCorrectionParameter correction, double ms1AlignmentTolerance, bool userDefinedRtCorrection) {
+        if (correction is null || !correction.Execute) {
             return null;
         }
-        var reporter = new CollectingAutomaticRtCorrectionReporter();
-        return PrepareInputs(parameter, reporter) is null ? reporter.Errors.FirstOrDefault() : null;
+        if (userDefinedRtCorrection) {
+            return "User-defined RT correction and automatic alignment RT correction cannot be enabled together because that would correct the RT axis twice.";
+        }
+        try {
+            AutomaticAlignmentRetentionTimeCorrection.ValidateParameter(correction, ms1AlignmentTolerance);
+        }
+        catch (ArgumentException ex) {
+            return $"Automatic alignment RT correction settings cannot be used: {ex.Message}";
+        }
+        if (correction.AnchorMode != AutomaticRtCorrectionAnchorMode.Automatic) {
+            try {
+                var library = AutomaticRtCorrectionAnchorLibrary.Load(correction.AnchorLibraryFilePath);
+                AutomaticRtCorrectionAnchorLibrary.Check(library, correction);
+            }
+            catch (Exception ex) {
+                return $"Automatic RT correction anchor library could not be used: {ex.Message}";
+            }
+        }
+        return null;
     }
 
     /// <summary>
@@ -201,6 +226,70 @@ public static class AutomaticAlignmentRtCorrectionWorkflow {
         catch (Exception ex) {
             reporter.Error($"Automatic alignment RT correction failed: {ex.Message}");
             return null;
+        }
+    }
+
+    /// <summary>
+    /// The folder the audit of an alignment result's correction is written to when the result is
+    /// aligned by the GUI: beside the result, named after it, holding the Console's three file names.
+    /// </summary>
+    public static string AuditFolderFor(AlignmentFileBean alignmentFile) {
+        if (alignmentFile is null) throw new ArgumentNullException(nameof(alignmentFile));
+        var folder = Path.GetDirectoryName(alignmentFile.FilePath) ?? string.Empty;
+        return Path.Combine(folder, alignmentFile.FileName + "_automatic_rt_correction");
+    }
+
+    /// <summary>
+    /// The correction of an alignment the GUI runs, made as the Console makes it: the peaks of each
+    /// file's saved peak list, the raw data read through <paramref name="providerFactory"/>, the
+    /// audit in <see cref="AuditFolderFor"/>. On success the alignment reference becomes the
+    /// correction's reference, as in the Console, and the map is written beside the alignment
+    /// result (<see cref="AlignmentRetentionTimeCorrectionMapFile"/>); null, with the reason given
+    /// to <paramref name="reporter"/>, when it fails, and then neither is changed.
+    /// </summary>
+    public static AutomaticAlignmentRetentionTimeCorrectionResult? RunForAlignment(
+        IReadOnlyList<AnalysisFileBean> files,
+        MsdialLcmsParameter parameter,
+        AutomaticRtCorrectionInputs inputs,
+        AlignmentFileBean alignmentFile,
+        IDataProviderFactory<AnalysisFileBean> providerFactory,
+        IAutomaticRtCorrectionReporter reporter) {
+        if (providerFactory is null) throw new ArgumentNullException(nameof(providerFactory));
+        var auditFolder = AuditFolderFor(alignmentFile);
+        Directory.CreateDirectory(auditFolder);
+        var result = Build(
+            files,
+            parameter,
+            inputs,
+            auditFolder,
+            file => MsdialCore.Parser.MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath),
+            (file, anchors) => ReadRawFile(file, providerFactory.Create(file), parameter, anchors),
+            "Run",
+            reporter);
+        if (result is null) {
+            return null;
+        }
+        parameter.AlignmentReferenceFileID = result.Correction.ReferenceFileId;
+        var mapPath = AlignmentRetentionTimeCorrectionMapFile.PathFor(alignmentFile);
+        try {
+            AlignmentRetentionTimeCorrectionMapFile.Write(mapPath, result.Correction, files);
+            reporter.Info($"Automatic alignment RT correction map: {mapPath}");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException) {
+            reporter.Info($"Warning: the automatic alignment RT correction map {mapPath} could not be written ({ex.Message}); the curation windows will move RTs between the axes through each peak's stored bounds.");
+        }
+        reporter.Info($"Automatic alignment RT correction audit folder: {auditFolder}");
+        return result;
+    }
+
+    /// <summary>
+    /// Removes the map an earlier alignment left under this alignment result's name, so that an
+    /// alignment made without the correction is never read through another alignment's maps.
+    /// </summary>
+    public static void RemoveMap(AlignmentFileBean alignmentFile) {
+        var path = AlignmentRetentionTimeCorrectionMapFile.PathFor(alignmentFile);
+        if (File.Exists(path)) {
+            File.Delete(path);
         }
     }
 
