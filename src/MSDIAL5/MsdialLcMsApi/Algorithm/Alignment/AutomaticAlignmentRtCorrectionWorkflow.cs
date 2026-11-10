@@ -269,7 +269,14 @@ public static class AutomaticAlignmentRtCorrectionWorkflow {
         if (result is null) {
             return null;
         }
-        parameter.AlignmentReferenceFileID = result.Correction.ReferenceFileId;
+        // The aligned RTs are on the correction reference's axis, so the alignment's master file
+        // must be that file; say which file replaced the one the settings named, as the Console does.
+        var declared = parameter.AlignmentReferenceFileID;
+        var correctionReference = result.Correction.ReferenceFileId;
+        reporter.Info(declared == correctionReference
+            ? $"Alignment reference file ID: {correctionReference}, the automatic alignment RT correction's reference."
+            : $"Alignment reference file ID: {correctionReference}, the automatic alignment RT correction's reference, in place of {declared}; the alignment must use the reference of the corrected RT axis.");
+        parameter.AlignmentReferenceFileID = correctionReference;
         var mapPath = AlignmentRetentionTimeCorrectionMapFile.PathFor(alignmentFile);
         try {
             AlignmentRetentionTimeCorrectionMapFile.Write(mapPath, result.Correction, files);
@@ -321,6 +328,9 @@ public static class AutomaticAlignmentRtCorrectionWorkflow {
         }
         foreach (var group in result.Anchors.Where(anchor => anchor.OutlierFlagged).GroupBy(anchor => anchor.AnchorName)) {
             reporter.Info($"Note: the outlier test disagrees with user anchor {group.Key} in {group.Count()} file(s); a user anchor is not rejected for that.");
+        }
+        foreach (var warning in result.Warnings) {
+            reporter.Info($"Warning: {warning}");
         }
         foreach (var exclusion in result.Exclusions.Where(exclusion => exclusion.ExcludedCandidates == 0)) {
             reporter.Info($"Warning: exclusion {exclusion.AnchorName} (m/z {exclusion.Mass.ToString(CultureInfo.InvariantCulture)}, RT {exclusion.Rt.ToString(CultureInfo.InvariantCulture)} min) matched no automatic candidate of reference file {exclusion.ReferenceFileName}.");
