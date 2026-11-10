@@ -2,6 +2,21 @@
 
 This context covers the MS-DIAL console test application used to exercise core LC/MS workflows, especially EIC handling in the console test app.
 
+## Molecular networking inputs
+
+The `msn` command accepts MSP libraries as before. It also accepts MS-DIAL binary peak lists when the corresponding MS/MS spectra are supplied with `--spectrum`:
+
+```text
+MSDIALCUI msn -i <analysis.pai2> --spectrum <analysis.dcl> -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <alignment.arf2> -s <alignment.dcl> -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <project.mddata> -o <output.pairs> -m <mn-parameter.txt>
+MSDIALCUI msn -i <project.mddata> --analysis-file <analysis-name> -o <output.pairs> -m <mn-parameter.txt>
+```
+
+Alignment results are the default for `.mddata` input. Use `--analysis-file` to select an analysis file by its `AnalysisFileName` stored in the project or the peak-list filename; this also switches project processing from alignment to that analysis file. When multiple analysis files are available, the option is required to select one. Binary input type is detected from the `.pai/.pai2` or `.arf/.arf2` extension. A binary peak-list input without `--spectrum` is rejected rather than being interpreted as an MSP file, and `--spectrum` with an MSP input is rejected too. The short form is `-s`. The current implementation reads dcl files; the option name intentionally describes the input role rather than that storage format.
+
+A project records peak lists and alignment results as `.pai` and `.arf`, but they are written to disk as `.pai2` and `.arf2`; `msn` accepts either name. Binary input is networked like an MSP file: every pair of spectra in the selected ion mode is scored once, the node IDs are the master peak or master alignment IDs, and `MaxEdgeNumberPerNode` is not applied. With `MsmsSimilarityCalc: All` the header names the Bonanza, modified dot product, and cosine score columns.
+
 ## Language
 
 **Peak**:

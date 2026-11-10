@@ -29,10 +29,63 @@ public sealed class MainProcessCommandTests
         Assert.IsTrue(root.Parse(["info"]).Errors.Count > 0);
     }
 
+    [TestMethod]
+    public void Msn_AcceptsStringInputPathWithoutValidatorCastError() {
+        var root = BuildRoot();
+        var existingPath = typeof(MainProcessCommandTests).Assembly.Location;
+
+        var parseResult = root.Parse([
+            "msn",
+            "-i", existingPath,
+            "-o", existingPath,
+            "-m", existingPath,
+        ]);
+
+        Assert.AreEqual(0, parseResult.Errors.Count);
+    }
+
+    [TestMethod]
+    public void Msn_HelpDoesNotRequireExecutionOptions() {
+        var root = BuildRoot();
+
+        var parseResult = root.Parse(["msn", "--help"]);
+
+        Assert.AreEqual(0, parseResult.Errors.Count);
+    }
+
+    [TestMethod]
+    public void Msn_ExposesSpectrumOptionWithShortAlias() {
+        var root = BuildRoot();
+        var msn = root.Subcommands.Single(command => command.Name == "msn");
+
+        var spectrum = msn.Options.SingleOrDefault(option => option.Name.Contains("spectrum") || option.Aliases.Contains("--spectrum"));
+        Assert.IsNotNull(spectrum);
+        Assert.IsTrue(spectrum!.Aliases.Contains("-s"));
+    }
+
+    [TestMethod]
+    public void Msn_HelpDescriptionsDocumentInputTypesAndOptionPrecedence() {
+        var root = BuildRoot();
+        var msn = root.Subcommands.Single(command => command.Name == "msn");
+
+        var descriptions = msn.Options.ToDictionary(
+            option => option.Aliases.FirstOrDefault(alias => alias.StartsWith("--"))?.TrimStart('-') ?? option.Name.TrimStart('-'),
+            option => option.Description);
+
+        StringAssert.Contains(descriptions["input"], ".msp");
+        StringAssert.Contains(descriptions["spectrum"], ".dcl");
+        StringAssert.Contains(descriptions["targetFile"], "MSP");
+        StringAssert.Contains(descriptions["analysis-file"], "Takes precedence over --alignment");
+        StringAssert.Contains(descriptions["alignment"], "Ignored when --analysis-file is specified");
+        StringAssert.Contains(descriptions["all-edge-export"], "[default: false]");
+        Assert.IsFalse(descriptions["ionmode"].Contains("Default:"));
+    }
+
     private static RootCommand BuildRoot() {
         var root = new RootCommand("test");
         MainProcess.SetEicCommand(root);
         MainProcess.SetRtCorrectionCommand(root);
+        MainProcess.SetMsnCommand(root);
         return root;
     }
 }
