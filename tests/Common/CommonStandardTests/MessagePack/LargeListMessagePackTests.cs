@@ -131,6 +131,60 @@ namespace CompMs.Common.MessagePack.Tests
             CollectionAssert.AreEqual(new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, actual.Xs);
         }
 
+        // These byte strings are what MessagePack 1.x (MS-DIAL releases up to now) wrote for the same lists.
+        [TestMethod()]
+        public void SerializeWritesTheBytesEarlierReleasesWrote() {
+            var small = LargeListMessagePack.Deserialize<SmallSample>(new MemoryStream(HexToBytes("C90000000D63D2000000077092000000009090")));
+            AssertSerializedHex("C90000000D63D2000000077092000000009090", small);
+
+            var large = LargeListMessagePack.Deserialize<LargeSample>(new MemoryStream(HexToBytes("C90000002463D20000001DF00E9200000000919A0102030405060708090A919A0B0C0D0E0F1011121314")));
+            AssertSerializedHex("C90000002463D20000001DF00E9200000000919A0102030405060708090A919A0B0C0D0E0F1011121314", large);
+
+            var fixedSamples = LargeListMessagePack.Deserialize<FixedSample>(new MemoryStream(HexToBytes("C90000002663D20000001FF010920000000092C40401020304C4040506070892C404090A0B0CC4040D0E0F10")));
+            AssertSerializedHex("C90000002663D20000001FF010920000000092C40401020304C4040506070892C404090A0B0CC4040D0E0F10", fixedSamples);
+        }
+
+        [TestMethod()]
+        public void SerializeWritesNilForNullAndNothingForEmpty() {
+            AssertSerializedHex("C0", (IReadOnlyList<SmallSample>)null);
+            AssertSerializedHex("", new SmallSample[0]);
+        }
+
+        [TestMethod()]
+        public void SerializeSplitsChunksAtTheCutoffAsEarlierReleasesDid() {
+            var cutoff = LargeListMessagePack.OffsetCutoff;
+            try {
+                LargeListMessagePack.OffsetCutoff = 64;
+                var datas = new RandomSample[10];
+                for (int i = 0; i < datas.Length; i++) {
+                    datas[i] = new RandomSample(40);
+                }
+                var memory = new MemoryStream();
+                LargeListMessagePack.Serialize(memory, datas);
+
+                memory.Position = 0;
+                var chunks = new List<List<RandomSample>>(LargeListMessagePack.DeserializeIncremental<RandomSample>(memory));
+                Assert.AreEqual(5, chunks.Count);
+                memory.Position = 0;
+                var actual = LargeListMessagePack.Deserialize<RandomSample>(memory);
+                Assert.AreEqual(datas.Length, actual.Count);
+                for (int i = 0; i < datas.Length; i++) {
+                    CollectionAssert.AreEqual(datas[i].Xs, actual[i].Xs);
+                }
+                memory.Position = 0;
+                CollectionAssert.AreEqual(datas[7].Xs, LargeListMessagePack.DeserializeAt<RandomSample>(memory, 7).Xs);
+            }
+            finally {
+                LargeListMessagePack.OffsetCutoff = cutoff;
+            }
+        }
+
+        private static void AssertSerializedHex<T>(string expected, IReadOnlyList<T> value) {
+            var memory = new MemoryStream();
+            LargeListMessagePack.Serialize(memory, value);
+            Assert.AreEqual(expected, BitConverter.ToString(memory.ToArray()).Replace("-", string.Empty));
+        }
+
         private static byte[] HexToBytes(string hex) {
             var bytes = new byte[hex.Length / 2];
             for (var i = 0; i < bytes.Length; i++) {

@@ -30,6 +30,27 @@ namespace CompMs.Common.Components.Tests
             Assert.AreEqual(name, actual.Name);
         }
 
+        [TestMethod()]
+        public void SerializeNullAsFiveNilsAsEarlierReleasesDid() {
+            var arraywriter = new TestBufferWriter();
+            var writer = new MessagePackWriter(arraywriter);
+            MoleculePropertyExtension.Formatter.Serialize(ref writer, null, MessagePackSerializerOptions.Standard);
+            writer.Flush();
+
+            CollectionAssert.AreEqual(HexToBytes("95C0C0C0C0C0"), arraywriter.WrittenMemory.ToArray());
+        }
+
+        [TestMethod()]
+        public void DeserializeFiveNilsAndBareNil() {
+            var reader = new MessagePackReader(HexToBytes("95C0C0C0C0C0"));
+            var fromFiveNils = MoleculePropertyExtension.Formatter.Deserialize(ref reader, MessagePackSerializerOptions.Standard);
+            Assert.IsNotNull(fromFiveNils);
+            Assert.IsNull(fromFiveNils.Name);
+
+            reader = new MessagePackReader(HexToBytes("C0"));
+            Assert.IsNull(MoleculePropertyExtension.Formatter.Deserialize(ref reader, MessagePackSerializerOptions.Standard));
+        }
+
         public static IEnumerable<object[]> GetSerializedMoleculePropertyTestData {
             get {
                 yield return new object[] { "Glucose", "95A7476C75636F7365DC001BA0CB0000000000000000CB0000000000000000CB00000000000000000000000000000000000000000000000000000000C20080A0A0A0" };
