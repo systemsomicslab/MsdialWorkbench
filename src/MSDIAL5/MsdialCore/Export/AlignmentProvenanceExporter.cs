@@ -66,10 +66,32 @@ public sealed class AlignmentProvenanceExporter
         "area_above_baseline",
     ];
 
+    /// <summary>
+    /// Appended when the alignment moved the per-file RTs onto a reference file's axis: rt_min is then
+    /// that aligned RT, and this column is the file's measured RT, the axis of the raw scan IDs.
+    /// </summary>
+    public const string OriginalRtHeader = "rt_original_min";
+
+    private readonly Func<int, double, double?>? _originalRt;
+
+    public AlignmentProvenanceExporter()
+    {
+    }
+
+    /// <param name="originalRt">
+    /// The measured RT of a file's aligned RT (file ID, aligned RT), when the automatic alignment RT
+    /// correction moved the aligned RTs onto a reference file's axis; its values are written in the
+    /// appended <see cref="OriginalRtHeader"/> column. Null writes the columns of a run without it.
+    /// </param>
+    public AlignmentProvenanceExporter(Func<int, double, double?>? originalRt)
+    {
+        _originalRt = originalRt;
+    }
+
     public void Export(Stream stream, IEnumerable<AlignmentSpotProperty> spots)
     {
         using var writer = new StreamWriter(stream, new UTF8Encoding(false), 1024, leaveOpen: true);
-        WriteRow(writer, Headers);
+        WriteHeader(writer);
         foreach (var spot in Flatten(spots)) {
             foreach (var peak in spot.AlignedPeakProperties.OrderBy(peak => peak.FileID)) {
                 WriteMember(writer, spot, peak);
@@ -80,12 +102,25 @@ public sealed class AlignmentProvenanceExporter
     public void Export(Stream stream, IEnumerable<AlignmentSpotProperty> spots, AlignmentLightPeakStore peakStore)
     {
         using var writer = new StreamWriter(stream, new UTF8Encoding(false), 1024, leaveOpen: true);
-        WriteRow(writer, Headers);
+        WriteHeader(writer);
         foreach (var spot in Flatten(spots)) {
             foreach (var peak in peakStore.ReadSpotPeaks(spot.MasterAlignmentID).OrderBy(peak => peak.FileID)) {
                 WriteMember(writer, spot, peak);
             }
         }
+    }
+
+    private void WriteHeader(StreamWriter writer)
+    {
+        WriteRow(writer, Headers, _originalRt is null ? null : OriginalRtHeader);
+    }
+
+    private string? OriginalRtCell(int fileId, double? alignedRt)
+    {
+        if (_originalRt is null) {
+            return null;
+        }
+        return alignedRt is double rt && rt >= 0d ? Format(_originalRt(fileId, rt)) : NotApplicable;
     }
 
     private static IEnumerable<AlignmentSpotProperty> Flatten(IEnumerable<AlignmentSpotProperty> spots)
@@ -98,7 +133,7 @@ public sealed class AlignmentProvenanceExporter
         }
     }
 
-    private static void WriteMember(StreamWriter writer, AlignmentSpotProperty spot, AlignmentChromPeakFeature peak)
+    private void WriteMember(StreamWriter writer, AlignmentSpotProperty spot, AlignmentChromPeakFeature peak)
     {
         var hasSourcePeak = peak.MasterPeakID >= 0;
         var ms2Ids = hasSourcePeak
@@ -135,10 +170,10 @@ public sealed class AlignmentProvenanceExporter
             Format(peak.PeakHeightTop),
             Format(peak.PeakAreaAboveZero),
             Format(peak.PeakAreaAboveBaseline),
-        ]);
+        ], OriginalRtCell(peak.FileID, peak.ChromXsTop?.RT.Value));
     }
 
-    private static void WriteMember(StreamWriter writer, AlignmentSpotProperty spot, AlignmentLightPeakRow peak)
+    private void WriteMember(StreamWriter writer, AlignmentSpotProperty spot, AlignmentLightPeakRow peak)
     {
         var hasSourcePeak = peak.MasterPeakID >= 0;
         WriteRow(writer, [
@@ -168,11 +203,14 @@ public sealed class AlignmentProvenanceExporter
             Format(peak.PeakHeightTop),
             Format(peak.PeakAreaAboveZero),
             NotApplicable,
-        ]);
+        ], OriginalRtCell(peak.FileID, peak.Rt));
     }
 
-    /// <summary>Writes one row, refusing a field count that does not match the header.</summary>
-    private static void WriteRow(StreamWriter writer, string[] values)
+    /// <summary>
+    /// Writes one row, refusing a field count that does not match the header; <paramref name="appended"/>,
+    /// when not null, is the appended <see cref="OriginalRtHeader"/> cell.
+    /// </summary>
+    private static void WriteRow(StreamWriter writer, string[] values, string? appended)
     {
         // The header and the two value lists are maintained by hand. Adding a column to one and not the
         // others would otherwise produce a ragged TSV that is wrong in only one of the two Console modes.
@@ -180,7 +218,8 @@ public sealed class AlignmentProvenanceExporter
             throw new InvalidOperationException(
                 $"Alignment provenance row has {values.Length} fields but the header declares {Headers.Length}.");
         }
-        writer.WriteLine(String.Join("\t", values));
+        var line = String.Join("\t", values);
+        writer.WriteLine(appended is null ? line : line + "\t" + appended);
     }
 
     /// <summary>Names why a member has no source peak, so the peak-id sentinel does not have to.</summary>

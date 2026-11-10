@@ -421,6 +421,9 @@ public sealed class LcmsProcess
             }
             storage.Parameter.AlignmentReferenceFileID = automaticRtCorrectionResult.Correction.ReferenceFileId;
         }
+        // The aligned RTs are then on the reference file's axis, and every export says so.
+        var rtAxis = automaticRtCorrectionResult is null ? null : AlignmentRtAxis.FromCorrection(automaticRtCorrectionResult.Correction, files);
+        var rtAxisNote = rtAxis?.ExportNote();
 
         // The identity of the build, without the host application's name: this field is the
         // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
@@ -472,6 +475,9 @@ public sealed class LcmsProcess
                 lipidRtRun = aligner.LipidRtRun;
                 removedIsotopeSpots = aligner.RemovedIsotopeSpots;
                 result.Save(alignmentFile);
+                if (automaticRtCorrectionResult is not null) {
+                    WriteRtCorrectionMap(alignmentFile, automaticRtCorrectionResult.Correction, files);
+                }
                 align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
                 MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
             }
@@ -491,7 +497,7 @@ public sealed class LcmsProcess
                 : new LegacyQuantValueAccessor(exportType, storage.Parameter);
             IQuantValueAccessor align_quantAccessor = CreateQuantAccessor("Height");
             var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
-            var align_exporter = new AlignmentCSVExporter();
+            var align_exporter = new AlignmentCSVExporter { RetentionTimeAxisNote = rtAxisNote };
             using var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
             align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
@@ -520,7 +526,7 @@ public sealed class LcmsProcess
             if (exportDetailedAlignmentProvenance) {
                 var provenanceOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdprovenance.tsv");
                 using (var provenanceStream = File.Open(provenanceOutputFile, FileMode.Create, FileAccess.Write)) {
-                    var provenanceExporter = new AlignmentProvenanceExporter();
+                    var provenanceExporter = new AlignmentProvenanceExporter(rtAxis is null ? null : rtAxis.ToOriginal);
                     if (alignmentLightPeakStore is null) {
                         provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties);
                     }
@@ -555,7 +561,7 @@ public sealed class LcmsProcess
                     using (var matrixStream = File.Open(matrixFile, FileMode.Create, FileAccess.Write)) {
                         ExportAlignmentMatrix(
                             matrixStream, result.AlignmentSpotProperties, align_decResults, files,
-                            align_accessor, exportType, storage.Parameter, alignmentLightPeakStore, matrixStats);
+                            align_accessor, exportType, storage.Parameter, alignmentLightPeakStore, matrixStats, rtAxisNote);
                     }
                     Console.WriteLine($"{exportType} matrix: {matrixFile}");
                 }
@@ -598,7 +604,7 @@ public sealed class LcmsProcess
             var spots = result.AlignmentSpotProperties; // TODO: cancellation
             var msdecs = align_decResults;
             var accessor = align_accessor;
-            var mztabM_exporter = new MztabFormatExporter(storage.DataBases, alignmentLightPeakStore);
+            var mztabM_exporter = new MztabFormatExporter(storage.DataBases, alignmentLightPeakStore) { RetentionTimeAxisNote = rtAxisNote };
 
             using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             mztabM_exporter.MztabFormatExporterCore(
@@ -706,13 +712,28 @@ public sealed class LcmsProcess
         string exportType,
         ParameterBase parameter,
         AlignmentLightPeakStore? alignmentLightPeakStore,
-        IReadOnlyList<StatsValue> stats) {
+        IReadOnlyList<StatsValue> stats,
+        string? rtAxisNote = null) {
         IQuantValueAccessor quantAccessor = alignmentLightPeakStore is null
             ? new LegacyQuantValueAccessor(exportType, parameter)
             : new AlignmentLightQuantValueAccessor(exportType, parameter, alignmentLightPeakStore);
-        new AlignmentCSVExporter().Export(
+        new AlignmentCSVExporter { RetentionTimeAxisNote = rtAxisNote }.Export(
             stream, spots, msdecResults, files,
             new MulticlassFileMetaAccessor(0), metadataAccessor, quantAccessor, stats);
+    }
+
+    // The maps the alignment used, beside the alignment result, so that the GUI moves each peak's
+    // RTs between the measured and the aligned axis as the alignment did. A failure to write it
+    // does not fail the run: the GUI then falls back on each peak's stored bounds, and says so.
+    private static void WriteRtCorrectionMap(AlignmentFileBean alignmentFile, AlignmentRetentionTimeCorrectionCollection correction, IReadOnlyList<AnalysisFileBean> files) {
+        var path = AlignmentRetentionTimeCorrectionMapFile.PathFor(alignmentFile);
+        try {
+            AlignmentRetentionTimeCorrectionMapFile.Write(path, correction, files);
+            Console.WriteLine($"Automatic alignment RT correction map: {path}");
+        }
+        catch (Exception ex) {
+            Console.WriteLine($"Warning: the automatic alignment RT correction map {path} could not be written ({ex.Message}); the GUI will move RTs between the axes through each peak's stored bounds.");
+        }
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {
