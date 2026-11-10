@@ -50,15 +50,23 @@ namespace CompMs.App.Msdial.Properties
             }
         }
 
+        // A SETTING PROPERTY MUST NOT BE DECLARED string?.
+        //
+        // The compiler marks a string? property with NullableAttribute, and ApplicationSettingsBase
+        // stores each property's attributes in a table keyed by attribute type. On .NET Framework that
+        // throws "Item has already been added" for NullableAttribute, and because every property is
+        // read at once on first access, every setting fails -- not just the nullable one. The values
+        // below can still be null; callers treat them as string?.
+
         /// <summary>
         /// Until when "Remind me later" holds back the update notification, as a round-trip UTC string.
         /// </summary>
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(null)]
-        public string? UpdateRemindAfterUtc {
+        public string UpdateRemindAfterUtc {
             get {
-                return ((string?)(this["UpdateRemindAfterUtc"]));
+                return ((string)(this["UpdateRemindAfterUtc"]));
             }
             set {
                 this["UpdateRemindAfterUtc"] = value;
@@ -71,9 +79,9 @@ namespace CompMs.App.Msdial.Properties
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(null)]
-        public string? UpdateSkippedVersion {
+        public string UpdateSkippedVersion {
             get {
-                return ((string?)(this["UpdateSkippedVersion"]));
+                return ((string)(this["UpdateSkippedVersion"]));
             }
             set {
                 this["UpdateSkippedVersion"] = value;

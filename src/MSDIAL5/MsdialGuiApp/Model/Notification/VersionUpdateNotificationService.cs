@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Notification
                     TrySave(() => settings.UpdateRemindAfterUtc = UpdateReminder.RemindAfterFrom(DateTime.UtcNow));
                     break;
                 case UpdateNotificationChoice.SkipThisVersion:
-                    TrySave(() => settings.UpdateSkippedVersion = vdd.LatestVersion);
+                    TrySave(() => settings.UpdateSkippedVersion = vdd.LatestVersion ?? string.Empty);
                     break;
             }
         }
