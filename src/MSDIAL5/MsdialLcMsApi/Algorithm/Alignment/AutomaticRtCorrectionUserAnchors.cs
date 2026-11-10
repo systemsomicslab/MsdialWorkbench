@@ -73,8 +73,10 @@ public sealed class AutomaticRtCorrectionRawFileReading {
 /// The columns mean what they mean there, and one more thing: in Hybrid mode a False row is an
 /// exclusion. The user-defined correction skips a False row; here it also keeps every automatic
 /// candidate within the row's m/z and RT tolerances out of the selection, so that a candidate a
-/// person rejected on review is not chosen again by the next run. Its RT is read on the
-/// reference file's axis, the axis the review showed.
+/// person rejected on review is not chosen again by the next run. Its RT is read on the run's
+/// reference file's axis, which is the axis the review showed when the run chooses the
+/// preview's reference again; the exclusions audit names the file it was read on, and an
+/// exclusion that excluded nothing says it may have been read on another.
 /// <para>
 /// Because a False row now does the opposite of a True row, the library is read more strictly
 /// than the user-defined correction reads it: the first line is the header; every other line

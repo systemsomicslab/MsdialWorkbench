@@ -14,7 +14,8 @@ namespace CompMs.App.MsdialConsole.Parser
         public static AlignmentFileBean GetAlignmentFileBean(string inputFolder)
         {
             var dt = DateTime.Now;
-            var alignFileString = "AlignResult-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+            // The stamp the analysis files are named with (AnalysisFilesParser.RunStamp).
+            var alignFileString = "AlignResult-" + AnalysisFilesParser.RunStamp(dt);
 
             var alignmentFile = new AlignmentFileBean() {
                 FileID = 0,

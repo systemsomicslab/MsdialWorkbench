@@ -43,10 +43,21 @@ namespace CompMs.App.MsdialConsole.Process
     public static class CommonProcess {
 
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
+            return SetProjectProperty(param, input, out analysisFiles, out alignmentFile, out _);
+        }
+
+        /// <summary>
+        /// As the overload without <paramref name="orderProblems"/>, which lists the analysis CSV
+        /// rows whose analytical_order or batch_order could not be read and were replaced
+        /// (AnalysisFilesParser.ReadCsvContents); each was also said on the console.
+        /// </summary>
+        public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile, out IReadOnlyList<string> orderProblems) {
 
             Console.WriteLine("Loading analysis files..");
+            var problems = new List<string>();
+            orderProblems = problems;
             // Null when the person at the console declined the mixed formats: reported as no files.
-            analysisFiles = AnalysisFilesParser.ReadInput(input) ?? new List<AnalysisFileBean>();
+            analysisFiles = AnalysisFilesParser.ReadInput(input, problems) ?? new List<AnalysisFileBean>();
             if (analysisFiles.IsEmptyOrNull()) {
                 alignmentFile = new AlignmentFileBean();
                 Console.WriteLine(CommonProcess.NoFileError());
