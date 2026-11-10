@@ -1663,13 +1663,19 @@ The following packages from Microsoft and the .NET Foundation are redistributed
 with the .NET Framework builds of MS-DIAL and MS-FINDER. All of them are licensed
 under the MIT License shown below.
 
-Microsoft.Bcl.AsyncInterfaces 5.0.0 (https://github.com/dotnet/runtime)
+Microsoft.Bcl.AsyncInterfaces 8.0.0 (https://github.com/dotnet/runtime)
     Copyright (c) .NET Foundation and Contributors
+    (c) Microsoft Corporation. All rights reserved.
+Microsoft.NET.StringTools 17.11.4 (https://github.com/dotnet/msbuild)
+    Copyright (c) .NET Foundation and contributors
     (c) Microsoft Corporation. All rights reserved.
 Microsoft.Win32.Registry 4.5.0 (https://github.com/dotnet/corefx)
     Copyright (c) .NET Foundation and Contributors
     (c) Microsoft Corporation. All rights reserved.
 System.Buffers 4.5.1 (https://github.com/dotnet/corefx)
+    Copyright (c) .NET Foundation and Contributors
+    (c) Microsoft Corporation. All rights reserved.
+System.Collections.Immutable 8.0.0 (https://github.com/dotnet/runtime)
     Copyright (c) .NET Foundation and Contributors
     (c) Microsoft Corporation. All rights reserved.
 System.ComponentModel.Annotations 5.0.0 (https://github.com/dotnet/runtime)
@@ -1681,7 +1687,7 @@ System.Memory 4.5.5 (https://github.com/dotnet/corefx)
 System.Numerics.Vectors 4.5.0 (https://github.com/dotnet/corefx)
     Copyright (c) .NET Foundation and Contributors
     (c) Microsoft Corporation. All rights reserved.
-System.Runtime.CompilerServices.Unsafe 4.5.3 (https://github.com/dotnet/corefx)
+System.Runtime.CompilerServices.Unsafe 6.0.0 (https://github.com/dotnet/runtime)
     Copyright (c) .NET Foundation and Contributors
     (c) Microsoft Corporation. All rights reserved.
 System.Security.AccessControl 4.5.0, 4.7.0 (https://github.com/dotnet/corefx)
@@ -1703,6 +1709,8 @@ System.ValueTuple 4.5.0 (https://github.com/dotnet/corefx)
 These packages also contain third-party notices for code they incorporate.
 See THIRD-PARTY-NOTICES.TXT in each NuGet package, or
 https://github.com/dotnet/runtime/blob/main/THIRD-PARTY-NOTICES.TXT
+(for Microsoft.NET.StringTools, notices/THIRDPARTYNOTICES.txt in the package, or
+https://github.com/dotnet/msbuild/blob/main/THIRDPARTYNOTICES.txt)
 
 The MIT License (MIT)
 
