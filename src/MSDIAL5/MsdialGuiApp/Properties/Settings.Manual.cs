@@ -49,5 +49,35 @@ namespace CompMs.App.Msdial.Properties
                 this["RHome"] = value;
             }
         }
+
+        /// <summary>
+        /// Until when "Remind me later" holds back the update notification, as a round-trip UTC string.
+        /// </summary>
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(null)]
+        public string? UpdateRemindAfterUtc {
+            get {
+                return ((string?)(this["UpdateRemindAfterUtc"]));
+            }
+            set {
+                this["UpdateRemindAfterUtc"] = value;
+            }
+        }
+
+        /// <summary>
+        /// The release version for which the user chose "Skip this version".
+        /// </summary>
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(null)]
+        public string? UpdateSkippedVersion {
+            get {
+                return ((string?)(this["UpdateSkippedVersion"]));
+            }
+            set {
+                this["UpdateSkippedVersion"] = value;
+            }
+        }
     }
 }

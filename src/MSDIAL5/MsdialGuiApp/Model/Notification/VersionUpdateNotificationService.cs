@@ -3,12 +3,12 @@ using CompMs.App.Msdial.Utility;
 using CompMs.Common;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Notification
 {
@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Notification
             return null;
         }
 
-        private static void ShowUpdatePopup(VersionDescriptionDocument vdd)
+        private static void ShowUpdatePopup(VersionDescriptionDocument vdd, Func<string, UpdateNotificationChoice?> ask)
         {
             // A BUILD NEWER THAN THE RELEASE IS NOT OFFERED AN UPDATE TO IT.
             //
@@ -75,29 +75,72 @@ namespace CompMs.App.Msdial.Model.Notification
                 return;
             }
 
-            if (GlobalResources.Instance.Version != vdd.LatestVersion)
-            {
-                var result = MessageBox.Show(
-                    $"A new MS-DIAL is available: {vdd.LatestVersion}\r\nClick 'Yes' if you want to go MS-DIAL website.",
-                    "Update notification",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
-                if (result == MessageBoxResult.Yes) {
-                    System.Diagnostics.Process.Start("https://github.com/systemsomicslab/MsdialWorkbench/releases");
-                }
+            if (GlobalResources.Instance.Version == vdd.LatestVersion) {
+                return;
+            }
 
+            var settings = Settings.Default;
+            if (UpdateReminder.IsSkipped(vdd.LatestVersion, TryRead(() => settings.UpdateSkippedVersion))) {
+                return;
+            }
+
+            switch (ask(vdd.LatestVersion ?? string.Empty)) {
+                case UpdateNotificationChoice.OpenReleasePage:
+                    System.Diagnostics.Process.Start("https://github.com/systemsomicslab/MsdialWorkbench/releases");
+                    break;
+                case UpdateNotificationChoice.RemindLater:
+                    TrySave(() => settings.UpdateRemindAfterUtc = UpdateReminder.RemindAfterFrom(DateTime.UtcNow));
+                    break;
+                case UpdateNotificationChoice.SkipThisVersion:
+                    TrySave(() => settings.UpdateSkippedVersion = vdd.LatestVersion);
+                    break;
             }
         }
 
-        public static void CheckForUpdates()
+        /// <summary>
+        /// Checks the release feed and, when a newer MS-DIAL is out, asks the user through
+        /// <paramref name="ask"/> what to do about it.
+        /// </summary>
+        /// <param name="ask">
+        /// Shows the notification for the given version and returns the user's choice, or null
+        /// when the user closed it without choosing.
+        /// </param>
+        public static void CheckForUpdates(Func<string, UpdateNotificationChoice?> ask)
         {
             if (!NetworkInterface.GetIsNetworkAvailable()) {
                 return;
             }
-            
+
+            // A running "Remind me later" is checked before the request, so a snoozed start does
+            // not contact GitHub at all.
+            if (UpdateReminder.IsSnoozed(TryRead(() => Settings.Default.UpdateRemindAfterUtc), DateTime.UtcNow)) {
+                return;
+            }
+
             // TODO: Show "Checking for updates" in status bar
             Uri updateUri = new Uri(Resources.VDD_URI);
-            FetchVersionDescriptionDocument(updateUri, ShowUpdatePopup);
+            FetchVersionDescriptionDocument(updateUri, vdd => ShowUpdatePopup(vdd, ask));
+        }
+
+        // A broken user.config is reported and moved aside by MainWindowModel. Here it only means
+        // the user's choice is not remembered, which is not worth failing the start over.
+        private static string? TryRead(Func<string?> read) {
+            try {
+                return read();
+            }
+            catch (ConfigurationErrorsException) {
+                return null;
+            }
+        }
+
+        private static void TrySave(Action assign) {
+            try {
+                assign();
+                Settings.Default.Save();
+            }
+            catch (ConfigurationErrorsException) {
+
+            }
         }
 
         /// <summary>
