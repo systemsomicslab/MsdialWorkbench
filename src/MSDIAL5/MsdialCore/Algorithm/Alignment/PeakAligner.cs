@@ -1,8 +1,10 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -26,6 +28,24 @@ public class PeakAligner {
     protected List<MoleculeMsReference> MspDB { get; } = new List<MoleculeMsReference>();
     public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; set; }
     private IProgress<int>? Progress { get; set; }
+
+    /// <summary>
+    /// What the lipid RT check did on the last alignment (hook B): its result for the review list, or why it did not
+    /// run. Null when the check does not apply to this kind of project.
+    /// </summary>
+    public LipidRtUnitRun? LipidRtRun { get; private set; }
+
+    /// <summary>
+    /// The spots the last alignment removed because their representative peak is an isotope and they are not
+    /// reference-matched. Null when this kind of project does not remove isotope spots.
+    /// </summary>
+    public IReadOnlyList<RemovedIsotopeSpot>? RemovedIsotopeSpots => (Refiner as AlignmentRefiner)?.RemovedIsotopeSpots;
+
+    /// <summary>
+    /// The annotators that search a library of predicted spectra, whose matches the lipid RT check does not evaluate
+    /// (<see cref="LipidRtInputBuilder.PredictedLibraryAnnotators"/>). Null when the factory does not know them.
+    /// </summary>
+    public ISet<string>? PredictedLibraryAnnotators { get; set; }
 
     public PeakAligner(AlignmentProcessFactory factory, IProgress<int>? progress) {
         Accessor = factory.CreateDataAccessor();
@@ -53,6 +73,14 @@ public class PeakAligner {
 
             if (Param.TrackingIsotopeLabels) {
                 IsotopeTracking.SetIsotopeTrackingID(container, Param, MspDB, null);
+            }
+
+            // Hook B of the lipid RT check, shared by the Console and the GUI. It runs after every step that changes the
+            // spots' annotations (isotope tracking clears those of spots represented by a labelled file) and before the
+            // result is saved and exported, so its verdicts and tags describe the annotations that are saved. Isotope
+            // tracking replaces the spot collection, so it is read from the container here. LC-MS only in this version.
+            if (Param.MachineCategory == MachineCategory.LCMS) {
+                LipidRtRun = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, Param, PredictedLibraryAnnotators);
             }
 
             if (chromPeakInfoSerializer != null)

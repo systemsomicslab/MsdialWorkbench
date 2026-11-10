@@ -1582,6 +1582,80 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
         }
         #endregion
 
+        [TestMethod()]
+        public void RefineRecordsSpotsRemovedAsIsotopesTest() {
+            var param = new MsdialLcmsParameter
+            {
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType> { { 0, AnalysisFileType.Sample } },
+                FileID_ClassName = new Dictionary<int, string> { { 0, "A" } },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+            };
+            var refiner = Create(param, new IupacDatabase());
+            var parent = BuildUnannotatedSpot(id: 0, mz: 276.1019, peakId: 10, weight: 0, parentPeakId: 10, height: 300);
+            var isotope = BuildUnannotatedSpot(id: 1, mz: 278.1170, peakId: 11, weight: 2, parentPeakId: 10, height: 3000);
+
+            (var actuals, _) = refiner.Refine(new List<AlignmentSpotProperty> { parent, isotope });
+
+            Assert.AreEqual(1, actuals.Count);
+            Assert.AreEqual(276.1019, actuals[0].MassCenter, 1e-6);
+            Assert.IsNotNull(refiner.RemovedIsotopeSpots);
+            Assert.AreEqual(1, refiner.RemovedIsotopeSpots.Count);
+            var removed = refiner.RemovedIsotopeSpots[0];
+            Assert.AreEqual(278.1170, removed.Mz, 1e-6);
+            Assert.AreEqual(2, removed.IsotopeWeightNumber);
+            Assert.AreEqual(10, removed.IsotopeParentPeakID);
+            Assert.AreEqual("file0", removed.RepresentativeFileName);
+            Assert.AreEqual(11, removed.RepresentativePeakID);
+            Assert.AreEqual(276.1019, removed.ParentMz.Value, 1e-6);
+            Assert.AreEqual(300d, removed.ParentHeight.Value);
+            Assert.AreEqual(3000d, removed.RepresentativeHeight.Value);
+        }
+
+        [TestMethod()]
+        public void RefineRecordsNoSpotWhenNoneIsAnIsotopeTest() {
+            var param = new MsdialLcmsParameter
+            {
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType> { { 0, AnalysisFileType.Sample } },
+                FileID_ClassName = new Dictionary<int, string> { { 0, "A" } },
+            };
+            var refiner = Create(param, new IupacDatabase());
+            var spot = BuildUnannotatedSpot(id: 0, mz: 276.1019, peakId: 10, weight: 0, parentPeakId: 10, height: 300);
+
+            refiner.Refine(new List<AlignmentSpotProperty> { spot });
+
+            Assert.IsNotNull(refiner.RemovedIsotopeSpots);
+            Assert.AreEqual(0, refiner.RemovedIsotopeSpots.Count);
+        }
+
+        AlignmentSpotProperty BuildUnannotatedSpot(int id, double mz, int peakId, int weight, int parentPeakId, double height) {
+            IonFeatureCharacter Character() => new IonFeatureCharacter
+            {
+                IsotopeWeightNumber = weight, IsotopeParentPeakID = parentPeakId, Charge = 1,
+                PeakLinks = new List<LinkedPeakFeature>(),
+                AdductType = AdductIon.GetAdductIon("[M+H]+"),
+            };
+            var spot = new AlignmentSpotProperty
+            {
+                MasterAlignmentID = id, AlignmentID = id, RepresentativeFileID = 0,
+                MassCenter = mz, TimesCenter = new ChromXs(5.0), Name = "Unknown",
+                HeightAverage = (float)height,
+                PeakCharacter = Character(),
+                FeatureFilterStatus = new FeatureFilterStatus { IsBlankFiltered = false },
+                AlignedPeakProperties = new List<AlignmentChromPeakFeature>
+                {
+                    new AlignmentChromPeakFeature
+                    {
+                        PeakID = peakId, MasterPeakID = peakId, FileID = 0, FileName = "file0",
+                        Mass = mz, ChromXsTop = new ChromXs(5.0), PeakHeightTop = height,
+                        PeakCharacter = Character(),
+                    },
+                },
+            };
+            spot.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
+            return spot;
+        }
+
         #region builder
         LcmsAlignmentRefiner Create(MsdialLcmsParameter parameter, IupacDatabase iupac) {
             return new LcmsAlignmentRefiner(parameter, iupac, new FacadeMatchResultEvaluator(), null);

@@ -1,85 +1,245 @@
 ﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.ProjectPropertySettingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type={x:Type vm:ProjectPropertySettingViewModel}}"
              d:Background="White"
-             d:DesignHeight="400" d:DesignWidth="400">
-    <Grid>
-        <Grid.Resources>
-            <Style TargetType="ui:LabeledContent">
-                <Setter Property="Margin" Value="4,0,4,0"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ui:LabeledContent">
-                            <Grid HorizontalAlignment="Stretch">
+             d:DesignHeight="520" d:DesignWidth="560">
+    <UserControl.Resources>
+        <!-- The message under the field, so that a constrained field says what it needs. -->
+        <ControlTemplate x:Key="FieldErrorTemplate">
+            <DockPanel>
+                <TextBlock Text="{Binding AdornedElement.(Validation.Errors)/ErrorContent, ElementName=adornedField}"
+                           Foreground="Red" FontSize="10" DockPanel.Dock="Bottom"/>
+                <AdornedElementPlaceholder x:Name="adornedField"/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ShownWhenConstrained" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ConstrainToMassBankFormat.Value}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ShownWhenFreeText" TargetType="FrameworkElement">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ConstrainToMassBankFormat.Value}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <!-- SettingDialog's window template has no AdornerDecorator, so the view brings its own: without it no
+         Validation.ErrorTemplate is drawn and a constrained field could not say what it needs. -->
+    <AdornerDecorator>
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="ui:LabeledContent">
+                    <Setter Property="Margin" Value="4,0,4,0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ui:LabeledContent">
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="{TemplateBinding PrependLabel}"
+                                           VerticalAlignment="Top" VerticalContentAlignment="Center"
+                                           Width="128" Margin="0,0,8,0"
+                                           Grid.Column="0"/>
+                                    <ContentPresenter VerticalAlignment="Stretch"
+                                                      Grid.Column="1"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource FieldErrorTemplate}"/>
+                    <Style.Triggers>
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter Property="ToolTip" Value="{Binding (Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="ComboBox">
+                    <Setter Property="Height" Value="24"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Style.Triggers>
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter Property="ToolTip" Value="{Binding (Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <StackPanel.Resources>
+                    <!-- Room under each field for its validation message. -->
+                    <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource {x:Type ui:LabeledContent}}">
+                        <Setter Property="MinHeight" Value="40"/>
+                    </Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalAlignment" Value="Top"/>
+                        <Setter Property="Margin" Value="0,2,0,0"/>
+                        <Setter Property="Height" Value="24"/>
+                    </Style>
+                </StackPanel.Resources>
+
+                <CheckBox Content="Constrain to MassBank format"
+                          IsChecked="{Binding ConstrainToMassBankFormat.Value, Mode=TwoWay}"
+                          AutomationProperties.AutomationId="CheckBox_ConstrainToMassBankFormat"
+                          ToolTip="Accept only values that make valid MassBank records: the instrument type and the license are chosen from MassBank's lists, authors and instrument are required. MSP, NIST, SDF and mzTab-M exports use the same values."
+                          Margin="8,8,4,8"/>
+
+                <ui:LabeledContent PrependLabel="Instrument type:" ToolTip="GC-EI-TOF, LC-ESI-QTOF etc. See MassBank definition">
+                    <Grid>
+                        <!-- Free text. While constrained the composer below replaces it and shows its problem. -->
+                        <Border Style="{StaticResource ShownWhenFreeText}">
+                            <TextBox Text="{Binding InstrumentType.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=False}"
+                                     AutomationProperties.AutomationId="TextBox_InstrumentType"/>
+                        </Border>
+                        <Border Style="{StaticResource ShownWhenConstrained}">
+                            <Grid DataContext="{Binding InstrumentTypeComposer}"
+                                  Margin="0,2,0,2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="56"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="72"/>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-
-                                <Label Content="{TemplateBinding PrependLabel}"
-                                       VerticalAlignment="Top" VerticalContentAlignment="Center"
-                                       Width="128" Margin="0,0,8,0"
-                                       Grid.Column="0"/>
-                                <ContentPresenter VerticalAlignment="Stretch"
-                                                  Grid.Column="1"/>
+                                <!-- The descriptive tooltips are style setters, not local values, so that the
+                                     Validation.HasError trigger of the ComboBox style can show the error instead. -->
+                                <ComboBox ItemsSource="{Binding Separations}"
+                                          DisplayMemberPath="Label" SelectedValuePath="Value"
+                                          SelectedValue="{Binding Separation.Value, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ComboBox_InstrumentSeparation"
+                                          Grid.Column="0">
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                            <Setter Property="ToolTip" Value="Separation: none, LC, GC or CE"/>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                                <TextBlock Text="-" VerticalAlignment="Center" Margin="4,0" Grid.Column="1"/>
+                                <ComboBox ItemsSource="{Binding Ionisations}"
+                                          SelectedItem="{Binding Ionisation.Value, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ComboBox_InstrumentIonisation"
+                                          Grid.Column="2">
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                            <Setter Property="ToolTip" Value="Ionization, e.g. ESI or EI"/>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                                <TextBlock Text="-" VerticalAlignment="Center" Margin="4,0" Grid.Column="3"/>
+                                <!-- Each entry is cut to a fixed width, with the whole description in its tooltip,
+                                     so that the list is not much wider than the dialog. -->
+                                <ComboBox ItemsSource="{Binding Analyzers}"
+                                          SelectedItem="{Binding Analyzer.Value, Mode=TwoWay}"
+                                          AutomationProperties.AutomationId="ComboBox_InstrumentAnalyzer"
+                                          Grid.Column="4">
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                            <Setter Property="ToolTip" Value="Analyzer, e.g. QTOF or QFT"/>
+                                        </Style>
+                                    </ComboBox.Style>
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="ComboBoxItem">
+                                            <Setter Property="ToolTip" Value="{Binding Description, Mode=OneWay}"/>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextTrimming="CharacterEllipsis" MaxWidth="280">
+                                                <Run Text="{Binding Analyzer, Mode=OneWay}" FontWeight="Bold"/>
+                                                <Run Text="-"/>
+                                                <Run Text="{Binding Description, Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBlock Text="{Binding Preview.Value}"
+                                           AutomationProperties.AutomationId="TextBlock_InstrumentTypePreview"
+                                           TextWrapping="Wrap" FontSize="11"
+                                           Margin="0,2,0,0"
+                                           Grid.Row="1" Grid.ColumnSpan="5">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="Gray"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsValid.Value}" Value="False">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            <Style TargetType="TextBox">
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            </Style>
-        </Grid.Resources>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+                        </Border>
+                    </Grid>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Instrument:" ToolTip="ex. LTQ Orbitrap XL, Thermo Scientfic; HP-1100 HPLC, Agilent">
+                    <TextBox Text="{Binding Instrument.Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="TextBox_Instrument"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Authors:" ToolTip="ex. Hiroshi Tsugawa, Kazutaka Ikeda, and Makoto Arita">
+                    <TextBox Text="{Binding Authors.Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="TextBox_Authors"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="License:" ToolTip="ex. CC BY">
+                    <Grid>
+                        <Border Style="{StaticResource ShownWhenFreeText}">
+                            <TextBox Text="{Binding License.Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="TextBox_License"/>
+                        </Border>
+                        <Border Style="{StaticResource ShownWhenConstrained}">
+                            <ComboBox ItemsSource="{Binding Licenses}"
+                                      SelectedItem="{Binding SelectedLicense.Value, Mode=TwoWay}"
+                                      AutomationProperties.AutomationId="ComboBox_License"
+                                      Validation.ErrorTemplate="{StaticResource FieldErrorTemplate}"
+                                      VerticalAlignment="Top" Margin="0,2,0,0"/>
+                        </Border>
+                    </Grid>
+                </ui:LabeledContent>
 
-        <StackPanel Grid.Row="0">
-            <StackPanel.Resources>
-                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource {x:Type ui:LabeledContent}}">
-                    <Setter Property="Height" Value="32"/>
-                </Style>
-                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="Height" Value="24"/>
-                </Style>
-            </StackPanel.Resources>
+                <ui:LabeledContent PrependLabel="CollisionEnergy:" ToolTip="ex. 70 eV (in GC-MS), 30 +/-15 V (in MS/MS)">
+                    <TextBox Text="{Binding CollisionEnergy.Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="TextBox_CollisionEnergy"/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Contributor ID:"
+                                   ToolTip="The contributor ID MassBank assigned to you (1 to 32 of A-Z, 0-9 and _). It is the second block of every MassBank accession, and the MassBank export starts from it.">
+                    <TextBox Text="{Binding MassBankContributorId.Value, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="TextBox_MassBankContributorID"/>
+                </ui:LabeledContent>
+                <TextBlock Text="The MassBank contributor ID is assigned by MassBank. Leave it empty until you have one."
+                           Foreground="Gray" FontSize="10" TextWrapping="Wrap"
+                           Margin="144,0,8,4"/>
+            </StackPanel>
 
-            <ui:LabeledContent PrependLabel="Instrument type:" ToolTip="GC-EI-TOF, LC-ESI-QTOF etc. See MassBank definition">
-                <TextBox Text="{Binding InstrumentType.Value}"/>
+            <ui:LabeledContent PrependLabel="Comment:" ToolTip="Add comment."
+                               VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"
+                               Margin="4"
+                               Grid.Row="1">
+                <TextBox Text="{Binding Comment.Value}" AutomationProperties.AutomationId="TextBox_Comment"
+                         AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Instrument:" ToolTip="ex. LTQ Orbitrap XL, Thermo Scientfic; HP-1100 HPLC, Agilent">
-                <TextBox Text="{Binding Instrument.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Authors:" ToolTip="ex. Hiroshi Tsugawa, Kazutaka Ikeda, and Makoto Arita">
-                <TextBox Text="{Binding Authors.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="License:" ToolTip="ex. CC-BY">
-                <TextBox Text="{Binding License.Value}"/>
-            </ui:LabeledContent>
-
-            <ui:LabeledContent PrependLabel="CollisionEnergy:" ToolTip="ex. 70 eV (in GC-MS), 30 +/-15 V (in MS/MS)">
-                <TextBox Text="{Binding CollisionEnergy.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-
-        <ui:LabeledContent PrependLabel="Comment:" ToolTip="Add comment."
-                           VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"
-                           Margin="4"
-                           Grid.Row="1">
-            <TextBox Text="{Binding Comment.Value}"
-                     AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" 
-                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        </ui:LabeledContent>
-    </Grid>
+        </Grid>
+    </AdornerDecorator>
 </UserControl>

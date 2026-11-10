@@ -39,6 +39,7 @@
                     Enter project title which is used as project file name.
                 </ui:LabeledBar.ToolTip>
                 <TextBox Text="{Binding ProjectTitle.Value}"
+                         AutomationProperties.AutomationId="TextBox_ProjectTitle"
                          d:Text="ProjectTitle"
                          VerticalContentAlignment="Center"
                          Margin="8,0,0,0"

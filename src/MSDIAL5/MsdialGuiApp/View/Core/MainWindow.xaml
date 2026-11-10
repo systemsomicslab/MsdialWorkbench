@@ -30,7 +30,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Margin="0,64,0,0">
+        <Grid Margin="0,64,0,0"
+              IsEnabled="{Binding IsNotLoading.Value}">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -103,6 +104,7 @@
                 <Button Command="{Binding CreateNewProjectCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                         Background="Transparent"
+                        AutomationProperties.AutomationId="Button_NewProject"
                         ToolTip="Start new project.">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{StaticResource New_project_is}"
@@ -118,6 +120,7 @@
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                         Background="Transparent"
                         Margin="0,50,0,0"
+                        AutomationProperties.AutomationId="Button_LoadProject"
                         ToolTip="Load project">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Image Source="{StaticResource Open_is}"
@@ -209,7 +212,8 @@
             </StackPanel>
         </Grid>
 
-        <ContentControl Content="{Binding MethodViewModel.Value}">
+        <ContentControl Content="{Binding MethodViewModel.Value}"
+                        IsEnabled="{Binding IsNotLoading.Value}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type lcvm:LcmsMethodViewModel}"
                               xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"

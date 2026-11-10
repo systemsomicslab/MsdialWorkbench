@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Utility;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -17,6 +18,19 @@ namespace Rfx.Riken.OsakaUniv
     public partial class App : Application
     {
         private static Mutex mutex = new Mutex(false, "MSFINDER");
+
+        /// <remarks>
+        /// The culture is set here, before Run. The base constructor has already queued the startup
+        /// operation, and WPF runs it and every later dispatcher operation with the culture the UI
+        /// thread has at that moment, setting it on the thread explicitly. Setting the thread culture
+        /// and the process default here puts the invariant culture in place for Application_Startup,
+        /// the main window, the library loading it starts and every file MS-FINDER reads or writes
+        /// afterwards. A process default set only inside Application_Startup would not reach the UI
+        /// thread.
+        /// </remarks>
+        public App() {
+            ProcessCulture.UseInvariantCulture();
+        }
 
         private void Application_Startup(object sender, StartupEventArgs e) {
             mutex = new System.Threading.Mutex(false, "MSFINDER");

@@ -283,10 +283,8 @@ namespace Rfx.Riken.OsakaUniv
                         case "PROJECT":
                             break;
                         case "COMMENT":
-                            if (string.IsNullOrEmpty(rawData.Comment)) {
-                                rawData.Comment = string.Empty;
-                            }
-                            rawData.Comment += content;
+                            // A record has one COMMENT line per remark; keep them apart, on the one line a query's comment is.
+                            rawData.Comment = string.IsNullOrEmpty(rawData.Comment) ? content : rawData.Comment + "; " + content;
                             break;
                         case "CH$NAME":
                             rawData.MetaboliteName = rawData.Name = content;
@@ -308,7 +306,8 @@ namespace Rfx.Riken.OsakaUniv
                         case "CH$CDK_DEPICT":
                             break;
                         case "CH$LINK":
-                            switch (subtag) {
+                            // MS-DIAL writes "CH$LINK: INCHIKEY: <key>", so accept the subtag with a trailing colon too
+                            switch (subtag?.TrimEnd(':')) {
                                 case "INCHIKEY":
                                     rawData.InchiKey = subcontent;
                                     break;
@@ -331,7 +330,7 @@ namespace Rfx.Riken.OsakaUniv
                         case "AC$MASS_SPECTROMETRY":
                             switch (subtag) {
                                 case "ION_MODE":
-                                    switch (subcontent)
+                                    switch (subcontent.ToUpperInvariant())
                                     {
                                         case "POSITIVE":
                                             rawData.IonMode = IonMode.Positive;
@@ -352,6 +351,7 @@ namespace Rfx.Riken.OsakaUniv
                                     rawData.Assign(d => d.RetentionTime, subcontent.Split()[0]);
                                     break;
                                 case "KOVATS_RTI":
+                                case "RETENTION_INDEX": // what MS-DIAL and MS-FINDER write
                                     rawData.Assign(d => d.RetentionIndex, subcontent.Split()[0]);
                                     break;
                                 case "CCS":
@@ -521,7 +521,7 @@ namespace Rfx.Riken.OsakaUniv
 
         public static void MassBankRecordWriter(string filePath, RawData rawData) {
             List<string> lines;
-            using (var sr = new StreamReader(filePath, Encoding.ASCII)) {
+            using (var sr = new StreamReader(filePath, Encoding.UTF8)) {
                 lines = new List<string>();
                 while (!sr.EndOfStream) {
                     lines.Add(sr.ReadLine());
@@ -597,7 +597,7 @@ namespace Rfx.Riken.OsakaUniv
                     }
                 }
             }
-            using (var sw = new StreamWriter(filePath, false, Encoding.ASCII)) {
+            using (var sw = new StreamWriter(filePath, false, new UTF8Encoding(false))) {
                 foreach (var line in lines) {
                     sw.WriteLine(line);
                 }

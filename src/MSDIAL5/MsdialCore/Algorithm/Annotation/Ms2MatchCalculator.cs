@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return new Ms2MatchResult(
                 sqweightedDotProduct, sqsimpleDotProduct, sqreverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
-                isSpectrumMatch);
+                isSpectrumMatch, spectrumCompared: true);
         }
     }
 
@@ -116,16 +116,31 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public bool IsSpectrumMatch { get; }
 
+        /// <summary>
+        /// True when a reference spectrum was actually compared.
+        /// </summary>
+        /// <remarks>
+        /// Carried explicitly because <see cref="Empty"/> destroys the evidence. The calculator
+        /// returns <see cref="Empty"/> when the scoring functions gave their not-compared -1, and
+        /// <see cref="Empty"/> holds 0 in every spectral field, so by the time <see cref="Assign"/>
+        /// runs a comparison that never happened is indistinguishable from one that scored 0.
+        ///
+        /// Required rather than defaulted, so that a future call site has to answer the question
+        /// instead of inheriting the answer that is wrong for <see cref="Empty"/>.
+        /// </remarks>
+        public bool SpectrumCompared { get; }
+
         public Ms2MatchResult(
             double sqweightedDotProduct, double sqsimpleDotProduct, double sqreverseDotProduct,
             double matchedPeaksPercentage, int matchedPeaksCount,
-            bool isSpectrumMatch) {
+            bool isSpectrumMatch, bool spectrumCompared) {
             SquaredWeightedDotProduct = sqweightedDotProduct;
             SquaredSimpleDotProduct = sqsimpleDotProduct;
             SquaredReverseDotProduct = sqreverseDotProduct;
             MatchedPeaksPercentage = matchedPeaksPercentage;
             MatchedPeaksCount = matchedPeaksCount;
             IsSpectrumMatch = isSpectrumMatch;
+            SpectrumCompared = spectrumCompared;
         }
 
         public virtual void Assign(MsScanMatchResult result) {
@@ -135,9 +150,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             result.MatchedPeaksPercentage = (float)MatchedPeaksPercentage;
             result.MatchedPeaksCount = MatchedPeaksCount;
             result.IsSpectrumMatch = IsSpectrumMatch;
+            if (SpectrumCompared) {
+                result.MeasuredTerms |= MeasuredTerms.Spectrum;
+            }
         }
 
-        public static Ms2MatchResult Empty => empty ?? (empty = new Ms2MatchResult(0, 0, 0, 0, 0, false));
+        public static Ms2MatchResult Empty => empty ?? (empty = new Ms2MatchResult(0, 0, 0, 0, 0, false, spectrumCompared: false));
         private static Ms2MatchResult empty;
     }
 }

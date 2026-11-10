@@ -1,6 +1,8 @@
-﻿using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Information;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
@@ -29,6 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
     {
         protected static readonly double MassEPS = 1e-10;
         private readonly ICompoundSearchModel _model;
+        private readonly MoleculeStructureModel _structureModel;
 
         public CompoundSearchVM(ICompoundSearchModel model) {
             if (model is null) {
@@ -53,6 +56,12 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
             SelectedCompound = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedCompoundResult).AddTo(Disposables);
 
+            _structureModel = new MoleculeStructureModel().AddTo(Disposables);
+            SelectedCompound
+                .Subscribe(c => _structureModel.UpdateMolecule(c?.MsReference))
+                .AddTo(Disposables);
+            StructureViewModel = new MoleculeStructureViewModel(_structureModel).AddTo(Disposables);
+
             var canSet = SelectedCompound.Select(c => c != null);
             SetConfidenceCommand = canSet.ToReactiveCommand().AddTo(Disposables);
             SetConfidenceCommand.Subscribe(model.SetConfidence);
@@ -75,6 +84,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
 
         public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }
+
+        public MoleculeStructureViewModel StructureViewModel { get; }
 
         public ReactiveCommand SetConfidenceCommand { get; }
 

@@ -6,6 +6,7 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialDimsCore.Algorithm
 {
@@ -253,6 +254,45 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
         public IDataProvider Create(RawMeasurement source) {
             return new DimsBpiDataProvider(source, timeBegin, timeEnd);
+        }
+    }
+
+    /// <summary>
+    /// The spectra of an imaging run (MALDI .d, imzML) as one MS1 spectrum: the sum of every pixel's spectrum.
+    /// The summing is left to RawDataHandler, which reads the run as imaging data one pixel at a time, so no
+    /// pixel spectrum is held in memory here. Pixel intensities for ion images are read from the raw data
+    /// directly and do not go through this provider.
+    /// </summary>
+    public sealed class DimsImagingDataProvider : BaseDataProvider
+    {
+        public DimsImagingDataProvider(RawMeasurement rawObj)
+            : base(rawObj.SpectrumList) {
+
+        }
+
+        public DimsImagingDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5, CancellationToken token = default)
+            : base(LoadMeasurementAsync(file, isProfile: true, isImagingMs: true, isGuiProcess, retry, ignoreRtCorrection: true, token)) {
+
+        }
+    }
+
+    public sealed class DimsImagingDataProviderFactory
+        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    {
+        private readonly int _retry;
+        private readonly bool _isGuiProcess;
+
+        public DimsImagingDataProviderFactory(int retry = 5, bool isGuiProcess = false) {
+            _retry = retry;
+            _isGuiProcess = isGuiProcess;
+        }
+
+        public IDataProvider Create(AnalysisFileBean source) {
+            return new DimsImagingDataProvider(source, _isGuiProcess, _retry);
+        }
+
+        public IDataProvider Create(RawMeasurement source) {
+            return new DimsImagingDataProvider(source);
         }
     }
 

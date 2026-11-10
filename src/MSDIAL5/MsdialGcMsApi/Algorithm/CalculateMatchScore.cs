@@ -18,10 +18,15 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         private readonly MsRefSearchParameterBase _searchParameter;
         private readonly MoleculeMsReference[] _mspDB;
         private readonly string _annotatorID;
+        // Required rather than defaulted: the two retention-index scales differ by a factor of
+        // about 390, so a match cap chosen for one is meaningless on the other, and a new call
+        // site should have to say which it is.
+        private readonly RiCompoundType _riCompoundType;
 
-        public CalculateMatchScore(DataBaseItem<MoleculeDataBase> mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType) {
+        public CalculateMatchScore(DataBaseItem<MoleculeDataBase> mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, RiCompoundType riCompoundType) {
             _searchParameter = searchParameter;
             RetentionType = retentionType;
+            _riCompoundType = riCompoundType;
             ChromXType type;
             switch (retentionType) {
                 case RetentionType.RI:
@@ -35,14 +40,22 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
             _mspDB = mspDB?.DataBase.Database.OrderBy(r => r.ChromXs.GetChromByType(type).Value).ToArray();
             _annotatorID = mspDB?.Pairs.FirstOrDefault()?.AnnotatorID;
+            _dataBaseSource = mspDB?.DataBase.DataBaseSource ?? DataBaseSource.None;
         }
 
-        private CalculateMatchScore(MoleculeMsReference[] mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, string annotatorID) {
+        private CalculateMatchScore(MoleculeMsReference[] mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, string annotatorID, RiCompoundType riCompoundType, DataBaseSource dataBaseSource) {
             _searchParameter = searchParameter;
             RetentionType = retentionType;
             _mspDB = mspDB;
             _annotatorID = annotatorID;
+            _riCompoundType = riCompoundType;
+            _dataBaseSource = dataBaseSource;
         }
+
+        // What kind of EI library this is. Wiley, NIST and MassBank are acquired; NEIMS and its kin
+        // generate their spectra from structures. MS-DIAL searches them identically and the evidence
+        // record is the only place the difference is stated.
+        private readonly DataBaseSource _dataBaseSource;
 
         public MsRefSearchParameterBase CopySearchParameter() => new MsRefSearchParameterBase(_searchParameter);
 
@@ -68,6 +81,24 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
         }
 
+        /// <summary>
+        /// The widest retention difference that may be called a match on the axis this run uses.
+        /// Deliberately not the same number as <see cref="Tolerance"/>: that one is the search
+        /// window, and it is doubled when retention filtering is off.
+        /// </summary>
+        private double RetentionMatchTolerance {
+            get {
+                switch (RetentionType) {
+                    case RetentionType.RI:
+                        return RetentionMatchPolicy.EffectiveRetentionIndexTolerance(_searchParameter.RiTolerance, _riCompoundType);
+                    case RetentionType.RT:
+                        return RetentionMatchPolicy.EffectiveRetentionTimeTolerance(_searchParameter.RtTolerance);
+                    default:
+                        throw new Exception($"Unknown {nameof(RetentionType)}: {RetentionType}");
+                }
+            }
+        }
+
         public MoleculeMsReference Reference(MsScanMatchResult result) {
             return _mspDB[result.LibraryIDWhenOrdered];
         }
@@ -83,9 +114,37 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 var refRetention = RetentionType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
                 System.Diagnostics.Debug.Assert(Math.Abs(rValue - refRetention) < tolerance);
                 if (!_searchParameter.IsUseTimeForAnnotationFiltering || Math.Abs(rValue - refRetention) < tolerance) {
-                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter, RetentionType == RetentionType.RI);
+                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _searchParameter, RetentionType == RetentionType.RI, RetentionMatchTolerance);
                     result.LibraryIDWhenOrdered = i;
                     result.AnnotatorID = _annotatorID;
+                    // Recorded here and not inside CompareEIMSScanProperties: that function is also
+                    // how GcmsPeakJoiner compares two SAMPLE spectra to each other during alignment,
+                    // where there is no reference at all and "a reference spectrum was compared"
+                    // would be false. This is the caller that knows -- an EI entry from an acquired
+                    // MSP library -- and it is the single funnel for the whole GC-MS mode.
+                    //
+                    // This value does survive a GC-MS session. The primary store is MessagePack:
+                    // the container reaches SpectrumFeatureCollection through AnnotatedMSDecResult,
+                    // whose hand-written formatter serialises MsScanMatchResultContainer with the
+                    // standard resolver, so every [Key] member is kept. That is the copy the
+                    // exporter reads (AnnotatedMSDecResult.MatchResults.Representative, in
+                    // GcmsAnalysisMetadataAccessor) and the copy alignment merges in
+                    // DataObjConverter.
+                    //
+                    // The .dcl block is a second, lossy copy of the same annotation: it carries
+                    // only numeric scores, IDs and booleans, so MSDecResult.MspBasedMatchResult and
+                    // the legacy MSRawID2MspBasedMatchResult dictionary built from it come back
+                    // with no evidence. Pinned by ADclRoundTripDiscardsTheEvidenceSource. Do not
+                    // try to extend that layout: its record size comes from a hand-written member
+                    // list with no version gate, so one more field makes every existing .dcl
+                    // unreadable.
+                    //
+                    // Through ForDatabaseMatch rather than asserting ReferenceSpectrum here, so that
+                    // "the spectra in this library were acquired" is decided in one place for every
+                    // mode instead of twice. GC-MS is always metabolomics, so the omics branch is
+                    // not in play; what this buys is the library-quality question.
+                    result.EvidenceSource = AnnotationEvidence.ForDatabaseMatch(
+                        result.MeasuredTerms, TargetOmics.Metabolomics, _dataBaseSource);
                     yield return result;
                 }
             }
@@ -109,7 +168,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public CalculateMatchScore With(MsRefSearchParameterBase searchParameter) {
-            return new CalculateMatchScore(_mspDB, searchParameter, RetentionType, _annotatorID);
+            return new CalculateMatchScore(_mspDB, searchParameter, RetentionType, _annotatorID, _riCompoundType, _dataBaseSource);
         }
     }
 }
