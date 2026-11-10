@@ -83,28 +83,6 @@
         "resolved": "1.6.0",
         "contentHash": "gWH/And7eJFxDT/q/hWFyWjrCni6HJ01fgDB2NUhYaqrEZN2LtsaTwAkSPhd26AdAbeYkZg7kS/umlt2Wci2HQ=="
       },
-      "Microsoft.Bcl": {
-        "type": "Transitive",
-        "resolved": "1.1.10",
-        "contentHash": "+tTqoh/M1pyL8El3qLy30EcwnAtyvFoDZJtdG9Cbg/WdFbh4N8kyrq198XHuEL7lnJbeD0DRO8jcX5IIOh05cQ==",
-        "dependencies": {
-          "Microsoft.Bcl.Build": "1.0.14"
-        }
-      },
-      "Microsoft.Bcl.Build": {
-        "type": "Transitive",
-        "resolved": "1.0.14",
-        "contentHash": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA=="
-      },
-      "Microsoft.Net.Http": {
-        "type": "Transitive",
-        "resolved": "2.2.29",
-        "contentHash": "fc4CPEewJ30Xgal+fSq1lYIBt582A7eKlAL7O4HXiYAiTp2VTnA4osSvk7T2n8aS4xTCPVJusQk3yKLT0XSpkg==",
-        "dependencies": {
-          "Microsoft.Bcl": "1.1.10",
-          "Microsoft.Bcl.Build": "1.0.14"
-        }
-      },
       "Microsoft.Xaml.Behaviors.Wpf": {
         "type": "Transitive",
         "resolved": "1.1.39",
@@ -413,7 +391,6 @@
         "dependencies": {
           "EnterpriseLibrary.Common": "[5.0.505, )",
           "EnterpriseLibrary.Validation": "[5.0.505, )",
-          "Microsoft.Net.Http": "[2.2.29, )",
           "Newtonsoft.Json": "[13.0.3, )",
           "Unity": "[2.1.505.2, )",
           "Unity.Interception": "[2.1.505.2, )"
@@ -629,34 +606,12 @@
         "resolved": "1.6.0",
         "contentHash": "gWH/And7eJFxDT/q/hWFyWjrCni6HJ01fgDB2NUhYaqrEZN2LtsaTwAkSPhd26AdAbeYkZg7kS/umlt2Wci2HQ=="
       },
-      "Microsoft.Bcl": {
-        "type": "Transitive",
-        "resolved": "1.1.10",
-        "contentHash": "+tTqoh/M1pyL8El3qLy30EcwnAtyvFoDZJtdG9Cbg/WdFbh4N8kyrq198XHuEL7lnJbeD0DRO8jcX5IIOh05cQ==",
-        "dependencies": {
-          "Microsoft.Bcl.Build": "1.0.14"
-        }
-      },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
         "resolved": "5.0.0",
         "contentHash": "W8DPQjkMScOMTtJbPwmPyj9c3zYSFGawDW3jwlBOOsnY+EzZFLgNQ/UMkK35JmkNOVPdCyPr2Tw7Vv9N+KA3ZQ==",
         "dependencies": {
           "System.Threading.Tasks.Extensions": "4.5.4"
-        }
-      },
-      "Microsoft.Bcl.Build": {
-        "type": "Transitive",
-        "resolved": "1.0.14",
-        "contentHash": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA=="
-      },
-      "Microsoft.Net.Http": {
-        "type": "Transitive",
-        "resolved": "2.2.29",
-        "contentHash": "fc4CPEewJ30Xgal+fSq1lYIBt582A7eKlAL7O4HXiYAiTp2VTnA4osSvk7T2n8aS4xTCPVJusQk3yKLT0XSpkg==",
-        "dependencies": {
-          "Microsoft.Bcl": "1.1.10",
-          "Microsoft.Bcl.Build": "1.0.14"
         }
       },
       "Microsoft.Xaml.Behaviors.Wpf": {
@@ -993,7 +948,6 @@
         "dependencies": {
           "EnterpriseLibrary.Common": "[5.0.505, )",
           "EnterpriseLibrary.Validation": "[5.0.505, )",
-          "Microsoft.Net.Http": "[2.2.29, )",
           "Newtonsoft.Json": "[13.0.3, )",
           "Unity": "[2.1.505.2, )",
           "Unity.Interception": "[2.1.505.2, )"
@@ -1209,34 +1163,12 @@
         "resolved": "1.6.0",
         "contentHash": "gWH/And7eJFxDT/q/hWFyWjrCni6HJ01fgDB2NUhYaqrEZN2LtsaTwAkSPhd26AdAbeYkZg7kS/umlt2Wci2HQ=="
       },
-      "Microsoft.Bcl": {
-        "type": "Transitive",
-        "resolved": "1.1.10",
-        "contentHash": "+tTqoh/M1pyL8El3qLy30EcwnAtyvFoDZJtdG9Cbg/WdFbh4N8kyrq198XHuEL7lnJbeD0DRO8jcX5IIOh05cQ==",
-        "dependencies": {
-          "Microsoft.Bcl.Build": "1.0.14"
-        }
-      },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
         "resolved": "5.0.0",
         "contentHash": "W8DPQjkMScOMTtJbPwmPyj9c3zYSFGawDW3jwlBOOsnY+EzZFLgNQ/UMkK35JmkNOVPdCyPr2Tw7Vv9N+KA3ZQ==",
         "dependencies": {
           "System.Threading.Tasks.Extensions": "4.5.4"
-        }
-      },
-      "Microsoft.Bcl.Build": {
-        "type": "Transitive",
-        "resolved": "1.0.14",
-        "contentHash": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA=="
-      },
-      "Microsoft.Net.Http": {
-        "type": "Transitive",
-        "resolved": "2.2.29",
-        "contentHash": "fc4CPEewJ30Xgal+fSq1lYIBt582A7eKlAL7O4HXiYAiTp2VTnA4osSvk7T2n8aS4xTCPVJusQk3yKLT0XSpkg==",
-        "dependencies": {
-          "Microsoft.Bcl": "1.1.10",
-          "Microsoft.Bcl.Build": "1.0.14"
         }
       },
       "Microsoft.Xaml.Behaviors.Wpf": {
@@ -1573,7 +1505,6 @@
         "dependencies": {
           "EnterpriseLibrary.Common": "[5.0.505, )",
           "EnterpriseLibrary.Validation": "[5.0.505, )",
-          "Microsoft.Net.Http": "[2.2.29, )",
           "Newtonsoft.Json": "[13.0.3, )",
           "Unity": "[2.1.505.2, )",
           "Unity.Interception": "[2.1.505.2, )"
