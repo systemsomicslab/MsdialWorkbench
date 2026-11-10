@@ -140,6 +140,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public IReferenceDataBase? Create() {
             switch (DBSource) {
                 case DataBaseSource.Msp:
+                case DataBaseSource.PredictedMsp:
                 case DataBaseSource.Lbm:
                 case DataBaseSource.Text:
                     return CreateMoleculeDataBase();
@@ -161,6 +162,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public MoleculeDataBase? CreateMoleculeDataBase() {
             switch (DBSource) {
                 case DataBaseSource.Msp:
+                case DataBaseSource.PredictedMsp:
                     return _metabolomicsDB ?? LoadMspDataBase();
                 case DataBaseSource.Lbm:
                     return _metabolomicsDB ?? LoadLipidDataBase();
@@ -242,8 +244,17 @@ namespace CompMs.App.Msdial.Model.Setting
             return new StagedLipidDatabase(DataBaseID, seeds);
         }
 
+        /// <summary>
+        /// Reads an MSP library, acquired or predicted, and records which the analyst said it was.
+        /// </summary>
+        /// <remarks>
+        /// DBSource rather than the DataBaseSource.Msp constant that used to be here. The two kinds
+        /// parse identically and are searched identically; the only thing that differs is the claim
+        /// the evidence record may make about a match, and passing the constant threw that claim
+        /// away at the one point it was known.
+        /// </remarks>
         private MoleculeDataBase LoadMspDataBase() {
-            return new MoleculeDataBase(LibraryHandler.ReadMspLibrary(DataBasePath), DataBaseID, DataBaseSource.Msp, SourceType.MspDB, DataBasePath);
+            return new MoleculeDataBase(LibraryHandler.ReadMspLibrary(DataBasePath), DataBaseID, DBSource, SourceType.MspDB, DataBasePath);
         }
 
         private MoleculeDataBase LoadLipidDataBase() {

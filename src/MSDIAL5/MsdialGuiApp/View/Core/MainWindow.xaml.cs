@@ -75,6 +75,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorConfirmationMessage);
+            broker.ToObservable<MessageRequest>()
+                .Subscribe(ShowMessage);
             broker.ToObservable<RiDictionarySettingViewModel>()
                 .Subscribe(ShowRiDictionarySettingDialog);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
@@ -101,6 +103,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildDialog<AnalysisResultExportWin>);
             broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(ShowChildDialog<AlignmentResultExportWin>);
+            broker.ToObservable<LipidRtCheckSettingViewModel>()
+                .Subscribe(ShowChildDialog<LipidRtCheckSettingView>);
             broker.ToObservable<TargetCompoundLibrarySettingViewModel>()
                 .Subscribe(ShowChildSettingDialog<TargetCompoundsLibrarySettingView>("Select library file", height: 600, width: 400));
             broker.ToObservable<FindTargetCompoundsSpotViewModel>()
@@ -117,8 +121,9 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildSettingDialog<AnalysisFilePropertyResettingView>("Analysis property setting", height: 700, width: 1000));
             broker.ToObservable<ProcessSettingViewModel>()
                 .Subscribe(ShowChildDialog<ProjectSettingDialog>);
+            // The view model outlives the dialog, so closing it with the title-bar button must throw edits away as Cancel does.
             broker.ToObservable<ProjectPropertySettingViewModel>()
-                .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 400, width: 400));
+                .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 600, width: 560, cancelUnlessFinished: true));
             broker.ToObservable<ICompoundSearchViewModel>()
                 .Subscribe(ShowChildDialog<CompoundSearchWindow>);
             broker.ToObservable<ExportMrmprobsViewModel>()
@@ -232,7 +237,7 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null, bool needDispose = false)
+        private Action<object> ShowChildSettingDialog<TView>(string title, double height, double width, object? finishCommandContent = null, bool needDispose = false, bool cancelUnlessFinished = false)
             where TView: FrameworkElement, new() {
             void InnerShowDialog(object viewmodel) {
                 var dialog = new SettingDialog() {
@@ -246,7 +251,12 @@ namespace CompMs.App.Msdial.View.Core
                 if (finishCommandContent is not null) {
                     dialog.FinishCommandContent = finishCommandContent;
                 }
-                dialog.ShowDialog();
+                if (cancelUnlessFinished) {
+                    dialog.ShowDialogAndCancelUnlessFinished();
+                }
+                else {
+                    dialog.ShowDialog();
+                }
                 if (needDispose)
                 {
                     (viewmodel as IDisposable)?.Dispose();
@@ -341,14 +351,17 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void OpenFileDialog(OpenFileRequest request) {
-            var ofd = new OpenFileDialog() {
-                Title = request.Title,
-                Filter = request.Filter,
-            };
+            Dispatcher.Invoke(() => {
+                var ofd = new OpenFileDialog()
+                {
+                    Title = request.Title,
+                    Filter = request.Filter,
+                };
 
-            if (ofd.ShowDialog(this) == true) {
-                request.Run(ofd.FileName);
-            }
+                if (ofd.ShowDialog(this) == true) {
+                    request.Run(ofd.FileName);
+                }
+            });
         }
 
         private void SelectFolderPath(SelectFolderRequest request) {
@@ -366,6 +379,15 @@ namespace CompMs.App.Msdial.View.Core
             Dispatcher.Invoke(() => {
                 var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
                 request.Result = result;
+            });
+        }
+
+        private void ShowMessage(MessageRequest request) {
+            Dispatcher.Invoke(() => {
+                // The wait cursor is left to the operations that set it: the message box draws its own arrow,
+                // and an operation that finishes while the box is open clears the cursor itself.
+                var result = MessageBox.Show(request.Content, request.Caption, MessageRequestBox.ButtonsOf(request), MessageRequestBox.IconOf(request));
+                request.Result = MessageRequestBox.IsAccepted(result);
             });
         }
 

@@ -4,10 +4,8 @@
 # Category: untriaged | xml-error | judgeif-constraint | xml-only-rule | judgeif-bug
 LipidClass	Adduct	Check	Category	Reason
 ASM	[M+CH3COO]-	chain	judgeif-bug	The ext-FA double-bond limit uses maxSphDoubleBond instead of the acyl limit (MsmsCharacterization.cs:12838); JudgeIfCeramideeos does it right (12208-12209).
-ASM	[M+CH3COO]-	prohibited M+CH3COOAdduct-HCOOAdduct-Proton	xml-error	JudgeIf rejects [M+CH3COO]- - C2H4O2 (829.680) above 50 (MsmsCharacterization.cs:12819-12822); the XML formula, copied from Cer, is 14.016 (CH2) too high - use M+CH3COOAdduct-C2H4O2.
 ASM	[M+HCOO]-	chain	judgeif-bug	Same maxSphDoubleBond cap (MsmsCharacterization.cs:12838).
 BAHex	[M+NH4]+	class	xml-error	JudgeIfSterolHexoside needs [M+H-Hex]+ (MsmsCharacterization.cs:15784); the XML only has the dehydrated [M+H-C6H12O6]+ - add [M+H-C6H10O5]+ above 10/999. JudgeIf's 179.0561 is the [Hex-H]- mass, off by 23 mDa (latent).
-BASulfate	[M+NH4]+	class	xml-error	JudgeIfSterolSulfate needs [M+H-SO3]+ (MsmsCharacterization.cs:15835); the XML only has [M+H-H2SO4]+ - add [M+H-SO3]+. JudgeIf's 96.9601 is the HSO4- mass (latent).
 Cer_ADS	[M+CH3COO]-	prohibited M+CH3COOAdduct	xml-only-rule	JudgeIfCeramideads never tests the [M+CH3COO]- precursor (MsmsCharacterization.cs:11702-11713).
 Cer_ADS	[M+HCOO]-	prohibited M+HCOOAdduct	xml-only-rule	No precursor-intensity rejection; the [M+HCOO]- branch only requires [M-H]- >20 (MsmsCharacterization.cs:11715-11721).
 Cer_AP	[M+Na]+	chain	judgeif-bug	Same formula (MsmsCharacterization.cs:10659-10660).
@@ -18,12 +16,6 @@ Cer_BDS	[M+CH3COO]-	prohibited M+CH3COOAdduct	xml-only-rule	JudgeIfCeramidebds h
 Cer_BDS	[M+HCOO]-	prohibited M+HCOOAdduct	xml-only-rule	No precursor-intensity rejection; only requires [M-H]- >20 (MsmsCharacterization.cs:11916-11924).
 Cer_BS	[M+CH3COO]-	prohibited M+CH3COOAdduct	xml-only-rule	JudgeIfCeramidebs has no check on the [M+CH3COO]- precursor (MsmsCharacterization.cs:11808-11821).
 Cer_BS	[M+HCOO]-	prohibited M+HCOOAdduct	xml-only-rule	No precursor-intensity rejection; only requires [M-H]- >5 (MsmsCharacterization.cs:11822-11830).
-Cer_EBDS	[M-H]-	chain	judgeif-bug	Same capped acyl loop (MsmsCharacterization.cs:12982-12983).
-Cer_EBDS	[M-H]-	class	judgeif-bug	The amide-acyl loop is capped by the sphingoid limits (MsmsCharacterization.cs:12982-12983), so acyl chains longer than the base are never tried.
-Cer_EBDS	[M+CH3COO]-	chain	judgeif-bug	Same capped acyl loop (MsmsCharacterization.cs:12982-12983).
-Cer_EBDS	[M+CH3COO]-	class	judgeif-bug	Same capped acyl loop (MsmsCharacterization.cs:12982-12983).
-Cer_EBDS	[M+HCOO]-	chain	judgeif-bug	Same capped acyl loop (MsmsCharacterization.cs:12982-12983).
-Cer_EBDS	[M+HCOO]-	class	judgeif-bug	Same capped acyl loop (MsmsCharacterization.cs:12982-12983).
 Cer_NP	[M+H]+	chain	judgeif-bug	sph1 subtracts an O as if the acyl had a 2-OH (copied from Cer_AP, MsmsCharacterization.cs:12017), 2.016 above the XML sphingoid ions.
 Cer_NP	[M+Na]+	chain	judgeif-bug	Dihydroxy-base formula (MsmsCharacterization.cs:12057-12058), one O short of the phyto base ion.
 CerP	[M-H]-	chain	judgeif-constraint	JudgeIfCeramidePhosphate negative only ever returns species level (MsmsCharacterization.cs:9315-9318); the XML could mark [M-H]- as SL instead.
@@ -68,18 +60,10 @@ HexCer_NS	[M+H]+	prohibited M+Proton-C12H20O10-H2O	xml-only-rule	The positive br
 HexCer_NS	[M+HCOO]-	prohibited M-Proton-C12H20O10	xml-only-rule	No C12H20O10 check (MsmsCharacterization.cs:9621-9642).
 KLCAE	[M-H]-	prohibited C25H37O5+Electron	xml-error	JudgeIf rejects C24H37O4- (389.270) above 0.1 (MsmsCharacterization.cs:14960-14964); the XML ion C25H37O5- (417.265) is off by CO.
 LPC	[M+H]+	prohibited M+Proton-C2H8NO4P	judgeif-constraint	JudgeIf rejects this ion only when it is also more intense than m/z 184.073 (MsmsCharacterization.cs:4051-4056).
-LPC_d5	[M+HCO3]-	chain	judgeif-bug	Same cause as the class row (MsmsCharacterization.cs:18401).
-LPC_d5	[M+HCO3]-	class	judgeif-bug	JudgeIfLysopcD5 subtracts CHO + C3H9N (MsmsCharacterization.cs:18401); every other [M+HCO3]- JudgeIf subtracts CHO3 + Proton + C3H9N (e.g. 4159) - off by 32.998.
 LPE	[M+H]+	prohibited M-SN1Acyl+CO-2H+Proton	xml-error	JudgeIf's ether check is (M+H-141.019) - alkyl + H+ (89.023) above 3 (MsmsCharacterization.cs:4202-4210); the XML drops the head-group loss and uses CO instead of O. JudgeIf's own alkyl carbon count also looks off by one.
 LPE	[M+H]+	prohibited SN1Acyl-CO+2H+C2H5NO4P+Proton	xml-error	JudgeIf's sn1 rearrangement ion is 392.293 above 3 (MsmsCharacterization.cs:4206-4210); the XML (378.277) is CH2 short - use SN1Acyl-O+4H+C2H5NO4P+Proton.
-LPE_d5	[M-H]-	chain	judgeif-bug	Same cause as the class row (MsmsCharacterization.cs:18516).
-LPE_d5	[M-H]-	class	judgeif-bug	JudgeIfLysopeD5 reuses the unlabelled LPE loss 197.045 (MsmsCharacterization.cs:18516); with glycerol-d5 it is 202.076.
 LPE_d5	[M+H]+	prohibited M-SN1Acyl+CO-2H+Proton	xml-error	Same as LPE: JudgeIf expects 94.054 above 10 (MsmsCharacterization.cs:18450-18458), XML gives 246.066.
 LPE_d5	[M+H]+	prohibited SN1Acyl-CO+2H+C2H5NO4P+Proton	xml-error	Same as LPE: JudgeIf expects 392.293 above 10 (MsmsCharacterization.cs:18454-18458), XML gives 378.277.
-LPI_d5	[M-H]-	chain	judgeif-bug	Same cause as the class row (MsmsCharacterization.cs:18602).
-LPI_d5	[M-H]-	class	judgeif-bug	JudgeIfLysopiD5 hard-codes the unlabelled C9H16O10P- 315.049 (MsmsCharacterization.cs:18602); the d5 fragment is 320.080.
-MG	[M+H]+	chain	judgeif-bug	Same cause as the class row (MsmsCharacterization.cs:4008-4010).
-MG	[M+H]+	class	judgeif-bug	JudgeIfMag always subtracts NH3, also for [M+H]+ (MsmsCharacterization.cs:4004-4014).
 OxFA	[M-H]-	chain	xml-error	Same cause as the class row (MsmsCharacterization.cs:8812).
 OxFA	[M-H]-	class	xml-error	JudgeIfOxfattyacid requires [M-H-H2O]- (MsmsCharacterization.cs:8809-8812); the XML [M-H]- rule has only the precursor - add [M-H-H2O]-.
 OxPG	[M-H]-	chain	xml-error	Same cause as the class row (MsmsCharacterization.cs:5407).
@@ -93,8 +77,12 @@ PMeOH	[M-H]-	prohibited M-C2H2N-Na+Electron	xml-error	JudgeIf rejects [M-H]- - C
 PS	[M-H]-	prohibited M-C2H2N-Na+Electron	xml-error	JudgeIf rejects [M-H]- - C2H2N - Na above 30 (MsmsCharacterization.cs:2581-2584); the XML is +1.0078 - use M-Proton-C2H2N-Na.
 PS_d5	[M-H]-	prohibited M-C2H2N-Na+Electron	xml-error	JudgeIf rejects [M-H]- - C2H2N - Na above 30 (MsmsCharacterization.cs:18002-18005); the XML is +1.0078 - use M-Proton-C2H2N-Na.
 SHex	[M+NH4]+	class	xml-error	Same as BAHex: needs [M+H-Hex]+ (MsmsCharacterization.cs:15784), the XML only has [M+H-C6H12O6]+.
-SM_d9	[M+CH3COO]-	chain	judgeif-bug	Same non-deuterated masses (MsmsCharacterization.cs:18997-18999).
-SM_d9	[M+CH3COO]-	class	judgeif-bug	JudgeIf uses the non-deuterated methyl loss and class ion (MsmsCharacterization.cs:18997-18999), 3.02 off the d9 ions.
-SM_d9	[M+HCOO]-	chain	judgeif-bug	Same non-deuterated masses (MsmsCharacterization.cs:18997-18999).
-SM_d9	[M+HCOO]-	class	judgeif-bug	Same non-deuterated masses (MsmsCharacterization.cs:18997-18999).
-SSulfate	[M+NH4]+	class	xml-error	Same as BASulfate: needs [M+H-SO3]+ (MsmsCharacterization.cs:15835), the XML only has [M+H-H2SO4]+.
+ASM	[M+H]+	chain	judgeif-bug	Since #880 JudgeIfAcylsm [M+H]+ no longer resolves the chains (SM 42:0;O2 instead of SM 28:0;O2(FA 14:0)); #880 added the acylCarbon guard and replaced the constants here (MsmsCharacterization.cs:13330). Cause not pinned down.
+LDGTS	[M+CH3COO]-	chain	judgeif-bug	#880 added "if (sn2Carbon <= 0 ...) continue" to the chain loop (MsmsCharacterization.cs:7525); LDGTS has one chain, so sn2Carbon is always 0 and JudgeIf never returns.
+LDGTS	[M+CH3COO]-	class	judgeif-bug	Same sn2Carbon guard (MsmsCharacterization.cs:7525).
+LDGTS	[M+HCOO]-	chain	judgeif-bug	Same sn2Carbon guard (MsmsCharacterization.cs:7525).
+LDGTS	[M+HCOO]-	class	judgeif-bug	Same sn2Carbon guard (MsmsCharacterization.cs:7525).
+LPA	[M-H]-	chain	judgeif-constraint	#880 inverted the FA check: JudgeIf now requires one of seven hard-coded FA- ions at 5 or more (MsmsCharacterization.cs:6921); the XML LPA [M-H]- rule has no chain ion, so the generated spectrum has none.
+LPA	[M-H]-	class	judgeif-constraint	Same FA- requirement (MsmsCharacterization.cs:6921).
+LPS_d5	[M-H]-	chain	xml-error	#880 made JudgeIf look for the d5-glycerol phosphate C3HD5O5P- (158.025, MsmsCharacterization.cs:19287); the XML class ion is the unlabeled C3H6O5P- (152.996).
+LPS_d5	[M-H]-	class	xml-error	Same C3HD5O5P- class ion (MsmsCharacterization.cs:19287).

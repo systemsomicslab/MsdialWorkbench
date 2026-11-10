@@ -264,15 +264,33 @@
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <chart:SmallEicChart>
-                                <chart:SmallEicChart.DataContext>
-                                    <MultiBinding Converter="{StaticResource peak2eic}">
-                                        <Binding />
-                                        <Binding Path="DataContext.EicLoader.Value"
-                                                 RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
-                                    </MultiBinding>
-                                </chart:SmallEicChart.DataContext>
-                            </chart:SmallEicChart>
+                            <Grid>
+                                <chart:SmallEicChart>
+                                    <chart:SmallEicChart.DataContext>
+                                        <MultiBinding Converter="{StaticResource peak2eic}">
+                                            <Binding />
+                                            <Binding Path="DataContext.EicLoader.Value"
+                                                     RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+                                        </MultiBinding>
+                                    </chart:SmallEicChart.DataContext>
+                                </chart:SmallEicChart>
+                                <!-- The sample was opened without its raw data, so there is no EIC to draw. -->
+                                <TextBlock Text="No raw data"
+                                           Foreground="Gray"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding DataContext.EicLoader.Value, RelativeSource={RelativeSource AncestorType=DataGrid}}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

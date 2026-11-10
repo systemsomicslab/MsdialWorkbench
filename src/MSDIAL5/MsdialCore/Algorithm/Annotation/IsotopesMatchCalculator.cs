@@ -50,6 +50,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public void Assign(MsScanMatchResult result) {
             result.IsotopeSimilarity = (float)IsotopeSimilarity;
+            // No explicit flag needed here, unlike the mass and spectrum results:
+            // GetIsotopeRatioSimilarity returns its own not-compared sentinel and there is no
+            // clamping getter in the way, so the value can be asked directly.
+            result.MeasuredTerms = result.MeasuredTerms.With(MeasuredTerms.Isotope, IsotopeSimilarity);
         }
     }
 }

@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
 
-            QuantmassBrowserViewModel = new QuantmassBrowserViewModel(model.QuantmassBrowserModel).AddTo(Disposables);
+            QuantmassBrowserViewModel = new QuantmassBrowserViewModel(model.QuantmassBrowserModel, broker).AddTo(Disposables);
             ShowQuantmassBrowserCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(QuantmassBrowserViewModel)).AddTo(Disposables);
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);

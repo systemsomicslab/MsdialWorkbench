@@ -43,9 +43,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return results.SelectMany(result => Get(result?.AnnotatorID)?.SelectReferenceMatchResults(IEnumerableExtension.Return(result))).ToList();
         }
 
+        /// <summary>
+        /// The best of several candidates from DIFFERENT annotators.
+        /// </summary>
+        /// <remarks>
+        /// The evidence rank goes BELOW Priority. Priority is the analyst's ordering of their
+        /// databases -- IdentifySettingModel hands out <c>AnnotatorModels.Count - index</c>, and
+        /// "move up" changes it -- so between annotators the order the analyst set decides. The
+        /// evidence rank prefers a spectrum-backed candidate only among candidates of the same
+        /// Priority, i.e. from the same annotation method. An m/z-RT text library placed above an
+        /// MS/MS library therefore keeps its precursor-only name against that library's spectral
+        /// match, as it did before the evidence rank was introduced.
+        ///
+        /// Source stays first: its Manual bit is the top bit of the flags byte, so a candidate a
+        /// person accepted still dominates everything below.
+        ///
+        /// StandardAnnotationProcess calls this once per annotator, so in that path Source and
+        /// Priority are constant within the set and the rank is the first key that can separate
+        /// anything.
+        /// </remarks>
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
             return results.DefaultIfEmpty()
-                .Argmax(result => (result?.Source ?? SourceType.None, result?.Priority ?? -1, result?.TotalScore ?? 0));
+                .Argmax(result => (result?.Source ?? SourceType.None, result?.Priority ?? -1, AnnotationEvidence.RankOf(result), result?.TotalScore ?? 0));
         }
 
         public static FacadeMatchResultEvaluator FromDataBases(DataBaseStorage storage) {

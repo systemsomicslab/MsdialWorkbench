@@ -251,13 +251,7 @@ namespace CompMs.MsdialCore.Algorithm
                 if (isotopeTemps[i - 1].PeakID == -1 && isotopeTemps[i].PeakID == -1) break;
 
                 if (monoisotopicMass <= 800) {
-                    if (isotopeTemps[i - 1].Intensity > isotopeTemps[i].Intensity && param.IsBrClConsideredForIsotopes == false) {
-                        peakFeatures[isotopeTemps[i].PeakID].PeakCharacter.IsotopeParentPeakID = monoIsoPeak.PeakID;
-                        peakFeatures[isotopeTemps[i].PeakID].PeakCharacter.IsotopeWeightNumber = i;
-                        peakFeatures[isotopeTemps[i].PeakID].PeakCharacter.Charge = monoIsoPeak.PeakCharacter.Charge;
-                        isIsotopeDetected = true;
-                    }
-                    else if (param.IsBrClConsideredForIsotopes == true) {
+                    if (IsIntensityAcceptedUpTo800Da(isotopeTemps, i, param.IsBrClConsideredForIsotopes)) {
                         peakFeatures[isotopeTemps[i].PeakID].PeakCharacter.IsotopeParentPeakID = monoIsoPeak.PeakID;
                         peakFeatures[isotopeTemps[i].PeakID].PeakCharacter.IsotopeWeightNumber = i;
                         peakFeatures[isotopeTemps[i].PeakID].PeakCharacter.Charge = monoIsoPeak.PeakCharacter.Charge;
@@ -471,13 +465,7 @@ namespace CompMs.MsdialCore.Algorithm
                     if (isotopeTemps[j - 1].PeakID == -1 && isotopeTemps[j].PeakID == -1) break;
 
                     if (monoisotopicMass <= 800) {
-                        if (isotopeTemps[j - 1].Intensity > isotopeTemps[j].Intensity && param.IsBrClConsideredForIsotopes == false) {
-                            peaks[isotopeTemps[j].PeakID].IsotopeParentPeakID = peak.PeakID;
-                            peaks[isotopeTemps[j].PeakID].IsotopeWeightNumber = j;
-                            peaks[isotopeTemps[j].PeakID].Charge = peak.Charge;
-                            isIsotopeDetected = true;
-                        }
-                        else if (param.IsBrClConsideredForIsotopes == true) {
+                        if (IsIntensityAcceptedUpTo800Da(isotopeTemps, j, param.IsBrClConsideredForIsotopes)) {
                             peaks[isotopeTemps[j].PeakID].IsotopeParentPeakID = peak.PeakID;
                             peaks[isotopeTemps[j].PeakID].IsotopeWeightNumber = j;
                             peaks[isotopeTemps[j].PeakID].Charge = peak.Charge;
@@ -662,7 +650,7 @@ namespace CompMs.MsdialCore.Algorithm
         private static void SetParentToIsotopes(IList<AlignmentSpotProperty> spots, AlignmentSpotProperty monoIsoPeak,
             IReadOnlyList<IsotopeTemp> isotopeTemps, int maxTraceNumber, IupacDatabase iupac, bool isBrClConsidered) {
 
-            Func<int, bool> predicate = i => isBrClConsidered || isotopeTemps[i - 1].Intensity > isotopeTemps[i].Intensity;
+            Func<int, bool> predicate = i => IsIntensityAcceptedUpTo800Da(isotopeTemps, i, isBrClConsidered);
             var monoisotopicMass = monoIsoPeak.MassCenter * monoIsoPeak.PeakCharacter.Charge;
 
             //from here, simple decreasing will be expected for <= 800 Da
@@ -690,6 +678,45 @@ namespace CompMs.MsdialCore.Algorithm
                 spots[isotopeTemps[i].PeakID].PeakCharacter.IsotopeWeightNumber = i;
                 spots[isotopeTemps[i].PeakID].PeakCharacter.Charge = monoIsoPeak.PeakCharacter.Charge;
             }
+        }
+
+        /// <summary>
+        /// Largest accepted ratio between an even isotope position and the even position two below it
+        /// (M + 2 against M, M + 4 against M + 2, ...) when Cl and Br are considered. With n bromine atoms
+        /// M + 2 is about n times M, and with n chlorine atoms about 0.32 n times, so 4 accepts up to four
+        /// bromine or twelve chlorine atoms.
+        /// </summary>
+        internal const double MaxClBrIsotopeStepRatio = 4.0;
+
+        /// <summary>
+        /// The intensity rule for isotope position <paramref name="position"/> of a cluster whose
+        /// monoisotopic mass is 800 Da or less.
+        /// Without Cl and Br, every position must be weaker than the position before it.
+        /// With Cl and Br, an even position may be stronger than the odd position before it, because a
+        /// 37Cl or 81Br isotope can exceed the 13C isotope; but it may be at most
+        /// <see cref="MaxClBrIsotopeStepRatio"/> times the nearest detected position two or more below it.
+        /// An odd position is a 13C isotope and may not be stronger than the nearest detected position
+        /// below it. These bounds keep a strong ion from being taken as an isotope of a much weaker ion
+        /// 1 to 15 Da lower, which would skip it in the library search and remove it from the alignment.
+        /// </summary>
+        internal static bool IsIntensityAcceptedUpTo800Da(IReadOnlyList<IsotopeTemp> isotopeTemps, int position, bool isBrClConsidered) {
+            var intensity = isotopeTemps[position].Intensity;
+            if (!isBrClConsidered) {
+                return isotopeTemps[position - 1].Intensity > intensity;
+            }
+            if (position % 2 == 1) {
+                return NearestDetectedIntensity(isotopeTemps, position - 1) >= intensity;
+            }
+            return intensity <= MaxClBrIsotopeStepRatio * NearestDetectedIntensity(isotopeTemps, position - 2);
+        }
+
+        private static double NearestDetectedIntensity(IReadOnlyList<IsotopeTemp> isotopeTemps, int from) {
+            for (int k = from; k > 0; k--) {
+                if (isotopeTemps[k].PeakID != -1) {
+                    return isotopeTemps[k].Intensity;
+                }
+            }
+            return isotopeTemps[0].Intensity;
         }
 
         private static string getSimulatedFormulaByAlkane(double mass) {

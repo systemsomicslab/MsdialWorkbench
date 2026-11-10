@@ -166,6 +166,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyCollection<DataBaseSource> DBSources { get; } = new ReadOnlyCollection<DataBaseSource>([
             DataBaseSource.None,
             DataBaseSource.Msp,
+            DataBaseSource.PredictedMsp,
             DataBaseSource.Lbm,
             DataBaseSource.Text,
             DataBaseSource.Fasta,

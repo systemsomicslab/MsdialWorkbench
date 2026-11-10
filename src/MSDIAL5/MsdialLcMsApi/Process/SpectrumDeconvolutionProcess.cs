@@ -36,6 +36,13 @@ namespace CompMs.MsdialLcMsApi.Process
                     var results = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, token, targetCE);
                     mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
                 }
+                if (mSDecREsultCollections.Count == 0) {
+                    // Without one deconvolution there is no .dcl, and the run would otherwise go on to
+                    // fail later, at the first reader of it, with an error that names neither cause.
+                    throw new InvalidOperationException(
+                        $"AIF file {analysisFile.AnalysisFileName}: no MS2 scan carries a collision energy above 0 " +
+                        $"(collision-energy targets read: [{string.Join(", ", ceList)}]), so no AIF deconvolution was made.");
+                }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];

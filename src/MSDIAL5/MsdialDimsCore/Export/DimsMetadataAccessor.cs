@@ -51,6 +51,11 @@ namespace CompMs.MsdialDimsCore.Export
                 "Spectrum reference file name",
                 "MS1 isotopic spectrum",
                 "MS/MS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched",
             };
         }
 
@@ -109,7 +114,12 @@ namespace CompMs.MsdialDimsCore.Export
                 "Total score",
                 "S/N",
                 "MS1 isotopes",
-                "MSMS spectrum" };
+                "MSMS spectrum",
+                "Measured terms",
+                "Evidence source",
+                "Candidates found",
+                "Candidates above threshold",
+                "Candidates reference matched" };
         }
 
         protected override Dictionary<string, string> GetContentCore(

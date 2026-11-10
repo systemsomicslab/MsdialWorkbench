@@ -78,5 +78,13 @@
         <ui:LabeledContent PrependLabel="Comment:">
             <TextBox Text="{Binding Comment.Value, Mode=OneWay}"/>
         </ui:LabeledContent>
+
+        <!-- Shown only where the lipid RT check left a verdict; the tooltip has the verdict in full and who set the Confirmed tag. -->
+        <ui:LabeledContent PrependLabel="Lipid RT check:"
+                           Visibility="{Binding HasLipidRtCheck.Value, Converter={StaticResource BooleanToVisibility}}"
+                           ToolTip="{Binding LipidRtCheckDetail.Value}"
+                           ToolTipService.ShowDuration="60000">
+            <TextBox Text="{Binding LipidRtCheck.Value, Mode=OneWay}"/>
+        </ui:LabeledContent>
     </StackPanel>
 </UserControl>

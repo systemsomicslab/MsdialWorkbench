@@ -20,6 +20,9 @@ namespace CompMs.App.Msdial.ViewModel.Information
             Ontology = model.ObserveProperty(m => m.Ontology).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             InChIKey = model.ObserveProperty(m => m.InChIKey).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Comment = model.ObserveProperty(m => m.Comment).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LipidRtCheck = model.ObserveProperty(m => m.LipidRtCheck).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LipidRtCheckDetail = model.ObserveProperty(m => m.LipidRtCheckDetail).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            HasLipidRtCheck = model.ObserveProperty(m => m.LipidRtCheck).Select(c => !string.IsNullOrEmpty(c)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakPoints = model.ObserveProperty(m => m.PeakPoints)
                 .SkipNull()
                 .Select(ps => ps.ToReadOnlyReactiveCollection(m => new PeakPointViewModel(m)))
@@ -40,6 +43,16 @@ namespace CompMs.App.Msdial.ViewModel.Information
         public ReadOnlyReactivePropertySlim<string?> Ontology { get; }
         public ReadOnlyReactivePropertySlim<string?> InChIKey { get; }
         public ReadOnlyReactivePropertySlim<string?> Comment { get; }
+
+        /// <summary>The lipid RT check's verdict on the selected peak or spot, in one line.</summary>
+        public ReadOnlyReactivePropertySlim<string?> LipidRtCheck { get; }
+
+        /// <summary>The verdict in full, with who set or removed the Confirmed tag, for the tooltip.</summary>
+        public ReadOnlyReactivePropertySlim<string?> LipidRtCheckDetail { get; }
+
+        /// <summary>True when the check has a verdict on the selected peak or spot; the row is hidden otherwise.</summary>
+        public ReadOnlyReactivePropertySlim<bool> HasLipidRtCheck { get; }
+
         public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakPointViewModel>> PeakPoints { get; }
         public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakAmountViewModel>> PeakAmounts { get; }
     }

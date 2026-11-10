@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public bool IsItalic => _spotFocus.IsItalic;
 
-        [RegularExpression(@"-?\d*.?\d*", ErrorMessage = "Invalid format")]
+        [RegularExpression(@"-?\d*\.?\d*", ErrorMessage = "Invalid format")]
         public ReactiveProperty<string> Value { get; }
 
         public ReactiveCommand FocusCommand { get; }

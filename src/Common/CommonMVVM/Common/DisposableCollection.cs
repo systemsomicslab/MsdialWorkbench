@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 
 namespace CompMs.CommonMVVM.Common
@@ -33,9 +34,12 @@ namespace CompMs.CommonMVVM.Common
                         }
                     }
                     else {
+                        // The items are taken now: DisposableModelBase clears the collection as soon as this returns,
+                        // before the dispatcher runs the disposal, and a clear while it runs would break the enumeration.
+                        var disposables = this.ToArray();
                         Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            foreach (var disposable in this) {
+                            foreach (var disposable in disposables) {
                                 disposable?.Dispose();
                             }
                         }, System.Windows.Threading.DispatcherPriority.Background);

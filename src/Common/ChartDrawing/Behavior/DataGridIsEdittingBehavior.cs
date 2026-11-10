@@ -1,5 +1,6 @@
 ﻿using CompMs.Graphics.Base;
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -31,11 +32,30 @@ namespace CompMs.Graphics.Behavior
                 if ((bool)e.OldValue) {
                     grid.BeginningEdit -= OnBeginningEdit;
                     grid.RowEditEnding -= OnRowEditEnding;
+                    grid.Sorting -= OnSorting;
                 }
                 if ((bool)e.NewValue) {
                     grid.BeginningEdit += OnBeginningEdit;
                     grid.RowEditEnding += OnRowEditEnding;
+                    grid.Sorting += OnSorting;
                 }
+            }
+        }
+
+        private static void OnSorting(object sender, DataGridSortingEventArgs e) {
+            // DataGrid commits the pending edit before sorting, but only through the current cell's container.
+            // Once the edited row has been scrolled out of view that container is virtualized away, the edit transaction
+            // survives, and sorting throws "'Sorting' is not allowed during an AddNew or EditItem transaction".
+            // Close the transaction on the collection view directly so the sort can go ahead.
+            if (sender is DataGrid grid && grid.Items is IEditableCollectionView view && (view.IsEditingItem || view.IsAddingNew)) {
+                System.Diagnostics.Debug.WriteLine("Commit the edit left open before sorting");
+                if (view.IsAddingNew) {
+                    view.CommitNew();
+                }
+                if (view.IsEditingItem) {
+                    view.CommitEdit();
+                }
+                SetIsEditting(grid, false);
             }
         }
 
