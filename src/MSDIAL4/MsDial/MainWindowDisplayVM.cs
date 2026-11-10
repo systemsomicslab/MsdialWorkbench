@@ -1,7 +1,6 @@
 ﻿using Msdial.Gcms.Dataprocess.Algorithm;
 using Msdial.Lcms.Dataprocess;
 using Msdial.Lcms.Dataprocess.Utility;
-using Riken.Metabolomics.StructureFinder.Utility;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
