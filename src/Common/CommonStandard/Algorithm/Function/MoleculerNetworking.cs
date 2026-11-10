@@ -177,6 +177,10 @@ namespace CompMs.Common.Algorithm.Function
         private static double[] CalculateEdgeScore(IMSScanProperty prop1, IMSScanProperty prop2, MolecularNetworkingQuery query) {
             var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
             if (massDiff > query.MaxPrecursorDifference) return null;
+            // TODO: MaxPrecursorDifferenceAsPercent is shown in the GUI settings and passed in everywhere, but no
+            // networking path applies it. The disabled check below drops a pair when the smaller precursor is
+            // MORE than the given percent of the larger, so at the default 50 it would drop the closest pairs;
+            // the comparison looks inverted. Decide whether to fix and enable it or remove the parameter.
             // if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
             double[] scoreitem = new double[2];
             switch (query.MsmsSimilarityCalc) {
@@ -194,8 +198,8 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         public static EdgeData GetEdge(
-           IMoleculeMsProperty peak1,
-           IMoleculeMsProperty peak2,
+           IMSScanProperty peak1,
+           IMSScanProperty peak2,
            double massTolerance,
            double minimumPeakMatch,
            double matchThreshold,
@@ -343,7 +347,7 @@ namespace CompMs.Common.Algorithm.Function
             }
         }
 
-        private static List<double> GetMsnScoreItems(IMoleculeMsProperty prop1, IMoleculeMsProperty prop2, double massTolerance, MsmsSimilarityCalc msmsSimilarityCalc) {
+        private static List<double> GetMsnScoreItems(IMSScanProperty prop1, IMSScanProperty prop2, double massTolerance, MsmsSimilarityCalc msmsSimilarityCalc) {
             if (msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza) {
                 return MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance).ToList();
             }
