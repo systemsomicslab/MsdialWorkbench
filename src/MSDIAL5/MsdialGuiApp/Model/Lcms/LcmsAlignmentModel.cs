@@ -30,6 +30,7 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -140,12 +141,18 @@ namespace CompMs.App.Msdial.Model.Lcms
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            // Where the aligned RTs are when the automatic alignment RT correction moved them onto a
+            // reference file's axis, and how each aligned peak moves back onto its file's measured axis.
+            var rtAxis = AlignmentRtAxis.Load(alignmentFileBean.AlignmentFileBean, files, parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute);
+            RtAxis = rtAxis;
             PlotModel = new AlignmentPeakPlotModel(spotsSource, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, brushMapDataSelector.SelectedBrush, brushMapDataSelector.Brushes, PeakLinkModel.Build(spotsSource.Spots.Items, spotsSource.Spots.Items.Select(p => p.innerModel.PeakCharacter).ToList()))
             {
                 GraphTitle = ((IFileBean)_alignmentFile).FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
-                HorizontalTitle = "Retention time [min]",
+                HorizontalTitle = rtAxis.IsCorrected
+                    ? (string.IsNullOrEmpty(rtAxis.ReferenceFileName) ? "Aligned retention time [min] (reference file axis)" : $"Aligned retention time [min] (axis of {rtAxis.ReferenceFileName})")
+                    : "Retention time [min]",
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
             var mrmprobsExporter = new EsiMrmprobsExporter(evaluator, mapper);
@@ -207,15 +214,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter,
-                    useOriginalRtPeakBounds: parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute).AddTo(Disposables),
+                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean, fileCollection, projectBaseParameter, rtAxis).AddTo(Disposables),
                 files,
                 parameter,
                 projectBaseParameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
-            AlignmentEicModel.Elements.HorizontalTitle = parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute
+            AlignmentEicModel.Elements.HorizontalTitle = rtAxis.IsCorrected
                 ? "Original retention time [min] (before alignment correction)"
                 : "Retention time [min]";
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
@@ -291,6 +297,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public UndoManager UndoManager => _undoManager;
+        /// <summary>The RT axes of this alignment result (see <see cref="AlignmentRtAxis"/>).</summary>
+        public AlignmentRtAxis RtAxis { get; }
 
         public ReadOnlyObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel?> Target { get; }

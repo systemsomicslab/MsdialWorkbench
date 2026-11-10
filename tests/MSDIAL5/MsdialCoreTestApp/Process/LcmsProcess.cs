@@ -86,9 +86,8 @@ public sealed class LcmsProcess
             Console.Error.WriteLine(unreadable);
             return -1;
         }
-        if (automaticAlignmentRtCorrection.Execute
-            && param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
-            Console.Error.WriteLine("User-defined RT correction and automatic alignment RT correction cannot be enabled together because that would correct the RT axis twice.");
+        if (AutomaticAlignmentRtCorrectionWorkflow.ExclusiveWithLegacyRtCorrection(param) is string exclusive) {
+            Console.Error.WriteLine(exclusive);
             return -1;
         }
         if (automaticAlignmentRtCorrection.Execute && !param.TogetherWithAlignment) {
@@ -109,34 +108,9 @@ public sealed class LcmsProcess
         // The settings and the anchor library are checked before anything heavy is read, as the
         // RT correction library below is; the library is handed to the correction once the peaks
         // are picked.
-        List<MoleculeMsReference> automaticRtCorrectionAnchorLibrary = [];
-        var anchorLibraryIdentity = (Name: string.Empty, Sha256: string.Empty);
-        var anchorLibraryPath = automaticAlignmentRtCorrection.AnchorLibraryFilePath;
-        if (automaticAlignmentRtCorrection.Execute) {
-            try {
-                AutomaticAlignmentRetentionTimeCorrection.ValidateParameter(automaticAlignmentRtCorrection, param.Ms1AlignmentTolerance);
-            }
-            catch (ArgumentException ex) {
-                Console.Error.WriteLine($"Automatic alignment RT correction settings cannot be used: {ex.Message}");
-                return -1;
-            }
-        }
-        if (automaticAlignmentRtCorrection.Execute && automaticAlignmentRtCorrection.AnchorMode != AutomaticRtCorrectionAnchorMode.Automatic) {
-            try {
-                automaticRtCorrectionAnchorLibrary = AutomaticRtCorrectionAnchorLibrary.Load(anchorLibraryPath);
-                AutomaticRtCorrectionAnchorLibrary.Check(automaticRtCorrectionAnchorLibrary, automaticAlignmentRtCorrection);
-            }
-            catch (Exception ex) {
-                Console.Error.WriteLine($"Automatic RT correction anchor library could not be used: {ex.Message}");
-                return -1;
-            }
-            anchorLibraryIdentity = ReportAnchorLibrary(param, anchorLibraryPath, automaticRtCorrectionAnchorLibrary);
-        }
-        else if (!anchorLibraryPath.IsEmptyOrNull()) {
-            var reason = automaticAlignmentRtCorrection.Execute
-                ? "the anchor mode is Automatic"
-                : "'Execute automatic RT correction for alignment' is False";
-            Console.WriteLine($"Warning: 'Automatic RT correction anchor library file path' is set ({anchorLibraryPath}) but {reason}, so the library is not used.");
+        var automaticRtCorrectionInputs = AutomaticAlignmentRtCorrectionWorkflow.PrepareInputs(param, ConsoleRtCorrectionReporter.Instance);
+        if (automaticRtCorrectionInputs is null) {
+            return -1;
         }
         // The RT correction library is checked here, before the analysis files, the annotation
         // libraries and the raw data are read: it is small and easy to get wrong, and a mistake
@@ -208,7 +182,7 @@ public sealed class LcmsProcess
                 MsdialLcmsParameter = param
             };
             Console.WriteLine("Automatic alignment RT correction preview: peak picking without deconvolution or annotation, then anchor selection; nothing is aligned, and nothing is saved beside the raw data.");
-            return PreviewAutomaticRtCorrection(previewStorage, outputFolder, automaticRtCorrectionAnchorLibrary, anchorLibraryIdentity);
+            return PreviewAutomaticRtCorrection(previewStorage, outputFolder, automaticRtCorrectionInputs);
         }
 
         var textAnnotatorSettings = ConfigParser.ReadTextAnnotatorSettings(methodFile, param);
@@ -259,7 +233,7 @@ public sealed class LcmsProcess
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionAnchorLibrary, anchorLibraryIdentity).Result;
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionInputs).Result;
     }
 
     /// <summary>
@@ -278,14 +252,13 @@ public sealed class LcmsProcess
     private static int PreviewAutomaticRtCorrection(
         IMsdialDataStorage<MsdialLcmsParameter> storage,
         string outputFolder,
-        IReadOnlyList<MoleculeMsReference> anchorLibrary,
-        (string Name, string Sha256) anchorLibraryIdentity) {
+        AutomaticRtCorrectionInputs inputs) {
         var files = storage.AnalysisFiles;
         var parameter = storage.Parameter;
         var correction = parameter.AlignmentBaseParam.AutomaticRtCorrection;
         var anchors = correction.AnchorMode == AutomaticRtCorrectionAnchorMode.Automatic
             ? new List<MoleculeMsReference>()
-            : AutomaticRtCorrectionAnchorLibrary.Anchors(anchorLibrary);
+            : AutomaticRtCorrectionAnchorLibrary.Anchors(inputs.AnchorLibrary);
         var providerFactory = new StandardDataProviderFactory(5, false);
         var picker = new PeakPickProcess(storage);
         var readings = new ConcurrentDictionary<int, AutomaticRtCorrectionRawFileReading>();
@@ -302,7 +275,7 @@ public sealed class LcmsProcess
                 Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, parameter.NumThreads / 2) }, file => {
                     var provider = providerFactory.Create(file);
                     MsdialPeakSerializer.SaveChromatogramPeakFeatures(PeaksOf(file), picker.Pick(file, provider, null, default).Items.ToList());
-                    readings[file.AnalysisFileId] = ReadRawFile(file, provider, parameter, anchors);
+                    readings[file.AnalysisFileId] = AutomaticAlignmentRtCorrectionWorkflow.ReadRawFile(file, provider, parameter, anchors);
                     Console.WriteLine($"Automatic alignment RT correction preview: {Interlocked.Increment(ref completed)}/{files.Count} files read ({file.AnalysisFileName}).");
                 });
             }
@@ -311,16 +284,17 @@ public sealed class LcmsProcess
                 return -1;
             }
 
-            var result = BuildAutomaticRtCorrection(
-                storage,
-                anchorLibrary,
+            var result = AutomaticAlignmentRtCorrectionWorkflow.Build(
+                storage.AnalysisFiles,
+                storage.Parameter,
+                inputs,
                 outputFolder,
                 file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(PeaksOf(file)),
                 (file, given) => given.SequenceEqual(anchors)
                     ? readings[file.AnalysisFileId]
                     : throw new InvalidOperationException("The preview read other anchors than the correction asked for."),
                 "Preview",
-                anchorLibraryIdentity);
+                ConsoleRtCorrectionReporter.Instance);
             if (result is null) {
                 return -1;
             }
@@ -462,163 +436,15 @@ public sealed class LcmsProcess
         }
     }
 
-    // One file's raw data, read once: its MS1 scan times (the outlier test's scale floor) and its
-    // user anchors, detected on the raw extracted ion chromatograms.
-    private static AutomaticRtCorrectionRawFileReading ReadRawFile(
-        AnalysisFileBean file,
-        IDataProvider provider,
-        MsdialLcmsParameter parameter,
-        IReadOnlyList<MoleculeMsReference> anchors) {
-        var correction = parameter.AlignmentBaseParam.AutomaticRtCorrection;
-        var detection = AutomaticRtCorrectionUserAnchorDetector.Detect(
-            file, provider, parameter, anchors, correction.AnchorPeakSelectionMode, correction.AnchorPeakSelectionRtWeight);
-        return new AutomaticRtCorrectionRawFileReading(
-            Ms1CycleProfile.FromSpectra(provider.LoadMsSpectrums(), parameter.IonMode),
-            detection.Observations,
-            detection.Notes);
-    }
+    // The Console's voice for the shared automatic alignment RT correction: what it says goes to
+    // the standard output, why it refuses or fails to the standard error, as it always did.
+    private sealed class ConsoleRtCorrectionReporter : IAutomaticRtCorrectionReporter
+    {
+        public static ConsoleRtCorrectionReporter Instance { get; } = new ConsoleRtCorrectionReporter();
 
-    /// <summary>
-    /// Learns the automatic alignment RT correction and writes its audit; null, with the reason
-    /// on the error stream, when it fails.
-    /// </summary>
-    /// <remarks>
-    /// An earlier run's audit in the output folder is removed first (Run removes it before any
-    /// file is read, and this again), so that a failure cannot leave it looking like this run's.
-    /// When the correction fails after the raw data was read, what was read (each file, each user
-    /// anchor's detection, the exclusions) is written as the audit, with the reason in every
-    /// file's note: the person can see which anchor was not found where. The summary names the
-    /// kind of run and the anchor library by file name and SHA-256.
-    /// </remarks>
-    private static AutomaticAlignmentRetentionTimeCorrectionResult? BuildAutomaticRtCorrection(
-        IMsdialDataStorage<MsdialLcmsParameter> storage,
-        IReadOnlyList<MoleculeMsReference> anchorLibrary,
-        string outputFolder,
-        Func<AnalysisFileBean, List<ChromatogramPeakFeature>> peakLoader,
-        Func<AnalysisFileBean, IReadOnlyList<MoleculeMsReference>, AutomaticRtCorrectionRawFileReading> rawFileReader,
-        string run,
-        (string Name, string Sha256) anchorLibraryIdentity) {
-        var parameter = storage.Parameter;
-        try {
-            AutomaticAlignmentRetentionTimeCorrectionResult.RemoveAudit(outputFolder);
-            Console.WriteLine("Automatic alignment RT correction: selecting anchors after peak picking.");
-            var result = AutomaticAlignmentRetentionTimeCorrection.Build(
-                storage.AnalysisFiles,
-                parameter.AlignmentBaseParam.AutomaticRtCorrection,
-                parameter.Ms1AlignmentTolerance,
-                peakLoader,
-                anchorLibrary,
-                rawFileReader);
-            result.WriteAudit(outputFolder, run, anchorLibraryIdentity.Name, anchorLibraryIdentity.Sha256);
-            ReportAutomaticRtCorrection(result);
-            return result;
-        }
-        catch (AutomaticRtCorrectionFailedException ex) {
-            Console.Error.WriteLine($"Automatic alignment RT correction failed: {ex.Message}");
-            try {
-                ex.PartialAudit.WriteAudit(outputFolder, run, anchorLibraryIdentity.Name, anchorLibraryIdentity.Sha256);
-                Console.Error.WriteLine($"What was read before it failed, each user anchor's detection in each file included, is in {AutomaticAlignmentRetentionTimeCorrectionResult.SummaryFileName} and {AutomaticAlignmentRetentionTimeCorrectionResult.AnchorsFileName}.");
-            }
-            catch (Exception writeError) {
-                Console.Error.WriteLine($"The audit of the failed correction could not be written: {writeError.Message}");
-            }
-            return null;
-        }
-        catch (Exception ex) {
-            Console.Error.WriteLine($"Automatic alignment RT correction failed: {ex.Message}");
-            return null;
-        }
-    }
+        public void Info(string line) => Console.WriteLine(line);
 
-    // Says on the console what the audit says and a person must not miss: the reference, the
-    // non-Blank files left on their original RT, the user anchors that are no anchor, and the
-    // exclusions that excluded nothing.
-    private static void ReportAutomaticRtCorrection(AutomaticAlignmentRetentionTimeCorrectionResult result) {
-        var reference = result.Files.FirstOrDefault(file => file.FileId == result.Correction.ReferenceFileId);
-        Console.WriteLine($"Automatic alignment RT correction reference file ID: {result.Correction.ReferenceFileId}{(reference is null ? string.Empty : $" ({reference.FileName})")}");
-        if (!string.IsNullOrEmpty(result.ReferenceSelection)) {
-            Console.WriteLine($"Automatic alignment RT correction reference selection: {result.ReferenceSelection}");
-        }
-        var uncorrected = result.Files
-            .Where(file => file.FileType != AnalysisFileType.Blank && file.ModelSource == AutomaticRtCorrectionModelSource.Uncorrected)
-            .ToList();
-        if (uncorrected.Count > 0) {
-            Console.WriteLine($"Warning: {uncorrected.Count} non-Blank file(s) keep their original RT, too few usable anchors: "
-                + string.Join(", ", uncorrected.Select(file => $"{file.FileName} ({file.MatchedAnchorCount} matched)"))
-                + ". They are aligned uncorrected.");
-        }
-        if (reference is not null) {
-            foreach (var anchor in result.Anchors.Where(anchor => anchor.FileId == reference.FileId && anchor.Status is "MissingInReference" or "Duplicate")) {
-                Console.WriteLine(anchor.Status == "Duplicate"
-                    ? $"Warning: user anchor {anchor.AnchorName} is not used: {anchor.Detection}"
-                    : $"Warning: user anchor {anchor.AnchorName} was not detected in the reference file and is not used. {anchor.Detection}");
-            }
-        }
-        foreach (var group in result.Anchors.Where(anchor => anchor.OutlierFlagged).GroupBy(anchor => anchor.AnchorName)) {
-            Console.WriteLine($"Note: the outlier test disagrees with user anchor {group.Key} in {group.Count()} file(s); a user anchor is not rejected for that.");
-        }
-        foreach (var warning in result.Warnings) {
-            Console.WriteLine($"Warning: {warning}");
-        }
-        foreach (var exclusion in result.Exclusions.Where(exclusion => exclusion.ExcludedCandidates == 0)) {
-            Console.WriteLine($"Warning: exclusion {exclusion.AnchorName} (m/z {exclusion.Mass.ToString(System.Globalization.CultureInfo.InvariantCulture)}, RT {exclusion.Rt.ToString(System.Globalization.CultureInfo.InvariantCulture)} min) matched no automatic candidate of reference file {exclusion.ReferenceFileName}.");
-        }
-        Console.WriteLine(result.Exclusions.Count > 0
-            ? $"Automatic alignment RT correction audit: {AutomaticAlignmentRetentionTimeCorrectionResult.SummaryFileName}, {AutomaticAlignmentRetentionTimeCorrectionResult.AnchorsFileName} and {AutomaticAlignmentRetentionTimeCorrectionResult.ExclusionsFileName}"
-            : $"Automatic alignment RT correction audit: {AutomaticAlignmentRetentionTimeCorrectionResult.SummaryFileName} and {AutomaticAlignmentRetentionTimeCorrectionResult.AnchorsFileName}");
-    }
-
-    // Says what the library holds and where it comes from, warns about a row the run's other
-    // settings will keep from being found, and returns the library's file name and SHA-256 for
-    // the audit.
-    private static (string Name, string Sha256) ReportAnchorLibrary(MsdialLcmsParameter param, string path, IReadOnlyList<MoleculeMsReference> library) {
-        var invariant = System.Globalization.CultureInfo.InvariantCulture;
-        var correction = param.AlignmentBaseParam.AutomaticRtCorrection;
-        var anchors = AutomaticRtCorrectionAnchorLibrary.Anchors(library);
-        var exclusions = AutomaticRtCorrectionAnchorLibrary.Exclusions(library);
-        string checksum;
-        using (var sha = System.Security.Cryptography.SHA256.Create())
-        using (var stream = File.OpenRead(path)) {
-            checksum = string.Concat(sha.ComputeHash(stream).Select(value => value.ToString("x2")));
-        }
-        Console.WriteLine($"Automatic alignment RT correction anchor mode {correction.AnchorMode}: {anchors.Count} user anchor(s) and {exclusions.Count} exclusion(s) from {path} (SHA-256 {checksum}).");
-        Console.WriteLine($"User anchors: {(anchors.Count == 0 ? "none" : string.Join(", ", anchors.Select(anchor => anchor.Name)))}.");
-        if (exclusions.Count > 0) {
-            Console.WriteLine($"Exclusions: {string.Join(", ", exclusions.Select(exclusion => exclusion.Name))}.");
-        }
-        if (correction.AnchorMode == AutomaticRtCorrectionAnchorMode.UserOnly && exclusions.Count > 0) {
-            Console.WriteLine($"Warning: the anchor library's {exclusions.Count} False row(s) have no effect in UserOnly mode; they exclude automatic candidates only in Hybrid mode.");
-        }
-        foreach (var anchor in anchors) {
-            // The run drops a detected peak whose m/z lies within an excluded window
-            // (PeakSpottingCore). An anchor whose whole m/z window lies inside one is never
-            // found; one whose window only reaches into it is found unless its peak's m/z falls
-            // inside.
-            var covering = param.ExcludedMassList.FirstOrDefault(query => Math.Abs(query.Mass - anchor.PrecursorMz) + anchor.MassTolerance <= query.MassTolerance);
-            var touching = covering ?? param.ExcludedMassList.FirstOrDefault(query => Math.Abs(query.Mass - anchor.PrecursorMz) < query.MassTolerance + anchor.MassTolerance);
-            if (covering is not null) {
-                Console.WriteLine($"Warning: user anchor {anchor.Name} (m/z {anchor.PrecursorMz.ToString(invariant)}) lies within the excluded mass {covering.Mass.ToString(invariant)}; peaks there are not detected, so it will be missing in every file.");
-            }
-            else if (touching is not null) {
-                Console.WriteLine($"Warning: user anchor {anchor.Name} (m/z {anchor.PrecursorMz.ToString(invariant)}) reaches into the excluded mass {touching.Mass.ToString(invariant)}; it will be missing in a file where its peak's m/z falls inside the excluded window.");
-            }
-        }
-        // The user-defined RT correction's peak selection keys do not reach the new pipeline,
-        // which reads its own. A method file that set them and moved from one pipeline to the
-        // other would choose another peak per anchor without a word; one that left them at their
-        // defaults says nothing it needs to hear.
-        var legacy = param.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam;
-        var legacyDefaults = new RetentionTimeCorrectionParam();
-        var legacySet = legacy.PeakSelectionMode != legacyDefaults.PeakSelectionMode
-            || Math.Abs(legacy.PeakSelectionRtWeight - legacyDefaults.PeakSelectionRtWeight) > 1e-6;
-        var differs = legacy.PeakSelectionMode != correction.AnchorPeakSelectionMode
-            || (legacy.PeakSelectionMode == RetentionTimeCorrectionPeakSelectionMode.Weighted && Math.Abs(legacy.PeakSelectionRtWeight - correction.AnchorPeakSelectionRtWeight) > 1e-6);
-        if (legacySet && differs) {
-            Console.WriteLine($"Warning: 'RT correction peak selection mode' is {legacy.PeakSelectionMode}, but user anchors are chosen by 'Automatic RT correction anchor peak selection mode', which is {correction.AnchorPeakSelectionMode}"
-                + (correction.AnchorPeakSelectionMode == RetentionTimeCorrectionPeakSelectionMode.Weighted ? $" (RT weight {correction.AnchorPeakSelectionRtWeight.ToString(invariant)})" : string.Empty)
-                + "; the user-defined RT correction's keys have no effect here.");
-        }
-        return (Path.GetFileName(path), checksum);
+        public void Error(string line) => Console.Error.WriteLine(line);
     }
 
     private async Task<int> ExecuteAsync(
@@ -628,8 +454,7 @@ public sealed class LcmsProcess
         bool isAlignmentLightMode,
         bool exportDetailedAlignmentProvenance,
         bool exportAnnotationCandidates,
-        IReadOnlyList<MoleculeMsReference> automaticRtCorrectionAnchorLibrary,
-        (string Name, string Sha256) anchorLibraryIdentity) {
+        AutomaticRtCorrectionInputs automaticRtCorrectionInputs) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
 
@@ -670,14 +495,15 @@ public sealed class LcmsProcess
 
         AutomaticAlignmentRetentionTimeCorrectionResult? automaticRtCorrectionResult = null;
         if (storage.Parameter.TogetherWithAlignment && storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
-            automaticRtCorrectionResult = BuildAutomaticRtCorrection(
-                storage,
-                automaticRtCorrectionAnchorLibrary,
+            automaticRtCorrectionResult = AutomaticAlignmentRtCorrectionWorkflow.Build(
+                storage.AnalysisFiles,
+                storage.Parameter,
+                automaticRtCorrectionInputs,
                 outputFolder,
                 file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath),
-                (file, anchors) => ReadRawFile(file, providerFactory.Create(file), storage.Parameter, anchors),
+                (file, anchors) => AutomaticAlignmentRtCorrectionWorkflow.ReadRawFile(file, providerFactory.Create(file), storage.Parameter, anchors),
                 "Run",
-                anchorLibraryIdentity);
+                ConsoleRtCorrectionReporter.Instance);
             if (automaticRtCorrectionResult is null) {
                 return -1;
             }
@@ -691,6 +517,9 @@ public sealed class LcmsProcess
                 : $"Alignment reference file ID: {correctionReference}, the automatic alignment RT correction's reference, in place of {declared}; the alignment must use the reference of the corrected RT axis.");
             storage.Parameter.AlignmentReferenceFileID = correctionReference;
         }
+        // The aligned RTs are then on the reference file's axis, and every export says so.
+        var rtAxis = automaticRtCorrectionResult is null ? null : AlignmentRtAxis.FromCorrection(automaticRtCorrectionResult.Correction, files);
+        var rtAxisNote = rtAxis?.ExportNote();
 
         // The identity of the build, without the host application's name: this field is the
         // VERSION, and mzTab-M already wraps it as "MS-DIAL, <this>" -- "MS-DIAL, Msdial console
@@ -742,6 +571,9 @@ public sealed class LcmsProcess
                 lipidRtRun = aligner.LipidRtRun;
                 removedIsotopeSpots = aligner.RemovedIsotopeSpots;
                 result.Save(alignmentFile);
+                if (automaticRtCorrectionResult is not null) {
+                    WriteRtCorrectionMap(alignmentFile, automaticRtCorrectionResult.Correction, files);
+                }
                 align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
                 MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
             }
@@ -761,7 +593,7 @@ public sealed class LcmsProcess
                 : new LegacyQuantValueAccessor(exportType, storage.Parameter);
             IQuantValueAccessor align_quantAccessor = CreateQuantAccessor("Height");
             var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
-            var align_exporter = new AlignmentCSVExporter();
+            var align_exporter = new AlignmentCSVExporter { RetentionTimeAxisNote = rtAxisNote };
             using var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
             align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
@@ -790,7 +622,7 @@ public sealed class LcmsProcess
             if (exportDetailedAlignmentProvenance) {
                 var provenanceOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdprovenance.tsv");
                 using (var provenanceStream = File.Open(provenanceOutputFile, FileMode.Create, FileAccess.Write)) {
-                    var provenanceExporter = new AlignmentProvenanceExporter();
+                    var provenanceExporter = new AlignmentProvenanceExporter(rtAxis is null ? null : rtAxis.ToOriginal);
                     if (alignmentLightPeakStore is null) {
                         provenanceExporter.Export(provenanceStream, result.AlignmentSpotProperties);
                     }
@@ -825,7 +657,7 @@ public sealed class LcmsProcess
                     using (var matrixStream = File.Open(matrixFile, FileMode.Create, FileAccess.Write)) {
                         ExportAlignmentMatrix(
                             matrixStream, result.AlignmentSpotProperties, align_decResults, files,
-                            align_accessor, exportType, storage.Parameter, alignmentLightPeakStore, matrixStats);
+                            align_accessor, exportType, storage.Parameter, alignmentLightPeakStore, matrixStats, rtAxisNote);
                     }
                     Console.WriteLine($"{exportType} matrix: {matrixFile}");
                 }
@@ -868,7 +700,7 @@ public sealed class LcmsProcess
             var spots = result.AlignmentSpotProperties; // TODO: cancellation
             var msdecs = align_decResults;
             var accessor = align_accessor;
-            var mztabM_exporter = new MztabFormatExporter(storage.DataBases, alignmentLightPeakStore);
+            var mztabM_exporter = new MztabFormatExporter(storage.DataBases, alignmentLightPeakStore) { RetentionTimeAxisNote = rtAxisNote };
 
             using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             mztabM_exporter.MztabFormatExporterCore(
@@ -976,13 +808,28 @@ public sealed class LcmsProcess
         string exportType,
         ParameterBase parameter,
         AlignmentLightPeakStore? alignmentLightPeakStore,
-        IReadOnlyList<StatsValue> stats) {
+        IReadOnlyList<StatsValue> stats,
+        string? rtAxisNote = null) {
         IQuantValueAccessor quantAccessor = alignmentLightPeakStore is null
             ? new LegacyQuantValueAccessor(exportType, parameter)
             : new AlignmentLightQuantValueAccessor(exportType, parameter, alignmentLightPeakStore);
-        new AlignmentCSVExporter().Export(
+        new AlignmentCSVExporter { RetentionTimeAxisNote = rtAxisNote }.Export(
             stream, spots, msdecResults, files,
             new MulticlassFileMetaAccessor(0), metadataAccessor, quantAccessor, stats);
+    }
+
+    // The maps the alignment used, beside the alignment result, so that the GUI moves each peak's
+    // RTs between the measured and the aligned axis as the alignment did. A failure to write it
+    // does not fail the run: the GUI then falls back on each peak's stored bounds, and says so.
+    private static void WriteRtCorrectionMap(AlignmentFileBean alignmentFile, AlignmentRetentionTimeCorrectionCollection correction, IReadOnlyList<AnalysisFileBean> files) {
+        var path = AlignmentRetentionTimeCorrectionMapFile.PathFor(alignmentFile);
+        try {
+            AlignmentRetentionTimeCorrectionMapFile.Write(path, correction, files);
+            Console.WriteLine($"Automatic alignment RT correction map: {path}");
+        }
+        catch (Exception ex) {
+            Console.WriteLine($"Warning: the automatic alignment RT correction map {path} could not be written ({ex.Message}); the GUI will move RTs between the axes through each peak's stored bounds.");
+        }
     }
 
     private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty>? spots) {

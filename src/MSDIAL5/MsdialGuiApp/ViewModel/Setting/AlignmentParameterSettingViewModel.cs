@@ -61,6 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ShouldRunAlignment = Model.ToReactivePropertySlimAsSynchronized(m => m.ShouldRunAlignment).AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AutomaticRtCorrection = new AutomaticRtCorrectionSettingViewModel(model.AutomaticRtCorrection).AddTo(Disposables);
 
             ObserveHasErrors = new[]
             {
@@ -70,6 +71,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 PeakCountFilter.ObserveHasErrors,
                 NPercentDetectedInOneGroup.ObserveHasErrors,
                 FoldChangeForBlankFiltering.ObserveHasErrors,
+                AutomaticRtCorrection.ObserveHasErrors,
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -89,6 +91,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 IsKeepRemovableFeaturesAndAssignedTagForChecking.ToUnit(),
                 IsForceInsertForGapFilling.ToUnit(),
                 UseRefMatchedPeaksOnly.ToUnit(),
+                AutomaticRtCorrection.ObserveChanges,
             }.Merge();
 
             decide = new Subject<Unit>().AddTo(Disposables);
@@ -146,6 +149,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> UseRefMatchedPeaksOnly { get; }
 
         public ReactivePropertySlim<bool> ShouldRunAlignment { get; }
+
+        public AutomaticRtCorrectionSettingViewModel AutomaticRtCorrection { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 

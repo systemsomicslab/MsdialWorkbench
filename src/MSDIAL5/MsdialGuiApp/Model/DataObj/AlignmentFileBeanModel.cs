@@ -38,6 +38,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string ProteinAssembledResultFilePath => _alignmentFile.ProteinAssembledResultFilePath;
 
         public int CountRawFiles => _analysisFiles.Count;
+        public IReadOnlyList<AnalysisFileBean> AnalysisFiles => _analysisFiles;
 
         public AlignmentResultContainer RunAlignment(PeakAligner aligner, ChromatogramSerializer<ChromatogramSpotInfo>? serializer) {
             var container = aligner.Alignment(_analysisFiles, _alignmentFile, serializer);

@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.Model.Export
                 ExportLong(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta);
             }
             else {
-                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta);
+                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta, RetentionTimeAxisNote);
             }
         }
 
@@ -85,8 +85,15 @@ namespace CompMs.App.Msdial.Model.Export
             }
         }
 
-        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string>? notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta, AccessFileMetaModel accessFileMeta) {
+        /// <summary>
+        /// Which RT axis the exported RTs are on, written into the wide table's header when set (an
+        /// alignment the automatic RT correction moved onto a reference file's axis); null otherwise.
+        /// </summary>
+        public string? RetentionTimeAxisNote { get; set; }
+
+        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string>? notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta, AccessFileMetaModel accessFileMeta, string? rtAxisNote = null) {
             var exporter = Format.CreateWideExporter();
+            exporter.RetentionTimeAxisNote = rtAxisNote;
             var accessor = accessPeakMeta.GetAccessor();
             MsdialCore.Export.MulticlassFileMetaAccessor fileMetaAccessor = accessFileMeta.GetAccessor();
             foreach (var exportType in exportTypes) {
