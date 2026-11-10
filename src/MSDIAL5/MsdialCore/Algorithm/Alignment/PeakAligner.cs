@@ -35,6 +35,18 @@ public class PeakAligner {
     /// </summary>
     public LipidRtUnitRun? LipidRtRun { get; private set; }
 
+    /// <summary>
+    /// The spots the last alignment removed because their representative peak is an isotope and they are not
+    /// reference-matched. Null when this kind of project does not remove isotope spots.
+    /// </summary>
+    public IReadOnlyList<RemovedIsotopeSpot>? RemovedIsotopeSpots => (Refiner as AlignmentRefiner)?.RemovedIsotopeSpots;
+
+    /// <summary>
+    /// The annotators that search a library of predicted spectra, whose matches the lipid RT check does not evaluate
+    /// (<see cref="LipidRtInputBuilder.PredictedLibraryAnnotators"/>). Null when the factory does not know them.
+    /// </summary>
+    public ISet<string>? PredictedLibraryAnnotators { get; set; }
+
     public PeakAligner(AlignmentProcessFactory factory, IProgress<int>? progress) {
         Accessor = factory.CreateDataAccessor();
         Joiner = factory.CreatePeakJoiner();
@@ -68,7 +80,7 @@ public class PeakAligner {
             // result is saved and exported, so its verdicts and tags describe the annotations that are saved. Isotope
             // tracking replaces the spot collection, so it is read from the container here. LC-MS only in this version.
             if (Param.MachineCategory == MachineCategory.LCMS) {
-                LipidRtRun = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, Param);
+                LipidRtRun = LipidRtCheckHooks.RunOnSpots(container.AlignmentSpotProperties, Param, PredictedLibraryAnnotators);
             }
 
             if (chromPeakInfoSerializer != null)

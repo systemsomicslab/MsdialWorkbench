@@ -38,7 +38,10 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public DataCollectionSettingModel(MsdialDimsParameter parameter, PeakPickBaseParameterModel peakPickBaseParameterModel, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, peakPickBaseParameterModel, analysisFiles, process) {
-            DimsProviderFactoryParameter = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, peakPickBaseParameterModel, parameter.ProviderFactoryParameter);
+            // Imaging DIMS always detects peaks on the sum of every pixel's spectrum, so it has no MS1 selection method to set.
+            if (parameter.MachineCategory != MachineCategory.IDIMS) {
+                DimsProviderFactoryParameter = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, peakPickBaseParameterModel, parameter.ProviderFactoryParameter);
+            }
         }
 
         public DataCollectionSettingModel(MsdialImmsParameter parameter, PeakPickBaseParameterModel peakPickBaseParameterModel, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, peakPickBaseParameterModel, analysisFiles, process) {

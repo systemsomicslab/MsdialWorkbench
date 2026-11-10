@@ -14,23 +14,45 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 {
     public class LcmsMspAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
-        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID, int priority)
+        /// <param name="allowsSuggestions">False keeps only reference matches; see <see cref="AllowsSuggestions"/>.</param>
+        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID, int priority, bool allowsSuggestions = true)
             : base(mspDB.Database, parameter, annotatorID, priority, SourceType.MspDB) {
             Id = annotatorID;
             ReferObject = mspDB;
             scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.CID, true, mspDB.DataBaseSource);
             evaluator = new MsScanMatchResultEvaluator(parameter);
+            AllowsSuggestions = allowsSuggestions;
         }
 
-        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, CollisionType type, string annotatorID, int priority)
+        /// <param name="allowsSuggestions">False keeps only reference matches; see <see cref="AllowsSuggestions"/>.</param>
+        public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, CollisionType type, string annotatorID, int priority, bool allowsSuggestions = true)
             : base(mspDB.Database, parameter, annotatorID, priority, SourceType.MspDB) {
             Id = annotatorID;
             ReferObject = mspDB;
             scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, type, true, mspDB.DataBaseSource);
             evaluator = new MsScanMatchResultEvaluator(parameter);
+            AllowsSuggestions = allowsSuggestions;
         }
 
         public string Id { get; }
+
+        /// <summary>
+        /// Whether a candidate this annotator did not accept may stand as a suggestion.
+        /// </summary>
+        /// <remarks>
+        /// True unless the caller says otherwise, which is what every annotator did before. False
+        /// leaves the reference match exactly as it was and takes away only the suggestion: the
+        /// precursor-only candidate of a feature with no product-ion spectrum, and the candidate whose
+        /// spectrum was compared and fell short. FilterByThreshold keeps a result only when one of the
+        /// two verdicts holds, so such a candidate is then not stored at all. The Console sets it per
+        /// annotator from its settings table, for an in-silico library whose mass windows hold
+        /// hundreds of generated records each.
+        ///
+        /// Not part of the restoration key, so an annotator rebuilt when a project is reopened
+        /// suggests again. The stored results are unaffected; only a re-annotation would differ.
+        /// </remarks>
+        public bool AllowsSuggestions { get; }
+
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly IReferenceScorer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> scorer;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
@@ -62,7 +84,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             // deleted the candidate from the stored results outright. It now costs the reference
             // match and leaves the precursor-only suggestion standing, which is what the evidence
             // supports. This is the shape MassAnnotator and DimsMspAnnotator already had.
-            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
+            result.IsAnnotationSuggested = AllowsSuggestions && result.IsPrecursorMzMatch && !result.IsReferenceMatched;
             return result;
         }
 

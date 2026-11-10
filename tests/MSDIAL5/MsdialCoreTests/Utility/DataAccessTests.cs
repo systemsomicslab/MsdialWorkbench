@@ -3,6 +3,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -235,6 +236,65 @@ public class DataAccessTests
             var peak = new AlignmentChromPeakFeature { Name = name };
             Assert.AreEqual("TRUE", DataAccess.GetSpotValueAsString(peak, "Reference matched"), name);
             Assert.AreEqual(1d, DataAccess.GetSpotValue(peak, "Reference matched"), name);
+            Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(peak, "In-silico matched"), name);
+            Assert.AreEqual(0d, DataAccess.GetSpotValue(peak, "In-silico matched"), name);
         }
+    }
+
+    /// <summary>
+    /// The author's decision of 2026-10-28: an in-silico match is never an identification, so the QA
+    /// matrix does not count a peak whose accepted annotation is one as "Reference matched"; it marks it
+    /// "In-silico matched" instead. Acquired, rule-based and peptide matches keep "Reference matched".
+    /// </summary>
+    [TestMethod()]
+    public void QaReferenceMatchedLeavesOutAnInSilicoMatch() {
+        Assert.AreEqual("In-silico matched", DataAccess.QaInSilicoMatchedColumn);
+
+        var inSilico = PeakAnnotatedBy("Morin", AnnotationEvidenceSource.BySpectrumPredictionTool, SourceType.MspDB);
+        Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(inSilico, "Reference matched"));
+        Assert.AreEqual(0d, DataAccess.GetSpotValue(inSilico, "Reference matched"));
+        Assert.AreEqual("TRUE", DataAccess.GetSpotValueAsString(inSilico, "In-silico matched"));
+        Assert.AreEqual(1d, DataAccess.GetSpotValue(inSilico, "In-silico matched"));
+
+        foreach (var (evidence, source) in new[] {
+            (AnnotationEvidenceSource.ReferenceSpectrum, SourceType.MspDB),
+            (AnnotationEvidenceSource.RuleBased, SourceType.MspDB | SourceType.GeneratedLipid),
+            (AnnotationEvidenceSource.Unspecified, SourceType.MspDB),
+            // Peptides keep 430 and their reference match, as the 450 carve-out says.
+            (AnnotationEvidenceSource.BySpectrumPredictionTool, SourceType.FastaDB),
+        }) {
+            var peak = PeakAnnotatedBy("Quercetin", evidence, source);
+            Assert.AreEqual("TRUE", DataAccess.GetSpotValueAsString(peak, "Reference matched"), $"{evidence} {source}");
+            Assert.AreEqual(1d, DataAccess.GetSpotValue(peak, "Reference matched"), $"{evidence} {source}");
+            Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(peak, "In-silico matched"), $"{evidence} {source}");
+            Assert.AreEqual(0d, DataAccess.GetSpotValue(peak, "In-silico matched"), $"{evidence} {source}");
+        }
+
+        // A suggestion's name decides first, whatever its evidence: neither column marks it.
+        var suggested = PeakAnnotatedBy("no MS2: Morin", AnnotationEvidenceSource.BySpectrumPredictionTool, SourceType.MspDB);
+        Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(suggested, "Reference matched"));
+        Assert.AreEqual("FALSE", DataAccess.GetSpotValueAsString(suggested, "In-silico matched"));
+    }
+
+    [TestMethod()]
+    public void IsInSilicoMsmsMatchReadsTheEvidenceRecord() {
+        Assert.IsFalse(DataAccess.IsInSilicoMsmsMatch(null));
+        Assert.IsTrue(DataAccess.IsInSilicoMsmsMatch(new MsScanMatchResult { EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool, Source = SourceType.MspDB }));
+        Assert.IsFalse(DataAccess.IsInSilicoMsmsMatch(new MsScanMatchResult { EvidenceSource = AnnotationEvidenceSource.BySpectrumPredictionTool, Source = SourceType.FastaDB }));
+        Assert.IsFalse(DataAccess.IsInSilicoMsmsMatch(new MsScanMatchResult { EvidenceSource = AnnotationEvidenceSource.ReferenceSpectrum, Source = SourceType.MspDB }));
+    }
+
+    private static AlignmentChromPeakFeature PeakAnnotatedBy(string name, AnnotationEvidenceSource evidence, SourceType source) {
+        var peak = new AlignmentChromPeakFeature { Name = name };
+        peak.MatchResults.AddResult(new MsScanMatchResult {
+            Name = name,
+            Source = source,
+            EvidenceSource = evidence,
+            IsReferenceMatched = !name.StartsWith("no MS2"),
+            IsSpectrumMatch = true,
+            IsPrecursorMzMatch = true,
+            TotalScore = 0.8f,
+        });
+        return peak;
     }
 }

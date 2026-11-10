@@ -446,7 +446,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             var result = new LipidRtCheck(parameter).Evaluate(LipidRtSyntheticRun.Input(sp));
             var verdict = result[LipidRtSyntheticRun.Find(sp, "TG", 52, 1)].ToVerdict(parameter.ComputeHash());
             Assert.AreEqual(LipidRtOutcome.Confirmed, verdict.Outcome);
-            Assert.AreEqual("1.0", verdict.RuleVersion);
+            Assert.AreEqual("1.1", verdict.RuleVersion);
             Assert.AreEqual(16, verdict.ParameterHash.Length);
             StringAssert.StartsWith(verdict.Evidence, "Confirmed: ");
         }

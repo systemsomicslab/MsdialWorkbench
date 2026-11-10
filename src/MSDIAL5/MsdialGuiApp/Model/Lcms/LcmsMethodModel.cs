@@ -118,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new AlignmentSpectraExportFormat("Sdf", "sdf", new AlignmentSdfExporter(false, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mat", "mat", new AlignmentMatExporter(storage.DataBaseMapper, storage.Parameter)));
             var gnps = new AlignmentGnpsExportModel("GNPS", quantTypes, new GnpsMetadataAccessor(storage.DataBaseMapper, storage.Parameter), peakMeta.GetAccessor(), fileMeta.GetAccessor(), analysisFileBeanModelCollection);
-            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext);
+            var massBank = new AlignmentResultMassBankRecordExportModel(peakSpotSupplyer, storage.Parameter.ProjectParam, studyContext, _matchResultEvaluator, broker);
             var productions = new AlignmentReferenceMatchedProductIonExportModel(peakSpotSupplyer, analysisFileBeanModelCollection, _matchResultEvaluator, storage.DataBaseMapper, storage.Parameter.ProjectParam.TargetOmics);
             var spectraAndReference = new AlignmentMatchedSpectraExportModel(peakSpotSupplyer, storage.DataBaseMapper, analysisFileBeanModelCollection.IncludedAnalysisFiles, CompoundSearcherCollection.BuildSearchers(storage.DataBases, storage.DataBaseMapper));
             var mztabm = new AlignmentMztabMExportModel(analysisFileBeanModelCollection, peakSpotSupplyer, storage.DataBases, quantTypes.GetRange(0, 4), peakMeta);
@@ -403,14 +403,14 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public AnalysisResultExportModel ExportAnalysis() {
-            var models = CreateAnalysisExports(_providerFactory, _storage.DataBaseMapper, _storage.Parameter, _studyContext, _broker);
+            var models = CreateAnalysisExports(_providerFactory, _storage.DataBaseMapper, _storage.Parameter, _studyContext, _matchResultEvaluator, _broker);
             return new AnalysisResultExportModel(AnalysisFileModelCollection, _storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
 
         /// <summary>
         /// The per-sample exports of Export &gt; Peak list result, over the raw data provider factory that processing uses.
         /// </summary>
-        internal static IMsdialAnalysisExport[] CreateAnalysisExports(IDataProviderFactory<AnalysisFileBean> providerFactory, DataBaseMapper dataBaseMapper, MsdialLcmsParameter parameter, StudyContextModel studyContext, IMessageBroker broker) {
+        internal static IMsdialAnalysisExport[] CreateAnalysisExports(IDataProviderFactory<AnalysisFileBean> providerFactory, DataBaseMapper dataBaseMapper, MsdialLcmsParameter parameter, StudyContextModel studyContext, FacadeMatchResultEvaluator evaluator, IMessageBroker broker) {
             // The peak table reads the raw data only for its MS1 isotope column, which it writes as null without them.
             // Centroid spectra are read from the raw data, so a sample without them stops the export at once and says why.
             var tableProviderFactory = new RawDataOptionalProviderFactory(providerFactory);
@@ -466,7 +466,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     FileSuffix = "sdf",
                     Label = "MDL SDfile (*.sdf)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(parameter.ProjectParam, studyContext),
+                new MsdialAnalysisMassBankRecordExportModel(parameter.ProjectParam, studyContext, evaluator, broker),
             };
             return models;
         }
@@ -519,7 +519,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (alignmentModel is null) {
                 return null;
             }
-            return new LipidRtCheckSettingModel(_storage.Parameter, alignmentModel.Ms1Spots, alignmentModel.SaveAsync, alignmentModel.UndoManager);
+            return new LipidRtCheckSettingModel(_storage.Parameter, alignmentModel.Ms1Spots, _storage.DataBases, alignmentModel.SaveAsync, alignmentModel.UndoManager);
         }
     }
 }

@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.Service;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Table
 {
@@ -25,14 +26,14 @@ namespace CompMs.App.Msdial.Model.Table
             _target.Value.SwitchPeakSpotTag(tag);
         }
 
-        public override void MarkAllAsConfirmed() {
-            IDoCommand command = new MarkAllAsConfirmedCommand<ChromatogramPeakFeatureModel>(PeakSpots, true);
+        public override void MarkAllAsConfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<ChromatogramPeakFeatureModel>(peakSpots.OfType<ChromatogramPeakFeatureModel>().ToList(), true);
             command.Do();
             _undoManager.Add(command);
         }
 
-        public override void MarkAllAsUnconfirmed() {
-            IDoCommand command = new MarkAllAsConfirmedCommand<ChromatogramPeakFeatureModel>(PeakSpots, false);
+        public override void MarkAllAsUnconfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<ChromatogramPeakFeatureModel>(peakSpots.OfType<ChromatogramPeakFeatureModel>().ToList(), false);
             command.Do();
             _undoManager.Add(command);
         }

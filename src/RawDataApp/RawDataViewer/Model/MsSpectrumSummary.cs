@@ -1,5 +1,4 @@
 ﻿using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings.Extensions;
 using System;
@@ -12,8 +11,8 @@ namespace CompMs.App.RawDataViewer.Model
         public MsSpectrumSummary(DataPoint[] intensityHistogram, string title) {
             IntensityHistogram = intensityHistogram ?? throw new ArgumentNullException(nameof(intensityHistogram));
             AccumulateIntensityHistogram = Accumulate(intensityHistogram);
-            HorizontalAxis = new LogScaleAxisManager<double>(AccumulateIntensityHistogram.Select(bin => bin.X).ToArray(), new ConstantMargin(40), base_: 2).AddTo(Disposables);
-            VerticalAxis = new ContinuousAxisManager<double>(AccumulateIntensityHistogram.Select(bin => bin.Y).ToArray(), new ConstantMargin(0, 30), new AxisRange(0d, 0d)).AddTo(Disposables);
+            HorizontalAxis = Log2HistogramAxis.Create(AccumulateIntensityHistogram.Select(bin => bin.X), new ConstantMargin(40)).AddTo(Disposables);
+            VerticalAxis = HistogramCountAxis.Create(AccumulateIntensityHistogram.Select(bin => bin.Y), new ConstantMargin(0, 30)).AddTo(Disposables);
 
             Title = title;
         }

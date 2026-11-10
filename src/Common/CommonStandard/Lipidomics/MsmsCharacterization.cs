@@ -339,7 +339,7 @@ namespace CompMs.Common.Lipidomics
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 2,
+                AnnotationLevel = 1,
                 SublevelLipidName = totalName,
                 LipidName = totalName,
                 TotalCarbonCount = totalCarbon,
@@ -400,13 +400,16 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
+                Sn1Oxidizedount = sn1OxydizedCount,
                 Sn1AcylChainString = sn1ChainString,
                 Sn2CarbonCount = sn2CarbonCount,
                 Sn2DoubleBondCount = sn2DbCount,
+                Sn2Oxidizedount = sn2OxydizedCount,
                 Sn2AcylChainString = sn2ChainString
             };
         }
@@ -448,13 +451,16 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
+                Sn1Oxidizedount = sn1OxydizedCount,
                 Sn1AcylChainString = sn1ChainString,
                 Sn2CarbonCount = sn2CarbonCount,
                 Sn2DoubleBondCount = sn2DbCount,
+                Sn2Oxidizedount = sn2OxydizedCount,
                 Sn2AcylChainString = sn2ChainString
             };
         }
@@ -472,14 +478,9 @@ namespace CompMs.Common.Lipidomics
             var acyls = new List<int[]>() {
                 new int[] { sn1Carbon, sn1Double, sn1Oxydized }, new int[] { sn2Carbon, sn2Double, sn2Oxydized }
             };
-            if (sn1Oxydized == 0)
-            {
-                acyls = acyls.OrderBy(n => n[2]).ThenBy(n => n[1]).ThenBy(n => n[0]).ToList();
-            }
-            else
-            {
-                acyls = acyls.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
-            }
+
+            acyls = acyls.OrderBy(n => n[2]).ThenBy(n => n[1]).ThenBy(n => n[0]).ToList();
+
 
             var sn1CarbonCount = acyls[0][0];
             var sn1DbCount = acyls[0][1];
@@ -508,13 +509,16 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
+                Sn1Oxidizedount = sn1OxydizedCount,
                 Sn1AcylChainString = sn1ChainString,
                 Sn2CarbonCount = sn2CarbonCount,
                 Sn2DoubleBondCount = sn2DbCount,
+                Sn2Oxidizedount = sn2OxydizedCount,
                 Sn2AcylChainString = sn2ChainString
             };
         }
@@ -535,6 +539,7 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
             };
@@ -595,6 +600,7 @@ namespace CompMs.Common.Lipidomics
                 Score = score,
                 Sn1CarbonCount = sn1Carbon,
                 Sn1DoubleBondCount = sn1Double,
+                Sn1Oxidizedount = totalOxidized,
                 Sn1AcylChainString = totalString,
                 TotalOxidizedCount = totalOxidized
             };
@@ -727,10 +733,13 @@ namespace CompMs.Common.Lipidomics
             var sn2Carbon2 = sn2Carbon; var sn2Double2 = sn2Double;
             var sn3Carbon2 = sn3Carbon; var sn3Double2 = sn3Double;
 
-            if (sn2Carbon > sn3Carbon || sn2Double > sn3Double)
+            if (sn2Double > sn3Double ||
+                (sn2Double == sn3Double && sn2Carbon > sn3Carbon))
             {
-                sn2Carbon2 = sn3Carbon; sn2Double2 = sn3Double;
-                sn3Carbon2 = sn2Carbon; sn3Double2 = sn2Double;
+                sn2Carbon2 = sn3Carbon;
+                sn2Double2 = sn3Double;
+                sn3Carbon2 = sn2Carbon;
+                sn3Double2 = sn2Double;
             }
 
             var acyls = new List<int[]>() {
@@ -1450,9 +1459,21 @@ namespace CompMs.Common.Lipidomics
             };
             acyls2 = acyls2.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
 
-            var acyls3 = new List<int[]>() {
-                new int[] { sn1Carbon, sn1Double, sn2Carbon, sn2Double }, new int[] { sn3Carbon, sn3Double, sn4Carbon, sn4Double } };
-            acyls3 = acyls3.OrderBy(n => n[1]).ThenBy(n => n[0]).ToList();
+            var acyls3 = new List<int[]> {
+                new int[] {
+                    acyls[0][0], acyls[0][1],
+                    acyls[1][0], acyls[1][1]
+                },
+                new int[] {
+                    acyls2[0][0], acyls2[0][1],
+                    acyls2[1][0], acyls2[1][1]
+                }
+            }
+            .OrderBy(n => n[1])
+            .ThenBy(n => n[0])
+            .ThenBy(n => n[3])
+            .ThenBy(n => n[2])
+            .ToList();
 
             var sn1CarbonCount = acyls3[0][0];
             var sn1DbCount = acyls3[0][1];
@@ -1774,6 +1795,7 @@ namespace CompMs.Common.Lipidomics
                 Sn1AcylChainString = sphChainString,
                 Sn2CarbonCount = acylCarbon,
                 Sn2DoubleBondCount = acylDouble,
+                Sn2Oxidizedount = acylOxidized,
                 Sn2AcylChainString = acylChainString
             };
         }
@@ -1840,6 +1862,7 @@ namespace CompMs.Common.Lipidomics
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
                 TotalChainString = totalString,
+                TotalOxidizedCount = totalOxidized,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
                 Sn1DoubleBondCount = sn1DbCount,
@@ -1849,6 +1872,7 @@ namespace CompMs.Common.Lipidomics
                 Sn2AcylChainString = sn2ChainString,
                 Sn3CarbonCount = sn3CarbonCount,
                 Sn3DoubleBondCount = sn3DbCount,
+                Sn3Oxidizedount = totalOxidized,
                 Sn3AcylChainString = sn3ChainString
             };
         }
@@ -1894,6 +1918,7 @@ namespace CompMs.Common.Lipidomics
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
                 TotalDoubleBondCount = totalDB,
+                TotalOxidizedCount = totalOxidized,
                 TotalChainString = totalString,
                 Score = score,
                 Sn1CarbonCount = sn1CarbonCount,
@@ -2048,9 +2073,143 @@ namespace CompMs.Common.Lipidomics
 
         private const double Electron = 0.00054858026;
         private const double Proton = 1.00727641974;
-        private const double H2O = 18.010564684;
-        private const double Sugar162 = 162.052823422;
+        private static readonly double H2O = new[] {
+            MassDiffDictionary.HydrogenMass * 2,
+            MassDiffDictionary.OxygenMass
+        }.Sum();
+        private static readonly double Sugar162 = new[] {
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * 10,
+            MassDiffDictionary.OxygenMass * 5
+        }.Sum(); //162.052833
+        private static readonly double Sugar179 = new[] {
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * 11,
+            MassDiffDictionary.OxygenMass * 6
+        }.Sum(); //179.05611
         private const double Na = 22.98977;
+        private const double NaIon = 22.9892207;
+        private static readonly double NH3 = new[] {
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.HydrogenMass * 3
+        }.Sum();
+        private static readonly double CH3COOadduct = new[] {
+            MassDiffDictionary.CarbonMass * 2,
+            MassDiffDictionary.HydrogenMass * 3,
+            MassDiffDictionary.OxygenMass * 2,
+            Electron
+        }.Sum(); // 59.013864
+        private static readonly double HCOOadduct = new[] {
+        MassDiffDictionary.CarbonMass,
+            MassDiffDictionary.HydrogenMass,
+            MassDiffDictionary.OxygenMass * 2,
+            Electron
+        }.Sum(); // 44.998214
+        private static readonly double HCO3adduct = new[] {
+            MassDiffDictionary.CarbonMass * 1,
+            MassDiffDictionary.HydrogenMass * 1,
+            MassDiffDictionary.OxygenMass * 3,
+            Electron
+        }.Sum(); // 61.02
+        private static readonly double CH3 = new[] {
+        MassDiffDictionary.CarbonMass * 1,
+            MassDiffDictionary.HydrogenMass * 3,
+        }.Sum();//
+        private static readonly double CD3 = new[] {
+        MassDiffDictionary.CarbonMass* 1,
+            MassDiffDictionary.Hydrogen2Mass* 3,
+        }.Sum();//
+        private static readonly double C5H14NO4P = new[] {
+        MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * 14,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.OxygenMass * 4,
+            MassDiffDictionary.PhosphorusMass,
+        }.Sum();//183.06604456202
+
+        private static readonly double C2H8NO4P = new[] {
+            MassDiffDictionary.CarbonMass * 2,
+            MassDiffDictionary.HydrogenMass * 8,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.OxygenMass * 4,
+            MassDiffDictionary.PhosphorusMass
+        }.Sum();//141.019094;
+        private static readonly double C6H12O9P = new[] {
+            MassDiffDictionary.CarbonMass * 6,
+            MassDiffDictionary.HydrogenMass * 12,
+            MassDiffDictionary.OxygenMass * 9,
+            MassDiffDictionary.PhosphorusMass
+        }.Sum();//259.021895;
+        private static readonly double C5H13NO = new[] 
+        {
+            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * 13,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.OxygenMass
+        }.Sum();//103.107
+        private static readonly double C5H11NO5P = new[]
+        {
+            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * 11,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.OxygenMass*5,
+            MassDiffDictionary.PhosphorusMass
+        }.Sum();//196.038
+        private static readonly double C3H6O5P = new[] {
+        MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * 6,
+            MassDiffDictionary.OxygenMass * 5,
+            MassDiffDictionary.PhosphorusMass
+        }.Sum();//152.99;
+        private static readonly double C3H8NO6P = new[] {
+            MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * 8,
+            MassDiffDictionary.NitrogenMass,
+            MassDiffDictionary.OxygenMass * 6,
+            MassDiffDictionary.PhosphorusMass
+        }.Sum();//185.008927;
+        private static readonly double C3H9N = new[] {
+                MassDiffDictionary.CarbonMass * 3,
+                MassDiffDictionary.HydrogenMass * 9,
+                MassDiffDictionary.NitrogenMass,
+            }.Sum();
+        private static readonly double C3H9O6P = new[]
+        {
+                MassDiffDictionary.CarbonMass * 3,
+                MassDiffDictionary.HydrogenMass * 9,
+                MassDiffDictionary.OxygenMass * 6,
+                MassDiffDictionary.PhosphorusMass,
+            }.Sum();//172.07
+        private static readonly double C3H4O2 = new[]
+        {
+                MassDiffDictionary.CarbonMass * 3,
+                MassDiffDictionary.HydrogenMass * 4,
+                MassDiffDictionary.OxygenMass * 2,
+            }.Sum();//72.03
+        private static readonly double C3H5NO2 = new[]
+            {
+                MassDiffDictionary.CarbonMass * 3,
+                MassDiffDictionary.HydrogenMass * 5,
+                MassDiffDictionary.NitrogenMass,
+                MassDiffDictionary.OxygenMass * 2,
+            }.Sum();//87.032029
+
+        private static readonly double C2H5NO2 = new[]
+        {
+                MassDiffDictionary.CarbonMass * 2,
+                MassDiffDictionary.HydrogenMass * 5,
+                MassDiffDictionary.NitrogenMass,
+                MassDiffDictionary.OxygenMass * 2,
+            }.Sum();//75.03 glycine 
+        private static readonly double H2SO4 = new[]
+        {
+                MassDiffDictionary.HydrogenMass * 2,
+                MassDiffDictionary.SulfurMass,
+                MassDiffDictionary.OxygenMass * 4,
+            }.Sum();//96.9601
+
+
+
 
         // spectrum should be centroided, purified by absolute- and relative abundance cut off values
         // spectrum must be ordered by intensity
@@ -2071,12 +2230,12 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = 184.07332;
+                    var diagnosticMz = C5H14NO4P + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     // for eieio
-                    var PEHeaderLoss = theoreticalMz - 141.019094261;
+                    var PEHeaderLoss = theoreticalMz - C2H8NO4P;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
                     if (isClassIonFound2 && LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, PEHeaderLoss, diagnosticMz))
                     {
@@ -2089,7 +2248,7 @@ namespace CompMs.Common.Lipidomics
                     //    + MassDiffDictionary.OxygenMass * 4
                     //    + MassDiffDictionary.PhosphorusMass
                     //    + Proton;
-                    //var PEHeader = 141.019094261 + Proton;
+                    //var PEHeader = C2H8NO4P + Proton;
                     //var isClassIonFound3 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEspecific, 1.0);
                     //var isClassIonFound4 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
                     //if (isClassIonFound2 && isClassIonFound3) return null;
@@ -2106,6 +2265,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2Double = totalDoubleBond - sn1Double;
                             //if (sn1Carbon < 10 || sn2Carbon < 10) continue;
                             if (sn1Double > 6 || sn2Double > 6) continue;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -2149,11 +2309,11 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 5.0;
-                    //var diagnosticMz = 184.07332;
+                    //var diagnosticMz = C5H14NO4P + Proton;
                     // seek [M+Na -C5H14NO4P]+
-                    var diagnosticMz2 = theoreticalMz - 183.06604;
+                    var diagnosticMz2 = theoreticalMz - C5H14NO4P;
                     // seek [M+Na -C3H9N]+
-                    var diagnosticMz3 = theoreticalMz - 59.0735;
+                    var diagnosticMz3 = theoreticalMz - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
                     if (isClassIonFound == false || isClassIon2Found == false) return null;
@@ -2167,6 +2327,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz3 - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz3 - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -2207,12 +2368,12 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-CH3]-
                     var threshold = 5.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - 60.021129369; // in source check
+                        var diagnosticMz2 = theoreticalMz - CH3 - HCOOadduct + Electron; // in source check
                         var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                         if (isClassIonFound2) return null;
                     }
@@ -2226,6 +2387,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if(sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -2262,7 +2424,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // "[M-H]- -C3H9N"
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - MassDiffDictionary.ProtonMass - (12 * 4 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
+                    var diagnosticMz = theoreticalMz - MassDiffDictionary.ProtonMass - HCO3adduct - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2273,6 +2435,7 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -2287,7 +2450,7 @@ namespace CompMs.Common.Lipidomics
 
                             if (foundCount >= 1)
                             {
-                                var sn1FlagFragment = sn1 + (12 * 5 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4);
+                                var sn1FlagFragment = sn1 + (MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4);
                                 var query2 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = sn1FlagFragment, Intensity = 5.0 },
                                     };
@@ -2332,7 +2495,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -141.019094261 (C2H8NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 141.019094261;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2345,6 +2508,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -2382,9 +2546,9 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -141.019094261 (C2H8NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 141.019094261;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     // seek - 43.042199 (C2H5N)
-                    var diagnosticMz2 = theoreticalMz - 43.042199;
+                    var diagnosticMz2 = theoreticalMz - (MassDiffDictionary.CarbonMass*2 + MassDiffDictionary.HydrogenMass*5 + MassDiffDictionary.NitrogenMass);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2397,6 +2561,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -2435,11 +2600,11 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C5H11NO5P-
                     var threshold = 5.0;
-                    var diagnosticMz = 196.03803;
+                    var diagnosticMz = C5H11NO5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     var threshold2 = 5.0;
-                    var diagnosticMz2 = 152.995833871; // seek C3H6O5P- (maybe LNAPE)
+                    var diagnosticMz2 = C3H6O5P + Electron; // seek C3H6O5P- (maybe LNAPE)
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon2Found == true) return null;
 
@@ -2453,6 +2618,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -2500,7 +2666,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -185.008927 (C3H8NO6P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 185.008927;
+                    var diagnosticMz = theoreticalMz - C3H8NO6P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2512,6 +2678,7 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -2554,7 +2721,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -185.008927 (C3H8NO6P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 185.008927;
+                    var diagnosticMz = theoreticalMz - C3H8NO6P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2574,12 +2741,14 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C3H5NO2 loss
                     var threshold = 3.0;
-                    var diagnosticMz = theoreticalMz - 87.032029;
+                    var diagnosticMz = theoreticalMz - C3H5NO2;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     var threshold2 = 30;
-                    var diagnosticMz2 = theoreticalMz - 63.008491; // [M+C2H3N(ACN)+Na-2H]- adduct of PG [M-H]- 
+                    var diagnosticMz2 = theoreticalMz
+                        - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + Na)
+                        + MassDiffDictionary.HydrogenMass; // [M+C2H3N(ACN)+Na-2H]- adduct of PG [M-H]-  
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound2) return null;
 
@@ -2592,6 +2761,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -2640,9 +2810,9 @@ namespace CompMs.Common.Lipidomics
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // seek -185.008927 (C4H10NO6P)
+                    // seek -199.10 (C4H10NO6P)
                     var threshold = 20.0;
-                    var diagnosticMz = theoreticalMz - (12 * 4 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass);
+                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2654,6 +2824,7 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -2695,7 +2866,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C4H7NO2 loss
                     var threshold = 0.5;
-                    var diagnosticMz = theoreticalMz - (12 * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2);
+                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2708,6 +2879,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -2751,7 +2923,9 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -189.040227 (C3H8O6P+NH4)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 189.040227;
+                    var diagnosticMz = theoreticalMz
+                        - C3H9O6P
+                        - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2763,7 +2937,7 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
@@ -2798,9 +2972,11 @@ namespace CompMs.Common.Lipidomics
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    // seek -171.005851 (C3H8O6P) - 22.9892207 (Na+)
+                    // seek -171.005851 (C3H8O6P) - Na
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 171.005851 - 22.9892207;// + MassDiffDictionary.HydrogenMass;
+                    var diagnosticMz = theoreticalMz 
+                        - (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass)
+                        - Na;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2821,7 +2997,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C3H6O5P-
                     var threshold = 0.01;
-                    var diagnosticMz = 152.995833871;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -2833,6 +3009,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -2879,7 +3056,9 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -189.040227 (C3H8O6P+NH4)
                     var threshold = 0.01;
-                    var diagnosticMz = theoreticalMz - 189.040227;
+                    var diagnosticMz = theoreticalMz
+                        - C3H9O6P
+                        - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == false) return null;
 
@@ -2891,6 +3070,7 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
@@ -2944,7 +3124,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -277.056272 (C6H12O9P+NH4)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 277.056272;
+                    var diagnosticMz = theoreticalMz - C6H12O9P - NH3 - MassDiffDictionary.HydrogenMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -2978,15 +3158,15 @@ namespace CompMs.Common.Lipidomics
                     #endregion
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI", LbmClass.PI, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
                     // 
                     var threshold = 10.0;
-                    var diagnosticMz1 = theoreticalMz - (259.021895 + 22.9892207);  // seek -(C6H12O9P +Na)
-                    var diagnosticMz2 = theoreticalMz - (260.02972);                 // seek -(C6H12O9P + H)
-                    var diagnosticMz3 = (260.02972 + 22.9892207);                   // seek (C6H13O9P +Na)
+                    var diagnosticMz1 = theoreticalMz - (C6H12O9P + Na);  // seek -(C6H12O9P +Na)
+                    var diagnosticMz2 = theoreticalMz - (C6H12O9P + MassDiffDictionary.HydrogenMass); // seek -(C6H12O9P + H)
+                    var diagnosticMz3 = (C6H12O9P + MassDiffDictionary.HydrogenMass + NaIon); // seek (C6H13O9P +Na)
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -3000,7 +3180,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI", LbmClass.PI, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
 
             }
@@ -3010,8 +3190,8 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 241.01188(C6H10O8P-) and 297.037548(C9H14O9P-)
                     var threshold = 0.01;
-                    var diagnosticMz1 = 241.01188 + Electron;
-                    var diagnosticMz2 = 297.037548 + Electron;
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;
+                    var diagnosticMz2 = C6H12O9P + C3H4O2 - H2O - MassDiffDictionary.OxygenMass + Electron;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon1Found && !isClassIon2Found) return null;
@@ -3025,6 +3205,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -3077,7 +3258,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // check [M-C2H8NO4P+H]+  
                     var threshold = 1;
-                    var diagnosticMz = theoreticalMz - 141.019094261;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (!isClassIon1Found) return null; // reject PS
 
@@ -3089,6 +3270,7 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -3122,8 +3304,8 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C5H11NO5P- is not observed in LNAPE, instead, C3H6O5P is observed.
                     var threshold = 10;
-                    var diagnosticMz1 = 152.995833871;
-                    var diagnosticMz2 = theoreticalMz - 87.032029; // should be a marker of PS
+                    var diagnosticMz1 = C3H6O5P + Electron;
+                    var diagnosticMz2 = theoreticalMz - C3H5NO2; // should be a marker of PS
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon1Found || isClassIon2Found) return null;
@@ -3139,6 +3321,7 @@ namespace CompMs.Common.Lipidomics
                             //if (sn2Carbon < minSnCarbon) { break; }
 
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -3196,7 +3379,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     //// check -141.019094261 (C2H8NO4P)
                     //var threshold = 1.0;
-                    //var diagnosticMz = theoreticalMz - 141.019094261;
+                    //var diagnosticMz = theoreticalMz - C2H8NO4P;
 
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == true) return null;  // reject PE
@@ -3243,8 +3426,8 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C5H11NO5P- is not observed in LNAPE, instead, C3H6O5P is observed.
                     var threshold = 0.01;
-                    var diagnosticMz1 = 196.03803; // should be a marker of PE
-                    var diagnosticMz2 = 152.995833871;
+                    var diagnosticMz1 = C5H11NO5P + Electron; // should be a marker of PE
+                    var diagnosticMz2 = C3H6O5P + Electron;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon2Found || isClassIon1Found) return null;
@@ -3258,14 +3441,14 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            //if (sn2Carbon < minSnCarbon) { break; }
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
 
                             var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1, threshold);
-                            if (!isClassIon3Found) return null; // sn1 must (2019/10/24)
+                            if (!isClassIon3Found) continue; // sn1 must (2019/10/24)
 
 
                             //Console.WriteLine(sn1Carbon + ":" + sn1Double + "/n-" + sn2Carbon + ":" + sn2Double +
@@ -3316,7 +3499,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = 184.07332;
+                    var diagnosticMz = C5H14NO4P + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -3331,6 +3514,7 @@ namespace CompMs.Common.Lipidomics
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon < 8) continue;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
 
                             var sph1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) -
@@ -3368,13 +3552,13 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -59.0735 [M-C3H9N+Na]+
                     var threshold = 20.0;
-                    var diagnosticMz = theoreticalMz - 59.0735;
+                    var diagnosticMz = theoreticalMz - C3H9N;
                     // seek -183.06604 [M-C5H14NO4P+Na]+
                     var threshold2 = 30.0;
-                    var diagnosticMz2 = theoreticalMz - 183.06604;
+                    var diagnosticMz2 = theoreticalMz - C5H14NO4P;
                     // seek -183.06604 [M-C5H16NO5P+H]+
                     var threshold3 = 1;
-                    var diagnosticMz3 = theoreticalMz - 183.06604 - 39.993064;
+                    var diagnosticMz3 = theoreticalMz - C5H14NO4P - H2O - NaIon + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -3393,7 +3577,7 @@ namespace CompMs.Common.Lipidomics
                     //        var acylDouble = totalDoubleBond - sphDouble;
 
                     //        var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) 
-                    //                -  (MassDiffDictionary.HydrogenMass*2) - 22.9898;
+                    //                -  (MassDiffDictionary.HydrogenMass*2) - Na;
 
                     //        var query = new List<SpectrumPeak> {
                     //            new SpectrumPeak() { Mass = sph1, Intensity = 0.01 }
@@ -3434,8 +3618,8 @@ namespace CompMs.Common.Lipidomics
                     var threshold1 = 50.0;
                     var threshold2 = 0.01;
                     var diagnosticMz1 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
-                    var diagnosticMz2 = 168.042572 + Electron;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
+                    var diagnosticMz2 = C5H14NO4P - CH3 + Electron;//C4H11NO4P-
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon1Found == false || isClassIon2Found == false) return null;
@@ -3449,6 +3633,7 @@ namespace CompMs.Common.Lipidomics
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             if (acylCarbon < 8) continue;
 
@@ -3488,8 +3673,8 @@ namespace CompMs.Common.Lipidomics
                     // "[M-H]- -C3H9N"
                     var threshold1 = 5.0;
                     var threshold2 = 0.5;
-                    var diagnosticMz1 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.HydrogenMass) - MassDiffDictionary.ProtonMass - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass);
-                    var diagnosticMz2 = 182.057671;
+                    var diagnosticMz1 = theoreticalMz - Proton - HCO3adduct - C3H9N;
+                    var diagnosticMz2 = C5H14NO4P - Proton; //182.057671;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
@@ -3501,10 +3686,11 @@ namespace CompMs.Common.Lipidomics
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             if (acylCarbon < 8) continue;
 
-                            var sphFragment = diagnosticMz1 - LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + 12 * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass;
+                            var sphFragment = diagnosticMz1 - LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass;
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphFragment, Intensity = 0.01 }
                             };
@@ -3543,7 +3729,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 30.0;
-                    var diagnosticMz = 184.07332;
+                    var diagnosticMz = C5H14NO4P + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -3564,8 +3750,8 @@ namespace CompMs.Common.Lipidomics
                     var threshold1 = 50.0;
                     var threshold2 = 0.01;
                     var diagnosticMz1 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
-                    var diagnosticMz2 = 168.042572 + Electron;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
+                    var diagnosticMz2 = C5H14NO4P - CH3 + Electron;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
@@ -3597,7 +3783,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -3619,6 +3805,11 @@ namespace CompMs.Common.Lipidomics
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
+
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
 
                                     if ((sn1Carbon == 18 && sn1Double == 5) || (sn2Carbon == 18 && sn2Double == 5) || (sn3Carbon == 18 && sn3Double == 5)) continue;
 
@@ -3663,7 +3854,7 @@ namespace CompMs.Common.Lipidomics
                     {
                         for (int sn1Double = minSn1DoubleBond; sn1Double <= maxSn1DoubleBond; sn1Double++)
                         {
-                            var diagnosticMz = theoreticalMz; // - 22.9892207 + MassDiffDictionary.HydrogenMass; //if want to choose [M+H]+
+                            var diagnosticMz = theoreticalMz; // - Na + MassDiffDictionary.HydrogenMass; //if want to choose [M+H]+
                             var remainCarbon = totalCarbon - sn1Carbon;
                             var remainDouble = totalDoubleBond - sn1Double;
                             var carbonLimit = Math.Min(remainCarbon, maxSn2Carbon);
@@ -3676,7 +3867,10 @@ namespace CompMs.Common.Lipidomics
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -3692,7 +3886,7 @@ namespace CompMs.Common.Lipidomics
 
                                     if (foundCount < 3)
                                     {
-                                        var diagnosticMzH = theoreticalMz - 22.9892207 + MassDiffDictionary.HydrogenMass;
+                                        var diagnosticMzH = theoreticalMz - NaIon + Proton;
                                         var nl_SN1_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN2_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN3_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -3754,16 +3948,16 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 85.028405821 (C4H5O2+)
                     var threshold = 5.0;
-                    var diagnosticMz = 85.028405821;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2 - Electron; //85.028405821;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
-                    // seek 59.073499294 loss (C3H9N)
-                    var diagnosticMz2 = theoreticalMz - 59.073499294;
+                    // seek (C3H9N) loss
+                    var diagnosticMz2 = theoreticalMz - C3H9N;
                     var threshold2 = 1.0;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
 
-                    // seek 144.1019 (Acyl and H2O loss) // not found at PasefOn case
-                    var diagnosticMz3 = 144.1019;
+                    // seek 144.1019 (Acyl and H2O loss) // not found at PasefOn case C7H14NO2
+                    var diagnosticMz3 = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.HydrogenMass * 14 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Electron;
                     var threshold3 = 1.0;
                     var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
 
@@ -3816,7 +4010,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 369.3515778691 (C27H45+)
                     var threshold = 30.0;
-                    var diagnosticMz = 369.3515778691;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 27 + MassDiffDictionary.HydrogenMass * 45 - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     if (totalCarbon >= 41 && totalDoubleBond >= 4) return null;
@@ -3834,7 +4028,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 369.3515778691 (C27H45+)
                     var threshold = 10.0;
-                    var diagnosticMz = 369.3515778691;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 27 + MassDiffDictionary.HydrogenMass * 45 - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     // if (isClassIonFound == false) return null;
 
@@ -3869,7 +4063,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -3881,6 +4075,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
                             if (sn2Double >= 7) continue;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -3927,7 +4122,7 @@ namespace CompMs.Common.Lipidomics
                     //{
                     //    for (int sn1Double = minSn1DoubleBond; sn1Double <= maxSn1DoubleBond; sn1Double++)
                     //    {
-                    //        var diagnosticMz = theoreticalMz;// - 22.9892207 + MassDiffDictionary.HydrogenMass; //to choose [M+H]+;
+                    //        var diagnosticMz = theoreticalMz;// - Na + MassDiffDictionary.HydrogenMass; //to choose [M+H]+;
 
                     //        var sn2Carbon = totalCarbon - sn1Carbon;
                     //        var sn2Double = totalDoubleBond - sn1Double;
@@ -3947,7 +4142,7 @@ namespace CompMs.Common.Lipidomics
                     //        {
                     //            var foundCount2 = 0;
                     //            var averageIntensity2 = 0.0;
-                    //            var diagnosticMzH = theoreticalMz - 22.9892207 + MassDiffDictionary.HydrogenMass;
+                    //            var diagnosticMzH = theoreticalMz - NaIon + Proton;
                     //            var nl_SN1_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                     //            var nl_SN2_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                     //            var query2 = new List<SpectrumPeak>
@@ -4001,17 +4196,35 @@ namespace CompMs.Common.Lipidomics
             if (maxSn1DoubleBond > totalDoubleBond) maxSn1DoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+H]+")
+                if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 5;
-                    var diagnosticMz1 = theoreticalMz - 17.026549;
+                    var diagnosticMz1 = theoreticalMz - NH3;
                     // seek dehydroxy
                     var diagnosticMz2 = diagnosticMz1 - H2O;
                     // var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     // if (isClassIon1Found !=true || isClassIon2Found != true) return null;
                     if (isClassIon2Found != true) return null;
+
+                    var candidates = new List<LipidMolecule>();
+                    //var averageIntensity = 0.0;
+                    //var molecule = LipidMsmsCharacterizationUtility.getSingleacylchainMoleculeObjAsLevel2("MAG", LbmClass.MAG, totalCarbon, totalDoubleBond,
+                    //               averageIntensity);
+                    //candidates.Add(molecule);
+
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("MG", LbmClass.MG, string.Empty, theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                }
+                else if (adduct.AdductIonName == "[M+H]+")
+                {
+                    var threshold = 5;
+                    // seek dehydroxy
+                    var diagnosticMz1 = theoreticalMz - H2O;
+                    var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
+                    // if (isClassIon1Found !=true || isClassIon2Found != true) return null;
+                    if (isClassIon1Found != true) return null;
 
                     var candidates = new List<LipidMolecule>();
                     //var averageIntensity = 0.0;
@@ -4042,20 +4255,20 @@ namespace CompMs.Common.Lipidomics
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 5.0;
-                    var diagnosticMz = 184.07332;
-                    var diagnosticMz2 = 104.106990;
+                    var diagnosticMz = C5H14NO4P + Proton;
+                    var diagnosticMz2 = C5H13NO + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found != true) return null;
 
                     // for eieio
-                    var PEHeaderLoss = theoreticalMz - 141.019094261;
+                    var PEHeaderLoss = theoreticalMz - C2H8NO4P;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
                     if (isClassIonFound2 && LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, PEHeaderLoss, diagnosticMz))
                     {
                         return null;
                     }
 
-                    //var PEHeader = 141.019094261 + Proton;
+                    //var PEHeader = C2H8NO4P + Proton;
                     //var isClassIonFound4 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
                     //if (isClassIonFound4) return null;
 
@@ -4104,12 +4317,12 @@ namespace CompMs.Common.Lipidomics
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
                     // seek PreCursor - 59 (C3H9N)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 59.072951;
+                    var diagnosticMz = theoreticalMz - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     // seek 104.1070 (C5H14NO) maybe not found
                     //var threshold2 = 1.0;
-                    //var diagnosticMz2 = 104.1070;
+                    //var diagnosticMz2 = C5H13NO + Proton;
 
                     //
                     var candidates = new List<LipidMolecule>();
@@ -4133,7 +4346,7 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-CH3]-
                     var threshold = 3.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var diagnosticMz2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond);
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -4156,7 +4369,7 @@ namespace CompMs.Common.Lipidomics
 
                     // "[M-H]- -C3H9N"
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.HydrogenMass) - MassDiffDictionary.ProtonMass - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass);
+                    var diagnosticMz = theoreticalMz - Proton - HCO3adduct - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -4186,7 +4399,7 @@ namespace CompMs.Common.Lipidomics
 
                     // seek PreCursor -141(C2H8NO4P)
                     var threshold = 3.0;
-                    var diagnosticMz = theoreticalMz - 141.019094;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found == false) return null;
@@ -4198,12 +4411,13 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether)
 
                             var NL_sn1 = diagnosticMz - sn1alkyl + Proton;
-                            var sn1_rearrange = sn1alkyl + MassDiffDictionary.HydrogenMass * 2 + 139.00290;//sn1(ether) + C2H5NO4P + proton 
+                            var sn1_rearrange = sn1alkyl + C2H8NO4P - Electron;//sn1(ether) + C2H8NO4P - Electron
 
                             var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, NL_sn1, threshold);
                             var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, threshold);
@@ -4231,7 +4445,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek PreCursor -141(C2H8NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 141.019094;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -4243,12 +4457,13 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether)
 
                             var NL_sn1 = diagnosticMz - sn1alkyl + Proton;
-                            var sn1_rearrange = sn1alkyl + 139.00290 + MassDiffDictionary.HydrogenMass * 2;//sn1(ether) + C2H5NO4P + proton 
+                            var sn1_rearrange = sn1alkyl + C2H8NO4P - Electron;//sn1(ether) + C2H8NO4P  - Electron
 
                             var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, NL_sn1, threshold);
                             var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, threshold);
@@ -4281,9 +4496,15 @@ namespace CompMs.Common.Lipidomics
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
-                    // seek PreCursor -197(C5H12NO5P)
+                    // seek PreCursor -197(C5HMassDiffDictionary.CarbonMassNO5P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 197.04475958;
+                    var diagnosticMz = theoreticalMz
+                        - (MassDiffDictionary.CarbonMass * 5
+                            + MassDiffDictionary.HydrogenMass * 12
+                            + MassDiffDictionary.OxygenMass * 5
+                            + MassDiffDictionary.NitrogenMass * 1
+                            + MassDiffDictionary.PhosphorusMass * 1
+                        );
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     //
@@ -4315,7 +4536,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = 184.07332;
+                    var diagnosticMz = C5H14NO4P + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     // from here, acyl level annotation is executed.
@@ -4330,6 +4551,7 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var acylLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
 
@@ -4356,7 +4578,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek PreCursor - 59 (C3H9N)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 59.072951;
+                    var diagnosticMz = theoreticalMz - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;  // must or not?
 
@@ -4380,13 +4602,13 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-CH3]-
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (!isClassIonFound) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var formateMz = theoreticalMz - 60.021129369;
+                        var formateMz = theoreticalMz - CH3 - HCOOadduct + Electron;
                         var threshold2 = 30;
                         var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, formateMz, threshold2);
                         if (isClassIonFound2) return null;
@@ -4401,11 +4623,12 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
                             var NL_sn2 = diagnosticMz - sn2 - Proton;
-                            var NL_sn2AndWater = NL_sn2 + 18.0105642;
+                            var NL_sn2AndWater = NL_sn2 + H2O;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn2, Intensity = 30.0 },
@@ -4442,7 +4665,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // "[M-H]- -C3H9N"
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - MassDiffDictionary.ProtonMass - (12 * 4 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
+                    var diagnosticMz = theoreticalMz - MassDiffDictionary.ProtonMass - HCO3adduct - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -4454,11 +4677,12 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
                             var NL_sn2 = diagnosticMz - sn2 - Proton;
-                            var NL_sn2AndWater = NL_sn2 + 18.0105642;
+                            var NL_sn2AndWater = NL_sn2 + H2O;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn2, Intensity = 5.0 },
@@ -4501,7 +4725,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek -141.019094261 (C2H8NO4P)
                     var threshold = 0.5;
-                    var diagnosticMz = theoreticalMz - 141.019094261;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -4514,11 +4738,12 @@ namespace CompMs.Common.Lipidomics
                             if (sn1Double >= 5) continue;
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(carbon chain)
 
                             var NL_sn1 = diagnosticMz - sn1alkyl + Proton;
-                            var sn1_rearrange = sn1alkyl + 139.00290 + MassDiffDictionary.HydrogenMass * 2;//sn1(carbon chain) + C2H5NO4P + proton 
+                            var sn1_rearrange = sn1alkyl + C2H8NO4P - Electron;//sn1(carbon chain) + C2H8NO4P - Electron 
 
                             //Console.WriteLine(sn1Carbon + ":" + sn1Double + "e/" + sn2Carbon + ":" + sn2Double + " " + NL_sn1 + " " + sn1_rearrange);
 
@@ -4593,7 +4818,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C5H11NO5P-
                     var threshold = 5.0;
-                    var diagnosticMz = 196.03803;
+                    var diagnosticMz = C5H11NO5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -4605,7 +4830,9 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon >= 24 && sn1Double >= 5) return null;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
+
+                            if (sn1Carbon >= 24 && sn1Double >= 5) continue;
 
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
                             var NL_sn2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
@@ -4664,19 +4891,20 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-CH3]-
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     // seek [M-H-H2O]-
                     var threshold2 = 5.0;
-                    var diagnosticMz2 = theoreticalMz - H2O;
+                    var diagnosticMz2 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct - H2O: theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct - H2O;
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     // if (isClassIon2Found == false) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var formateMz = theoreticalMz - 60.021129369;
+                        var formateMz = theoreticalMz - CH3 - HCOOadduct + Electron;
                         var threshold3 = 30;
                         var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, formateMz, threshold3);
                         if (isClassIonFound2) return null;
@@ -4697,8 +4925,9 @@ namespace CompMs.Common.Lipidomics
                             {
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
-
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
                                 if (sn2Double > 0)
                                 {
                                     if ((double)(sn2Carbon / sn2Double) < 3) break;
@@ -4709,7 +4938,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_H2Oloss = sn2 - (H2O);
                                 var sn2_xH2Oloss = sn2 - (H2O * sn2Oxidized);
                                 var nl_sn2 = diagnosticMz - sn2 - Proton;
-                                var nl_sn2H2O = nl_sn2 + 18.0105642;
+                                var nl_sn2H2O = nl_sn2 + H2O;
 
                                 var query1 = new List<SpectrumPeak> {
                                     new SpectrumPeak() { Mass = nl_sn2, Intensity = 0.1 },
@@ -4745,13 +4974,13 @@ namespace CompMs.Common.Lipidomics
                     if (isClassIon2Found == false && candidates.Count == 0) return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.EtherOxPC, "e", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+HCO3]-")
                 {
                     // "[M-H]- -C3H9N"
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.HydrogenMass) - MassDiffDictionary.ProtonMass - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass);
+                    var diagnosticMz = theoreticalMz - Proton - HCO3adduct - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -4770,7 +4999,9 @@ namespace CompMs.Common.Lipidomics
                             {
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
 
                                 if (sn2Double > 0)
                                 {
@@ -4782,7 +5013,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_H2Oloss = sn2 - (H2O);
                                 var sn2_xH2Oloss = sn2 - (H2O * sn2Oxidized);
                                 var nl_sn2 = diagnosticMz - sn2 + MassDiffDictionary.HydrogenMass;
-                                var nl_sn2H2O = nl_sn2 + 18.0105642;
+                                var nl_sn2H2O = nl_sn2 + H2O;
 
                                 var query1 = new List<SpectrumPeak> {
                                     new SpectrumPeak() { Mass = nl_sn2, Intensity = 0.1 },
@@ -4818,7 +5049,7 @@ namespace CompMs.Common.Lipidomics
                     if (candidates.Count == 0) return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.OxPC, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
 
             }
@@ -4843,7 +5074,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C5H11NO5P-
                     var threshold = 5.0;
-                    var diagnosticMz = 196.03803;
+                    var diagnosticMz = C5H11NO5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // seek [M-H-H2O]-
@@ -4853,7 +5084,7 @@ namespace CompMs.Common.Lipidomics
                     if (isClassIon2Found == false) return null;
 
                     var threshold3 = 5.0;
-                    var diagnosticMz3 = 152.995833871; // seek C3H6O5P- maybe LNAPE
+                    var diagnosticMz3 = C3H6O5P + Electron; // seek C3H6O5P- maybe LNAPE
                     var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                     //if (isClassIon3Found == true) return null;
 
@@ -4873,7 +5104,9 @@ namespace CompMs.Common.Lipidomics
                             {
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
 
                                 if (sn2Double > 0)
                                 {
@@ -4885,7 +5118,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_H2Oloss = sn2 - (H2O);
                                 var sn2_xH2Oloss = sn2 - (H2O * sn2Oxidized);
                                 var nl_sn2 = theoreticalMz - sn2 - Proton;
-                                var nl_sn2AndWater = nl_sn2 + 18.0105642;
+                                var nl_sn2AndWater = nl_sn2 + H2O;
 
                                 var query1 = new List<SpectrumPeak> {
                                     new SpectrumPeak() { Mass = nl_sn2, Intensity = 0.1 },
@@ -4921,7 +5154,7 @@ namespace CompMs.Common.Lipidomics
                     }
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.EtherOxPE, "e", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -4942,9 +5175,9 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 184.07332 (C5H15NO4P), 104.10699 (C5H12N+), 124.99982 (C2H5O4P + H+)
                     var threshold = 20.0;
-                    var diagnosticMz1 = 184.07332;
-                    var diagnosticMz2 = 104.106990;
-                    var diagnosticMz3 = 124.99982;
+                    var diagnosticMz1 = C5H14NO4P + Proton;
+                    var diagnosticMz2 = C5H13NO + Proton;
+                    var diagnosticMz3 = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass + Proton;// 124.99982;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon1Found) return null;
@@ -4966,8 +5199,10 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-CH3]-
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
-                    var diagnosticMz2 = diagnosticMz - 89.08461258; //[M-CH3 -C4H11NO]-
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
+                    //[M-CH3 -C4H11NO]-
+                    var diagnosticMz2 = diagnosticMz
+                        - (MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);// 89.08461258; 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
@@ -4983,7 +5218,7 @@ namespace CompMs.Common.Lipidomics
 
                     // "[M-H]- -C3H9N"
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.HydrogenMass) - MassDiffDictionary.ProtonMass - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass);
+                    var diagnosticMz = theoreticalMz - Proton - HCO3adduct - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -5015,7 +5250,7 @@ namespace CompMs.Common.Lipidomics
                     // case LPE P-
                     // seek PreCursor -154 [SN1ether+C2H8NO]+
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - (12 * 3 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass * 7);
+                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass * 7);
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     // seek PreCursor -172 [SN1ether+C2H6N]+
                     var threshold2 = 50.0;
@@ -5024,11 +5259,11 @@ namespace CompMs.Common.Lipidomics
 
                     // case LPE O-
                     // seek precursor -43
-                    var diagnosticMz3 = theoreticalMz - (12 * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5);
+                    var diagnosticMz3 = theoreticalMz - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5);
                     var threshold3 = 5.0;
                     var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                     // seek precursor -141
-                    var diagnosticMz4 = theoreticalMz - (12 * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
+                    var diagnosticMz4 = theoreticalMz - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
                     var threshold4 = 5.0;
                     var isClassIon4Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
 
@@ -5060,10 +5295,21 @@ namespace CompMs.Common.Lipidomics
             {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek PreCursor -197(C5H12NO5P-) , -61(C2H8NO-)
+                    // seek PreCursor -197(C5H12NO5P) , -61(C2H7NO)
                     var threshold = 10.0;
-                    var diagnosticMz1 = theoreticalMz - 197.0447624;
-                    var diagnosticMz2 = theoreticalMz - 61.052764;
+                    var diagnosticMz1 = theoreticalMz
+                        - (MassDiffDictionary.CarbonMass * 5
+                            + MassDiffDictionary.HydrogenMass * 12
+                            + MassDiffDictionary.OxygenMass * 5
+                            + MassDiffDictionary.NitrogenMass * 1
+                            + MassDiffDictionary.PhosphorusMass * 1
+                        ); 
+                    var diagnosticMz2 = theoreticalMz 
+                        - (MassDiffDictionary.CarbonMass * 2
+                            + MassDiffDictionary.HydrogenMass * 7
+                            + MassDiffDictionary.OxygenMass * 1
+                            + MassDiffDictionary.NitrogenMass * 1
+                            );
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIon1Found == false && isClassIon2Found == false) return null;
@@ -5071,7 +5317,7 @@ namespace CompMs.Common.Lipidomics
                     var EtherFrag = "e";
                     //case LPE P-
                     // seek SN1ether
-                    var Sn1EtherMz = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 2 + Electron;
+                    var Sn1EtherMz = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 2;
                     var Sn1EtherMzThreshold = 20.0;
                     if (totalDoubleBond > 0 && LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Sn1EtherMz, Sn1EtherMzThreshold))
                     {
@@ -5112,13 +5358,13 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-CH3]-
                     var threshold = 5.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var formateMz = theoreticalMz - 60.021129369;
+                        var formateMz = theoreticalMz - CH3 - HCOOadduct + Electron;
                         var threshold4 = 30;
                         var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, formateMz, threshold4);
                         if (isClassIonFound2) return null;
@@ -5126,7 +5372,8 @@ namespace CompMs.Common.Lipidomics
 
                     // seek [M-H-H2O]-
                     var threshold2 = 5.0;
-                    var diagnosticMz2 = theoreticalMz - H2O;
+                    var diagnosticMz2 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct - H2O : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct - H2O;
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     // if (isClassIon2Found == false) return null;
 
@@ -5142,7 +5389,9 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 // if (sn2Carbon < minSnCarbon) { break; }
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
 
                                 var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double) + (MassDiffDictionary.OxygenMass * sn1Oxidized);
                                 var sn1_H2Oloss = sn1 - (H2O);
@@ -5188,13 +5437,13 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.OxPC, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+HCO3]-")
                 {
                     // "[M-H]- -C3H9N"
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.HydrogenMass) - MassDiffDictionary.ProtonMass - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass);
+                    var diagnosticMz = theoreticalMz - Proton - HCO3adduct - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -5209,7 +5458,9 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 // if (sn2Carbon < minSnCarbon) { break; }
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
 
                                 var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double) + (MassDiffDictionary.OxygenMass * sn1Oxidized);
                                 //var sn1_H2Oloss = sn1 - (H2O);
@@ -5240,7 +5491,7 @@ namespace CompMs.Common.Lipidomics
 
                                 if (foundCount1 >= 2)
                                 {
-                                    var sn1FlagFragment = sn1 + (12 * 5 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4);
+                                    var sn1FlagFragment = sn1 + (MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4);
                                     var query2 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = sn1FlagFragment, Intensity = 5.0 },
                                     };
@@ -5264,7 +5515,7 @@ namespace CompMs.Common.Lipidomics
                     if (candidates.Count == 0) return null;
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC", LbmClass.OxPC, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5288,7 +5539,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C5H11NO5P-
                     var threshold = 0.1;
-                    var diagnosticMz = 196.03803;
+                    var diagnosticMz = C5H11NO5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // seek [M-H-H2O]-
@@ -5314,7 +5565,9 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 //  if (sn2Carbon < minSnCarbon) { break; }
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
                                 if (sn2Double > 0)
                                 {
                                     if ((double)(sn2Carbon / sn2Double) < 3) break;
@@ -5383,7 +5636,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE", LbmClass.OxPE, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5407,7 +5660,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C3H6O5P-
                     var threshold = 0.01;
-                    var diagnosticMz = 152.995833871;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == false) return null;
 
@@ -5418,8 +5671,8 @@ namespace CompMs.Common.Lipidomics
                     if (isClassIon2Found == false) return null;
 
                     var threshold1 = 50.0;
-                    var diagnosticMzSm1 = theoreticalMz - 74.036779433;
-                    var diagnosticMzSm2 = theoreticalMz - 60.021129369;
+                    var diagnosticMzSm1 = theoreticalMz - CH3COOadduct - CH3 + Electron;
+                    var diagnosticMzSm2 = theoreticalMz - HCOOadduct - CH3 + Electron;
                     var isClassIonSm1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMzSm1, threshold1);
                     var isClassIonSm2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMzSm2, threshold1);
                     if (isClassIonSm1Found == true || isClassIonSm2Found == true) return null;
@@ -5438,7 +5691,9 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 //if (sn2Carbon < minSnCarbon) { break; }
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
 
                                 var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double) + (MassDiffDictionary.OxygenMass * sn1Oxidized);
                                 var sn1_H2Oloss = sn1 - (H2O);
@@ -5504,7 +5759,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PG", LbmClass.OxPG, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5528,8 +5783,8 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek 241.01188(C6H10O8P-) and 297.037548(C9H14O9P-)
                     var threshold = 0.01;
-                    var diagnosticMz1 = 241.01188 + Electron;
-                    var diagnosticMz2 = 297.037548 + Electron;
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;
+                    var diagnosticMz2 = C6H12O9P + C3H4O2 - H2O - MassDiffDictionary.OxygenMass + Electron;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon1Found && !isClassIon2Found) return null;
@@ -5552,7 +5807,9 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 //if (sn2Carbon < minSnCarbon) { break; }
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
 
                                 var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double) + (MassDiffDictionary.OxygenMass * sn1Oxidized);
                                 var sn1_H2Oloss = sn1 - (H2O);
@@ -5617,7 +5874,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI", LbmClass.OxPI, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5641,7 +5898,7 @@ namespace CompMs.Common.Lipidomics
                 {
                     // seek C3H5NO2 loss
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 87.032029;
+                    var diagnosticMz = theoreticalMz - C3H5NO2;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -5662,7 +5919,9 @@ namespace CompMs.Common.Lipidomics
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 // if (sn2Carbon < minSnCarbon) { break; }
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
                                 var sn2Oxidized = TotalOxidized - sn1Oxidized;
+                                if (sn2Oxidized > sn2MaxOxidized) continue;
 
                                 var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double) + (MassDiffDictionary.OxygenMass * sn1Oxidized);
                                 var sn1_H2Oloss = sn1 - (H2O);
@@ -5727,7 +5986,7 @@ namespace CompMs.Common.Lipidomics
                     //candidates.Add(molecule0);
                     if (candidates.Count == 0) return null;
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PS", LbmClass.OxPS, "", theoreticalMz, adduct,
-                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, TotalOxidized, candidates, 2);
                 }
             }
             return null;
@@ -5751,12 +6010,12 @@ namespace CompMs.Common.Lipidomics
                     // seek [M+H-C6H12O6]+
                     var threshold = 10;
                     var diagnosticMz = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
-                        - (12 * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
+                        - (MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     //reject DGDG
                     var threshold2 = 1;
-                    var dgdgFrg = diagnosticMz - (12 * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5); // two Hex loss
+                    var dgdgFrg = diagnosticMz - (MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5); // two Hex loss
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, dgdgFrg, threshold2);
                     if (isClassIon2Found == true) return null;
 
@@ -5770,9 +6029,10 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
-                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - 179.05611 - 17.026549;
-                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - 179.05611 - 17.026549;
+                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Sugar179 - NH3;
+                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Sugar179 - NH3;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
@@ -5806,9 +6066,10 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
-                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + Proton;
-                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
+                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
+                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
@@ -5823,9 +6084,11 @@ namespace CompMs.Common.Lipidomics
                             {
                                 //reject DGDG
                                 var threshold = 0.1;
-                                var dgdgFrg = nl_SN1 - 162.05282; // one Hex loss
+                                var dgdgFrg = nl_SN1 - Sugar162; // one Hex loss
+                                var dgdgFrg2 = nl_SN2 - Sugar162; // 
                                 var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, dgdgFrg, threshold);
-                                if (isClassIonFound == true) return null;
+                                var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, dgdgFrg2, threshold);
+                                if (isClassIonFound == true|| isClassIonFound2 == true) return null;
 
                                 var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("MGDG", LbmClass.MGDG, sn1Carbon, sn1Double,
                                     sn2Carbon, sn2Double, averageIntensity);
@@ -5847,10 +6110,10 @@ namespace CompMs.Common.Lipidomics
                     // calc [M-H]-
                     //var threshold = 1.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold1 = 0.1;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     //if (isClassIonFound == false) return null;
 
@@ -5864,6 +6127,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -5921,10 +6185,18 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             // if (sn2Carbon < minSnCarbon) { break; }
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon <= 10 || sn2Carbon <= 10) return null;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
+
+                            if (sn1Carbon <= 10 || sn2Carbon <= 10) continue;
                             // 2 x Hex loss
-                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - 341.108935 - 17.026549;
-                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - 341.108935 - 17.026549;
+                            var nl_SN1 = theoreticalMz 
+                                - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) 
+                                - (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.OxygenMass * 11)
+                                - NH3;
+                            var nl_SN2 = theoreticalMz 
+                                - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) 
+                                - (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.OxygenMass * 11)
+                                - NH3;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = nl_SN1, Intensity = 1 },
@@ -5959,6 +6231,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -5994,9 +6267,9 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-H]-
                     var threshold = 5.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
-                    var diagnosticMz2 = 379.12459; // C15H23O11
-                    var diagnosticMz3 = 397.13515; // C15H25O12
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 15 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.OxygenMass * 11 + Electron; //379.12459; // C15H23O11
+                    var diagnosticMz3 = MassDiffDictionary.CarbonMass * 15 + MassDiffDictionary.HydrogenMass * 25 + MassDiffDictionary.OxygenMass * 12 + Electron; //397.13515; // C15H25O12
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
@@ -6011,6 +6284,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -6056,7 +6330,7 @@ namespace CompMs.Common.Lipidomics
                     // seek [M+H-C6H12O6]+
                     var threshold = 5;
                     var diagnosticMz = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
-                        - (12 * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
+                        - (MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6069,7 +6343,8 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                             if (sn1Double >= 5) continue;
 
 
@@ -6078,7 +6353,7 @@ namespace CompMs.Common.Lipidomics
 
                             //var nl_SN1 = diagnosticMz - sn1alkyl + Proton;
 
-                            var sn2Dmag = 12 * (sn2Carbon + 3) + MassDiffDictionary.HydrogenMass * ((sn2Carbon * 2) - (sn2Double * 2) - 1 + 5) + 3 * MassDiffDictionary.OxygenMass + Proton;
+                            var sn2Dmag = MassDiffDictionary.CarbonMass * (sn2Carbon + 3) + MassDiffDictionary.HydrogenMass * ((sn2Carbon * 2) - (sn2Double * 2) - 1 + 5) + 3 * MassDiffDictionary.OxygenMass + Proton;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn2Dmag, Intensity = 30 },
@@ -6104,7 +6379,7 @@ namespace CompMs.Common.Lipidomics
                 if (adduct.AdductIonName == "[M+Na]+")
                 {
                     var threshold = 1;
-                    var diagnosticMz = theoreticalMz - 202.04533; // - Hex and Na
+                    var diagnosticMz = theoreticalMz - Sugar179 - Na; // - Hex and Na
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == false) return null;
 
@@ -6114,10 +6389,11 @@ namespace CompMs.Common.Lipidomics
                     {
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                             + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether (not containing oxygen))
@@ -6131,7 +6407,7 @@ namespace CompMs.Common.Lipidomics
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            //if (foundCount == 1)
+                            //if (foundCount == 1) //because there were many misannotation
                             //{ // 
                             //    var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("MGDG", LbmClass.EtherMGDG, sn1Carbon, sn1Double,
                             //        sn2Carbon, sn2Double, averageIntensity, "e");
@@ -6152,7 +6428,7 @@ namespace CompMs.Common.Lipidomics
                     // seek [M-H]-
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // 
@@ -6161,14 +6437,15 @@ namespace CompMs.Common.Lipidomics
                     {
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                             if (sn1Double >= 5) continue;
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
-                            var NL_sn2 = 12 * (sn1Carbon + 3 + 6) + MassDiffDictionary.HydrogenMass * (2 * (sn1Carbon + 3 - sn1Double) + 11) + MassDiffDictionary.OxygenMass * 8;
+                            var NL_sn2 = MassDiffDictionary.CarbonMass * (sn1Carbon + 3 + 6) + MassDiffDictionary.HydrogenMass * (2 * (sn1Carbon + 3 - sn1Double) + 11) + MassDiffDictionary.OxygenMass * 8;
 
                             var query = new List<SpectrumPeak> {
                             new SpectrumPeak() { Mass = sn2, Intensity = 10.0 },
@@ -6209,7 +6486,7 @@ AdductIon adduct)
                     // seek [M+H-C6H12O6]+
                     var threshold = 10;
                     var diagnosticMz = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
-                        - (12 * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
+                        - (MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.OxygenMass * 6);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6235,7 +6512,7 @@ AdductIon adduct)
                     // seek [M-H]-
                     var threshold = 1.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == false) return null;
 
@@ -6269,7 +6546,7 @@ AdductIon adduct)
                     // seek [M+H]+ -2sugars -H2O
                     var threshold = 10;
                     var diagnosticMz1 = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3)
-                        - (12 * 12 + MassDiffDictionary.HydrogenMass * 20 + MassDiffDictionary.OxygenMass * 10) - H2O;
+                        - (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.HydrogenMass * 20 + MassDiffDictionary.OxygenMass * 10) - H2O;
                     // seek SN1(acyl)+
                     var diagnosticMz2 = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) - Electron;
 
@@ -6288,8 +6565,8 @@ AdductIon adduct)
                     // seek [M-H]-
                     var threshold = 5.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
-                    var diagnosticMz2 = 397.13515; // C15H25O12
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 15 + MassDiffDictionary.HydrogenMass * 25 + MassDiffDictionary.OxygenMass * 12 + Electron; ; // C15H25O12
                     var diagnosticMz3 = diagnosticMz2 + H2O; // C15H27O13
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -6336,10 +6613,11 @@ AdductIon adduct)
                             if (sn1Double > 3) continue;
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
                             if (sn2Double >= 7) continue;
                             if (sn2Carbon <= 10) continue;
                             if (sn1Carbon <= 10) continue;
-                            if (sn1Double == 19 && sn1Double == 2) continue;
+                            if (sn1Carbon == 19 && sn1Double == 2) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - H2O - 4.0 * MassDiffDictionary.HydrogenMass;
 
@@ -6384,11 +6662,11 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+NH4]+") // not found in lipidDbProject-Pos
                 {
                     // seek -17.026549 (NH3)
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
 
                     // seek [M -C12H21O11 +H] (-2Hex as 341.10838)  
                     var threshold = 5;
-                    var diagnosticMz2 = diagnosticMz - (12 * 12 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.OxygenMass * 11) + Proton;
+                    var diagnosticMz2 = diagnosticMz - (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.OxygenMass * 11) + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6401,7 +6679,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn2Carbon < 10) continue;
+                            if (sn2Carbon < 10 || sn2Double < 0) continue;
 
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                 + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether (not containing oxygen))
@@ -6431,7 +6709,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+Na]+") // not found in lipidDbProject-Pos
                 {
                     var threshold = 1;
-                    var diagnosticMz = theoreticalMz - 341.10838 - 22.9892207 + Proton; // - 2Hex and Na
+                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.OxygenMass * 11) - NaIon + Proton; // - 2Hex and Na
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == false) return null;
 
@@ -6445,7 +6723,7 @@ AdductIon adduct)
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
 
-                            if (sn2Carbon < 8) continue;
+                            if (sn2Carbon < 8 || sn2Double < 0) continue;
 
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                             + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether (not containing oxygen))
@@ -6479,7 +6757,7 @@ AdductIon adduct)
                     // seek [M-H]-  // not found in lipidDbProject-Neg
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6493,10 +6771,11 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn2Carbon < 10) continue;
+                            if (sn2Carbon < 10 || sn2Double < 0) continue;
 
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
-                            var NL_sn2 = 12 * (sn1Carbon + 3 + 12) + MassDiffDictionary.HydrogenMass * (2 * (sn1Carbon + 3 - sn1Double) + 21) + MassDiffDictionary.OxygenMass * 13;
+                            var NL_sn2 = MassDiffDictionary.CarbonMass * (sn1Carbon + 3) + MassDiffDictionary.HydrogenMass * (2 * (sn1Carbon + 3 - sn1Double)) + MassDiffDictionary.OxygenMass * 2
+                                + (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.OxygenMass * 11);
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn2, Intensity = 10.0 },
@@ -6539,7 +6818,7 @@ AdductIon adduct)
                 {
                     // seek C3H6O5P-
                     var threshold = 1.0;
-                    var diagnosticMz = 152.99583;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6552,6 +6831,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -6614,7 +6894,7 @@ AdductIon adduct)
                 {
                     // seek C3H6O5P-
                     var threshold = 1.0;
-                    var diagnosticMz = 152.99583;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6622,7 +6902,7 @@ AdductIon adduct)
                     //var threshold2 = 10;
                     //var diagnosticMz2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon,totalDoubleBond);
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    //if (isClassIon2Found == true) return null;
+                    //if (isClassIon2Found != true) return null;
 
                     var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = 255.2329539, Intensity = 5 },    // 16:0
@@ -6638,7 +6918,7 @@ AdductIon adduct)
                     var averageIntensity = 0.0;
                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                    if (foundCount >= 1)// Need to consider
+                    if (foundCount == 0)// Need to consider
                     { // 
                         return null;
                     }
@@ -6672,7 +6952,7 @@ AdductIon adduct)
                 {
                     // seek C3H6O5P-
 
-                    var diagnosticMz1 = 152.99583;  // seek C3H6O5P-
+                    var diagnosticMz1 = C3H6O5P + Electron;  // seek C3H6O5P-
                     var threshold1 = 1.0;
                     var diagnosticMz2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold2 = 10.0;
@@ -6697,7 +6977,7 @@ AdductIon adduct)
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
-                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (12 * 3 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6723,11 +7003,10 @@ AdductIon adduct)
             { //negative ion mode only
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek C3H6O5P-
-
-                    var diagnosticMz1 = 241.0118806 + Electron;  // seek C3H6O5P-
+                    // seek 241.01188(C6H10O8P-) and 315.048656(C9H16O10P- (NL of SN1))
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;  // seek C6H10O8P-
                     var threshold1 = 1.0;
-                    var diagnosticMz2 = 315.048656; // seek C9H16O10P-
+                    var diagnosticMz2 = C6H12O9P + C3H4O2 - MassDiffDictionary.OxygenMass + Electron; // seek C9H16O10P- (NL of SN1)
                     var threshold2 = 1.0;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold3 = 10.0;
@@ -6753,7 +7032,7 @@ AdductIon adduct)
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
-                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (12 * 3 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6779,9 +7058,9 @@ AdductIon adduct)
                 {
                     // seek C3H6O5P-
 
-                    var diagnosticMz1 = 152.99583;  // seek C3H6O5P-
+                    var diagnosticMz1 = C3H6O5P + Electron;  // seek C3H6O5P-
                     var threshold1 = 10.0;
-                    var diagnosticMz2 = theoreticalMz - 87.032029; // seek -C3H6NO2-H
+                    var diagnosticMz2 = theoreticalMz - C3H5NO2; // seek -C3H6NO2-H
                     var threshold2 = 5.0;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -6804,7 +7083,7 @@ AdductIon adduct)
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
-                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (12 * 3 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -6833,7 +7112,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -6854,12 +7133,15 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether chain (not containing oxygen))
-                                    var nl_SN1 = diagnosticMz - sn1alkyl - H2O + Proton;
-                                    var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
-                                    var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + Proton;
+                                    var nl_SN1 = diagnosticMz - sn1alkyl - H2O + MassDiffDictionary.HydrogenMass;
+                                    var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
+                                    var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
                                         new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
@@ -6910,7 +7192,7 @@ AdductIon adduct)
                         for (int sn1Double = minSn1DoubleBond; sn1Double <= maxSn1DoubleBond; sn1Double++)
                         {
 
-                            var diagnosticMz = theoreticalMz; // - 22.9892207 + MassDiffDictionary.HydrogenMass; //if want to choose [M+H]+
+                            var diagnosticMz = theoreticalMz; // - Na + MassDiffDictionary.HydrogenMass; //if want to choose [M+H]+
                             var remainCarbon = totalCarbon - sn1Carbon;
                             var remainDouble = totalDoubleBond - sn1Double;
                             var carbonLimit = Math.Min(remainCarbon, maxSn2Carbon);
@@ -6923,7 +7205,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     //var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -6939,7 +7224,7 @@ AdductIon adduct)
 
                                     if (foundCount < 2)
                                     {
-                                        var diagnosticMzH = theoreticalMz - 22.9892207 + MassDiffDictionary.HydrogenMass;
+                                        var diagnosticMzH = theoreticalMz - NaIon + Proton;
                                         //var nl_SN1_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN2_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN3_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -6951,7 +7236,7 @@ AdductIon adduct)
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 2)
@@ -7001,12 +7286,12 @@ AdductIon adduct)
                 {
                     // seek 144.10191 (C7H14NO2+)
                     var threshold = 1.0;
-                    var diagnosticMz = 144.10191;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.HydrogenMass * 14 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == false) return null;
                     // seek 236.1492492 (C10H21NO5H +)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = 236.1492492;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass - Electron; ;
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon2Found == false) return null;
 
@@ -7019,6 +7304,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -7056,12 +7342,12 @@ AdductIon adduct)
                 {
                     // seek -87 (-C4H9NO)
                     var threshold1 = 50.0;
-                    var diagnosticMz1 = theoreticalMz - (12 * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);
+                    var diagnosticMz1 = theoreticalMz - (MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found == false) return null;
                     // seek 236.1492492 (C10H21NO5H +)
                     var threshold2 = 0.01;
-                    var diagnosticMz2 = 236.1492492;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass - Electron; ;
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon2Found == false) return null;
 
@@ -7073,6 +7359,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz1 - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
 
@@ -7106,10 +7393,10 @@ AdductIon adduct)
                 {
                     // calc [M-H]- 
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     //seek [M-C3H5]-
                     var threshold = 10.0;
-                    var diagnosticMz2 = diagnosticMz - 12 * 3 - MassDiffDictionary.HydrogenMass * 5;
+                    var diagnosticMz2 = diagnosticMz - MassDiffDictionary.CarbonMass * 3 - MassDiffDictionary.HydrogenMass * 5;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -7121,6 +7408,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var SN1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var SN2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -7166,12 +7454,12 @@ AdductIon adduct)
                 {
                     // seek 144.10191 (C7H14NO2+)
                     var threshold = 1.0;
-                    var diagnosticMz = 144.10191;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.HydrogenMass * 14 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //if (isClassIonFound == false) return null;
                     // seek 236.1492492 (C10H21NO5H +)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = 236.1492492;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass - Electron; ;
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon2Found == false) return null;
 
@@ -7191,12 +7479,12 @@ AdductIon adduct)
                 {
                     // seek -87 (-C4H9NO)
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = theoreticalMz - (12 * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);
+                    var diagnosticMz1 = theoreticalMz - (MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found == false) return null;
                     // seek 236.1492492 (C10H21NO5H +)
                     //var threshold2 = 0.01;
-                    //var diagnosticMz2 = 236.1492492;
+                    //var diagnosticMz2 =MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.HydrogenMass - Electron;;
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     //if (isClassIon2Found == false) return null;
 
@@ -7220,10 +7508,10 @@ AdductIon adduct)
                 {
                     // calc [M-H]- 
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 60.02167792 : theoreticalMz - 46.00602785;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     //seek [M-C3H5]-
                     var threshold = 50.0;
-                    var diagnosticMz2 = diagnosticMz - 12 * 3 - MassDiffDictionary.HydrogenMass * 5;
+                    var diagnosticMz2 = diagnosticMz - MassDiffDictionary.CarbonMass * 3 - MassDiffDictionary.HydrogenMass * 5;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIonFound == false) return null;
                     // from here, acyl level annotation is executed.
@@ -7234,6 +7522,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var SN1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
 
@@ -7271,18 +7560,18 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // seek 144.10191 (C7H14NO2+)
+                    // seek C5H13NO,C6H13NO2
                     var threshold = 0.01;
-                    var diagnosticMz = 104.106990495;
+                    var diagnosticMz = C5H13NO + Proton; //104.107
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var diagnosticMz2 = 132.1019;
+                    var diagnosticMz2 = C5H13NO + MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass + Proton;//132.1019;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
 
                     if (isClassIonFound == false || isClassIonFound2 == false) return null;
 
                     // check 184.07332 (C5H15NO4P)  
                     var threshold1 = 5.0;
-                    var diagnosticMz1 = 184.07332;
+                    var diagnosticMz1 = C5H14NO4P + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found) return null; // reject PC
 
@@ -7301,6 +7590,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -7347,17 +7637,17 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // seek 144.10191 (C7H14NO2+)
+                    // seek C5H13NO,C6H13NO2
                     var threshold = 1.0;
-                    var diagnosticMz = 104.106990495;
+                    var diagnosticMz = C5H13NO + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var diagnosticMz2 = 132.1019;
+                    var diagnosticMz2 = C5H13NO + MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass + Proton; //132.1019;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
 
                     if (isClassIonFound == false || isClassIonFound2 == false) return null;
                     // check 184.07332 (C5H15NO4P)  
                     var threshold1 = 5.0;
-                    var diagnosticMz1 = 184.07332;
+                    var diagnosticMz1 = C5H14NO4P + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found) return null; // reject PC
 
@@ -7391,7 +7681,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     var threshold = 5.0;
-                    var diagnosticMz = theoreticalMz - 17.026549 - 194.042652622; // seek [M-194.042652]- (C6H10O7 + H+)
+                    var diagnosticMz = theoreticalMz - NH3 - (Sugar162 + MassDiffDictionary.OxygenMass * 2); // seek [M-194.042652]- (C6H10O7 + H+)
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == !true) return null;
 
@@ -7403,6 +7693,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
@@ -7448,6 +7739,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -7517,6 +7809,11 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
+                                    
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
 
                                     var sn1 = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                             + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2))) + MassDiffDictionary.OxygenMass;
@@ -7525,9 +7822,9 @@ AdductIon adduct)
                                     var sn3 = (MassDiffDictionary.CarbonMass * sn3Carbon)
                                             + (MassDiffDictionary.HydrogenMass * ((sn3Carbon * 2) - (sn3Double * 2))) + MassDiffDictionary.OxygenMass;
 
-                                    var SN1Glc = sn1 + 194.042652622 - H2O - MassDiffDictionary.HydrogenMass; // 
-                                    var SN2Gly = sn2 + 73.028416;//[SN2+C3H4O2+H]+
-                                    var SN3Gly = sn3 + 73.028416;//[SN1+C3H4O2+H]+
+                                    var SN1Glc = sn1 + (Sugar162 + MassDiffDictionary.OxygenMass * 2) - H2O - MassDiffDictionary.HydrogenMass; // 
+                                    var SN2Gly = sn2 + C3H4O2 + Proton;//[SN2+C3H4O2+H]+
+                                    var SN3Gly = sn3 + C3H4O2 + Proton;//[SN1+C3H4O2+H]+
 
                                     var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = SN1Glc, Intensity = 1 },
@@ -7580,6 +7877,11 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
+                                    
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
 
                                     var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                                     var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -7631,10 +7933,10 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+NH4]+") // not found in lipidDbProject-Pos
                 {
                     // seek -17.026549 (NH3)
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     // seek [M-C6H10O7S+H]+
                     var threshold = 1.0;
-                    var diagnosticMz2 = diagnosticMz - (12 * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 7 + MassDiffDictionary.SulfurMass);
+                    var diagnosticMz2 = diagnosticMz - (MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 7 + MassDiffDictionary.SulfurMass);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIonFound == !true) { return null; }
 
@@ -7646,6 +7948,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -7682,7 +7985,7 @@ AdductIon adduct)
                 {
                     // seek 225.0069 (C6H9O7S-)
                     var threshold = 1.0;
-                    var diagnosticMz = 225.0069;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 7 + MassDiffDictionary.SulfurMass + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -7694,11 +7997,12 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
-                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + Proton;
-                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
+                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
+                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
@@ -7744,7 +8048,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -7755,6 +8059,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -7789,7 +8094,7 @@ AdductIon adduct)
                 {
                     // seek 125.000919 (C2H6O4P-)
                     var threshold = 1;
-                    var diagnosticMz = 125.000919;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 6 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass + Electron; //125.000919;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -7801,6 +8106,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -7846,7 +8152,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -7858,6 +8164,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -7889,11 +8196,13 @@ AdductIon adduct)
                 {
                     // seek 110.98527 (CH4O4P-)
                     var threshold = 1;
-                    var diagnosticMz = 110.98527;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     var threshold2 = 30;
-                    var diagnosticMz2 = theoreticalMz - 63.008491; // [M+C2H3N(ACN)+Na-2H]- adduct of EtherPE [M-H]- 
+                    var diagnosticMz2 = theoreticalMz
+                        - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + Na)
+                        + MassDiffDictionary.HydrogenMass; // [M+C2H3N(ACN)+Na-2H]- adduct of EtherPE [M-H]- 
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound2) return null;
 
@@ -7906,6 +8215,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -7949,10 +8259,9 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
-                    // seek 
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -7964,6 +8273,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -7995,7 +8305,7 @@ AdductIon adduct)
                 {
                     // seek 153.03221938 (C4H10O4P-)
                     var threshold = 1;
-                    var diagnosticMz = 153.03221938;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -8007,6 +8317,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -8030,7 +8341,7 @@ AdductIon adduct)
 
                     if (isClassIonFound == false && candidates.Count == 0) return null;
 
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PBtOH", LbmClass.PMeOH, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PBtOH", LbmClass.PBtOH, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
@@ -8072,7 +8383,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var sn1 = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                             + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2))) + MassDiffDictionary.OxygenMass;
                                     var sn2 = (MassDiffDictionary.CarbonMass * sn2Carbon)
@@ -8080,9 +8394,9 @@ AdductIon adduct)
                                     var sn3 = (MassDiffDictionary.CarbonMass * sn3Carbon)
                                             + (MassDiffDictionary.HydrogenMass * ((sn3Carbon * 2) - (sn3Double * 2))) + MassDiffDictionary.OxygenMass;
 
-                                    var SN1Gly = sn1 + 73.028416;//[SN1+C3H4O2+H]+
-                                    var SN2Gly = sn2 + 73.028416;//[SN2+C3H4O2+H]+
-                                    var SN3Gly = sn3 + 73.028416;//[SN3+C3H4O2+H]+
+                                    var SN1Gly = sn1 + C3H4O2 + Proton;//[SN1+C3H4O2+H]+
+                                    var SN2Gly = sn2 + C3H4O2 + Proton;//[SN2+C3H4O2+H]+
+                                    var SN3Gly = sn3 + C3H4O2 + Proton;//[SN3+C3H4O2+H]+
 
                                     var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = SN1Gly, Intensity = 1.0 },
@@ -8096,7 +8410,10 @@ AdductIon adduct)
 
                                     if (foundCount == 3)
                                     {
-                                        var NL_SN3PA = theoreticalMz - 17.026549 - SN1Gly - 97.976897 + MassDiffDictionary.HydrogenMass; // [M-(sn3+C3H4O2+H)-H3PO4+H]+
+                                        var NL_SN3PA = theoreticalMz - NH3 
+                                            - SN1Gly 
+                                            - (MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4) 
+                                            + MassDiffDictionary.HydrogenMass; // [M-(sn3+C3H4O2+H)-H3PO4+H]+
                                         var threshold = 5;
                                         var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, NL_SN3PA, threshold);
                                         if (isClassIonFound == true)
@@ -8147,7 +8464,10 @@ AdductIon adduct)
                                     //if (sn3Carbon > maxSn1Carbon) break;
 
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                                     var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
                                     var sn3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn3Carbon, sn3Double);
@@ -8163,7 +8483,7 @@ AdductIon adduct)
 
                                     if (foundCount == 3)
                                     {
-                                        var SN1PA = sn1 + 135.993094251; // [FA1+C3H6O4P-H]-
+                                        var SN1PA = sn1 + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 6 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass) - MassDiffDictionary.HydrogenMass; // [FA1+C3H6O4P-H]- (+ 135.993094251)
                                         var NL_sn1 = theoreticalMz - sn1 - MassDiffDictionary.HydrogenMass; // which is better ?
                                         var threshold = 0.1;
                                         var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, SN1PA, threshold);
@@ -8224,7 +8544,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -8232,7 +8552,9 @@ AdductIon adduct)
 
                     // maybe fatty acid product ion is not found in positive mode
 
-                    for (int sn1_2Carbon = minSnCarbon1_2; sn1_2Carbon <= Math.Floor((double)totalCarbon / 2); sn1_2Carbon++)
+                    for (int sn1_2Carbon = minSnCarbon1_2;
+                         sn1_2Carbon <= maxSnCarbon1_2;
+                         sn1_2Carbon++)
                     {
                         for (int sn1_2Double = minSnDoubleBond1_2; sn1_2Double <= maxSnDoubleBond1_2; sn1_2Double++)
                         {
@@ -8240,11 +8562,13 @@ AdductIon adduct)
                             var sn3_4Carbon = totalCarbon - sn1_2Carbon;
                             var sn3_4Double = totalDoubleBond - sn1_2Double;
 
+                            if (sn3_4Carbon <= 0 || sn3_4Double < 0) continue;
+
                             var SN1_2 = LipidMsmsCharacterizationUtility.acylCainMass(sn1_2Carbon, sn1_2Double);
                             var SN3_4 = LipidMsmsCharacterizationUtility.acylCainMass(sn3_4Carbon, sn3_4Double);
 
-                            var SN1SN2Gly = SN1_2 + (12 * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //2*acyl + glycerol
-                            var SN3SN4Gly = SN3_4 + (12 * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //
+                            var SN1SN2Gly = SN1_2 + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //2*acyl + glycerol
+                            var SN3SN4Gly = SN3_4 + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //
 
                             var query = new List<SpectrumPeak>
                             {
@@ -8276,22 +8600,25 @@ AdductIon adduct)
             {
                 // seek 152.995836 (C3H6O5P-)
                 var threshold = 1.0;
-                var diagnosticMz = 152.995836;
+                var diagnosticMz = C3H6O5P + Electron;
                 var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                 //if (isClassIonFound == false) return null;
 
                 // from here, acyl level annotation is executed.
                 var candidates = new List<LipidMolecule>();
-                for (int sn1_2Carbon = minSnCarbon1_2; sn1_2Carbon <= Math.Floor((double)totalCarbon / 2); sn1_2Carbon++)
+                for (int sn1_2Carbon = minSnCarbon1_2;
+                     sn1_2Carbon <= maxSnCarbon1_2;
+                     sn1_2Carbon++)
                 {
                     for (int sn1_2Double = minSnDoubleBond1_2; sn1_2Double <= maxSnDoubleBond1_2; sn1_2Double++)
                     {
 
                         var sn3_4Carbon = totalCarbon - sn1_2Carbon;
                         var sn3_4Double = totalDoubleBond - sn1_2Double;
+                        if (sn3_4Carbon <= 0 || sn3_4Double < 0) continue;
 
-                        var SN1_SN2 = LipidMsmsCharacterizationUtility.acylCainMass(sn1_2Carbon, sn1_2Double) + 12 * 3 + (MassDiffDictionary.OxygenMass * 7) + (MassDiffDictionary.HydrogenMass * 6) + MassDiffDictionary.PhosphorusMass - Proton; //[SN1+SN2+C3H6O7P]-
-                        var SN3_SN4 = LipidMsmsCharacterizationUtility.acylCainMass(sn3_4Carbon, sn3_4Double) + 12 * 3 + (MassDiffDictionary.OxygenMass * 7) + (MassDiffDictionary.HydrogenMass * 6) + MassDiffDictionary.PhosphorusMass - Proton; //[SN3+SN4+C3H6O7P]-
+                        var SN1_SN2 = LipidMsmsCharacterizationUtility.acylCainMass(sn1_2Carbon, sn1_2Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 7) + (MassDiffDictionary.HydrogenMass * 6) + MassDiffDictionary.PhosphorusMass - Proton; //[SN1+SN2+C3H6O7P]-
+                        var SN3_SN4 = LipidMsmsCharacterizationUtility.acylCainMass(sn3_4Carbon, sn3_4Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 7) + (MassDiffDictionary.HydrogenMass * 6) + MassDiffDictionary.PhosphorusMass - Proton; //[SN3+SN4+C3H6O7P]-
 
                         //Console.WriteLine(sn1_2Carbon + ":" + sn1_2Double + "-" + sn3_4Carbon + ":" + sn3_4Double + " " + SN1_SN2 + " " + SN3_SN4);
 
@@ -8316,6 +8643,10 @@ AdductIon adduct)
 
                                     var sn4Carbon = sn3_4Carbon - sn3Carbon;
                                     var sn4Double = sn3_4Double - sn3Double;
+                                    if (sn4Carbon <= 0 || sn4Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var carbonLimit2 = Math.Min(sn1_2Carbon, maxSn1Carbon);
                                     var doubleLimit2 = Math.Min(sn1_2Double, maxSn1DoubleBond);
 
@@ -8329,14 +8660,17 @@ AdductIon adduct)
                                             }
 
                                             var sn2Carbon = sn1_2Carbon - sn1Carbon;
-
-                                            //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
-                                            if (sn2Carbon < minSn2Carbon) { break; }
-
                                             var sn2Double = sn1_2Double - sn1Double;
+
+                                            if (sn2Carbon < minSn2Carbon || sn2Carbon > maxSn2Carbon ||
+                                                sn2Double < minSn2DoubleBond || sn2Double > maxSn2DoubleBond)
+                                            {
+                                                continue;
+                                            }
+                                            //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
                                             if (sn2Double > 0)
                                             {
-                                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                                if ((double)(sn2Carbon / sn2Double) < 3) continue;
                                             }
 
                                             var SN1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
@@ -8396,19 +8730,22 @@ AdductIon adduct)
             {
                 // seek 152.995836 (C3H6O5P-)
                 var threshold = 1.0;
-                var diagnosticMz = 152.995836;
+                var diagnosticMz = C3H6O5P + Electron;
                 var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                 //if (isClassIonFound == false) return null;
 
                 // from here, acyl level annotation is executed.
                 var candidates = new List<LipidMolecule>();
-                for (int sn1_2Carbon = minSnCarbon1_2; sn1_2Carbon <= Math.Floor((double)totalCarbon / 2); sn1_2Carbon++)
+                for (int sn1_2Carbon = minSnCarbon1_2;
+                     sn1_2Carbon <= maxSnCarbon1_2;
+                     sn1_2Carbon++)
                 {
                     for (int sn1_2Double = minSnDoubleBond1_2; sn1_2Double <= maxSnDoubleBond1_2; sn1_2Double++)
                     {
 
                         var sn3_4Carbon = totalCarbon - sn1_2Carbon;
                         var sn3_4Double = totalDoubleBond - sn1_2Double;
+                        if (sn3_4Carbon <= 0 || sn3_4Double < 0) continue;
 
                         var carbonLimit = Math.Min(sn3_4Carbon, maxSn3Carbon);
                         var doubleLimit = Math.Min(sn3_4Double, maxSn3DoubleBond);
@@ -8420,6 +8757,10 @@ AdductIon adduct)
 
                                 var sn4Carbon = sn3_4Carbon - sn3Carbon;
                                 var sn4Double = sn3_4Double - sn3Double;
+                                if (sn4Carbon <=0 || sn4Double < 0)
+                                {
+                                    continue;
+                                }
                                 var carbonLimit2 = Math.Min(sn1_2Carbon, maxSn1Carbon);
                                 var doubleLimit2 = Math.Min(sn1_2Double, maxSn1DoubleBond);
 
@@ -8433,14 +8774,18 @@ AdductIon adduct)
                                         }
 
                                         var sn2Carbon = sn1_2Carbon - sn1Carbon;
-
-                                        //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
-                                        if (sn2Carbon < minSn2Carbon) { break; }
-
                                         var sn2Double = sn1_2Double - sn1Double;
+
+                                        if (sn2Carbon < minSn2Carbon || sn2Carbon > maxSn2Carbon ||
+                                            sn2Double < minSn2DoubleBond || sn2Double > maxSn2DoubleBond)
+                                        {
+                                            continue;
+                                        }
+                                        //if (sn3_4Carbon + sn1Carbon + sn2Carbon != totalCarbon) { break; }
+
                                         if (sn2Double > 0)
                                         {
-                                            if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                            if ((double)(sn2Carbon / sn2Double) < 3) continue;
                                         }
 
                                         var SN1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
@@ -8510,7 +8855,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -8530,12 +8875,13 @@ AdductIon adduct)
                             //var sn3_4Carbon = Math.Min(totalCarbon - sn1_2Carbon, maxSnCarbon);
                             var sn3_4Carbon = totalCarbon - sn1_2Carbon;
                             var sn3_4Double = totalDoubleBond - sn1_2Double;
+                            if (sn3_4Carbon <= 0 || sn3_4Double < 0) continue;
 
                             var SN1_2 = LipidMsmsCharacterizationUtility.acylCainMass(sn1_2Carbon, sn1_2Double);
                             var SN3_4 = LipidMsmsCharacterizationUtility.acylCainMass(sn3_4Carbon, sn3_4Double);
 
-                            var SN1SN2Gly = SN1_2 + (12 * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //2*acyl + glycerol
-                            var SN3SN4Gly = SN3_4 + (12 * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //
+                            var SN1SN2Gly = SN1_2 + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //2*acyl + glycerol
+                            var SN3SN4Gly = SN3_4 + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 3) + MassDiffDictionary.OxygenMass * 3 + Proton; //
 
                             var query = new List<SpectrumPeak>
                             {
@@ -8588,7 +8934,7 @@ AdductIon adduct)
                 {
                     // seek 152.995836 (C3H6O5P-)
                     var threshold = 1.0;
-                    var diagnosticMz = 152.995836;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     // from here, acyl level annotation is executed.
@@ -8610,15 +8956,15 @@ AdductIon adduct)
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     //if (sn1Carbon + sn2Carbon + sn3Carbon != totalCarbon) { break; }
                                     var sn3Double = remainDouble - sn2Double;
-                                    if (sn3Double < 0) { break; }
+                                    if (sn3Carbon <=0 || sn3Double < 0) { continue; }
 
                                     var SN1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                                     var SN2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
                                     var SN3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn3Carbon, sn3Double);
 
-                                    var SN1_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + 12 * 3 + (MassDiffDictionary.OxygenMass * 6)
+                                    var SN1_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 6)
                                             + (MassDiffDictionary.HydrogenMass * 6) + MassDiffDictionary.PhosphorusMass - Proton; //[SN1+C3H7O4P]-
-                                    var SN2_SN3_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon + sn3Carbon, sn2Double + sn3Double) + 12 * 3 + (MassDiffDictionary.OxygenMass * 7)
+                                    var SN2_SN3_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon + sn3Carbon, sn2Double + sn3Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 7)
                                             + (MassDiffDictionary.HydrogenMass * 8) + MassDiffDictionary.PhosphorusMass - Proton; //[SN2+SN3+C3H8O7P]-
 
 
@@ -8691,7 +9037,7 @@ AdductIon adduct)
                 {
                     // seek 152.995836 (C3H6O5P-)
                     var threshold = 1.0;
-                    var diagnosticMz = 152.995836;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -8706,11 +9052,12 @@ AdductIon adduct)
 
                             var sn2Double = totalDoubleBond - sn1Double;
                             //if (sn2Double < 0 ) { break; }
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
 
-                            var SN1_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + 12 * 3 + (MassDiffDictionary.OxygenMass * 6)
+                            var SN1_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 6)
                                     + (MassDiffDictionary.HydrogenMass * 8) + MassDiffDictionary.PhosphorusMass - Proton; //[SN1+C3H8O4P]-
-                            var SN2_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + 12 * 3 + (MassDiffDictionary.OxygenMass * 6)
+                            var SN2_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 6)
                                     + (MassDiffDictionary.HydrogenMass * 8) + MassDiffDictionary.PhosphorusMass - Proton; //[SN1+C3H8O4P]-
 
 
@@ -8789,7 +9136,7 @@ AdductIon adduct)
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, theoreticalMz, threshold);
                     if (isClassIonFound == false) return null;
                     var threshold2 = 1.0;
-                    var diagnosticMz = theoreticalMz - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
+                    var diagnosticMz = theoreticalMz - MassDiffDictionary.CarbonMass * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
                     if (isClassIonFound2 == false) return null;
                     var candidates = new List<LipidMolecule>();
@@ -8824,7 +9171,7 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
 
-                    var alphaOHflag01 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                    var alphaOHflag01 = theoreticalMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
                     var nl_H2O = theoreticalMz - H2O; // -H2O
                     var query = new List<SpectrumPeak>
                                         {
@@ -8875,7 +9222,7 @@ AdductIon adduct)
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, theoreticalMz, threshold);
                     if (isClassIonFound == false) return null;
                     var threshold2 = 1.0;
-                    var diagnosticMz = theoreticalMz - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
+                    var diagnosticMz = theoreticalMz - MassDiffDictionary.CarbonMass * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold2);
                     if (isClassIonFound2 == false) return null;
                     var diagnosticMz2 = diagnosticMz - H2O;
@@ -8885,7 +9232,7 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
 
-                    //var alphaOHflag01 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                    //var alphaOHflag01 = theoreticalMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
                     //var nl_H2O = theoreticalMz - H2O; // -H2O
                     //var query = new List<SpectrumPeak>
                     //                    {
@@ -8945,15 +9292,16 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             if (sn2Double > 0)
                             {
-                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                if ((double)(sn2Carbon / sn2Double) < 3) continue;
                             }
 
                             var NL_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass; //[M-SN1(HFA)-H]-
                             var NL_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; //[M - SN2-H]-
-                            var aahfaFrag1 = NL_SN1 - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                            var aahfaFrag1 = NL_SN1 - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
 
                             var query = new List<SpectrumPeak>
                                         {
@@ -9022,19 +9370,20 @@ AdductIon adduct)
                         {
                             if (sn1Double > 0)
                             {
-                                if ((double)(sn1Carbon / sn1Double) < 3) break;
+                                if ((double)(sn1Carbon / sn1Double) < 3) continue;
                             }
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             if (sn2Double > 0)
                             {
-                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                                if ((double)(sn2Carbon / sn2Double) < 3) continue;
                             }
 
                             var NL_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass; // extra FA loss
-                            var NL_SN1_header = NL_SN1 - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
+                            var NL_SN1_header = NL_SN1 - MassDiffDictionary.CarbonMass * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
 
                             var query = new List<SpectrumPeak>
                                         {
@@ -9094,11 +9443,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             // if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
                             if (acylDouble >= 7) continue;
                             var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             // must query
                             var queryMust = new List<SpectrumPeak> {
@@ -9144,7 +9494,7 @@ AdductIon adduct)
                 {
                     // reject HexCer
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 162.052833 - H2O;
+                    var diagnosticMz = theoreticalMz - Sugar162 - H2O;
                     if (LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold)) { return null; }
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
@@ -9154,9 +9504,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 2 },
@@ -9188,10 +9539,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-CH2O-H]-
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = diagnosticMz - 12 - H2O;
+                    var diagnosticMz1 = diagnosticMz - MassDiffDictionary.CarbonMass - H2O;
                     // seek [M-CH2O-H2O-H]-
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
@@ -9202,7 +9553,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold3 = 50.0;
                         var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                         if (isClassIon3Found) return null;
@@ -9219,10 +9570,11 @@ AdductIon adduct)
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylDouble >= 7) continue;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+NCCO-3H]- on Excel(may be not sure)
-                            var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCC-3H]-
+                            var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
                             var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                             //Console.WriteLine("d" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
@@ -9273,7 +9625,9 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    var diagnosticMz = theoreticalMz - 79.966333 - H2O;
+                    var diagnosticMz = theoreticalMz 
+                        - (MassDiffDictionary.HydrogenMass + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 3) // 79.966333 
+                        - H2O;
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
@@ -9282,11 +9636,12 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             // must query
                             var queryMust = new List<SpectrumPeak> {
@@ -9314,12 +9669,12 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     var diagnosticMz = theoreticalMz;
-                    // seek [M-CH2O-H]-
+                    // seek [H2PO4]-
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = 96.969619122;
-                    // seek [M-CH2O-H2O-H]-
+                    var diagnosticMz1 = MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.PhosphorusMass +  MassDiffDictionary.OxygenMass * 4 + Electron;
+                    // seek [PO3]-
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = 78.959054438;
+                    var diagnosticMz2 = MassDiffDictionary.PhosphorusMass +  MassDiffDictionary.OxygenMass * 3 + Electron;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -9362,11 +9717,12 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         //if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                         var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                         var sph2 = sph1 - H2O;
-                        var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
-                        var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                        var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
+                        var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                         // must query
                         var queryMust = new List<SpectrumPeak> {
@@ -9409,7 +9765,7 @@ AdductIon adduct)
                 {
                     // reject HexCer
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 162.052833 - H2O;
+                    var diagnosticMz = theoreticalMz - Sugar162 - H2O;
                     if (LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold)) { return null; }
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
@@ -9419,9 +9775,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -9454,10 +9811,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-CH2-H2O-H]-
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = diagnosticMz - 12 - H2O - 2 * MassDiffDictionary.HydrogenMass;
+                    var diagnosticMz1 = diagnosticMz - MassDiffDictionary.CarbonMass - H2O - 2 * MassDiffDictionary.HydrogenMass;
                     // seek [M-CH2O-H2O-H]-
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz1 - MassDiffDictionary.OxygenMass;
@@ -9468,7 +9825,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold3 = 50.0;
                         var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                         if (isClassIon3Found) return null;
@@ -9482,10 +9839,11 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         //if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                        var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
+                        var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                  2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+NCC-3H]- 
-                        var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCC-3H]-
+                        var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
                         var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
                         var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphChain_loss, Intensity = 5 },
@@ -9539,7 +9897,7 @@ AdductIon adduct)
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : theoreticalMz;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz - 162.052833;
+                    var diagnosticMz2 = diagnosticMz - Sugar162;
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon2Found == false) return null;
@@ -9554,12 +9912,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             // if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
 
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 5 },
@@ -9602,9 +9961,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -9636,17 +9996,17 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [[M-C6H10O5-H]-
                     var threshold1 = 10.0;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIonFound != true) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold3 = 50.0;
                         var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                         if (isClassIon3Found) return null;
@@ -9662,11 +10022,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz1 - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz1 - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+NCCO-3H]- 
-                            var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCC-3H]-
-                                                                                                                                                                                      //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
+                            var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
+                                                                                                                                                                                                      //var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
                             var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                             var query = new List<SpectrumPeak> {
@@ -9723,7 +10084,7 @@ AdductIon adduct)
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : theoreticalMz;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz - 162.052833;
+                    var diagnosticMz2 = diagnosticMz - Sugar162;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound == !true || isClassIon2Found == !true) return null;
@@ -9738,12 +10099,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             // if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
 
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             //Console.WriteLine("HexCer-O" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
                             //    sph1 + " " + sph2 + " " + sph3);
@@ -9791,9 +10153,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -9832,17 +10195,17 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [[M-C6H10O5-H]-
                     var threshold1 = 5.0;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIonFound != true) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold3 = 50.0;
                         var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                         if (isClassIon3Found) return null;
@@ -9857,8 +10220,10 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
+
                             var acylFragment = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass
-                                + MassDiffDictionary.HydrogenMass * 4 + 12 * 2 + MassDiffDictionary.OxygenMass - Proton; // as [FAA+C2H3-H]- fix 20220905
+                                + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.OxygenMass - Proton; // as [FAA+C2H3-H]- fix 20220905
                                                                                                                          //Console.WriteLine("HexCer-O " + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " + acylFragment);
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = acylFragment, Intensity = 0.1 }
@@ -9913,7 +10278,7 @@ AdductIon adduct)
                     var diagnosticMz = adductform == "[M+H]+" ? theoreticalMz - H2O : theoreticalMz;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz - 162.052833;
+                    var diagnosticMz2 = diagnosticMz - Sugar162;
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon2Found == !true) return null;
@@ -9927,11 +10292,12 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         //if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                         var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                         var sph2 = sph1 - H2O;
-                        // var sph3 = sph2 - 12; //[Sph-CH4O2+H]+ (may be not found)
-                        var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                        // var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+ (may be not found)
+                        var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                         var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 5 },
@@ -9971,9 +10337,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -10005,17 +10372,17 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [[M-C6H10O5-H]-
                     var threshold = 10.0;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     if (isClassIonFound != true) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold3 = 50.0;
                         var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                         if (isClassIon3Found) return null;
@@ -10030,11 +10397,12 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         //if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                        var sphChain_loss = diagnosticMz1 - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
+                        var sphChain_loss = diagnosticMz1 - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                  2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+NCCO-3H]- 
-                        var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCC-3H]-
-                                                                                                                                                                                  //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
+                        var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
+                                                                                                                                                                                                  //var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
                         var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                         var query = new List<SpectrumPeak> {
@@ -10097,11 +10465,12 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 3 },
@@ -10150,9 +10519,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -10190,10 +10560,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-CH2O-H]-
                     var threshold1 = 0.1;
-                    var diagnosticMz1 = diagnosticMz - H2O - 12;
+                    var diagnosticMz1 = diagnosticMz - H2O - MassDiffDictionary.CarbonMass;
                     // seek [M-CH4O2-H]-
                     var threshold2 = 0.1;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
@@ -10203,7 +10573,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -10230,8 +10600,9 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+C2H3N]- 
                             var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
                             var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass;
@@ -10288,11 +10659,12 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 1 },
@@ -10343,13 +10715,13 @@ AdductIon adduct)
                     // calc [M-H]-
                     var threshold1 = 10.0;
                     var diagnosticMz1 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-C6H10O5-H]-
                     var threshold2 = 5;
-                    var diagnosticMz2 = diagnosticMz1 - 162.052833;
+                    var diagnosticMz2 = diagnosticMz1 - Sugar162;
                     // seek [M-C12H20O10-H]-
                     var threshold3 = 1;
-                    var diagnosticMz3 = diagnosticMz2 - 162.052833;
+                    var diagnosticMz3 = diagnosticMz2 - Sugar162;
 
                     //var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -10364,13 +10736,13 @@ AdductIon adduct)
 
                     // seek [M-C18H30O15-H]- // reject Hex3Cer
                     var threshold5 = 1;
-                    var diagnosticMz5 = diagnosticMz3 - 162.052833;
+                    var diagnosticMz5 = diagnosticMz3 - Sugar162;
                     var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                     if (isClassIon5Found) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz4 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz4 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold4 = 50.0;
                         var isClassIon4Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
                         if (isClassIon4Found) return null;
@@ -10385,7 +10757,7 @@ AdductIon adduct)
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("Hex2Cer", LbmClass.Hex2Cer, "d", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
             else
@@ -10397,10 +10769,10 @@ AdductIon adduct)
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 0.1;
-                    var diagnosticMz2 = diagnosticMz - 162.052833;
+                    var diagnosticMz2 = diagnosticMz - Sugar162;
 
                     var threshold3 = 1.0;
-                    var diagnosticMz3 = diagnosticMz2 - 162.052833;
+                    var diagnosticMz3 = diagnosticMz2 - Sugar162;
 
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -10415,7 +10787,7 @@ AdductIon adduct)
 
                     // seek [M-C18H30O15-H]- // reject Hex3Cer
                     var threshold5 = 1;
-                    var diagnosticMz5 = diagnosticMz3 - 162.052833;
+                    var diagnosticMz5 = diagnosticMz3 - Sugar162;
                     var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                     if (isClassIon5Found) return null;
 
@@ -10429,12 +10801,13 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz3 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
 
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph2, Intensity = 1 },
@@ -10476,16 +10849,16 @@ AdductIon adduct)
                     // calc [M-H]-
                     var threshold1 = 10.0;
                     var diagnosticMz1 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-C6H10O5-H]-
                     var threshold2 = 1;
-                    var diagnosticMz2 = diagnosticMz1 - 162.052833;
+                    var diagnosticMz2 = diagnosticMz1 - Sugar162;
                     // seek [M-C12H20O10-H]-
                     var threshold3 = 1;
-                    var diagnosticMz3 = diagnosticMz2 - 162.052833;
+                    var diagnosticMz3 = diagnosticMz2 - Sugar162;
                     // seek [M-C18H30O15-H]-
                     var threshold4 = 1;
-                    var diagnosticMz4 = diagnosticMz3 - 162.052833;
+                    var diagnosticMz4 = diagnosticMz3 - Sugar162;
 
                     //var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -10502,7 +10875,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -10517,7 +10890,7 @@ AdductIon adduct)
                     //candidates.Add(molecule0);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("Hex3Cer", LbmClass.Hex3Cer, "d", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
             else
@@ -10529,13 +10902,13 @@ AdductIon adduct)
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 0.1;
-                    var diagnosticMz2 = diagnosticMz - 162.052833;
+                    var diagnosticMz2 = diagnosticMz - Sugar162;
 
                     var threshold3 = 0.1;
-                    var diagnosticMz3 = diagnosticMz2 - 162.052833;
+                    var diagnosticMz3 = diagnosticMz2 - Sugar162;
 
                     var threshold4 = 1.0;
-                    var diagnosticMz4 = diagnosticMz3 - 162.052833;
+                    var diagnosticMz4 = diagnosticMz3 - Sugar162;
 
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -10560,12 +10933,13 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz4 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
 
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph2, Intensity = 1 },
@@ -10623,12 +10997,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph1 - 2 * H2O;
                             var sph4 = sph1 - 3 * H2O;
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 5 },
@@ -10666,9 +11041,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -10701,11 +11077,11 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold2 = 50.0;
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon2Found) return null;
@@ -10720,12 +11096,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 3) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 3) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz - ((sphCarbon - 3) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 3) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // 
-                            var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + 2 * MassDiffDictionary.OxygenMass; // [Sph-NCC-2H2O]-
+                            var sphFragment = ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 - 1)) + 2 * MassDiffDictionary.OxygenMass + Electron; // [Sph-NCC-2H2O]-
                             var acylFragment1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass; // FA(+OH)+ O (may be not sure)
-                            var acylFragment2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - 12 - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // FA(+OH) -C -O -2H(may be not sure)
+                            var acylFragment2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // FA(+OH) -C -O -2H(may be not sure)
 
                             //Console.WriteLine("d" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
                             //    sphChain_loss + " " + sphFragment + " " + acylFragment1 + " " + acylFragment2);
@@ -10792,8 +11169,9 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 3 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 3 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
                             if (!LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, acylamide, threshold2))
                             {
                                 continue;
@@ -10839,11 +11217,11 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold2 = 50.0;
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon2Found) return null;
@@ -10858,9 +11236,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var Sph = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 4;
-                            var SphFragment = Sph + 12 * 2 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass - MassDiffDictionary.ProtonMass;
+                            var SphFragment = Sph + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass - MassDiffDictionary.ProtonMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass =SphFragment, Intensity = 40.0 },
@@ -10916,12 +11295,13 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         //if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                         var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton + MassDiffDictionary.HydrogenMass + H2O;
                         var sph2 = sph1 - H2O;
                         var sph3 = sph1 - 2 * H2O;
                         var sph4 = sph1 - 3 * H2O;
-                        //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                        //var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                         var query = new List<SpectrumPeak> {
                                 //new SpectrumPeak() { Mass = sph1, Intensity = 1 },
@@ -10955,11 +11335,11 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold2 = 50.0;
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon2Found) return null;
@@ -10974,11 +11354,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sphFragment1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - H2O + MassDiffDictionary.HydrogenMass; //[Sph-H2O-3H]-
-                            var sphFragment2 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - 12; //[Sph-CO-H]-
-                            var acylFragment1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton - 12 + MassDiffDictionary.HydrogenMass - H2O;  //"[Acyl-CO]-"
-                            var acylFragment2 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton + 12 * 2 + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.NitrogenMass; // [Acyl+C2H3N]-
+                            var sphFragment2 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - MassDiffDictionary.CarbonMass; //[Sph-CO-H]-
+                            var acylFragment1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton - MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass - H2O;  //"[Acyl-CO]-"
+                            var acylFragment2 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass - Proton + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.NitrogenMass; // [Acyl+C2H3N]-
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphFragment1, Intensity = 1 },
@@ -11040,12 +11421,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton + MassDiffDictionary.HydrogenMass + H2O;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph1 - 2 * H2O;
                             var sph4 = sph1 - 3 * H2O;
-                            //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            //var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 //new SpectrumPeak() { Mass = sph1, Intensity = 1 },
@@ -11080,10 +11462,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-CO-H]-
                     var threshold1 = 0.10;
-                    var diagnosticMz1 = diagnosticMz - (12 + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
+                    var diagnosticMz1 = diagnosticMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
                     // seek "[M-H2O-CO-3H]-";
                     var threshold2 = 0.10;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
@@ -11101,11 +11483,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sphChain_loss = diagnosticMz - (LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass)
                                 - Proton
-                                + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + 12 * 2; // "[FA+NCCO-O-3H]-"
-                            var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - (12 * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 3); // "[Sph-NCCO-3H]-"
+                                + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.CarbonMass * 2; // "[FA+NCCO-O-3H]-"
+                            var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 3); // "[Sph-NCCO-3H]-"
                             var acylamide = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass + Electron;
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
@@ -11167,12 +11550,13 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         //if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                         var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton + MassDiffDictionary.HydrogenMass + H2O;
                         var sph2 = sph1 - H2O;
                         var sph3 = sph1 - 2 * H2O;
                         var sph4 = sph1 - 3 * H2O;
-                        //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                        //var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                         var query = new List<SpectrumPeak> {
                                 //new SpectrumPeak() { Mass = sph1, Intensity = 1 },
@@ -11206,11 +11590,11 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold2 = 50.0;
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon2Found) return null;
@@ -11225,11 +11609,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sphFragment1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - H2O + MassDiffDictionary.HydrogenMass; //[Sph-H2O-3H]-
-                            var sphFragment2 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - 12; //[Sph-CO-H]-
-                            var acylFragment1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.OxygenMass - Proton - 12 + MassDiffDictionary.HydrogenMass - H2O;  //"[Acyl-CO]-"
-                            var acylFragment2 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.OxygenMass - Proton + 12 * 2 + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.NitrogenMass; // [Acyl+C2H3N]-
+                            var sphFragment2 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - MassDiffDictionary.CarbonMass; //[Sph-CO-H]-
+                            var acylFragment1 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.OxygenMass - Proton - MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass - H2O;  //"[Acyl-CO]-"
+                            var acylFragment2 = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.OxygenMass - Proton + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.NitrogenMass; // [Acyl+C2H3N]-
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphFragment1, Intensity = 1 },
@@ -11291,12 +11676,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton + MassDiffDictionary.HydrogenMass + H2O;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph1 - 2 * H2O;
                             var sph4 = sph1 - 3 * H2O;
-                            //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            //var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 //new SpectrumPeak() { Mass = sph1, Intensity = 1 },
@@ -11331,10 +11717,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-CO-H]-
                     var threshold1 = 0.10;
-                    var diagnosticMz1 = diagnosticMz - (12 + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
+                    var diagnosticMz1 = diagnosticMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
                     // seek "[M-H2O-CO-3H]-";
                     var threshold2 = 0.10;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
@@ -11352,11 +11738,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sphChain_loss = diagnosticMz - (LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass)
                                 - Proton
-                                + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + 12 * 2; // "[FA+NCCO-O-3H]-"
-                            var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - (12 * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 3); // "[Sph-NCCO-3H]-"
+                                + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.CarbonMass * 2; // "[FA+NCCO-O-3H]-"
+                            var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass - Proton - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 3); // "[Sph-NCCO-3H]-"
                             var acylamide = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.NitrogenMass + Electron;
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
@@ -11405,7 +11792,7 @@ AdductIon adduct)
                 {
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 162.052833;
+                    var diagnosticMz = theoreticalMz - Sugar162;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = adductform == "[M+H]+" ? diagnosticMz - H2O : diagnosticMz;
@@ -11422,12 +11809,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (sphCarbon >= 24 || sphCarbon <= 14) continue;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 + H2O;
                             var sph3 = sph1 - 1 * H2O;
                             var sph4 = sph1 - 2 * H2O;
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 1 },
@@ -11473,9 +11861,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -11506,17 +11895,17 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-C6H10O5-H]-
                     var threshold = 1.0;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     if (isClassIonFound != true) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -11532,11 +11921,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz1 - ((sphCarbon - 3) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 3) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz1 - ((sphCarbon - 3) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 3) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // 
                             var acylFragment1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass; // FA(+OH)+ O (may be not sure)
-                            var acylFragment2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - 12 - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // FA(+OH) -C -O -2H(may be not sure)
+                            var acylFragment2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // FA(+OH) -C -O -2H(may be not sure)
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
                                 new SpectrumPeak() { Mass = acylFragment1, Intensity = 0.1 },
@@ -11589,13 +11979,13 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-H2O-H]-
                     var threshold1 = 1.0;
                     var diagnosticMz1 = diagnosticMz - H2O;
                     // seek [M-CH2O-H2O-H]-
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz1 - H2O - 12;
+                    var diagnosticMz2 = diagnosticMz1 - H2O - MassDiffDictionary.CarbonMass;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -11604,7 +11994,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -11636,11 +12026,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; //
-                            var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCCO-3H]-
-                            var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - 12 - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // [FA-CO-3H]-
+                            var sphFragment = ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 - 1)) + MassDiffDictionary.OxygenMass + Electron; // [Sph-NCCO-3H]-
+                            var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // [FA-CO-3H]-
                             var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = sphChain_loss, Intensity = 0.5 },
                                         new SpectrumPeak() { Mass = sphFragment, Intensity = 0.5 },
@@ -11697,13 +12088,13 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-H2O-H]-
                     var threshold1 = 1.0;
                     var diagnosticMz1 = diagnosticMz - H2O;
                     // seek [M-CH2O-H2O-H]-
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz1 - H2O - 12;
+                    var diagnosticMz2 = diagnosticMz1 - H2O - MassDiffDictionary.CarbonMass;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -11712,7 +12103,7 @@ AdductIon adduct)
                     var isSolventAdduct = false;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -11742,10 +12133,11 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         // if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                         var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) - MassDiffDictionary.HydrogenMass - Proton; // [Sph-CO+C=O-4H]-
                         var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - 2 * MassDiffDictionary.HydrogenMass; // 
-                        var acylFragment2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - 2 * MassDiffDictionary.HydrogenMass - 12 - MassDiffDictionary.OxygenMass; // [FA-CO-3H]-
+                        var acylFragment2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - 2 * MassDiffDictionary.HydrogenMass - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass; // [FA-CO-3H]-
                         var query = new List<SpectrumPeak> {
                                     new SpectrumPeak() { Mass = sph1, Intensity = 1 },
                                     new SpectrumPeak() { Mass = acylFragment, Intensity = 1 },
@@ -11809,7 +12201,7 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-H2O-H]-
                     var threshold1 = 1.0;
                     var diagnosticMz1 = diagnosticMz - H2O;
@@ -11818,7 +12210,7 @@ AdductIon adduct)
                     //if (isClassIon1Found != true) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -11850,6 +12242,7 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon + 2, sphDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - Proton; // [Sph+C2H2O-H]- suggest Cer-BS fragment
                             var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-C2H7NO-H]-
@@ -11902,7 +12295,7 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-H2O-H]-  // maybe not found
                     //var threshold1 = 1.0;
                     //var diagnosticMz1 = diagnosticMz - H2O;
@@ -11912,7 +12305,7 @@ AdductIon adduct)
                     //var isSolventAdduct = false;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -11943,10 +12336,11 @@ AdductIon adduct)
                         var acylCarbon = totalCarbon - sphCarbon;
                         //if (acylCarbon < minSphCarbon) { break; }
                         var acylDouble = totalDoubleBond - sphDouble;
+                        if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                         var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon + 2, sphDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - Proton; // [Sph+C2H2O-H]- suggest beta-OH-FA fragment 
                         var sphFragment1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
-                        var sphFragment2 = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass + 12; // ([Sph+C=O-CO-3H]- on Excel sheet)
+                        var sphFragment2 = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass + MassDiffDictionary.CarbonMass; // ([Sph+C=O-CO-3H]- on Excel sheet)
 
                         var mustQuery = new List<SpectrumPeak> {
                                     new SpectrumPeak() { Mass = sph1, Intensity = 50 },
@@ -12024,12 +12418,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph1 - 2 * H2O;
                             var sph4 = sph1 - 3 * H2O;
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 1 },
@@ -12064,9 +12459,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -12097,7 +12493,7 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-H2O-H]-
                     var threshold1 = 0.10;
                     var diagnosticMz1 = diagnosticMz - H2O;
@@ -12111,7 +12507,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -12128,11 +12524,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 3) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 3) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz - ((sphCarbon - 3) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 3) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // [FAA+C3H5O-H]-
-                            var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + 2 * MassDiffDictionary.OxygenMass; // [Sph-C2H9NO-H]-
-                            var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
+                            var sphFragment = ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 - 1)) + 2 * MassDiffDictionary.OxygenMass + Electron; // [Sph-C2H9NO-H]-
+                            var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
                                 new SpectrumPeak() { Mass = sphFragment, Intensity = 1 },
@@ -12191,18 +12588,18 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     // seek [[M-C6H10O5-H]-  // reject HexCer-EOS
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIonFound == true) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -12226,13 +12623,15 @@ AdductIon adduct)
                                     var terminalCarbon = totalCarbon - sphCarbon - acylCarbon;
                                     //if (acylCarbon < maxSphCarbon) break;
                                     var terminalDouble = totalDoubleBond - sphDouble - acylDouble;
+                                    if(terminalCarbon <= 0 || terminalDouble < 0) { continue; }
+
                                     //var esterloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalCarbon, terminalDouble)
                                     //    + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // 
                                     var esterFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalCarbon, terminalDouble);
                                     var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble)
-                                        + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
+                                        + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
                                     var sphIon = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble)
-                                        - (12 * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass) + Electron;
+                                        - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass) + Electron;
                                     var query1 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
                                     };
@@ -12257,13 +12656,13 @@ AdductIon adduct)
                                         if (foundCount2 >= 1)
                                         {
                                             var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2("Cer", LbmClass.Cer_EOS, "d", sphCarbon, sphDouble,
-                                               acylCarbon, acylDouble, terminalCarbon, terminalDouble, averageIntensity1);
+                                               acylCarbon, acylDouble, terminalCarbon, terminalDouble, averageIntensity2);
                                             candidates.Add(molecule);
                                         }
                                         else
                                         {
                                             var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2_0("Cer", LbmClass.Cer_EOS, "d", sphCarbon + acylCarbon,
-                                             sphDouble + acylDouble, terminalCarbon, terminalDouble, averageIntensity2);
+                                             sphDouble + acylDouble, terminalCarbon, terminalDouble, averageIntensity1);
                                             candidates.Add(molecule);
                                         }
                                     }
@@ -12299,7 +12698,7 @@ AdductIon adduct)
 
                     // HexCer exclude
                     var thresholdHex = 30.0;
-                    var diagnosticMzHex = diagnosticMz - 162.052833;
+                    var diagnosticMzHex = diagnosticMz - Sugar162;
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMzHex, thresholdHex);
                     if (isClassIon2Found) return null;
@@ -12314,11 +12713,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             // if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + 3 * MassDiffDictionary.HydrogenMass - 2 * MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             //Console.WriteLine(sphCarbon + ":" + sphDouble + " " + sph1 + " " + sph2 + " " + sph3);
 
@@ -12354,7 +12754,7 @@ AdductIon adduct)
                 {
                     // HexCer exclude
                     var thresholdHex = 30.0;
-                    var diagnosticMzHex = theoreticalMz - 162.052833 - H2O;
+                    var diagnosticMzHex = theoreticalMz - Sugar162 - H2O;
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMzHex, thresholdHex);
                     if (isClassIon2Found) return null;
@@ -12366,9 +12766,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
-
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
+ 
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -12415,11 +12816,11 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -12441,14 +12842,15 @@ AdductIon adduct)
                             {
                                 var terminalCarbon = totalCarbon - sphCarbon - acylCarbon;
                                 var terminalDouble = totalDoubleBond - sphDouble - acylDouble;
+                                if(terminalCarbon <= 0 || terminalDouble < 0) { continue; }
 
                                 //var esterloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalCarbon, terminalDouble)
                                 //    + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // 
                                 var esterFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalCarbon, terminalDouble);
                                 var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble)
-                                    + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
+                                    + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
                                 var sphIon = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble)
-                                    - (12 * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass) + Electron;
+                                    - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass) + Electron;
                                 var query1 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
                                     };
@@ -12473,13 +12875,13 @@ AdductIon adduct)
                                     if (foundCount2 >= 1)
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2("Cer", LbmClass.Cer_EODS, "d", sphCarbon, sphDouble,
-                                           acylCarbon, acylDouble, terminalCarbon, terminalDouble, averageIntensity1);
+                                           acylCarbon, acylDouble, terminalCarbon, terminalDouble, averageIntensity2);
                                         candidates.Add(molecule);
                                     }
                                     else
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getEsterceramideMoleculeObjAsLevel2_0("Cer", LbmClass.Cer_EODS, "d", sphCarbon + acylCarbon,
-                                         sphDouble + acylDouble, terminalCarbon, terminalDouble, averageIntensity2);
+                                         sphDouble + acylDouble, terminalCarbon, terminalDouble, averageIntensity1);
                                         candidates.Add(molecule);
                                     }
                                 }
@@ -12528,16 +12930,16 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [[M-C6H10O5-H]-
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIonFound != true) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -12557,7 +12959,7 @@ AdductIon adduct)
                                     var omegaAcylDouble = acylDouble;
 
                                     var omegaAcylloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(omegaAcylCarbon, omegaAcylDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // 
-                                    var omegaAcyllossHexloss = omegaAcylloss - 162.052833; // 
+                                    var omegaAcyllossHexloss = omegaAcylloss - Sugar162; // 
                                     var omegaAcylFA = LipidMsmsCharacterizationUtility.fattyacidProductIon(omegaAcylCarbon, omegaAcylDouble);
 
                                     var omegaAcyllossHexH2Oloss = omegaAcyllossHexloss - H2O; // maybe this fragmment is not found
@@ -12611,7 +13013,7 @@ AdductIon adduct)
                 {
                     // seek -Hex(-C6H10O5)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 162.052833;
+                    var diagnosticMz = theoreticalMz - Sugar162;
                     // seek -H2O -Hex(-C6H10O5)
                     var threshold2 = 1.0;
                     var diagnosticMz2 = adductform == "[M+H]+" ? diagnosticMz - H2O : diagnosticMz;
@@ -12632,14 +13034,15 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + 3 * MassDiffDictionary.HydrogenMass - 2 * MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
 
                             //Console.WriteLine(sphCarbon + ":" + sphDouble + " " + sph1 + " " + sph2 + " " + sph3);
 
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 5 },
@@ -12678,9 +13081,10 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton - MassDiffDictionary.OxygenMass;
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -12729,10 +13133,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-CH2O-H]-
                     var threshold1 = 0.1;
-                    var diagnosticMz1 = diagnosticMz - H2O - 12;
+                    var diagnosticMz1 = diagnosticMz - H2O - MassDiffDictionary.CarbonMass;
                     // seek [M-CH4O2-H]-
                     var threshold2 = 0.1;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
@@ -12742,7 +13146,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -12769,8 +13173,9 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
+                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+C2H3N]- 
                             var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
                             var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass;
@@ -12822,18 +13227,19 @@ AdductIon adduct)
                     // seek [M-CH3]-
                     var threshold1 = 50.0;
                     var diagnosticMz1 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
+
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found != true) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - 60.021129369;
+                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold2 = 50.0;
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon2Found) return null;
                     }
 
-                    var diagnosticMz3 = 168.0431;
+                    var diagnosticMz3 = C5H14NO4P - CH3 + Electron;//C4H11NO4P-
                     var threshold3 = 0.01;
                     var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
 
@@ -12845,8 +13251,8 @@ AdductIon adduct)
                         {
                             var remainCarbon = totalCarbon - sphCarbon;
                             var remainDouble = totalDoubleBond - sphDouble;
-                            var carbonLimit = Math.Min(remainCarbon, maxSphCarbon);
-                            var doubleLimit = Math.Min(remainDouble, maxSphDoubleBond);
+                            var carbonLimit = Math.Min(remainCarbon, maxExtAcylCarbon); // acyl+ext
+                            var doubleLimit = Math.Min(remainDouble, maxExtAcylDoubleBond);
 
                             for (int extCarbon = minExtAcylCarbon; extCarbon <= carbonLimit; extCarbon++)
                             {
@@ -12854,7 +13260,7 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
-
+                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
                                     var extAcylloss = diagnosticMz1 - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass;  // 
                                     var extFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
 
@@ -12869,7 +13275,7 @@ AdductIon adduct)
 
                                     if (foundCount == 2)
                                     { // 
-                                        var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron + MassDiffDictionary.OxygenMass;
+                                        var acylamide = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass;
                                         var query2 = new List<SpectrumPeak>
                                         {
                                         new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
@@ -12906,7 +13312,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     var threshold1 = 50.0;
-                    var diagnosticMz1 = 184.073;
+                    var diagnosticMz1 = C5H14NO4P + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found != true) return null;
                     // from here, acyl level annotation is executed.
@@ -12921,8 +13327,11 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
+                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
 
-                                    var extAcylloss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + Electron;  // 
+                                    var extAcylloss = theoreticalMz 
+                                        - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) 
+                                        - MassDiffDictionary.HydrogenMass + Electron;  // 
                                                                                                                                                                                                 //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
@@ -12933,7 +13342,7 @@ AdductIon adduct)
                                     var averageIntensity = 0.0;
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                                    if (foundCount == 1)
+                                    if (foundCount == 1) // exsample return SM 32:1;O2(FA 16:0)
                                     { // 
                                         var molecule = LipidMsmsCharacterizationUtility.getAsmMoleculeObjAsLevel2_0("SM", LbmClass.ASM, "d", sphCarbon + acylCarbon,
                                                sphDouble + acylDouble, extCarbon, extDouble, averageIntensity);
@@ -12972,11 +13381,11 @@ AdductIon adduct)
                     // calc [M-H]-
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -13000,15 +13409,20 @@ AdductIon adduct)
                                     var terminalC = totalCarbon - sphCarbon - acylCarbon;
                                     var terminalDB = totalDoubleBond - sphDouble - acylDB;
 
+                                    if (sphCarbon <= 0 || acylCarbon <= 0 || terminalC <= 0) continue;
+                                    if (sphDouble < 0 || acylDB < 0 || terminalDB < 0) continue;
+
                                     var esterloss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalC, terminalDB) - MassDiffDictionary.HydrogenMass; // 
                                     var esterFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalC, terminalDB);
-                                    var acylFragment = esterloss - ((sphCarbon - 3) * 12 + ((sphCarbon - 3) * 2 - 2) * MassDiffDictionary.HydrogenMass);
+                                    var acylFragment = esterloss 
+                                        - ((sphCarbon - 3) * MassDiffDictionary.CarbonMass + ((sphCarbon - 3) * 2 - 2 - sphDouble * 2) 
+                                        * MassDiffDictionary.HydrogenMass);
 
-                                    var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
-                                        new SpectrumPeak() { Mass = esterFa, Intensity = 50 },
-                                        new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
-                                    };
+                                    //var query = new List<SpectrumPeak> {   //20261013 comment out
+                                    //    new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
+                                    //    new SpectrumPeak() { Mass = esterFa, Intensity = 50 },
+                                    //    new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
+                                    //};
 
                                     var query1 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
@@ -13075,16 +13489,16 @@ AdductIon adduct)
                     // calc [M-H]-
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [[M-C6H10O5-H]-  // reject HexCer-EOS
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = diagnosticMz - 162.052833;
+                    var diagnosticMz1 = diagnosticMz - Sugar162;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     //if (isClassIonFound == true) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz5 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold5 = 50.0;
                         var isClassIon5Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz5, threshold5);
                         if (isClassIon5Found) return null;
@@ -13112,12 +13526,13 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
+                                    if(acylCarbon <= 0 || acylDouble < 0) continue;
 
                                     var extAcylLoss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + H2O; //[M-FA]-
                                     var extAcylLoss2 = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass;      //[M-FA-H2O]-
-                                    var extAcylHexloss = extAcylLoss - 161.04555 - MassDiffDictionary.HydrogenMass;         // 
+                                    var extAcylHexloss = extAcylLoss - Sugar162;         // 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
-                                    var sphLoss = diagnosticMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
+                                    var sphLoss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2));  //[M-Sph+C2H6NO]-
                                     var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
                                     var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = extAcylHexloss, Intensity = 1 },
@@ -13170,6 +13585,7 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
+                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
 
                                     // eg. AHexCer 16:0/d18:1/22:0h
                                     var exAcylSugarIon = LipidMsmsCharacterizationUtility.acylCainMass(extCarbon, extDouble) + Sugar162 - Electron; // Hex 16:0, m/z 401
@@ -13179,9 +13595,9 @@ AdductIon adduct)
                                     var ceramideIon_1WaterLoss = ceramideIon - H2O;
                                     var ceramideIon_2WaterLoss = ceramideIon_1WaterLoss - H2O;
 
-                                    var sphIon = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) - MassDiffDictionary.OxygenMass + 2.0 * MassDiffDictionary.HydrogenMass; // Sph d18:1 -H2O, m/z 282;
+                                    var sphIon = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass + Proton; // Sph d18:1 -H2O, m/z 282;
                                     var sphIon_1H2OLoss = sphIon - H2O; // Sph d18:1 -2H2O, m/z 264;
-                                    var sphIon_CH2OLoss = sphIon_1H2OLoss - 12; // Sph d18:1 -CH2O, m/z 252;
+                                    var sphIon_CH2OLoss = sphIon_1H2OLoss - MassDiffDictionary.CarbonMass; // Sph d18:1 -CH2O, m/z 252;
 
                                     //Console.WriteLine("AcylHex {0}, ExAcyl {1}, Cer {2}, Cer-H2O {3}, Cer-2H2O {4}, Sph {5}, Sph-H2O {6}, Sph-CH2O {7}",
                                     //    "AHexCer" + extCarbon + ":" + extDouble + "/d" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble,
@@ -13266,7 +13682,7 @@ AdductIon adduct)
                 {
                     // seek [M-SO3-H2O+H]+
                     var threshold = 1.0;
-                    var diagnosticMz1 = theoreticalMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - H2O - Electron;
+                    var diagnosticMz1 = theoreticalMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - H2O;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     if (!isClassIon1Found) return null;
@@ -13283,6 +13699,7 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
+                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
 
                                     // eg. ASHexCer 16:0/18:1;O2/24:1(or 24:0;O etc)
                                     var exAcylSulfoSugar = LipidMsmsCharacterizationUtility.acylCainMass(extCarbon, extDouble)
@@ -13293,9 +13710,9 @@ AdductIon adduct)
                                     var ceramideIon_1WaterLoss = ceramideIon - H2O;
                                     var ceramideIon_2WaterLoss = ceramideIon_1WaterLoss - H2O;
 
-                                    var sphIon = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) - MassDiffDictionary.OxygenMass + 2.0 * MassDiffDictionary.HydrogenMass; // Sph d18:1 -H2O, m/z 282;
+                                    var sphIon = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass + Proton; // Sph d18:1 -H2O, m/z 282;
                                     var sphIon_1H2OLoss = sphIon - H2O; // Sph d18:1 -2H2O, m/z 264;
-                                    var sphIon_CH2OLoss = sphIon_1H2OLoss - 12; // Sph d18:1 -CH2O, m/z 252;
+                                    var sphIon_CH2OLoss = sphIon_1H2OLoss - MassDiffDictionary.CarbonMass; // Sph d18:1 -CH2O, m/z 252;
 
 
                                     //var exAcylQuery = new List<SpectrumPeak>() {
@@ -13379,11 +13796,12 @@ AdductIon adduct)
                                 {
                                     var acylCarbon = totalCarbon - sphCarbon - extCarbon;
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
+                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
-                                    //var sphMass = sphCarbon * 12 + (2 * sphCarbon - 2 * sphDouble + 3) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass;
-                                    ////var sphLoss = theoreticalMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
-                                    //var sphLoss = theoreticalMz - sphMass + 12 * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass;  //"[M-Sph+C2H4N]-"
+                                    //var sphMass = sphCarbon * MassDiffDictionary.CarbonMass + (2 * sphCarbon - 2 * sphDouble + 3) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass;
+                                    ////var sphLoss = theoreticalMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
+                                    //var sphLoss = theoreticalMz - sphMass + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass;  //"[M-Sph+C2H4N]-"
                                     //var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
                                     var queryExtAcyl = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = extAcylFa, Intensity = 5.0 },
@@ -13444,7 +13862,7 @@ AdductIon adduct)
                     var diagnosticMz1 = diagnosticMz - MassDiffDictionary.SulfurMass - 3 * MassDiffDictionary.OxygenMass - H2O - Electron;
                     // seek [M-H2O-SO3-C6H10O5+H]+
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz1 - 162.052833;
+                    var diagnosticMz2 = diagnosticMz1 - Sugar162;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -13466,11 +13884,12 @@ AdductIon adduct)
                                 var acylCarbon = totalCarbon - sphCarbon;
                                 //if (acylCarbon < minSphCarbon) { break; }
                                 var acylDouble = totalDoubleBond - sphDouble;
+                                if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                                 var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                                 var sph2 = sph1 - H2O;
-                                var sph3 = sph2 - 12;
-                                var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass - Electron;
+                                var sph3 = sph2 - MassDiffDictionary.CarbonMass;
+                                var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass - Electron;
 
 
                                 var query = new List<SpectrumPeak> {
@@ -13503,11 +13922,12 @@ AdductIon adduct)
                                 var acylCarbon = totalCarbon - sphCarbon;
                                 //if (acylCarbon < minSphCarbon) { break; }
                                 var acylDouble = totalDoubleBond - sphDouble;
+                                if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                                 var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass * acylOxidized;
                                 var sph2 = sph1 - H2O;
-                                var sph3 = sph2 - 12;
-                                var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass - Electron;
+                                var sph3 = sph2 - MassDiffDictionary.CarbonMass;
+                                var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass - Electron;
 
                                 //Console.WriteLine("SHexCer {0}:{1};2O/{2}:{3}, sph1={4}, sph2={5}, sph3={6}", sphCarbon, sphDouble, acylCarbon, acylDouble, sph1, sph2, sph3);
 
@@ -13541,7 +13961,7 @@ AdductIon adduct)
                 {
                     // seek [H2SO4-H]-
                     var threshold = 0.1;
-                    var diagnosticMz = 96.960103266;
+                    var diagnosticMz = H2SO4 - Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound != true) return null;
@@ -13580,13 +14000,13 @@ AdductIon adduct)
                 {
                     // calc [M+H]+
                     var diagnosticMz = adduct.AdductIonName == "[M+NH4]+" ?
-                        theoreticalMz - 17.026549 : theoreticalMz;
+                        theoreticalMz - NH3 : theoreticalMz;
                     // seek -H2O
                     var threshold1 = 1.0;
                     var diagnosticMz1 = diagnosticMz - H2O;
                     // seek [M-C23H37NO18-H2O+H]+
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = diagnosticMz - 12 * 23 - 19 * H2O - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass;
+                    var diagnosticMz2 = diagnosticMz - MassDiffDictionary.CarbonMass * 23 - 19 * H2O - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon1Found == !true || isClassIon2Found == !true) return null;
@@ -13601,6 +14021,7 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var sph1 = diagnosticMz2 - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
@@ -13640,7 +14061,7 @@ AdductIon adduct)
                 {
                     // seek [C11H17NO8-H]-  as 290.0875914768
                     var threshold1 = 0.01;
-                    var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                     //// seek [M-C11H17NO8-H]-
                     //var threshold2 = 0.01;
                     //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
@@ -13679,7 +14100,7 @@ AdductIon adduct)
                 {
                     // seek [C25H40N2O18+H]+ (maybe higher than GD1b)
                     var threshold = 10.0;
-                    var diagnosticMz = 12 * 25 + MassDiffDictionary.HydrogenMass * 40 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 18 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 25 + MassDiffDictionary.HydrogenMass * 40 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 18 + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found == !true) return null;
 
@@ -13691,9 +14112,10 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -13721,7 +14143,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                 //// seek [M-C11H17NO8-H]-
                 //var threshold2 = 0.01;
                 //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
@@ -13753,7 +14175,7 @@ AdductIon adduct)
                 {
                     // seek [C14H23NO10+H]+ // 366 (maybe higher than GD1a)
                     var threshold = 10.0;
-                    var diagnosticMz = 12 * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found == !true) return null;
 
@@ -13765,9 +14187,10 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -13795,7 +14218,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                 //// seek [M-C11H17NO8-H]-
                 //var threshold2 = 0.01;
                 //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
@@ -13825,7 +14248,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                 //// seek [M-C11H17NO8-H]-
                 //var threshold2 = 0.01;
                 //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
@@ -13855,7 +14278,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                 //// seek [M-C11H17NO8-H]-
                 //var threshold2 = 0.01;
                 //var diagnosticMz2 = theoreticalMz - diagnosticMz1 - MassDiffDictionary.HydrogenMass;
@@ -13888,7 +14311,7 @@ AdductIon adduct)
                 {
                     // seek [C14H23NO10+H]+ // 366 
                     var threshold = 5.0;
-                    var diagnosticMz = 12 * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found == !true) return null;
                     // from here, acyl level annotation is executed.
@@ -13899,9 +14322,10 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20230417
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20230417
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -13929,7 +14353,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                 var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                 if (isClassIon1Found != true) return null;
                 //// seek  [C11H17NO8-H]- *2 as 581.19 must be not found
@@ -13965,9 +14389,9 @@ AdductIon adduct)
                 {
                     // seek [C14H23NO10+H]+ // 366 
                     var threshold = 5.0;
-                    var diagnosticMz = 12 * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
                     // seek [C25H40N2O18+H]+ //657
-                    var diagnosticMz2 = 12 * 25 + MassDiffDictionary.HydrogenMass * 40 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 18 + Proton;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 25 + MassDiffDictionary.HydrogenMass * 40 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 18 + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIon1Found == !true || isClassIon2Found == !true) return null;
@@ -13979,9 +14403,10 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14009,7 +14434,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                 var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                 if (isClassIon1Found != true) return null;
                 //// seek  [C11H17NO8-H]- *2 as 581.19
@@ -14042,9 +14467,9 @@ AdductIon adduct)
                 {
                     // seek [C14H23NO10+H]+ // 366 
                     var threshold = 5.0;
-                    var diagnosticMz = 12 * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 10 + Proton;
                     // seek [C25H40N2O18+H]+ //657
-                    var diagnosticMz2 = 12 * 25 + MassDiffDictionary.HydrogenMass * 40 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 18 + Proton;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 25 + MassDiffDictionary.HydrogenMass * 40 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 18 + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (isClassIon1Found == !true || isClassIon2Found == !true) return null;
@@ -14056,9 +14481,10 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14085,7 +14511,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 290.0875914768
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + 8 * H2O + MassDiffDictionary.NitrogenMass + Electron;
                 var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                 if (isClassIon1Found != true) return null;
                 //// seek  [C11H17NO8-H]- *2 as 581.19
@@ -14119,14 +14545,14 @@ AdductIon adduct)
                 {
                     // calc [M+H]+
                     var diagnosticMz = adduct.AdductIonName == "[M+NH4]+" ?
-                        theoreticalMz - 17.026549 : theoreticalMz;
+                        theoreticalMz - NH3 : theoreticalMz;
 
                     // seek [M-H2O-C11H16NO9+H]+ // M-H2O-307
                     var threshold = 5.0;
-                    var diagnosticMz2 = diagnosticMz - H2O - (12 * 11 + MassDiffDictionary.HydrogenMass * 17
+                    var diagnosticMz2 = diagnosticMz - H2O - (MassDiffDictionary.CarbonMass * 11 + MassDiffDictionary.HydrogenMass * 17
                         + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 9); // fix 20220905
                                                                                                     // seek M-H2O-307-1sugar
-                    var diagnosticMz3 = diagnosticMz2 - (12 * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5);
+                    var diagnosticMz3 = diagnosticMz2 - (MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
                     if (isClassIon2Found == !true || isClassIon3Found == !true) return null;
@@ -14138,9 +14564,10 @@ AdductIon adduct)
                         {
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + Proton;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -14167,7 +14594,7 @@ AdductIon adduct)
             {
                 // seek [C11H17NO8-H]-  as 306.078
                 var threshold1 = 0.01;
-                var diagnosticMz1 = 12 * 11 + MassDiffDictionary.HydrogenMass * 17 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 9 - Proton;
+                var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + MassDiffDictionary.HydrogenMass * 17 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 9 - Proton;
                 var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                 if (isClassIon1Found != true) return null;
 
@@ -14198,7 +14625,7 @@ AdductIon adduct)
                     var diagnosticMz2 = diagnosticMz1 - H2O;
                     // seek -H2O -CH2O
                     var threshold3 = 1.0;
-                    var diagnosticMz3 = diagnosticMz2 - 12;
+                    var diagnosticMz3 = diagnosticMz2 - MassDiffDictionary.CarbonMass;
                     // frag -3H2O 
                     var threshold4 = 5.0;
                     var diagnosticMz4 = diagnosticMz2 - H2O;
@@ -14257,7 +14684,7 @@ AdductIon adduct)
                     var diagnosticMz2 = diagnosticMz1 - H2O;
                     // seek -H2O -CH2O
                     var threshold3 = 10.0;
-                    var diagnosticMz3 = diagnosticMz2 - 12;
+                    var diagnosticMz3 = diagnosticMz2 - MassDiffDictionary.CarbonMass;
                     // frag -3H2O 
                     var threshold4 = 10.0;
                     var diagnosticMz4 = diagnosticMz2 - H2O;
@@ -14318,7 +14745,7 @@ AdductIon adduct)
                     var diagnosticMz3 = diagnosticMz2 - H2O;
                     // seek -H2O -CH2O
                     var threshold4 = 10.0;
-                    var diagnosticMz4 = diagnosticMz2 - 12;
+                    var diagnosticMz4 = diagnosticMz2 - MassDiffDictionary.CarbonMass;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -14375,7 +14802,7 @@ AdductIon adduct)
                 {
                     // seek C6H10O8P-
                     var threshold = 5.0;
-                    var diagnosticMz = 241.01188;
+                    var diagnosticMz = C6H12O9P - H2O + Electron;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound != true) return null;
@@ -14389,8 +14816,9 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
-                            var sn1_gly = (sn1Carbon + 3) * 12 + (((sn1Carbon + 3) * 2) - (sn1Double * 2) + 1) * MassDiffDictionary.HydrogenMass + 5 * MassDiffDictionary.OxygenMass + MassDiffDictionary.PhosphorusMass - Proton;
+                            var sn1_gly = (sn1Carbon + 3) * MassDiffDictionary.CarbonMass + (((sn1Carbon + 3) * 2) - (sn1Double * 2) + 1) * MassDiffDictionary.HydrogenMass + 5 * MassDiffDictionary.OxygenMass + MassDiffDictionary.PhosphorusMass - Proton;
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
@@ -14433,7 +14861,7 @@ AdductIon adduct)
                 {
                     // seek C3H5NO2 loss
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 87.032029;
+                    var diagnosticMz = theoreticalMz - C3H5NO2;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound != true) return null;
 
@@ -14446,9 +14874,10 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn1Carbon >= 24 && sn1Double >= 5) return null;
+                            if (sn1Carbon >= 24 && sn1Double >= 5) continue;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
-                            var sn1_gly = (sn1Carbon + 3) * 12 + (((sn1Carbon + 3) * 2) - (sn1Double * 2) + 1) * MassDiffDictionary.HydrogenMass + 5 * MassDiffDictionary.OxygenMass + MassDiffDictionary.PhosphorusMass - Proton;
+                            var sn1_gly = (sn1Carbon + 3) * MassDiffDictionary.CarbonMass + (((sn1Carbon + 3) * 2) - (sn1Double * 2) + 1) * MassDiffDictionary.HydrogenMass + 5 * MassDiffDictionary.OxygenMass + MassDiffDictionary.PhosphorusMass - Proton;
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
@@ -14491,7 +14920,7 @@ AdductIon adduct)
                 {
                     // seek [C2H8NO4P-H]-
                     var threshold = 5.0;
-                    var diagnosticMz = 140.01182;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass - Proton;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found == false) return null;
@@ -14509,6 +14938,7 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var acylLoss1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + Proton;
 
@@ -14567,10 +14997,10 @@ AdductIon adduct)
                 {
                     // seek C6H10O8P-
                     var threshold = 5.0;
-                    var diagnosticMz = 241.01188;
+                    var diagnosticMz = C6H12O9P - H2O + Electron;
                     // seek Inositol loss (-C6H10O5)
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = theoreticalMz - 162.05282;
+                    var diagnosticMz2 = theoreticalMz - Sugar162;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -14590,6 +15020,7 @@ AdductIon adduct)
                             {
                                 var acylCarbon = totalCarbon - sphCarbon;
                                 var acylDouble = totalDoubleBond - sphDouble;
+                                if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                                 var acylLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + Proton;
 
@@ -14601,7 +15032,7 @@ AdductIon adduct)
                                 var averageIntensity = 0.0;
                                 LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
                                 var hydrogenString1 = "d";
-                                //if (diagnosticMz - (12 * totalCarbon + (totalCarbon * 2 - totalDoubleBond * 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3) > 1)
+                                //if (diagnosticMz - (MassDiffDictionary.CarbonMass * totalCarbon + (totalCarbon * 2 - totalDoubleBond * 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3) > 1)
                                 //{
                                 //    hydrogenString1 = "t";
                                 //}
@@ -14627,6 +15058,7 @@ AdductIon adduct)
                             {
                                 var acylCarbon = totalCarbon - sphCarbon;
                                 var acylDouble = totalDoubleBond - sphDouble;
+                                if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                                 var acylOxidized = totalOxdyzed - sphOxidized;
 
@@ -14659,7 +15091,7 @@ AdductIon adduct)
             {
                 // seek Header loss (-C6H13O9P)
                 var threshold = 1.0;
-                var diagnosticMz = theoreticalMz - 260.029722;
+                var diagnosticMz = theoreticalMz - (C6H12O9P + MassDiffDictionary.HydrogenMass);
                 var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                 if (isClassIonFound != true) return null;
 
@@ -14668,7 +15100,7 @@ AdductIon adduct)
 
                 var hydrogenString = "d";
                 var sphOxidized = 2;
-                //if (diagnosticMz - (12 * totalCarbon + (totalCarbon * 2 - totalDoubleBond * 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3) > 1)
+                //if (diagnosticMz - (MassDiffDictionary.CarbonMass * totalCarbon + (totalCarbon * 2 - totalDoubleBond * 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3) > 1)
                 //{
                 //    hydrogenString = "t";
                 //    sphOxidized = 3;
@@ -14691,9 +15123,13 @@ AdductIon adduct)
             { // Negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek 373.2748 [M-Acyl-H2O-H]-
+                    // seek 373.2748 [M-Acyl-H2O-H]- C24H37O3-
                     var threshold1 = 0.1;
-                    var diagnosticMz1 = 373.2748;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass*24 
+                        + MassDiffDictionary.HydrogenMass * 40
+                        + MassDiffDictionary.OxygenMass * 4
+                        - H2O
+                        - Proton;
 
                     // seek FA-
                     var diagnosticMz2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond) + totalOxidized * MassDiffDictionary.OxygenMass;
@@ -14711,10 +15147,13 @@ AdductIon adduct)
             }
             else if (adduct.AdductIonName == "[M+NH4]+")
             {
-                // seek 357.2788063 [M-FA-H2O+H]+
+                // seek 357.2788063 [M-FA-H2O+H]+  C24H37O2+
                 var threshold3 = 10;
-                var diagnosticMz3 = 357.2788063;
-
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 24
+                        + MassDiffDictionary.HydrogenMass * 40
+                        + MassDiffDictionary.OxygenMass * 4
+                        - H2O * 2
+                        + Proton;
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
 
@@ -14739,7 +15178,12 @@ AdductIon adduct)
                 {
                     // seek 430.29628  [M-Acyl-H2O-H]-
                     var threshold = 0.1;
-                    var diagnosticMz = 430.29628;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 26
+                        + MassDiffDictionary.HydrogenMass * 43
+                        + MassDiffDictionary.NitrogenMass * 1
+                        + MassDiffDictionary.OxygenMass * 5
+                        - H2O
+                        - Proton;
 
                     // seek FA-
                     var threshold2 = 0.1;
@@ -14760,7 +15204,12 @@ AdductIon adduct)
             {
                 // seek 414.30027 [M-FA-H2O+H]+
                 var threshold3 = 10;
-                var diagnosticMz3 = 414.30027;
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 26
+                        + MassDiffDictionary.HydrogenMass * 43
+                        + MassDiffDictionary.NitrogenMass * 1
+                        + MassDiffDictionary.OxygenMass * 5
+                        - H2O * 2
+                        + Proton;
 
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
@@ -14784,7 +15233,12 @@ AdductIon adduct)
                 {
                     // seek 414.30137 [M-Acyl-H2O-H]-
                     var threshold = 0.1;
-                    var diagnosticMz = 414.30137;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 26
+                        + MassDiffDictionary.HydrogenMass * 43
+                        + MassDiffDictionary.NitrogenMass * 1
+                        + MassDiffDictionary.OxygenMass * 4
+                        - H2O
+                        - Proton;
 
                     // seek FA-
                     var threshold2 = 0.1;
@@ -14803,9 +15257,14 @@ AdductIon adduct)
             }
             else if (adduct.AdductIonName == "[M+NH4]+")
             {
-                // seek 398.3053554 [M-FA+H]+
+                // seek 416.315920637 [M-Acyl-H2O-H]-
                 var threshold3 = 10;
-                var diagnosticMz3 = 416.315920637;
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 26
+                        + MassDiffDictionary.HydrogenMass * 43
+                        + MassDiffDictionary.NitrogenMass * 1
+                        + MassDiffDictionary.OxygenMass * 4
+                        - H2O
+                        + Proton; //416.315920637;
 
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
@@ -14827,9 +15286,15 @@ AdductIon adduct)
             { // Negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek 480.27892 [M-Acyl-H2O-H]-
+                    // seek 480.27892 [M-Acyl-H2O-H]- C26H43NO5S
                     var threshold = 0.1;
-                    var diagnosticMz = 480.27892;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 26 
+                        + MassDiffDictionary.HydrogenMass * 45 
+                        + MassDiffDictionary.NitrogenMass 
+                        + MassDiffDictionary.OxygenMass * 6 
+                        + MassDiffDictionary.SulfurMass 
+                        - H2O
+                        - Proton;
 
                     // seek FA-
                     var threshold2 = 0.1;
@@ -14849,7 +15314,13 @@ AdductIon adduct)
             {
                 // seek 464.2829058 [M-FA-H2O+H]+
                 var threshold3 = 10;
-                var diagnosticMz3 = 464.2829058;
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 26
+                        + MassDiffDictionary.HydrogenMass * 45
+                        + MassDiffDictionary.NitrogenMass
+                        + MassDiffDictionary.OxygenMass * 6
+                        + MassDiffDictionary.SulfurMass
+                        - H2O * 2
+                        + Proton;
 
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
@@ -14873,7 +15344,13 @@ AdductIon adduct)
                 {
                     // seek 464.28400 [M-Acyl-H2O-H]-
                     var threshold = 0.1;
-                    var diagnosticMz = 464.28400;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 26
+                        + MassDiffDictionary.HydrogenMass * 45
+                        + MassDiffDictionary.NitrogenMass
+                        + MassDiffDictionary.OxygenMass * 5
+                        + MassDiffDictionary.SulfurMass
+                        - H2O
+                        - Proton;
 
                     // seek FA-
                     var threshold2 = 0.1;
@@ -14892,9 +15369,15 @@ AdductIon adduct)
             }
             else if (adduct.AdductIonName == "[M+NH4]+")
             {
-                // seek 448.2879912 [M-FA+H]+
+                // seek 466.298556495; [M-FA+H]+
                 var threshold3 = 10;
-                var diagnosticMz3 = 466.298556495;
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 26
+                        + MassDiffDictionary.HydrogenMass * 45
+                        + MassDiffDictionary.NitrogenMass
+                        + MassDiffDictionary.OxygenMass * 5
+                        + MassDiffDictionary.SulfurMass
+                        - H2O
+                        + Proton; 
 
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
@@ -14916,9 +15399,14 @@ AdductIon adduct)
             { // Negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek 357.2799046 [M-Acyl-H2O-H]-
+                    // seek 357.2799046 [M-Acyl-H2O-H]- 
                     var threshold = 0.1;
-                    var diagnosticMz = 357.2799046;
+                    var diagnosticMz = 
+                        MassDiffDictionary.CarbonMass * 24 
+                        + MassDiffDictionary.HydrogenMass * 40 
+                        + MassDiffDictionary.OxygenMass * 3 
+                        - H2O
+                        - Proton; //357.2799046;
 
                     // seek FA-
                     var threshold2 = 0.1;
@@ -14938,7 +15426,11 @@ AdductIon adduct)
             {
                 // seek 359.2944571 [M-FA+H]+
                 var threshold3 = 10;
-                var diagnosticMz3 = 359.2944571;
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 24
+                        + MassDiffDictionary.HydrogenMass * 40
+                        + MassDiffDictionary.OxygenMass * 3
+                        - H2O
+                    + Proton; //359.2944571;
 
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
@@ -14962,7 +15454,11 @@ AdductIon adduct)
                 {
                     // seek 371.2591694 [M-Acyl-H2O-H]-
                     var threshold = 0.1;
-                    var diagnosticMz = 371.2591694;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 24 
+                    + MassDiffDictionary.HydrogenMass * 38
+                    + MassDiffDictionary.OxygenMass * 4
+                    - H2O
+                    - Proton; //
 
                     // seek FA-
                     var threshold2 = 0.1;
@@ -14989,7 +15485,11 @@ AdductIon adduct)
             {
                 // seek 373.2737222 [M-FA+H]+
                 var threshold3 = 10;
-                var diagnosticMz3 = 373.2737222;
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 24
+                    + MassDiffDictionary.HydrogenMass * 38
+                    + MassDiffDictionary.OxygenMass * 4
+                    - H2O
+                    + Proton;
 
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
@@ -15011,9 +15511,13 @@ AdductIon adduct)
             { // Negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek 387.254084 [M-Acyl-H2O-H]-
+                    // seek 387.254084 [M-Acyl-H2O-H]- C24H36O4+
                     var threshold = 0.1;
-                    var diagnosticMz = 387.254084;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 24
+                    + MassDiffDictionary.HydrogenMass * 38
+                    + MassDiffDictionary.OxygenMass * 5
+                    - H2O
+                    - Proton; ////387.254084;
 
                     // seek FA-
                     var threshold2 = 0.1;
@@ -15033,7 +15537,11 @@ AdductIon adduct)
             {
                 // seek 371.2580718 [M-FA-H2O+H]+
                 var threshold3 = 10;
-                var diagnosticMz3 = 371.2580718;
+                var diagnosticMz3 = MassDiffDictionary.CarbonMass * 24 
+                    + MassDiffDictionary.HydrogenMass * 38 
+                    + MassDiffDictionary.OxygenMass * 5 
+                    - H2O * 2
+                    + Proton; //371.2580718;
 
                 var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                 if (isClassIon3Found == false) return null;
@@ -15078,14 +15586,14 @@ AdductIon adduct)
                     var threshold = 10;
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-H]- 2H
                     var threshold1 = 10;
                     var diagnosticMz1 = diagnosticMz - MassDiffDictionary.HydrogenMass * 2;
 
                     //// seek C3H4NO2-
                     //var threshold2 = 1;
-                    //var diagnosticMz2 = 12 * 3 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Electron;
+                    //var diagnosticMz2 = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Electron;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
@@ -15110,7 +15618,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     var threshold = 10;
-                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + 12 * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound != true)
                     {
@@ -15124,7 +15632,7 @@ AdductIon adduct)
                     {
                         return null;
                     }
-                    var PEHeaderLoss = theoreticalMz - 141.019094261;
+                    var PEHeaderLoss = theoreticalMz - C2H8NO4P;
                     var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, threshold);
                     if (isClassIonFound3 && LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, PEHeaderLoss, diagnosticMz))
                     {
@@ -15143,7 +15651,7 @@ AdductIon adduct)
                 {
                     // seek C3H8PO6-
                     var threshold1 = 10;
-                    var diagnosticMz1 = 12 * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass + Electron;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass + Electron;
                     // seek PO3-
                     var threshold2 = 10;
                     var diagnosticMz2 = MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.PhosphorusMass + Electron;
@@ -15182,7 +15690,7 @@ AdductIon adduct)
 
                     // seek 76.03930542 (Gly)
                     var threshold2 = 10.0;
-                    var diagnosticMz2 = 76.03930542;
+                    var diagnosticMz2 = C2H5NO2 + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
 
                     // from here, acyl level annotation is executed.
@@ -15195,10 +15703,11 @@ AdductIon adduct)
                             var sn2Double = totalDoubleBond - sn1Double;
                             if (sn1Carbon + sn2Carbon < 24) continue;
                             if ((sn1Carbon == 16 && sn1Double == 2) || (sn2Carbon == 16 && sn2Double == 2)) continue;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
 
                             var sn2Loss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
-                            var sn2GlyLoss = sn2Loss - (12 * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2);
+                            var sn2GlyLoss = sn2Loss - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2);
                             var sn2H2OGlyLoss = sn2GlyLoss - H2O;
 
                             var queryMust = new List<SpectrumPeak> {
@@ -15246,7 +15755,7 @@ AdductIon adduct)
 
                     // seek 74.0247525 (Gly)
                     var threshold = 5.0;
-                    var diagnosticMz = 74.0247525;
+                    var diagnosticMz = C2H5NO2 - Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (!isClassIonFound) return null;
                     for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
@@ -15256,10 +15765,11 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
-                            var sn2CO2Loss = sn2Loss - 12 - MassDiffDictionary.OxygenMass * 2;
-                            var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
+                            var sn2CO2Loss = sn2Loss - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass * 2;
+                            var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
                                     new SpectrumPeak() { Mass = sn2Loss, Intensity = 10.0 },
@@ -15304,9 +15814,9 @@ AdductIon adduct)
                     var diagnosticMz = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3);
                     var candidates = new List<LipidMolecule>();
 
-                    // seek 145.06187 (gly+ser-O)
+                    // seek 145.06187 (gly+ser-O)C5H9N2O3+
                     var threshold3 = 5.0;
-                    var diagnosticMz3 = 145.06187;
+                    var diagnosticMz3 = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 3 - Electron;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
 
                     // from here, acyl level annotation is executed.
@@ -15317,11 +15827,12 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn2Loss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
-                            var sn2SerLoss = sn2Loss - (12 * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
-                            var sn2SerGlyLoss = sn2SerLoss - (12 * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);
-                            var ser = (12 * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
+                            var sn2SerLoss = sn2Loss - (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
+                            var sn2SerGlyLoss = sn2SerLoss - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass);
+                            var ser = (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
 
                             //Console.WriteLine(sn1Carbon + ":" + sn1Double + "/" + sn1Carbon + ":" + sn1Double +
                             //    " " + sn2Loss + " " + sn2SerLoss + " " + sn2SerGlyLoss + " " + ser);
@@ -15372,11 +15883,12 @@ AdductIon adduct)
 
                                 var sn2Carbon = totalCarbon - sn1Carbon;
                                 var sn2Double = totalDoubleBond - sn1Double;
+                                if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                                 var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
-                                var sn2CH2OLoss = sn2Loss - 12 - MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass * 2;
-                                var sn2CH2O3Loss = sn2Loss - 12 - MassDiffDictionary.OxygenMass * 3 - MassDiffDictionary.HydrogenMass * 2;
-                                var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
+                                var sn2CH2OLoss = sn2Loss - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass * 2;
+                                var sn2CH2O3Loss = sn2Loss - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass * 3 - MassDiffDictionary.HydrogenMass * 2;
+                                var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
                                 var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = sn2Loss, Intensity = 10.0 },
@@ -15429,7 +15941,7 @@ AdductIon adduct)
 
                     // seek 124.00629  ([C2H6NO3S]+)
                     var threshold2 = 1;
-                    var diagnosticMz2 = 124.00629;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 6 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.SulfurMass - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound == false) return null;
 
@@ -15445,10 +15957,11 @@ AdductIon adduct)
 
                                 var acylCarbon = totalCarbon - sphCarbon;
                                 var acylDouble = totalDoubleBond - sphDouble;
+                                if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                                 var acylLoss = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass * acylOxidized;
                                 var acylH2OLoss = acylLoss - H2O;
-                                var sph1 = diagnosticMz - (12 * (sphCarbon - 2) + ((sphCarbon - 2) * 2 - 2 * sphDouble - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass);
+                                var sph1 = diagnosticMz - (MassDiffDictionary.CarbonMass * (sphCarbon - 2) + ((sphCarbon - 2) * 2 - 2 * sphDouble - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass);
                                 var sph2 = sph1 - H2O;
 
                                 //Console.WriteLine("SL " + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble +
@@ -15486,10 +15999,11 @@ AdductIon adduct)
 
                                 var acylCarbon = totalCarbon - sphCarbon;
                                 var acylDouble = totalDoubleBond - sphDouble;
+                                if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                                 var acylLoss = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass * acylOxidized;
                                 var acylH2OLoss = acylLoss - H2O;
-                                var sph3 = diagnosticMz - (12 * (sphCarbon - 2 + 1) + ((sphCarbon - 2) * 2 - 2 * sphDouble - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2);
+                                var sph3 = diagnosticMz - (MassDiffDictionary.CarbonMass * (sphCarbon - 2 + 1) + ((sphCarbon - 2) * 2 - 2 * sphDouble - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2);
                                 var acylCain = LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass * acylOxidized;
 
 
@@ -15528,8 +16042,8 @@ AdductIon adduct)
                     var candidates = new List<LipidMolecule>();
                     // seek SO3- or HSO3-
                     var threshold = 0.1;
-                    var diagnosticMz1 = 79.95736;
-                    var diagnosticMz2 = 80.96409;
+                    var diagnosticMz1 = MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Electron; //79.95736;
+                    var diagnosticMz2 = MassDiffDictionary.HydrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Electron; //80.96409;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
 
@@ -15545,6 +16059,7 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             var acylLoss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass * acylOxidized;
                             var acylamideLoss = acylLoss - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3);
@@ -15588,11 +16103,13 @@ AdductIon adduct)
                 {
                     // seek C3H7O5P-
                     var threshold = 0.01;
-                    var diagnosticMz = 152.995833871;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     var threshold2 = 30;
-                    var diagnosticMz2 = theoreticalMz - 63.008491; // [M+C2H3N(ACN)+Na-2H]- adduct of PE [M-H]- 
+                    var diagnosticMz2 = theoreticalMz 
+                        - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + Na)
+                        - MassDiffDictionary.HydrogenMass;// [M +C2H3N(ACN)+Na-2H]- adduct of PE [M-H]- 
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound2) return null;
 
@@ -15605,8 +16122,9 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
-                            var sn1 = sn1Carbon * 12 + (sn1Carbon * 2 + 1 - sn1Double * 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2 + Electron; // (maybe) ether chain rearrange
+                            var sn1 = sn1Carbon * MassDiffDictionary.CarbonMass + (sn1Carbon * 2 + 1 - sn1Double * 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2 + Electron; // (maybe) ether chain rearrange
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
@@ -15649,9 +16167,9 @@ AdductIon adduct)
             { // negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    var diagnosticMz1 = 152.99583;  // seek C3H6O5P-
+                    var diagnosticMz1 = C3H6O5P + Electron;  // seek C3H6O5P-
                     var threshold1 = 10.0;
-                    var diagnosticMz2 = totalCarbon * 12 + (2 * (totalCarbon - totalDoubleBond) + 1) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass; // seek [Ether fragment]-
+                    var diagnosticMz2 = totalCarbon * MassDiffDictionary.CarbonMass + (2 * (totalCarbon - totalDoubleBond) + 1) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass; // seek [Ether fragment]-
                     var threshold2 = 1.0;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -15676,28 +16194,32 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
                 {
-                    var diagnosticMz1 = 197.0808164;  // seek [(C9H9O4)+CH3+H]+
+                    var diagnosticMz1 = (MassDiffDictionary.CarbonMass * 9 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 4)
+                        + CH3
+                        +Proton;  // seek [(C9H9O4)+CH3+H]+
                     var threshold1 = 10.0;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found != true) return null;
 
                     //
-                    var candidates = new List<LipidMolecule>();
-                    var coqSurfix = Math.Round((theoreticalMz - 182.057908802) / (12 * 5 + MassDiffDictionary.HydrogenMass * 8));
+                    var candidates = new List<LipidMolecule>(); 
+                    var coqSurfix = Math.Round((theoreticalMz - ((MassDiffDictionary.CarbonMass * 9 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 4))) / (MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 8));//182.057908802
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult("CoQ" + coqSurfix, LbmClass.CoQ, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    var diagnosticMz1 = 197.0808164;  // seek [(C9H9O4)+CH3+H]+
+                    var diagnosticMz1 = (MassDiffDictionary.CarbonMass * 9 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 4)
+                        + CH3
+                        + Proton;  // seek [(C9H9O4)+CH3+H]+
                     var threshold1 = 0.1;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIon1Found != true) return null;
 
                     //
                     var candidates = new List<LipidMolecule>();
-                    var coqSurfix = Math.Round((theoreticalMz - 182.057908802) / (12 * 5 + MassDiffDictionary.HydrogenMass * 8));
+                    var coqSurfix = Math.Round((theoreticalMz - ((MassDiffDictionary.CarbonMass * 9 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 4))) / (MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 8));//182.057908802
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationNoChainResult("CoQ" + coqSurfix, LbmClass.CoQ, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 1);
@@ -15723,16 +16245,19 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // vitamin E
-                    var vitamineMz = 429.3738044;
+                    var vitamineMz = MassDiffDictionary.CarbonMass * 29
+                        + MassDiffDictionary.HydrogenMass * 50 
+                        + MassDiffDictionary.OxygenMass * 2 
+                        - Proton;// 429.3738044;
                     var threshold = 1;
 
                     var isVitamindFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, vitamineMz, threshold);
                     if (isVitamindFound == true)
                     {
                         var threshold1 = 10.0;
-                        var diagnosticMz1 = 163.0753564; //[C10H11O2]-
+                        var diagnosticMz1 = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 2 + Electron; //[C10H11O2]-
                         var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                         if (isClassIon1Found != true) return null;
 
@@ -15756,9 +16281,12 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+Na]+")
                 {
                     // calc [M+H]+
-                    var diagnosticMz = adduct.AdductIonName == "[M+H]+" ? theoreticalMz : theoreticalMz - 22.9892207;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H]+" ? theoreticalMz : theoreticalMz - NaIon + Proton;
                     // vitamin D
-                    var vitamindMz = 401.3414071;
+                    var vitamindMz = MassDiffDictionary.CarbonMass * 27 
+                        + MassDiffDictionary.HydrogenMass * 44
+                        + MassDiffDictionary.OxygenMass * 2
+                        + Proton;
                     var threshold = 0.01;
 
                     var isVitamindFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, vitamindMz, threshold);
@@ -15770,7 +16298,7 @@ AdductIon adduct)
 
                         var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold1);
-                        if (isClassIon1Found != true && isClassIon1Found != true) return null;
+                        if (isClassIon1Found != true && isClassIon2Found != true) return null;
 
                         //
                         var candidates = new List<LipidMolecule>();
@@ -15792,7 +16320,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     // calc [M+H]+ -Hex
-                    var diagnosticMz = theoreticalMz - 179.0561136;
+                    var diagnosticMz = theoreticalMz - NH3 - Sugar162;
                     var threshold = 1;
 
                     var isSterolFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -15814,10 +16342,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     var diagnosticCutoff = 1.0;
                     // hexose
-                    var hexoseMz = 179.0561136;
+                    var hexoseMz = Sugar179 + Electron;
                     var threshold = 0.01;
 
                     var isHexoseFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, hexoseMz, threshold);
@@ -15843,7 +16371,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     // calc [M+H]+
-                    var diagnosticMz = theoreticalMz - 96.960103266;
+                    var diagnosticMz = theoreticalMz - NH3 - H2SO4;
                     var threshold = 0.01;
 
                     var isSterolFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -15861,7 +16389,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     // sulfate
-                    var hexoseMz = 96.960103266;
+                    var hexoseMz = H2SO4 - Proton;
                     var threshold = 0.01;
 
                     var isSulfateFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, hexoseMz, threshold);
@@ -15886,12 +16414,12 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+Na]+")
                 {
                     // calc [M+H]+
-                    var diagnosticMz = adduct.AdductIonName == "[M+H]+" ? theoreticalMz : theoreticalMz - 22.9892207;
+                    var diagnosticMz = adduct.AdductIonName == "[M+H]+" ? theoreticalMz : theoreticalMz - NaIon + Proton;
                     // retinyl ester
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = 269.2263771; // SN1 loss
-                    var diagnosticMz2 = 169.1011771; // SN1 and C7H16 loss
-                    var diagnosticMz3 = 119.0855264; // SN1 and C7H16 loss
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass*20 + MassDiffDictionary.HydrogenMass*30 +MassDiffDictionary.OxygenMass *1 -H2O + Proton; // SN1 loss 269.2263771
+                    var diagnosticMz2 = diagnosticMz1 - MassDiffDictionary.CarbonMass * 7 - MassDiffDictionary.HydrogenMass * 16; // SN1 and C7H16 loss 169.1011771
+                    var diagnosticMz3 = MassDiffDictionary.CarbonMass * 9 + MassDiffDictionary.HydrogenMass * 10 + Proton; // 119.0855264
 
                     if (adduct.AdductIonName == "[M+H]+")
                     {
@@ -15931,8 +16459,8 @@ AdductIon adduct)
                     var candidates = new List<LipidMolecule>();
 
                     var threshold = 1.0;
-                    var diagnosticMz1 = 115.0865894; //[C5H10N2O+H]+  fragment of Orn
-                    var diagnosticMz2 = 70.06512542; //[C4H7N+H]+     fragment of Orn
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass + Proton; //[C5H10N2O+H]+  fragment of Orn
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + Proton; //[C4H7N+H]+     fragment of Orn
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if ((isClassIon1Found == false || isClassIon2Found == false)) return null;
@@ -15946,10 +16474,11 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass;
                             var sn2H2OLoss = sn2Loss - H2O;
-                            var sn1Fragment = sn1Carbon * 12 + ((sn1Carbon - (sn1Double + 1)) * 2 - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass + Proton;
+                            var sn1Fragment = sn1Carbon * MassDiffDictionary.CarbonMass + ((sn1Carbon - (sn1Double + 1)) * 2 - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass + Proton;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn2Loss, Intensity = 5 },
@@ -15988,7 +16517,11 @@ AdductIon adduct)
                 {
                     // seek 381.35158  sterol structure (Brassica-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 381.35158;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 28
+                        + MassDiffDictionary.HydrogenMass * 46
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16016,7 +16549,11 @@ AdductIon adduct)
                 {
                     // seek 383.36723  sterol structure (Campe-sterol)
                     var threshold = 60;
-                    var diagnosticMz = 383.36723;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 28
+                        + MassDiffDictionary.HydrogenMass * 48
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
                     if (totalCarbon == 18 && totalDoubleBond == 5) return null;
                     if (totalCarbon == 19 && totalDoubleBond == 5) return null;
 
@@ -16046,7 +16583,11 @@ AdductIon adduct)
                 {
                     // seek 397.38288  sterol structure (Sito-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 397.38288;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 29
+                        + MassDiffDictionary.HydrogenMass * 50
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16074,7 +16615,11 @@ AdductIon adduct)
                 {
                     // seek 395.36723  sterol structure (Stigma-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 395.36723;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 29
+                        + MassDiffDictionary.HydrogenMass * 48
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16102,7 +16647,11 @@ AdductIon adduct)
                 {
                     // seek 379.335928  sterol structure (Ergosterol)
                     var threshold = 50;
-                    var diagnosticMz = 379.335928;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 28
+                        + MassDiffDictionary.HydrogenMass * 44
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -16129,7 +16678,11 @@ AdductIon adduct)
                 {
                     // seek  377.320278  sterol structure (Dehydroergosterol)
                     var threshold = 50;
-                    var diagnosticMz = 377.320278;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 28 
+                        + MassDiffDictionary.HydrogenMass * 42 
+                        + MassDiffDictionary.OxygenMass 
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16155,9 +16708,9 @@ AdductIon adduct)
             { // Positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+Na]+")
                 {
-                    // seek 367.335928  sterol structure (Desmosterol - H2O)
+                    // seek 367.335928  sterol structure (Desmosterol - H2O) C27H42
                     var threshold = 10;
-                    var diagnosticMz = 367.335928;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 27 + MassDiffDictionary.HydrogenMass * 43 - Electron;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16186,7 +16739,11 @@ AdductIon adduct)
                 {
                     // seek 381.35158  sterol structure (Brassica-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 381.35158;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 28
+                        + MassDiffDictionary.HydrogenMass * 46
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16208,7 +16765,7 @@ AdductIon adduct)
                     // calc [M-H]-
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     // seek FA-
                     var threshold1 = 5.0;
@@ -16240,7 +16797,11 @@ AdductIon adduct)
                 {
                     // seek 383.36723  sterol structure (Campe-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 383.36723;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 28
+                        + MassDiffDictionary.HydrogenMass * 48
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16262,7 +16823,7 @@ AdductIon adduct)
                     // calc [M-H]-
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     // seek FA-
                     var threshold1 = 5.0;
@@ -16294,7 +16855,7 @@ AdductIon adduct)
                 {
                     // seek 369.35158  sterol structure (Chole-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 369.35158;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 27 + MassDiffDictionary.HydrogenMass * 45 - Electron;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16316,7 +16877,7 @@ AdductIon adduct)
                     // calc [M-H]-
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     // seek FA-
                     var threshold1 = 5.0;
@@ -16348,7 +16909,11 @@ AdductIon adduct)
                 {
                     // seek 397.38288  sterol structure (Sito-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 397.38288;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 29
+                        + MassDiffDictionary.HydrogenMass * 50
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16370,7 +16935,7 @@ AdductIon adduct)
                     // calc [M-H]-
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     // seek FA-
                     var threshold1 = 5.0;
@@ -16402,7 +16967,11 @@ AdductIon adduct)
                 {
                     // seek 395.36723  sterol structure (Stigma-sterol)
                     var threshold = 10;
-                    var diagnosticMz = 395.36723;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 29
+                        + MassDiffDictionary.HydrogenMass * 48
+                        + MassDiffDictionary.OxygenMass
+                        - H2O
+                        + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16424,7 +16993,7 @@ AdductIon adduct)
                     // calc [M-H]-
                     var diagnosticMz =
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
 
                     // seek FA-
                     var threshold1 = 5.0;
@@ -16460,10 +17029,10 @@ AdductIon adduct)
                 {
                     // seek [C6H9O8S]-
                     var threshold1 = 0.1;
-                    var diagnosticMz1 = 241.0024;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 8 + MassDiffDictionary.SulfurMass + Electron; ;
                     // seek  [H2SO4-H]-
                     var threshold2 = 0.1;
-                    var diagnosticMz2 = 96.9601;
+                    var diagnosticMz2 = H2SO4 - Proton;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -16477,11 +17046,12 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
-                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + Proton;
-                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
+                            var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
+                            var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
@@ -16523,10 +17093,10 @@ AdductIon adduct)
                 {
                     // seek 241.0024 [C6H9O8S]-
                     var threshold1 = 0.1;
-                    var diagnosticMz1 = 241.0024;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 8 + MassDiffDictionary.SulfurMass + Electron; ;
                     // seek 96.9601 [H2SO4-H]-
                     var threshold2 = 0.1;
-                    var diagnosticMz2 = 96.9601;
+                    var diagnosticMz2 = H2SO4 - Proton;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -16538,12 +17108,13 @@ AdductIon adduct)
                     {
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
-                            if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                            if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             //var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
-                            var NL_sn2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
+                            var NL_sn2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                             //new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
@@ -16570,7 +17141,10 @@ AdductIon adduct)
             {
                 //seek M-SHex-H2O (M-277.0467551)
                 var threshold1 = 1;
-                var diagnosticMz1 = theoreticalMz - 277.0467551;
+                var diagnosticMz1 = theoreticalMz 
+                    - NH3 
+                    - (MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 8 + MassDiffDictionary.SulfurMass)
+                    - H2O;
                 var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                 if (isClassIon1Found == false) return null;
 
@@ -16580,12 +17154,13 @@ AdductIon adduct)
                 {
                     for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                     {
-                        if (sn1Carbon >= 26 && sn1Double >= 4) return null;
+                        if (sn1Carbon >= 26 && sn1Double >= 4) continue;
                         var sn2Carbon = totalCarbon - sn1Carbon;
                         var sn2Double = totalDoubleBond - sn1Double;
+                        if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
-                        var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass - Electron;
-                        var sn2Mag = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + 12 * 3 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 5 + Proton;
+                        var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass - Electron *2;
+                        var sn2Mag = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 5 - Electron + Proton;
 
                         var query = new List<SpectrumPeak> {
                             new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
@@ -16622,7 +17197,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
                 {
                     // calc [M+H-H2O]+
-                    var diagnosticMz = adduct.AdductIonName == "[M+NH4]+" ? theoreticalMz - 17.02600055 : theoreticalMz;
+                    var diagnosticMz = adduct.AdductIonName == "[M+NH4]+" ? theoreticalMz - NH3 : theoreticalMz;
                     diagnosticMz = diagnosticMz - H2O;
                     var threshold = 1;
                     var isSterolFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -16679,7 +17254,7 @@ AdductIon adduct)
                 {
                     // seek NL of C3H10NO4P
                     var threshold = 30.0;
-                    var diagnosticMz = theoreticalMz - (12 * 3 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
+                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -16692,6 +17267,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -16723,11 +17299,11 @@ AdductIon adduct)
                 {
                     // seek C6H13NO5P- (not must)
                     var threshold = 0.01;
-                    var diagnosticMz = 12 * 6 + MassDiffDictionary.HydrogenMass * 14 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 14 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass - Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     //var threshold2 = 5.0;
-                    //var diagnosticMz2 = 152.995833871; // seek C3H6O5P- (maybe LNAPE)
+                    //var diagnosticMz2 = C3H6O5P + Electron; // seek C3H6O5P- (maybe LNAPE)
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     //if (isClassIon2Found == true) return null;
 
@@ -16741,6 +17317,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -16787,7 +17364,7 @@ AdductIon adduct)
                 {
                     // seek NL of C4H12NO4P
                     var threshold = 30.0;
-                    var diagnosticMz = theoreticalMz - (12 * 4 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
+                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -16800,6 +17377,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -16831,11 +17409,11 @@ AdductIon adduct)
                 {
                     // seek C7H15NO5P- (not must)
                     var threshold = 0.01;
-                    var diagnosticMz = 12 * 7 + MassDiffDictionary.HydrogenMass * 16 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.HydrogenMass * 16 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass - Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     //var threshold2 = 5.0;
-                    //var diagnosticMz2 = 152.995833871; // seek C3H6O5P- (maybe LNAPE)
+                    //var diagnosticMz2 = C3H6O5P + Electron; // seek C3H6O5P- (maybe LNAPE)
                     //var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     //if (isClassIon2Found == true) return null;
 
@@ -16849,6 +17427,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -16895,7 +17474,7 @@ AdductIon adduct)
                 {
                     // seek header and H2O loss  
                     var threshold = 10.0;
-                    var headerMass = (12 * 12 + MassDiffDictionary.OxygenMass * 13 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.PhosphorusMass) + H2O;
+                    var headerMass = (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.OxygenMass * 13 + MassDiffDictionary.HydrogenMass * 21 + MassDiffDictionary.PhosphorusMass) + H2O;
                     var diagnosticMz = theoreticalMz - headerMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -16909,8 +17488,9 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = 12 * sphCarbon + (2 * sphCarbon - 2 * sphDouble + 1) * MassDiffDictionary.HydrogenMass + 3 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass + Proton - MassDiffDictionary.OxygenMass;
+                            var sph1 = MassDiffDictionary.CarbonMass * sphCarbon + (2 * sphCarbon - 2 * sphDouble + 1) * MassDiffDictionary.HydrogenMass + 3 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass + Proton - MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
 
                             var query = new List<SpectrumPeak> {
@@ -16940,7 +17520,7 @@ AdductIon adduct)
                 {
                     // seek header + O ()
                     var threshold = 0.1;
-                    var diagnosticMz = (12 * 12 + MassDiffDictionary.OxygenMass * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.PhosphorusMass) - Proton;
+                    var diagnosticMz = (MassDiffDictionary.CarbonMass * 12 + MassDiffDictionary.OxygenMass * 14 + MassDiffDictionary.HydrogenMass * 23 + MassDiffDictionary.PhosphorusMass) - Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -16953,8 +17533,9 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphFragment = 12 * (sphCarbon - 2) + (2 * (sphCarbon - 2) - 2 * sphDouble + 1) * MassDiffDictionary.HydrogenMass + 2 * MassDiffDictionary.OxygenMass - 3 * MassDiffDictionary.HydrogenMass - Proton;  // [Sph-NCCO-3H]-
+                            var sphFragment = MassDiffDictionary.CarbonMass * (sphCarbon - 2) + (2 * (sphCarbon - 2) - 2 * sphDouble + 1) * MassDiffDictionary.HydrogenMass + 2 * MassDiffDictionary.OxygenMass - 3 * MassDiffDictionary.HydrogenMass - Proton;  // [Sph-NCCO-3H]-
 
                             var query = new List<SpectrumPeak> {
                             new SpectrumPeak() { Mass = sphFragment, Intensity = 0.01 },
@@ -17001,7 +17582,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     //var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -17023,7 +17604,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     if ((sn1Carbon == 18 && sn1Double == 5) || (sn2Carbon == 18 && sn2Double == 5) || (sn3Carbon == 18 && sn3Double == 5)) continue;
 
                                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -17082,7 +17666,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 [M+H]+
                     //var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3);
+                    var diagnosticMz = theoreticalMz - NH3;
                     //var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -17111,7 +17695,10 @@ AdductIon adduct)
                                         {
                                             var sn4Carbon = totalCarbon - sn1Carbon - sn2Carbon - sn3Carbon;
                                             var sn4Double = totalDoubleBond - sn1Double - sn2Double - sn3Double;
-
+                                            if (sn4Carbon <= 0 || sn4Double < 0)
+                                            {
+                                                continue;
+                                            }
                                             if ((sn1Carbon == 18 && sn1Double == 5) || (sn2Carbon == 18 && sn2Double == 5) || (sn3Carbon == 18 && sn3Double == 5)) continue;
 
                                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -17167,10 +17754,10 @@ AdductIon adduct)
             { // Positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    //  seek 145.06187(gly+ser-O) and 106.04987
+                    //  seek 145.06187(gly+ser-O C5H9N2O3+) and 106.04987
                     var threshold = 80.0;
-                    var diagnosticMz = 145.06187;
-                    //var diagnosticMz2 = 106.04987;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass * 3 - Electron;
+                    //var diagnosticMz2 = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -17186,8 +17773,8 @@ AdductIon adduct)
             {
                 //  seek 99.056(C4H8N2O1-H- GlySer-H2O-CO2-H) and 74.024(C2H5NO2-H- Gly)
                 var threshold = 5;
-                var diagnosticMz = 99.056;
-                var diagnosticMz2 = 74.024;
+                var diagnosticMz = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass * 2 + MassDiffDictionary.OxygenMass - Proton;
+                var diagnosticMz2 = C2H5NO2 - Proton;
 
                 var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                 var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -17213,11 +17800,11 @@ AdductIon adduct)
                 {
                     //  seek 76.039305(gly+)
                     var threshold = 10.0;
-                    var diagnosticMz = 76.039305;
+                    var diagnosticMz = C2H5NO2 + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     //  seek -CO2
                     var threshold1 = 5.0;
-                    var diagnosticMz1 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass);
+                    var diagnosticMz1 = theoreticalMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass);
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     if (isClassIonFound == false || isClassIonFound1 == false) return null;
 
@@ -17231,7 +17818,7 @@ AdductIon adduct)
             {
                 //  74.024(C2H5NO2-H- Gly)
                 var threshold = 10.0;
-                var diagnosticMz = 74.024752;
+                var diagnosticMz = C2H5NO2 - Proton;
 
                 var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                 if (isClassIonFound == false) return null;
@@ -17254,9 +17841,9 @@ AdductIon adduct)
             { // Positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    //  seek 76.039305 ([C4H7N+H]+ orn fragment)
+                    //  seek  ([C4H7N+H]+ orn fragment)
                     var threshold = 10.0;
-                    var diagnosticMz = 70.06512;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -17286,7 +17873,7 @@ AdductIon adduct)
                     var candidates = new List<LipidMolecule>();
 
                     //[MAG-H2O]+
-                    var diagnosticMz01 = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + Proton + (3 * 12 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2);
+                    var diagnosticMz01 = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + Proton + (3 * MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2);
                     var threshold01 = 50;
                     var frag01 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz01, threshold01);
 
@@ -17338,7 +17925,7 @@ AdductIon adduct)
                     var candidates = new List<LipidMolecule>();
 
                     //[DAG-H2O]+
-                    var diagnosticMz01 = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + Proton + (3 * 12 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.OxygenMass * 3);
+                    var diagnosticMz01 = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + Proton + (3 * MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.OxygenMass * 3);
                     var threshold01 = 50;
                     var frag01 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz01, threshold01);
 
@@ -17351,7 +17938,7 @@ AdductIon adduct)
                     if (frag01 && frag02)
                     {
                         return LipidMsmsCharacterizationUtility.returnAnnotationResult(PaHex[lipidclass.ToString()], lipidclass, "", theoreticalMz, adduct,
-                            totalCarbon, totalDoubleBond, 0, candidates, 1);
+                            totalCarbon, totalDoubleBond, 0, candidates, 2);
                     }
                 }
                 return null;
@@ -17369,6 +17956,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1Fa = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2Fa = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -17411,11 +17999,11 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // C2H9NO4P+
-                    var diagnosticMz = 142.02637;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass - Electron; ;
                     var diagnosticCutoff = 10.0;
 
-                    //// precursor - C2H8NO4P
-                    //var diagnosticMz2 = theoreticalMz - 142.02637 + Proton;
+                    //// precursor - C2H8NO4P (142.02637)
+                    //var diagnosticMz2 = theoreticalMz - MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass;
                     //var diagnosticCutoff2 = 0.1;
 
                     var isDiagnosticFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, diagnosticCutoff);
@@ -17434,7 +18022,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     // C2H7NO4P-
-                    var diagnosticMz = 140.011818;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass + Electron;
                     var diagnosticCutoff = 10.0;
                     var isDiagnosticFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, diagnosticCutoff);
                     if (isDiagnosticFound)
@@ -17460,7 +18048,7 @@ AdductIon adduct)
                 {
                     //  seek 126.02 (Taurine+ fragment)
                     var threshold = 50.0;
-                    var diagnosticMz = 12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -17475,7 +18063,7 @@ AdductIon adduct)
             {
                 //  seek 124.01 (Taurine- fragment)
                 var threshold = 1.0;
-                var diagnosticMz = 12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 - Proton;
+                var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 - Proton;
                 //  seek 79.96 (SO3- fragment)
                 var threshold2 = 5.0;
                 var diagnosticMz2 = MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Electron;
@@ -17504,10 +18092,10 @@ AdductIon adduct)
                 {
                     //  seek 166.086  (phenylalanine fragment)
                     var threshold = 10.0;
-                    var diagnosticMz = 12 * 9 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 9 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Proton;
                     //  seek 120.08  (phenylalanine-H2CO2 fragment)
                     var threshold2 = 50.0;
-                    var diagnosticMz2 = diagnosticMz - 12 - MassDiffDictionary.OxygenMass * 2 - MassDiffDictionary.HydrogenMass * 2;
+                    var diagnosticMz2 = diagnosticMz - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass * 2 - MassDiffDictionary.HydrogenMass * 2;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -17523,7 +18111,7 @@ AdductIon adduct)
             {
                 //  seek 164.07  (phenylalanine fragment)
                 var threshold = 10.0;
-                var diagnosticMz = 12 * 9 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Proton;
+                var diagnosticMz = MassDiffDictionary.CarbonMass * 9 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Proton;
 
                 //  seek 147.04  (phenylalanine-NH3 fragment)
                 var threshold2 = 10.0;
@@ -17557,19 +18145,19 @@ AdductIon adduct)
                 {
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = 184.07332;
+                    var diagnosticMz = C5H14NO4P + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     // for eieio
-                    var PEHeaderLoss = theoreticalMz - 141.019094261;
+                    var PEHeaderLoss = theoreticalMz - C2H8NO4P;
                     var PEspecific = MassDiffDictionary.CarbonMass * 5
                         + MassDiffDictionary.HydrogenMass * 12
                         + MassDiffDictionary.NitrogenMass
                         + MassDiffDictionary.OxygenMass * 4
                         + MassDiffDictionary.PhosphorusMass
                         + Proton;
-                    var PEHeader = 141.019094261 + Proton;
+                    var PEHeader = C2H8NO4P + Proton;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
                     var isClassIonFound3 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEspecific, 1.0);
                     var isClassIonFound4 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeader, 3.0);
@@ -17585,6 +18173,8 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
+
                             if (sn1Carbon < 10 || sn2Carbon < 10) continue;
                             if (sn1Double > 6 || sn2Double > 6) continue;
 
@@ -17622,11 +18212,11 @@ AdductIon adduct)
                 {
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 5.0;
-                    //var diagnosticMz = 184.07332;
+                    //var diagnosticMz = C5H14NO4P + Proton;
                     // seek [M+Na -C5H14NO4P]+
-                    var diagnosticMz2 = theoreticalMz - 183.06604;
+                    var diagnosticMz2 = theoreticalMz - C5H14NO4P;
                     // seek [M+Na -C3H9N]+
-                    var diagnosticMz3 = theoreticalMz - 59.0735;
+                    var diagnosticMz3 = theoreticalMz - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
                     if (isClassIonFound == false || isClassIon2Found == false) return null;
@@ -17640,6 +18230,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz3 - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz3 - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -17673,12 +18264,12 @@ AdductIon adduct)
                     // seek [M-CH3]-
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - 60.021129369; // in source check
+                        var diagnosticMz2 = theoreticalMz - CH3 - HCOOadduct + Electron; // in source check
                         var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                         if (isClassIonFound2) return null;
                     }
@@ -17692,7 +18283,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-
+                            if(sn2Carbon <= 0 || sn2Double < 0) continue;
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
@@ -17720,7 +18311,7 @@ AdductIon adduct)
                 {
                     // "[M-H]- -C3H9N"
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - MassDiffDictionary.ProtonMass - (12 * 4 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 3);
+                    var diagnosticMz = theoreticalMz - MassDiffDictionary.ProtonMass - HCO3adduct - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -17731,6 +18322,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -17745,7 +18337,7 @@ AdductIon adduct)
 
                             if (foundCount >= 1)
                             {
-                                var sn1FlagFragment = sn1 + (12 * 5 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4);
+                                var sn1FlagFragment = sn1 + (MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4);
                                 var query2 = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = sn1FlagFragment, Intensity = 5.0 },
                                     };
@@ -17787,7 +18379,7 @@ AdductIon adduct)
                 {
                     // seek -141.019094261 (C2H8NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 141.019094261;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -17800,6 +18392,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -17829,9 +18422,9 @@ AdductIon adduct)
                 {
                     // seek -141.019094261 (C2H8NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 141.019094261;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     // seek - 43.042199 (C2H5N)
-                    var diagnosticMz2 = theoreticalMz - 43.042199;
+                    var diagnosticMz2 = theoreticalMz - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.NitrogenMass);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -17844,6 +18437,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - Electron;
                             var sn2 = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - Electron;
@@ -17875,11 +18469,11 @@ AdductIon adduct)
                 {
                     // seek C5H11NO5P-
                     var threshold = 5.0;
-                    var diagnosticMz = 196.03803;
+                    var diagnosticMz = C5H11NO5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     var threshold2 = 5.0;
-                    var diagnosticMz2 = 152.995833871; // seek C3H6O5P- (maybe LNAPE)
+                    var diagnosticMz2 = C3H6O5P + Electron; // seek C3H6O5P- (maybe LNAPE)
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon2Found == true) return null;
 
@@ -17893,6 +18487,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -17940,7 +18535,7 @@ AdductIon adduct)
                 {
                     // seek -185.008927 (C3H8NO6P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 185.008927;
+                    var diagnosticMz = theoreticalMz - C3H8NO6P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -17952,6 +18547,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -17986,7 +18582,7 @@ AdductIon adduct)
                 {
                     // seek -185.008927 (C3H8NO6P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 185.008927;
+                    var diagnosticMz = theoreticalMz - C3H8NO6P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18006,12 +18602,14 @@ AdductIon adduct)
                 {
                     // seek C3H5NO2 loss
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 87.032029;
+                    var diagnosticMz = theoreticalMz - C3H5NO2;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     var threshold2 = 30;
-                    var diagnosticMz2 = theoreticalMz - 63.008491; // [M+C2H3N(ACN)+Na-2H]- adduct of PG [M-H]- 
+                    var diagnosticMz2 = theoreticalMz
+                        - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + Na)
+                        + MassDiffDictionary.HydrogenMass; // [M+C2H3N(ACN)+Na-2H]- adduct of PG [M-H]- 
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound2) return null;
 
@@ -18024,6 +18622,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -18067,7 +18666,9 @@ AdductIon adduct)
                 {
                     // seek -189.040227 (C3H8O6P+NH4)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 189.040227;
+                    var diagnosticMz = theoreticalMz
+                        - C3H9O6P
+                        - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18079,7 +18680,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
@@ -18106,9 +18707,11 @@ AdductIon adduct)
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    // seek -171.005851 (C3H8O6P) - 22.9892207 (Na+)
+                    // seek -171.005851 (C3H8O6P) - Na
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 171.005851 - 22.9892207;// + MassDiffDictionary.HydrogenMass;
+                    var diagnosticMz = theoreticalMz
+                        - (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass)
+                        - Na; ;// + MassDiffDictionary.HydrogenMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18126,7 +18729,7 @@ AdductIon adduct)
                 {
                     // seek C3H6O5P-
                     var threshold = 0.01;
-                    var diagnosticMz = 152.995833871;
+                    var diagnosticMz = C3H6O5P + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -18138,6 +18741,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -18183,7 +18787,7 @@ AdductIon adduct)
                 {
                     // seek -277.056272 (C6H12O9P+NH4)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 277.056272;
+                    var diagnosticMz = theoreticalMz - C6H12O9P - NH3 - MassDiffDictionary.HydrogenMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18217,15 +18821,15 @@ AdductIon adduct)
                     #endregion
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI_d5", LbmClass.PI_d5, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
                     // 
                     var threshold = 10.0;
-                    var diagnosticMz1 = theoreticalMz - (259.021895 + 22.9892207);  // seek -(C6H12O9P +Na)
-                    var diagnosticMz2 = theoreticalMz - (260.02972);                 // seek -(C6H12O9P + H)
-                    var diagnosticMz3 = (260.02972 + 22.9892207);                   // seek (C6H13O9P +Na)
+                    var diagnosticMz1 = theoreticalMz - (C6H12O9P + Na);  // seek -(C6H12O9P +Na)
+                    var diagnosticMz2 = theoreticalMz - (C6H12O9P + MassDiffDictionary.HydrogenMass); // seek -(C6H12O9P + H)
+                    var diagnosticMz3 = (C6H12O9P + MassDiffDictionary.HydrogenMass + NaIon); // seek (C6H13O9P +Na)
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -18239,7 +18843,7 @@ AdductIon adduct)
                     //candidates.Add(molecule);
 
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI_d5", LbmClass.PI_d5, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
 
             }
@@ -18249,8 +18853,8 @@ AdductIon adduct)
                 {
                     // seek 241.01188(C6H10O8P-) and 297.037548(C9H14O9P-)
                     var threshold = 0.01;
-                    var diagnosticMz1 = 241.01188 + Electron;
-                    var diagnosticMz2 = 297.037548 + Electron;
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;
+                    var diagnosticMz2 = C6H12O9P + C3H4O2 - H2O - MassDiffDictionary.OxygenMass + Electron;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     if (!isClassIon1Found && !isClassIon2Found) return null;
@@ -18264,6 +18868,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -18307,8 +18912,8 @@ AdductIon adduct)
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
                     // seek 184.07332 (C5H15NO4P)
                     var threshold = 5.0;
-                    var diagnosticMz = 184.07332;
-                    var diagnosticMz2 = 104.106990;
+                    var diagnosticMz = C5H14NO4P + Proton;
+                    var diagnosticMz2 = C5H13NO + Proton;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found != true) return null;
                     //
@@ -18357,12 +18962,12 @@ AdductIon adduct)
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
                     // seek PreCursor - 59 (C3H9N)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 59.072951;
+                    var diagnosticMz = theoreticalMz - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     // seek 104.1070 (C5H14NO) maybe not found
                     //var threshold2 = 1.0;
-                    //var diagnosticMz2 = 104.1070;
+                    //var diagnosticMz2 = C5H13NO + Proton;
 
                     //
                     var candidates = new List<LipidMolecule>();
@@ -18386,7 +18991,7 @@ AdductIon adduct)
                     // seek [M-CH3]-
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var diagnosticMz2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond);
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -18409,7 +19014,10 @@ AdductIon adduct)
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPC
                     // seek [M-H] - 59 (C3H9N)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - (12 + MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass) - (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass * 1);
+                    var diagnosticMz = theoreticalMz 
+                        - HCO3adduct
+                        - C3H9N
+                        - MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18445,7 +19053,7 @@ AdductIon adduct)
 
                     // seek PreCursor -141(C2H8NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 141.019094;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found == false) return null;
@@ -18457,12 +19065,13 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether)
 
                             var NL_sn1 = diagnosticMz - sn1alkyl + Proton;
-                            var sn1_rearrange = sn1alkyl + MassDiffDictionary.HydrogenMass * 2 + 139.00290;//sn1(ether) + C2H5NO4P + proton 
+                            var sn1_rearrange = sn1alkyl + C2H8NO4P - Electron;//sn1(ether) + C2H8NO4P  - Electron
 
                             var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, NL_sn1, threshold);
                             var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, threshold);
@@ -18480,7 +19089,7 @@ AdductIon adduct)
                 {
                     // seek PreCursor -141(C2H8NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 141.019094;
+                    var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18492,12 +19101,13 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(ether)
 
                             var NL_sn1 = diagnosticMz - sn1alkyl + Proton;
-                            var sn1_rearrange = sn1alkyl + 139.00290 + MassDiffDictionary.HydrogenMass * 2;//sn1(ether) + C2H5NO4P + proton 
+                            var sn1_rearrange = sn1alkyl + C2H8NO4P - Electron;//sn1(ether) + C2H8NO4P  - Electron
 
                             var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, NL_sn1, threshold);
                             var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, threshold);
@@ -18522,9 +19132,16 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
-                    // seek PreCursor -197(C5H12NO5P)
+                    // seek PreCursor -202(C5D5H7NO5P) 
                     var threshold = 10.0;
-                    var diagnosticMz = theoreticalMz - 197.04475958;
+                    var diagnosticMz = theoreticalMz 
+                        - ( MassDiffDictionary.CarbonMass * 5 
+                            + MassDiffDictionary.HydrogenMass * 7 
+                            + MassDiffDictionary.Hydrogen2Mass * 5
+                            + MassDiffDictionary.OxygenMass * 5
+                            + MassDiffDictionary.NitrogenMass * 1
+                            + MassDiffDictionary.PhosphorusMass * 1
+                        );
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     //
@@ -18555,7 +19172,7 @@ AdductIon adduct)
                 {
                     // seek C3H6O5P-
 
-                    var diagnosticMz1 = 152.99583;  // seek C3H6O5P-
+                    var diagnosticMz1 = C3H6O5P + Electron;  // seek C3H6O5P-
                     var threshold1 = 1.0;
                     var diagnosticMz2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold2 = 10.0;
@@ -18580,7 +19197,7 @@ AdductIon adduct)
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
-                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (12 * 3 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18606,11 +19223,16 @@ AdductIon adduct)
             { //negative ion mode only
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek C3H6O5P-
-
-                    var diagnosticMz1 = 241.0118806 + Electron;  // seek C3H6O5P-
+                    // seek 241.01188(C6H10O8P-) and 320 C9D5H11O10P-(NL of SN1)
+                    var diagnosticMz1 = C6H12O9P - H2O + Electron;  // seek C6H10O8P-
                     var threshold1 = 1.0;
-                    var diagnosticMz2 = 315.048656; // seek C9H16O10P-
+                    var diagnosticMz2 = 
+                        MassDiffDictionary.CarbonMass * 9
+                        + MassDiffDictionary.Hydrogen2Mass * 5
+                        + MassDiffDictionary.HydrogenMass * 11
+                        + MassDiffDictionary.OxygenMass * 10
+                        + MassDiffDictionary.PhosphorusMass * 1 
+                        + Electron; // seek C9D5H11O10P-(NL of SN1)
                     var threshold2 = 1.0;
                     var diagnosticMz3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond); // seek [FA-H]-
                     var threshold3 = 10.0;
@@ -18636,7 +19258,7 @@ AdductIon adduct)
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
-                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (12 * 3 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18661,10 +19283,10 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     // seek C3H6O5P-
-
-                    var diagnosticMz1 = 152.99583;  // seek C3H6O5P-
+                    //var diagnosticMz1 = C3H6O5P + Electron;  // seek C3H6O5P-
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 1 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass + Electron;//158.0249
                     var threshold1 = 10.0;
-                    var diagnosticMz2 = theoreticalMz - 87.032029; // seek -C3H6NO2-H
+                    var diagnosticMz2 = theoreticalMz - C3H5NO2; // seek -C3H6NO2-H
                     var threshold2 = 5.0;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -18687,7 +19309,7 @@ AdductIon adduct)
                 {
                     // seek Header loss (MG+ + chain Acyl) 
                     var threshold = 5.0;
-                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (12 * 3 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.Hydrogen2Mass * 5 + MassDiffDictionary.OxygenMass * 2) + MassDiffDictionary.ProtonMass;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18714,7 +19336,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -18726,6 +19348,7 @@ AdductIon adduct)
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
                             if (sn2Double >= 7) continue;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -18789,7 +19412,7 @@ AdductIon adduct)
                 {
                     // seek -17.026549 (NH3)
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 17.026549;
+                    var diagnosticMz = theoreticalMz - NH3;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
@@ -18811,7 +19434,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     if ((sn1Carbon == 18 && sn1Double == 5) || (sn2Carbon == 18 && sn2Double == 5) || (sn3Carbon == 18 && sn3Double == 5)) continue;
 
                                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -18849,7 +19475,7 @@ AdductIon adduct)
                     {
                         for (int sn1Double = minSn1DoubleBond; sn1Double <= maxSn1DoubleBond; sn1Double++)
                         {
-                            var diagnosticMz = theoreticalMz; // - 22.9892207 + MassDiffDictionary.HydrogenMass; //if want to choose [M+H]+
+                            var diagnosticMz = theoreticalMz; // - Na + MassDiffDictionary.HydrogenMass; //if want to choose [M+H]+
                             var remainCarbon = totalCarbon - sn1Carbon;
                             var remainDouble = totalDoubleBond - sn1Double;
                             var carbonLimit = Math.Min(remainCarbon, maxSn2Carbon);
@@ -18862,7 +19488,10 @@ AdductIon adduct)
 
                                     var sn3Carbon = totalCarbon - sn1Carbon - sn2Carbon;
                                     var sn3Double = totalDoubleBond - sn1Double - sn2Double;
-
+                                    if (sn3Carbon <= 0 || sn3Double < 0)
+                                    {
+                                        continue;
+                                    }
                                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -18878,7 +19507,7 @@ AdductIon adduct)
 
                                     if (foundCount < 3)
                                     {
-                                        var diagnosticMzH = theoreticalMz - 22.9892207 + MassDiffDictionary.HydrogenMass;
+                                        var diagnosticMzH = theoreticalMz - NaIon + Proton;
                                         var nl_SN1_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN2_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN3_H = diagnosticMzH - LipidMsmsCharacterizationUtility.acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -18890,7 +19519,7 @@ AdductIon adduct)
 
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
-                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity2);
+                                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
 
                                         if (foundCount2 == 3)
@@ -18931,9 +19560,16 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // seek 184.07332 (C5H15NO4P) D9
+                    // seek  (C5D9H6NO4P)
                     var threshold = 30.0;
-                    var diagnosticMz = 184.07332 + MassDiffDictionary.HydrogenMass * 9;
+                    var diagnosticMz =
+                        MassDiffDictionary.CarbonMass * 5
+                        + MassDiffDictionary.Hydrogen2Mass * 9
+                        + MassDiffDictionary.HydrogenMass * 6
+                        + MassDiffDictionary.OxygenMass * 4
+                        + MassDiffDictionary.NitrogenMass * 1
+                        + MassDiffDictionary.PhosphorusMass * 1
+                        - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
@@ -18948,6 +19584,7 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon < 8) continue;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
 
                             var sph1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) -
@@ -18975,15 +19612,25 @@ AdductIon adduct)
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    // seek -59.0735 [M-C3H9N+Na]+
+                    // seek - [M-C3D9N+Na]+
                     var threshold = 20.0;
-                    var diagnosticMz = theoreticalMz - (59.0735 + MassDiffDictionary.HydrogenMass * 9);
-                    // seek -183.06604 [M-C5H14NO4P+Na]+
+                    var diagnosticMz = theoreticalMz 
+                        - (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.NitrogenMass);
+                    // seek - [M-C5D9H5NO4P+Na]+
                     var threshold2 = 30.0;
-                    var diagnosticMz2 = theoreticalMz - (183.06604 + MassDiffDictionary.HydrogenMass * 9);
-                    // seek -183.06604 [M-C5H16NO5P+H]+
+                    var diagnosticMz2 = theoreticalMz 
+                        - (MassDiffDictionary.CarbonMass * 5
+                        + MassDiffDictionary.Hydrogen2Mass * 9
+                        + MassDiffDictionary.HydrogenMass * 5
+                        + MassDiffDictionary.OxygenMass * 4
+                        + MassDiffDictionary.NitrogenMass * 1
+                        + MassDiffDictionary.PhosphorusMass * 1);
+                    // seek - [M-C5D9H5NO4P+H-H2O]+
                     var threshold3 = 1;
-                    var diagnosticMz3 = theoreticalMz - (183.06604 + MassDiffDictionary.HydrogenMass * 9) - 39.993064;
+                    var diagnosticMz3 = diagnosticMz2
+                        - NaIon
+                        + MassDiffDictionary.ProtonMass
+                        - H2O;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -19002,12 +19649,19 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
                     adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
-                    // seek [M-CH3]-
+                    // 
                     var threshold1 = 50.0;
                     var threshold2 = 0.01;
                     var diagnosticMz1 = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
-                    var diagnosticMz2 = 168.042572 + Electron + (MassDiffDictionary.HydrogenMass * 9);
+                        theoreticalMz - CD3 - CH3COOadduct + Electron : theoreticalMz - CD3 - HCOOadduct + Electron;
+                    var diagnosticMz2 =
+                    MassDiffDictionary.CarbonMass * 4 
+                        + MassDiffDictionary.HydrogenMass * 5 
+                        + MassDiffDictionary.Hydrogen2Mass * 6
+                        + MassDiffDictionary.NitrogenMass 
+                        + MassDiffDictionary.OxygenMass * 4 
+                        + MassDiffDictionary.PhosphorusMass 
+                        + Electron;//C4H5D6NO4P-
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
@@ -19021,6 +19675,7 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             if (acylCarbon < 8) continue;
 
@@ -19045,11 +19700,22 @@ AdductIon adduct)
                 }
                 else if (adduct.AdductIonName == "[M+HCO3]-")
                 {
-                    // "[M-H]- -C3H9N"
+                    // "[M-H]- -C3D9N"
                     var threshold1 = 5.0;
                     var threshold2 = 0.5;
-                    var diagnosticMz1 = theoreticalMz - (12 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.HydrogenMass) - MassDiffDictionary.ProtonMass - (12 * 3 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.NitrogenMass);
-                    var diagnosticMz2 = 12 * 5 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.PhosphorusMass + Electron;
+                    var diagnosticMz1 = 
+                        theoreticalMz 
+                        - HCO3adduct
+                        - (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.Hydrogen2Mass * 9 + MassDiffDictionary.NitrogenMass)
+                        - MassDiffDictionary.ProtonMass ;
+                    var diagnosticMz2 = 
+                        MassDiffDictionary.CarbonMass * 5 
+                        + MassDiffDictionary.OxygenMass * 4 
+                        + MassDiffDictionary.HydrogenMass * 4 
+                        + MassDiffDictionary.Hydrogen2Mass * 9 
+                        + MassDiffDictionary.NitrogenMass 
+                        + MassDiffDictionary.PhosphorusMass 
+                        + Electron;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIon1Found != true || isClassIon2Found != true) return null;
@@ -19061,10 +19727,11 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
                             if (acylCarbon < 8) continue;
 
-                            var sphFragment = diagnosticMz1 - LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + 12 * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass;
+                            var sphFragment = diagnosticMz1 - LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 4 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass;
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sphFragment, Intensity = 0.01 }
                             };
@@ -19115,11 +19782,12 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             // if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
                             if (acylDouble >= 7) continue;
                             var sph1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var sph2 = sph1 - H2O;
-                            var sph3 = sph2 - 12; //[Sph-CH4O2+H]+
-                            var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
+                            var sph3 = sph2 - MassDiffDictionary.CarbonMass; //[Sph-CH4O2+H]+
+                            var acylamide = acylCarbon * MassDiffDictionary.CarbonMass + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             // must query
                             var queryMust = new List<SpectrumPeak> {
@@ -19157,7 +19825,7 @@ AdductIon adduct)
                 {
                     // reject HexCer
                     var threshold = 1.0;
-                    var diagnosticMz = theoreticalMz - 162.052833 - H2O;
+                    var diagnosticMz = theoreticalMz - Sugar162 - H2O;
                     if (LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold)) { return null; }
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
@@ -19167,9 +19835,13 @@ AdductIon adduct)
                             var acylCarbon = totalCarbon - sphCarbon;
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass + (MassDiffDictionary.HydrogenMass * 7);
-                            var sph3 = sph1 - H2O + Proton;
+                            var sph1 = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) 
+                                + MassDiffDictionary.ProtonMass 
+                                - MassDiffDictionary.OxygenMass 
+                                + (MassDiffDictionary.Hydrogen2Mass * 7 - MassDiffDictionary.HydrogenMass * 7);
+                            var sph3 = sph1 - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph3, Intensity = 1 },
@@ -19201,10 +19873,10 @@ AdductIon adduct)
                     //var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - MassDiffDictionary.ProtonMass - 59.013864 : theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                     // seek [M-CH2O-H]-
                     var threshold1 = 1.0;
-                    var diagnosticMz1 = diagnosticMz - 12 - H2O;
+                    var diagnosticMz1 = diagnosticMz - MassDiffDictionary.CarbonMass - H2O;
                     // seek [M-CH2O-H2O-H]-
                     var threshold2 = 1.0;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
@@ -19215,7 +19887,7 @@ AdductIon adduct)
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - 44.998214;
+                        var diagnosticMz3 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold3 = 50.0;
                         var isClassIon3Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
                         if (isClassIon3Found) return null;
@@ -19232,10 +19904,17 @@ AdductIon adduct)
                             //if (acylCarbon < minSphCarbon) { break; }
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylDouble >= 7) continue;
+                            if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1 + (MassDiffDictionary.HydrogenMass * 7))) -
-                                     2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+NCCO-3H]- on Excel(may be not sure)
-                            var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass + (MassDiffDictionary.HydrogenMass * 7); // [Sph-NCC-3H]-
+                            var sphChain_loss = diagnosticMz 
+                                - (sphCarbon - 2) * MassDiffDictionary.CarbonMass 
+                                - MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1) 
+                                - (MassDiffDictionary.Hydrogen2Mass * 7 - MassDiffDictionary.HydrogenMass * 7)
+                                - 2 * MassDiffDictionary.OxygenMass 
+                                - MassDiffDictionary.HydrogenMass; // as [FA+NCCO-3H]- on Excel(may be not sure)
+                            var sphFragment = LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton
+                                + (MassDiffDictionary.Hydrogen2Mass * 7 - MassDiffDictionary.HydrogenMass * 7); // [Sph-NCC-3H]-
+
                             var acylFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                             //Console.WriteLine("d" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
@@ -19274,9 +19953,12 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
-                    // seek 369.3515778691 (C27H45+)+ MassDiffDictionary.HydrogenMass*7
+                    // seek  (C27H38D7+)
                     var threshold = 20.0;
-                    var diagnosticMz = 369.3515778691 + MassDiffDictionary.HydrogenMass * 7;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 27 
+                        + MassDiffDictionary.HydrogenMass * 38
+                        + MassDiffDictionary.Hydrogen2Mass * 7
+                        - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     if (totalCarbon >= 41 && totalDoubleBond >= 4) return null;
@@ -19288,9 +19970,12 @@ AdductIon adduct)
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    // seek 369.3515778691 (C27H45+)+ MassDiffDictionary.HydrogenMass*7
+                    // seek C27H38D7+
                     var threshold = 10.0;
-                    var diagnosticMz = 369.3515778691 + MassDiffDictionary.HydrogenMass * 7;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 27
+                        + MassDiffDictionary.HydrogenMass * 38
+                        + MassDiffDictionary.Hydrogen2Mass * 7
+                        - Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     // if (isClassIonFound == false) return null;
 
@@ -19320,7 +20005,7 @@ AdductIon adduct)
                 {
                     // seek 198 (C6H17NO4P)
                     var threshold = 10.0;
-                    var diagnosticMz = 12 * 6 + MassDiffDictionary.HydrogenMass * 16 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 16 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass + Proton;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     // from here, acyl level annotation is executed.
@@ -19334,6 +20019,7 @@ AdductIon adduct)
                             var sn2Double = totalDoubleBond - sn1Double;
                             if (sn1Carbon < 10 || sn2Carbon < 10) continue;
                             if (sn1Double > 6 || sn2Double > 6) continue;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
@@ -19368,11 +20054,11 @@ AdductIon adduct)
                 {
                     // 198.07332 (C6H16NO4P)
                     var threshold = 5.0;
-                    var diagnosticMz = 12 * 6 + MassDiffDictionary.HydrogenMass * 16 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 16 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass;
                     // seek [M+Na -C6H16NO4P]+
                     var diagnosticMz2 = theoreticalMz - diagnosticMz;
                     // seek [M+Na -C3H9N]+
-                    var diagnosticMz3 = theoreticalMz - 59.0735;
+                    var diagnosticMz3 = theoreticalMz - C3H9N;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);
                     if (isClassIonFound == false || isClassIon2Found == false) return null;
@@ -19384,6 +20070,7 @@ AdductIon adduct)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var nl_SN1 = diagnosticMz3 - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz3 - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -19417,12 +20104,12 @@ AdductIon adduct)
                     // seek [M-CH3]-
                     var threshold = 10.0;
                     var diagnosticMz = adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
-                        theoreticalMz - 74.036779433 : theoreticalMz - 60.021129369;
+                        theoreticalMz - CH3 - CH3COOadduct + Electron : theoreticalMz - CH3 - HCOOadduct + Electron;
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - 60.021129369; // in source check
+                        var diagnosticMz2 = theoreticalMz - CH3 - HCOOadduct + Electron; // in source check
                         var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                         if (isClassIonFound2) return null;
                     }
@@ -19436,6 +20123,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -19485,10 +20173,11 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var adductMass = adduct.AdductIonAccurateMass;
 
-                            var Sn2FA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + H2O + Electron;
+                            var Sn2FA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + H2O - Electron;
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = Sn2FA, Intensity = 50 },
                             };
@@ -19526,7 +20215,7 @@ AdductIon adduct)
                 {
                     //  seek 144.081 (indole + C2H3)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.ProtonMass;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19543,8 +20232,8 @@ AdductIon adduct)
                             for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                             {
                                 var sn2Carbon = totalCarbon - sn1Carbon;
-                                var sn2Double = totalDoubleBond - sn1Double;
-
+                                var sn2Double = totalDoubleBond - sn1Double - 1;
+                                if(sn2Carbon <= 0||sn2Double < 0) continue;
                                 var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + H2O - MassDiffDictionary.HydrogenMass;
 
                                 var query = new List<SpectrumPeak> {
@@ -19576,8 +20265,8 @@ AdductIon adduct)
                 {
                     // 
                     var threshold = 0.5;
-                    var diagnosticMz1 = 12 * 10 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass * 2 + Electron;
-                    var diagnosticMz2 = diagnosticMz1 - (12 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3);
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass * 2 + Electron;
+                    var diagnosticMz2 = diagnosticMz1 - (MassDiffDictionary.CarbonMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3);
 
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -19592,8 +20281,8 @@ AdductIon adduct)
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
                             var sn2Carbon = totalCarbon - sn1Carbon;
-                            var sn2Double = totalDoubleBond - sn1Double;
-
+                            var sn2Double = totalDoubleBond - sn1Double - 1;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double) + H2O - MassDiffDictionary.HydrogenMass;
                             var sn2Fragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
@@ -19634,7 +20323,7 @@ AdductIon adduct)
                 {
                     //  seek 160.076 (5OH-indole + C2H3)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.ProtonMass;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19652,7 +20341,7 @@ AdductIon adduct)
                 {
                     //  seek 158 (5OH-indole + C2H3)
                     var threshold = 40.0;
-                    var diagnosticMz = 12 * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass - MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass - MassDiffDictionary.ProtonMass;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19677,7 +20366,7 @@ AdductIon adduct)
                 {
                     //  seek 90.055 (Ala)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19694,7 +20383,7 @@ AdductIon adduct)
                 {
                     //  seek 88 (Ala-)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19719,7 +20408,7 @@ AdductIon adduct)
                 {
                     //  seek 130.05 (Gln-NH3)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 5 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19736,7 +20425,7 @@ AdductIon adduct)
                 {
                     //  seek 145 (Gln-)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 5 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass * 2 - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass * 2 - Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19761,7 +20450,7 @@ AdductIon adduct)
                 {
                     //  seek 132.10 (Leu)
                     var threshold = 10.0;
-                    var diagnosticMz = 12 * 6 + MassDiffDictionary.HydrogenMass * 13 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 13 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19778,14 +20467,14 @@ AdductIon adduct)
                 {
                     //  seek 130.08 (Leu)
                     var threshold = 10.0;
-                    var diagnosticMz = 12 * 6 + MassDiffDictionary.HydrogenMass * 13 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 13 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
                     //  seek -44(CO2 loss)
                     var threshold2 = 0.5;
-                    var diagnosticMz2 = theoreticalMz - 12 - MassDiffDictionary.OxygenMass * 2;
+                    var diagnosticMz2 = theoreticalMz - MassDiffDictionary.CarbonMass - MassDiffDictionary.OxygenMass * 2;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                     if (isClassIonFound2 == false) return null;
 
@@ -19810,7 +20499,7 @@ AdductIon adduct)
                 {
                     //  seek 118.09 (Val)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass * 1 + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass * 1 + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19827,7 +20516,7 @@ AdductIon adduct)
                 {
                     //  seek 116.07 (Val)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass * 1 - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass * 1 - Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19852,7 +20541,7 @@ AdductIon adduct)
                 {
                     //  seek 106.05 (Ser)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass + Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19869,10 +20558,10 @@ AdductIon adduct)
                 {
                     //  seek 104.04 (Ser)
                     var threshold = 5.0;
-                    var diagnosticMz = 12 * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.NitrogenMass - Proton;
                     //  seek 74.02 (Ser)
                     var threshold2 = 20.0;
-                    var diagnosticMz2 = 12 * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -19901,9 +20590,9 @@ AdductIon adduct)
 
                     //  seek "[C5H12PO5]+"; // 183
                     var threshold = 2.0;
-                    var diagnosticMz1 = 12 * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass + Proton;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass + Proton;
                     //  C2H7PO4 Loss
-                    var diagnosticMz2 = diagnosticMz - (12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
+                    var diagnosticMz2 = diagnosticMz - (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass);
 
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -19921,7 +20610,7 @@ AdductIon adduct)
                 {
                     //  seek "[C5H10PO5]-"; // 181
                     var threshold = 1.0;
-                    var diagnosticMz1 = 12 * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass - Proton;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 5 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.OxygenMass * 5 + MassDiffDictionary.PhosphorusMass - Proton;
                     // FA-
                     var thresholdFA = 30.0;
                     var FA = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond);
@@ -19952,7 +20641,7 @@ AdductIon adduct)
                 {
                     //  seek 144.081 (indole + C2H3)
                     var threshold = 10.0;
-                    var diagnosticMz = 12 * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 10 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.ProtonMass;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -19966,6 +20655,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
 
@@ -20002,6 +20692,7 @@ AdductIon adduct)
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
 
                             var sn2Loss = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
                             var sn2FA = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
@@ -20042,10 +20733,10 @@ AdductIon adduct)
                 {
                     //  seek "[GABA]+"; // 104
                     var threshold = 5.0;
-                    var diagnosticMz1 = 12 * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass + Proton;
                     //  seek "[C4H7NO]+"; // 86
                     var threshold2 = 50.0;
-                    var diagnosticMz2 = 12 * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 1 + MassDiffDictionary.NitrogenMass + Proton;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 1 + MassDiffDictionary.NitrogenMass + Proton;
 
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -20063,10 +20754,10 @@ AdductIon adduct)
                 {
                     //  seek "[GABA]-"; // 102
                     var threshold = 30.0;
-                    var diagnosticMz1 = 12 * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
+                    var diagnosticMz1 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
                     //  seek "[C4H7NO]-"; // 84
                     var threshold2 = 1.0;
-                    var diagnosticMz2 = 12 * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 1 + MassDiffDictionary.NitrogenMass - Proton;
+                    var diagnosticMz2 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 1 + MassDiffDictionary.NitrogenMass - Proton;
 
                     var isClassIonFound1 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold);
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
@@ -20074,7 +20765,7 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
 
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("BisMeLPA", LbmClass.BisMeLPA, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("NAGABA", LbmClass.NAGABA, "", theoreticalMz, adduct,
                     totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
                 }
             }
@@ -20093,7 +20784,7 @@ AdductIon adduct)
                 {
                     //  seek 120 (Anthranilic acid)
                     var threshold = 20.0;
-                    var diagnosticMz = 12 * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 7 - Proton;
+                    var diagnosticMz = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 7 - Proton;
 
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
@@ -20118,7 +20809,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+NH4]+")
                 {
                     var candidates = new List<LipidMolecule>();
-                    var peHex = (12 * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4) + Sugar162;
+                    var peHex = (MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4) + Sugar162;
                     //[EtAmP+Hex-H2O+H]+
                     var diagnosticMz01 = peHex
                         - H2O
@@ -20147,7 +20838,7 @@ AdductIon adduct)
         {
             var spectrum = msScanProp.Spectrum;
             if (spectrum == null || spectrum.Count == 0) return null;
-            var pg = (12 * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 6);
+            var pg = (MassDiffDictionary.CarbonMass * 3 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 6);
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+NH4]+")

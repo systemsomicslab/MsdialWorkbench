@@ -122,7 +122,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
                 Carbon = s.Carbon, DoubleBondEquivalent = s.DoubleBondEquivalent, Oxygen = s.Oxygen,
                 IsLipid = s.IsLipid, IsLabelled = s.IsLabelled, IsMsmsAnnotated = s.IsMsmsAnnotated,
                 TagLevel = level ?? s.TagLevel, WeightedDot = s.WeightedDot, Chains = s.Chains,
-                IsEligible = s.IsEligible, IneligibleReason = s.IneligibleReason,
+                IsEligible = s.IsEligible, IsInSilico = s.IsInSilico, IneligibleReason = s.IneligibleReason,
             };
         }
     }

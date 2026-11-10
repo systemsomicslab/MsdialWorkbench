@@ -323,7 +323,8 @@ public sealed class NormalizationProcess {
             var path = Path.Combine(outputDirectory, alignmentName + suffix);
             using (var stream = File.Open(path, FileMode.Create, FileAccess.Write)) {
                 new AlignmentCSVExporter().Export(
-                    stream, spots, decResults, files, new MulticlassFileMetaAccessor(0), accessor,
+                    stream, spots, decResults, files, new MulticlassFileMetaAccessor(0),
+                    exportType == "Normalized height" ? new NormalizedUnitCommentMetadataAccessorDecorator(accessor) : accessor,
                     new IncludedFilesQuantValueAccessor(exportType, parameter, files), stats);
             }
             int redacted;

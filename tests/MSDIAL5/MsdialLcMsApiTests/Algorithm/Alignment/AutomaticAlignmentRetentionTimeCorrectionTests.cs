@@ -658,14 +658,14 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
             var summaryHeader = summary[0].Split('\t');
             CollectionAssert.AreEqual(
                 new[] { "Note", "Estimated scan interval (min)", "First used anchor RT (min)", "Last used anchor RT (min)", "Peaks before first used anchor", "Peaks after last used anchor" },
-                summaryHeader.Skip(11).ToArray());
+                summaryHeader.Skip(11).Take(6).ToArray());
             Assert.IsTrue(summary.Skip(1).All(line => line.Split('\t').Length == summaryHeader.Length));
 
             var anchorLines = System.IO.File.ReadAllLines(Path.Combine(folder, "automatic_alignment_rt_correction_anchors.tsv"));
             var anchorHeader = anchorLines[0].Split('\t');
             CollectionAssert.AreEqual(
                 new[] { "Status", "Outlier test", "Local support count", "Expected offset (min)", "Outlier scale (min)", "MS1 cycle at anchor (min)" },
-                anchorHeader.Skip(10).ToArray());
+                anchorHeader.Skip(10).Take(6).ToArray());
             Assert.IsTrue(anchorLines.Skip(1).All(line => line.Split('\t').Length == anchorHeader.Length));
             Assert.AreEqual(1, anchorLines.Count(line => line.Split('\t')[10] == "LocalOutlier"));
             // Every matched anchor, the reference file's included, records the cycle around it.

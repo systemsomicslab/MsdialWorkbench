@@ -183,6 +183,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- PK$SPLASH of MassBank records, the code MS-DIAL uses. Linked rather than referenced: MsdialCore would bring
+         RawDataHandler and SQLite into MS-FINDER for this one class. -->
+    <Compile Include="..\..\MSDIAL5\MsdialCore\Export\MassBankSplash.cs" Link="Export\MassBankSplash.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
 	  <DesignTime>True</DesignTime>
 	  <AutoGen>True</AutoGen>

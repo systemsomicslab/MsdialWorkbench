@@ -90,6 +90,10 @@ namespace CompMs.MsdialCore.Parameter
         public string License { get => ProjectParam.License; set => ProjectParam.License = value; }
         [IgnoreMember]
         public string Comment { get => ProjectParam.Comment; set => ProjectParam.Comment = value; }
+        [IgnoreMember]
+        public bool ConstrainToMassBankFormat { get => ProjectParam.ConstrainToMassBankFormat; set => ProjectParam.ConstrainToMassBankFormat = value; }
+        [IgnoreMember]
+        public string MassBankContributorId { get => ProjectParam.MassBankContributorId; set => ProjectParam.MassBankContributorId = value; }
 
 
         // Annotation
@@ -538,8 +542,8 @@ namespace CompMs.MsdialCore.Parameter
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
             pStrings.Add("# Project information");
-            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Project start date", ProjectStartDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "MS-DIAL version number", MsdialVersionNumber.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project file path", Path.Combine(ProjectFolderPath, ProjectFileName).ToString() }));
@@ -716,6 +720,10 @@ namespace CompMs.MsdialCore.Parameter
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction reference centrality weight", AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction interpolate blanks by analytical order", AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction local support RT window", AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow.ToString(CultureInfo.InvariantCulture) }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor mode", AlignmentBaseParam.AutomaticRtCorrection.AnchorMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor library file path", AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor peak selection mode", AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionMode.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Automatic RT correction anchor peak selection RT weight", AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionRtWeight.ToString(CultureInfo.InvariantCulture) }));
 
             pStrings.Add("\r\n");
             pStrings.Add("# Filtering");
@@ -950,6 +958,35 @@ namespace CompMs.MsdialCore.Parameter
         public string License { get; set; } = string.Empty;
         [Key(22)]
         public string Comment { get; set; } = string.Empty;
+
+        // Key 23 is SpectrumCommentToColorBytes, declared with the project container above.
+
+        /// <summary>
+        /// When true, Option &gt; Project property setting only accepts project metadata that makes valid MassBank
+        /// records: the instrument type and licence are chosen from MassBank's vocabularies, and authors and
+        /// instrument are required. The values themselves stay in the members above, which every export reads.
+        /// </summary>
+        /// <remarks>
+        /// A project written before this key has no element for it and reads back false, the free-text behaviour
+        /// every older project had.
+        /// </remarks>
+        [Key(24)]
+        public bool ConstrainToMassBankFormat { get; set; } = false;
+
+        /// <summary>
+        /// The contributor ID MassBank assigned (the second block of every accession), which the MassBank export
+        /// dialogs start from. Empty when none was entered; never null.
+        /// </summary>
+        /// <remarks>
+        /// A project written before this key has no element for it, and MessagePack then assigns null rather than
+        /// the initializer, so the setter keeps empty instead.
+        /// </remarks>
+        [Key(25)]
+        public string MassBankContributorId {
+            get => _massBankContributorId;
+            set => _massBankContributorId = value ?? string.Empty;
+        }
+        private string _massBankContributorId = string.Empty;
     }
     [MessagePackObject]
     public class ProteomicsParameter {
@@ -1221,8 +1258,25 @@ namespace CompMs.MsdialCore.Parameter
         public bool TogetherWithAlignment { get; set; } = true;
         [Key(9)]
         public bool UseRefMatchedPeaksOnly { get; set; } = false;
+        /// <remarks>
+        /// Key 10 was added after projects with keys 0-9 were saved. Such a project has no element here, and MessagePack
+        /// then assigns null rather than the initializer, so the getter hands out the defaults instead of null: an older
+        /// project opens, exports its parameters and aligns with automatic RT correction off, as it was saved. The
+        /// defaults are put in place once, atomically, as for <see cref="ParameterBase.LipidRtCheckParam"/>.
+        /// </remarks>
         [Key(10)]
-        public AutomaticAlignmentRetentionTimeCorrectionParameter AutomaticRtCorrection { get; set; } = new AutomaticAlignmentRetentionTimeCorrectionParameter();
+        public AutomaticAlignmentRetentionTimeCorrectionParameter AutomaticRtCorrection {
+            get {
+                var parameter = _automaticRtCorrection;
+                if (parameter is null) {
+                    System.Threading.Interlocked.CompareExchange(ref _automaticRtCorrection, new AutomaticAlignmentRetentionTimeCorrectionParameter(), null);
+                    parameter = _automaticRtCorrection;
+                }
+                return parameter;
+            }
+            set => _automaticRtCorrection = value;
+        }
+        private AutomaticAlignmentRetentionTimeCorrectionParameter _automaticRtCorrection = new AutomaticAlignmentRetentionTimeCorrectionParameter();
     }
 
     /// <summary>
@@ -1286,6 +1340,73 @@ namespace CompMs.MsdialCore.Parameter
         [Key(15)]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public float? SerializedLocalSupportRtWindow { get; set; } = DefaultLocalSupportRtWindow;
+
+        /// <summary>
+        /// The anchor library of <see cref="AnchorMode"/> UserOnly and Hybrid: the seven-column
+        /// text the user-defined RT correction reads (Name, RT, RT tolerance, m/z, m/z tolerance,
+        /// minimum height, T/F), read more strictly than it reads it (the T/F column must say
+        /// True, False, T or F; numbers take a decimal point). A True row is an anchor the user
+        /// names; a False row keeps the automatic selection from taking a candidate within its
+        /// m/z and RT tolerances. Empty when no library is used, and in a project saved before
+        /// key 16 existed.
+        /// </summary>
+        [Key(16)]
+        public string AnchorLibraryFilePath {
+            get => _anchorLibraryFilePath ?? string.Empty;
+            set => _anchorLibraryFilePath = value;
+        }
+        private string? _anchorLibraryFilePath = string.Empty;
+
+        /// <summary>
+        /// Where the anchors come from. A project saved before key 17 existed loads as
+        /// <see cref="AutomaticRtCorrectionAnchorMode.Automatic"/>, the type's default, which is
+        /// what it ran with.
+        /// </summary>
+        [Key(17)]
+        public AutomaticRtCorrectionAnchorMode AnchorMode { get; set; } = AutomaticRtCorrectionAnchorMode.Automatic;
+
+        /// <summary>
+        /// How a user anchor's peak is chosen when its m/z and RT window holds more than one peak,
+        /// as in the user-defined RT correction. A project saved before key 18 existed loads with
+        /// HighestIntensity, the type's default.
+        /// </summary>
+        [Key(18)]
+        public RetentionTimeCorrectionPeakSelectionMode AnchorPeakSelectionMode { get; set; } = RetentionTimeCorrectionPeakSelectionMode.HighestIntensity;
+
+        public const float DefaultAnchorPeakSelectionRtWeight = 0.5F;
+
+        /// <summary>
+        /// The weight of RT closeness against intensity when <see cref="AnchorPeakSelectionMode"/>
+        /// is Weighted, between 0 and 1.
+        /// </summary>
+        [IgnoreMember]
+        public float AnchorPeakSelectionRtWeight {
+            get => SerializedAnchorPeakSelectionRtWeight ?? DefaultAnchorPeakSelectionRtWeight;
+            set => SerializedAnchorPeakSelectionRtWeight = value;
+        }
+
+        /// <summary>
+        /// The stored form of <see cref="AnchorPeakSelectionRtWeight"/>; use that property instead.
+        /// Nullable for the reason <see cref="SerializedLocalSupportRtWindow"/> is.
+        /// </summary>
+        [Key(19)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public float? SerializedAnchorPeakSelectionRtWeight { get; set; } = DefaultAnchorPeakSelectionRtWeight;
+    }
+
+    /// <summary>
+    /// Where the anchors of the automatic alignment RT correction come from.
+    /// </summary>
+    public enum AutomaticRtCorrectionAnchorMode {
+        /// <summary>Anchors are chosen from the detected peaks; no anchor library is read.</summary>
+        Automatic = 0,
+        /// <summary>Only the anchor library's True rows are anchors.</summary>
+        UserOnly = 1,
+        /// <summary>
+        /// The library's True rows are anchors, its False rows are kept out of the automatic
+        /// selection, and automatic anchors fill the RT bins the True rows leave empty.
+        /// </summary>
+        Hybrid = 2,
     }
 
     [MessagePackObject]

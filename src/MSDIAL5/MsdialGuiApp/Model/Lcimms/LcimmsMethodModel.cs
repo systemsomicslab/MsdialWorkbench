@@ -333,7 +333,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     FileSuffix = "sdf",
                     Label = "MDL SDfile (*.sdf)"
                 },
-                new MsdialAnalysisMassBankRecordExportModel(Storage.Parameter.ProjectParam, _studyContext),
+                new MsdialAnalysisMassBankRecordExportModel(Storage.Parameter.ProjectParam, _studyContext, matchResultEvaluator, _broker),
             };
             return new AnalysisResultExportModel(AnalysisFileModelCollection, Storage.Parameter.ProjectParam.ProjectFolderPath, _broker, models);
         }
