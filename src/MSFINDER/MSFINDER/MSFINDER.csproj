@@ -148,7 +148,6 @@
     <ProjectReference Include="..\\MassSpectrogramMsfinder\MassSpectrogramMsfinder.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MathematicsStandard\MathematicsStandard.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
-    <ProjectReference Include="..\..\MSDIAL4\MolViewer\MolViewer.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
     <ProjectReference Include="..\MsfinderCommonStandard\MsfinderCommonStandard.csproj" />

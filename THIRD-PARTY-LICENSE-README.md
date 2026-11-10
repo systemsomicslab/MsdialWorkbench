@@ -587,6 +587,26 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 # Microsoft Public License (Ms-PL)
 =====================================================
+The following packages are redistributed with the .NET Framework builds of
+MS-DIAL 4. All of them are licensed under the Microsoft Public License (Ms-PL)
+shown below.
+
+Unity 2.1.505.2 (Microsoft patterns & practices, http://msdn.microsoft.com/unity)
+    Microsoft.Practices.Unity.dll, Microsoft.Practices.Unity.Configuration.dll
+    Copyright (c) 2011 Microsoft Corporation.
+Unity.Interception 2.1.505.2 (Microsoft patterns & practices)
+    Microsoft.Practices.Unity.Interception.dll, Microsoft.Practices.Unity.Interception.Configuration.dll
+    Copyright (c) 2011 Microsoft Corporation.
+EnterpriseLibrary.Common 5.0.505 (Microsoft Enterprise Library 5.0, http://msdn.microsoft.com/entlib)
+    Microsoft.Practices.EnterpriseLibrary.Common.dll
+    Copyright (c) Microsoft Corporation.
+EnterpriseLibrary.Validation 5.0.505 (Microsoft Enterprise Library 5.0, http://msdn.microsoft.com/entlib)
+    Microsoft.Practices.EnterpriseLibrary.Validation.dll
+    Copyright (c) Microsoft Corporation.
+CommonServiceLocator 1.0.0 (https://github.com/unitycontainer/commonservicelocator)
+    Microsoft.Practices.ServiceLocation.dll
+    Copyright (c) Microsoft 2008
+
 This license governs use of the accompanying software. If you use the software, you accept this license. If you do not accept the license, do not use the software.
 
 1. Definitions
