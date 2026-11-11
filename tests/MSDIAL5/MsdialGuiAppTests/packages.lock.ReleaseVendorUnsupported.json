@@ -92,16 +92,28 @@
       },
       "MessagePack": {
         "type": "Transitive",
-        "resolved": "1.7.3.7",
-        "contentHash": "gyJ8m987yI1O7h4P2DS7YjOfOWqJ+WcvX/jST+vYxCt004FYRm6cHfCK20fa1ehpQhOwRIezVennku+pFWwtiw==",
+        "resolved": "3.1.7",
+        "contentHash": "gXpifaxbhfBqh8bVToQn9j+OgCnhXWMbRCV7RQIbCVa9CNJG1fY6oHAYYl+ER3Tb9uUIHiQ5QbGiGwwFhoagbA==",
         "dependencies": {
-          "System.Threading.Tasks.Extensions": "4.3.0"
+          "MessagePack.Annotations": "3.1.7",
+          "MessagePackAnalyzer": "3.1.7",
+          "Microsoft.Bcl.AsyncInterfaces": "8.0.0",
+          "Microsoft.NET.StringTools": "17.11.4",
+          "System.Collections.Immutable": "8.0.0",
+          "System.Memory": "4.5.5",
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
+          "System.Threading.Tasks.Extensions": "4.5.4"
         }
+      },
+      "MessagePack.Annotations": {
+        "type": "Transitive",
+        "resolved": "3.1.7",
+        "contentHash": "IW1yX9viarFl/Dsio5G+pM90JkOSW4xhAiJcKxPPF5rzyp2/yCpieWju8G99QLEmaQeze2uQMEskUBA59YZmkw=="
       },
       "MessagePackAnalyzer": {
         "type": "Transitive",
-        "resolved": "1.6.0",
-        "contentHash": "gWH/And7eJFxDT/q/hWFyWjrCni6HJ01fgDB2NUhYaqrEZN2LtsaTwAkSPhd26AdAbeYkZg7kS/umlt2Wci2HQ=="
+        "resolved": "3.1.7",
+        "contentHash": "ZF+OOJTRS7Ogzb4gG36hPKVQk3kEbp6kkUcdRjhddDq/uSGcV4BKIdYiyJipExXyE/zsqYb0ic215O9kI+fjPA=="
       },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
@@ -113,8 +125,8 @@
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "W8DPQjkMScOMTtJbPwmPyj9c3zYSFGawDW3jwlBOOsnY+EzZFLgNQ/UMkK35JmkNOVPdCyPr2Tw7Vv9N+KA3ZQ==",
+        "resolved": "8.0.0",
+        "contentHash": "3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw==",
         "dependencies": {
           "System.Threading.Tasks.Extensions": "4.5.4"
         }
@@ -128,6 +140,15 @@
         "type": "Transitive",
         "resolved": "4.5.0",
         "contentHash": "kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ=="
+      },
+      "Microsoft.NET.StringTools": {
+        "type": "Transitive",
+        "resolved": "17.11.4",
+        "contentHash": "mudqUHhNpeqIdJoUx2YDWZO/I9uEDYVowan89R6wsomfnUJQk6HteoQTlNjZDixhT2B4IXMkMtgZtoceIjLRmA==",
+        "dependencies": {
+          "System.Memory": "4.5.5",
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
       },
       "Microsoft.Testing.Extensions.Telemetry": {
         "type": "Transitive",
@@ -251,8 +272,12 @@
       },
       "System.Collections.Immutable": {
         "type": "Transitive",
-        "resolved": "1.5.0",
-        "contentHash": "EXKiDFsChZW0RjrZ4FYHu9aW6+P4MCgEDCklsVseRfhoO0F+dXeMSsMRAlVXIo06kGJ/zv+2w1a2uc2+kxxSaQ=="
+        "resolved": "8.0.0",
+        "contentHash": "AurL6Y5BA1WotzlEvVaIDpqzpIPvYnnldxru8oXJU2yFxFUy3+pNXjXd1ymO+RA0rq0+590Q8gaz2l3Sr7fmqg==",
+        "dependencies": {
+          "System.Memory": "4.5.5",
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
       },
       "System.ComponentModel.Annotations": {
         "type": "Transitive",
@@ -339,8 +364,8 @@
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "ZD9TMpsmYJLrxbbmdvhwt9YEgG5WntEnZ/d1eH8JBX9LBp+Ju8BSBhUGbZMNVHHomWo2KVImJhTDl2hIgw/6MA=="
+        "resolved": "6.0.0",
+        "contentHash": "/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg=="
       },
       "System.Runtime.Serialization.Primitives": {
         "type": "Transitive",
@@ -430,8 +455,8 @@
         "type": "Project",
         "dependencies": {
           "Accord.Statistics": "[3.8.0, )",
-          "MessagePack": "[1.7.3.7, )",
-          "MessagePackAnalyzer": "[1.6.0, )",
+          "MessagePack": "[3.1.7, )",
+          "MessagePackAnalyzer": "[3.1.7, )",
           "NCDK": "[1.5.6, )",
           "Newtonsoft.Json": "[13.0.3, )",
           "System.Buffers": "[4.5.1, )",
@@ -463,7 +488,7 @@
           "ChartDrawing": "[1.0.0, )",
           "Common": "[1.0.0, )",
           "CommonMVVM": "[1.0.0, )",
-          "MessagePack": "[1.7.3.7, )",
+          "MessagePack": "[3.1.7, )",
           "Microsoft.Xaml.Behaviors.Wpf": "[1.1.39, )",
           "MsdialIntegrate": "[1.0.0, )",
           "NCDK.Display": "[1.5.6, )",

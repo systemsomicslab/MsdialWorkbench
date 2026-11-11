@@ -22,7 +22,7 @@ namespace CompMs.MsdialCore.Parameter.Tests
 
             Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionParameter.DefaultLocalSupportRtWindow, loaded.LocalSupportRtWindow);
             Assert.AreEqual(1.5F, loaded.LocalSupportRtWindow);
-            Assert.IsNull(loaded.SerializedLocalSupportRtWindow, "the absent key is told apart from a stored value");
+            Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionParameter.DefaultLocalSupportRtWindow, loaded.SerializedLocalSupportRtWindow, "MessagePack 3 leaves the initialiser in place for an absent key");
             Assert.IsTrue(loaded.Execute);
             Assert.AreEqual(4.5F, loaded.OutlierMadThreshold);
             Assert.AreEqual(7, loaded.ReferenceFileId);
@@ -70,7 +70,7 @@ namespace CompMs.MsdialCore.Parameter.Tests
             Assert.AreEqual(string.Empty, loaded.AnchorLibraryFilePath, "an absent path is empty, not null");
             Assert.AreEqual(RetentionTimeCorrectionPeakSelectionMode.HighestIntensity, loaded.AnchorPeakSelectionMode);
             Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionParameter.DefaultAnchorPeakSelectionRtWeight, loaded.AnchorPeakSelectionRtWeight);
-            Assert.IsNull(loaded.SerializedAnchorPeakSelectionRtWeight, "the absent key is told apart from a stored value");
+            Assert.AreEqual(AutomaticAlignmentRetentionTimeCorrectionParameter.DefaultAnchorPeakSelectionRtWeight, loaded.SerializedAnchorPeakSelectionRtWeight, "MessagePack 3 leaves the initialiser in place for an absent key");
             Assert.IsTrue(loaded.Execute);
             Assert.AreEqual(7, loaded.ReferenceFileId);
             Assert.AreEqual(2.5F, loaded.LocalSupportRtWindow);
