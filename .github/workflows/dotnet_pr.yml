@@ -4,8 +4,11 @@
 name: PR Check
 
 on:
+  # No base-branch filter: stacked pull requests (based on another pull request's branch)
+  # are checked on every push too, so their head is already tested when GitHub retargets
+  # them to master after the pull request below merges. A retarget alone does not fire
+  # pull_request with the default types.
   pull_request:
-    branches: [ "master" ]
     paths-ignore:
       - .gitignore
       - CODE_OF_CONDUCT.md
