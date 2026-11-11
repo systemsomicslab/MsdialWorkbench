@@ -373,7 +373,7 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
-    public void ReadCommonParameter_ReadsAutomaticAlignmentRtCorrectionSettings()
+    public void ReadAutomaticRtCorrectionParameter_ReadsAutomaticAlignmentRtCorrectionSettings()
     {
         var parameter = new MsdialLcmsParameter();
         var settings = new[] {
@@ -396,7 +396,7 @@ public sealed class ConfigParserTests
         };
 
         foreach (var (key, value) in settings) {
-            Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsApplied, key);
+            Assert.IsTrue(ConfigParser.ReadAutomaticRtCorrectionParameter(parameter, key, value).IsApplied, key);
         }
 
         var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
@@ -424,17 +424,17 @@ public sealed class ConfigParserTests
     [DataRow("user_only", AutomaticRtCorrectionAnchorMode.UserOnly)]
     [DataRow("User only", AutomaticRtCorrectionAnchorMode.UserOnly)]
     [DataRow("hybrid", AutomaticRtCorrectionAnchorMode.Hybrid)]
-    public void ReadCommonParameter_ReadsTheAnchorModeOfTheAutomaticRtCorrection(string value, AutomaticRtCorrectionAnchorMode expected)
+    public void ReadAutomaticRtCorrectionParameter_ReadsTheAnchorModeOfTheAutomaticRtCorrection(string value, AutomaticRtCorrectionAnchorMode expected)
     {
         var parameter = new MsdialLcmsParameter();
 
-        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, "automatic rt correction anchor mode", value).IsApplied);
+        Assert.IsTrue(ConfigParser.ReadAutomaticRtCorrectionParameter(parameter, "automatic rt correction anchor mode", value).IsApplied);
 
         Assert.AreEqual(expected, parameter.AlignmentBaseParam.AutomaticRtCorrection.AnchorMode);
     }
 
     [TestMethod]
-    public void ReadCommonParameter_ReadsTheAnchorLibraryAndPeakSelectionOfTheAutomaticRtCorrection()
+    public void ReadAutomaticRtCorrectionParameter_ReadsTheAnchorLibraryAndPeakSelectionOfTheAutomaticRtCorrection()
     {
         var parameter = new MsdialLcmsParameter();
         var settings = new[] {
@@ -444,7 +444,7 @@ public sealed class ConfigParserTests
         };
 
         foreach (var (key, value) in settings) {
-            Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsApplied, key);
+            Assert.IsTrue(ConfigParser.ReadAutomaticRtCorrectionParameter(parameter, key, value).IsApplied, key);
         }
 
         var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
@@ -461,12 +461,12 @@ public sealed class ConfigParserTests
     [DataRow("automatic rt correction anchor peak selection rt weight", "1.5")]
     [DataRow("automatic rt correction anchor peak selection rt weight", "-0.1")]
     [DataRow("automatic rt correction anchor peak selection rt weight", "half")]
-    public void ReadCommonParameter_RefusesAnAnchorSettingItCannotUse(string key, string value)
+    public void ReadAutomaticRtCorrectionParameter_RefusesAnAnchorSettingItCannotUse(string key, string value)
     {
         var parameter = new MsdialLcmsParameter();
         var defaults = new AutomaticAlignmentRetentionTimeCorrectionParameter();
 
-        Assert.IsTrue(ConfigParser.ReadCommonParameter(parameter, key, value).IsUnusableValue);
+        Assert.IsTrue(ConfigParser.ReadAutomaticRtCorrectionParameter(parameter, key, value).IsUnusableValue);
 
         var actual = parameter.AlignmentBaseParam.AutomaticRtCorrection;
         Assert.AreEqual(defaults.AnchorMode, actual.AnchorMode);

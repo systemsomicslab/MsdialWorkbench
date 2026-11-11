@@ -19,6 +19,45 @@ namespace CompMs.MsdialCore.Export.Tests
     [TestClass]
     public class MztabFormatExportTests
     {
+        /// <summary>
+        /// An alignment the automatic RT correction moved onto a reference file's axis says so in one more
+        /// custom[n] metadata parameter, and an export without the note is unchanged.
+        /// </summary>
+        [TestMethod()]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2.dbs", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.arf2", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06_PeakProperties.arf", @"Resources\Export")]
+        [DeploymentItem(@"Resources\Export\AlignmentResult_2025_07_31_12_33_06.dcl", @"Resources\Export")]
+        public async Task TheRetentionTimeAxisIsNamedInOneMoreCustomParameter() {
+            var (storage, container, msdecs) = await LoadExportFixtureAsync();
+            string[] Export(string note) {
+                var exporter = new MztabFormatExporter(storage.DataBases) { RetentionTimeAxisNote = note };
+                using var stream = new MemoryStream();
+                exporter.MztabFormatExporterCore(
+                    stream,
+                    [.. container.AlignmentSpotProperties],
+                    msdecs,
+                    storage.AnalysisFiles,
+                    new StubMetadataAccessor(storage.DataBaseMapper, storage.Parameter),
+                    new LegacyQuantValueAccessor("Height", storage.Parameter),
+                    [StatsValue.Average, StatsValue.Stdev,],
+                    "mztab_test");
+                return System.Text.Encoding.ASCII.GetString(stream.ToArray()).Split('\n').Select(line => line.TrimEnd('\r')).ToArray();
+            }
+
+            var without = Export(null);
+            var with = Export("RT axis: aligned RTs are on the RT axis of reference file QC1");
+
+            var customs = without.Count(line => line.StartsWith("MTD\tcustom["));
+            var added = with.Except(without).ToArray();
+            Assert.AreEqual(1, added.Length, string.Join("\n", added));
+            Assert.AreEqual($"MTD\tcustom[{customs + 1}]\t[,, MS-DIAL retention time axis, RT axis: aligned RTs are on the RT axis of reference file QC1]", added[0]);
+            CollectionAssert.AreEqual(without, with.Where(line => line != added[0]).ToArray(), "nothing else changes");
+            Assert.IsFalse(without.Any(line => line.Contains("retention time axis")));
+        }
+
         [TestMethod()]
         [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11.mddata", @"Resources\Export")]
         [DeploymentItem(@"Resources\Export\Dataset_2025_07_31_12_31_11_Loaded.msp2", @"Resources\Export")]

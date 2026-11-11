@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -23,10 +24,27 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
         private readonly AlignmentFileBeanModel _alignmentFile;
         private readonly List<FileChromatogram> _fileChromatograms;
+        private readonly AlignmentRtAxis _rtAxis;
+        private readonly object _spotInfoLock = new object();
+        private (int Id, ChromatogramSpotInfo Info)? _lastSpotInfo;
 
-        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, AlignmentFileBeanModel alignmentFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter, bool useOriginalRtPeakBounds = false) {
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, AlignmentFileBeanModel alignmentFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter, bool useOriginalRtPeakBounds = false)
+            : this(chromatogramSpotSerializer, alignmentFile, files, projectParameter, useOriginalRtPeakBounds, AlignmentRtAxis.NotCorrected) {
+        }
+
+        /// <param name="rtAxis">
+        /// The RT axes of the alignment result. When its aligned RTs are on another axis than the
+        /// chromatograms (the automatic alignment RT correction ran), each file's peak area is taken at
+        /// the measured-axis bounds: through the saved map when there is one, else at the stored bounds.
+        /// </param>
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, AlignmentFileBeanModel alignmentFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter, AlignmentRtAxis rtAxis)
+            : this(chromatogramSpotSerializer, alignmentFile, files, projectParameter, rtAxis?.IsCorrected ?? false, rtAxis ?? AlignmentRtAxis.NotCorrected) {
+        }
+
+        private AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, AlignmentFileBeanModel alignmentFile, AnalysisFileBeanModelCollection files, FilePropertiesModel projectParameter, bool useOriginalRtPeakBounds, AlignmentRtAxis rtAxis) {
             _chromatogramSpotSerializer = chromatogramSpotSerializer ?? throw new ArgumentNullException(nameof(chromatogramSpotSerializer));
             _alignmentFile = alignmentFile ?? throw new ArgumentNullException(nameof(alignmentFile));
+            _rtAxis = rtAxis;
             var classToProp = projectParameter.ClassProperties.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
                 .Select(_ => projectParameter.ClassProperties.ToDictionary(prop => prop.Name, prop => prop)).ToReactiveProperty().AddTo(Disposables);
             _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToProp, useOriginalRtPeakBounds)).ToList();
@@ -35,12 +53,56 @@ namespace CompMs.App.Msdial.Model.Loader
             }
         }
 
+        /// <summary>The RT axes of the alignment result this loader reads.</summary>
+        public AlignmentRtAxis RtAxis => _rtAxis;
+
+        private ChromatogramSpotInfo LoadSpotInfo(AlignmentSpotPropertyModel target) {
+            lock (_spotInfoLock) {
+                if (_lastSpotInfo is { } last && last.Id == target.MasterAlignmentID) {
+                    return last.Info;
+                }
+            }
+            var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_alignmentFile.EicFilePath, target.MasterAlignmentID);
+            lock (_spotInfoLock) {
+                _lastSpotInfo = (target.MasterAlignmentID, spotinfo);
+            }
+            return spotinfo;
+        }
+
+        /// <summary>
+        /// How each of the spot's aligned peaks moves between its file's measured RT axis and the
+        /// aligned RT axis; for a result without the correction, the identity for every peak.
+        /// </summary>
+        public IObservable<AlignedSpotRtAxes> LoadRtAxesAsObservable(AlignmentSpotPropertyModel? target) {
+            if (target is null || !_rtAxis.IsCorrected) {
+                return Observable.Return(AlignedSpotRtAxes.NotCorrected);
+            }
+            if (_rtAxis.Correction is not null) {
+                // The saved map does not depend on the peaks.
+                return Observable.Return(_rtAxis.ForSpot(null, target.AlignedPeakPropertiesModelProperty.Value?.Select(peak => (
+                    peak.FileID, double.NaN, double.NaN, double.NaN, false)) ?? Enumerable.Empty<(int, double, double, double, bool)>()));
+            }
+            var spotinfo = LoadSpotInfo(target);
+            // The peaks' bounds as they are when the spot is loaded: the bounds the alignment wrote,
+            // unless a person has edited the peak, which ForSpot then refuses.
+            return target.AlignedPeakPropertiesModelProperty
+                .Where(peaks => peaks is not null)
+                .Take(1)
+                .Select(peaks => _rtAxis.ForSpot(spotinfo.PeakInfos, peaks!.Select(peak => (
+                    peak.FileID,
+                    peak.ChromXsLeft?.RT?.Value ?? double.NaN,
+                    peak.ChromXsTop?.RT?.Value ?? double.NaN,
+                    peak.ChromXsRight?.RT?.Value ?? double.NaN,
+                    peak.IsManuallyModifiedForQuant))))
+                .Replay(1).RefCount();
+        }
+
         public IObservable<List<PeakChromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
             if (target != null) {
-                var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_alignmentFile.EicFilePath, target.MasterAlignmentID);
+                var spotinfo = LoadSpotInfo(target);
                 var ps = Enumerable.Range(0, _fileChromatograms.Count)
                     .Select(i => target.AlignedPeakPropertiesModelProperty.Select(peaks => peaks?[i]));
-                return _fileChromatograms.Zip(ps, spotinfo.PeakInfos, (fileChromatogram, p, info) => fileChromatogram.GetChromatogram(target, p, info))
+                return _fileChromatograms.Zip(ps, spotinfo.PeakInfos, (fileChromatogram, p, info) => fileChromatogram.GetChromatogram(target, p, info, _rtAxis))
                     .CombineLatest()
                     .Throttle(TimeSpan.FromSeconds(.05d))
                     .Select(chromatograms => chromatograms.OfType<PeakChromatogram>().ToList())
@@ -79,10 +141,17 @@ namespace CompMs.App.Msdial.Model.Loader
                 _useOriginalRtPeakBounds = useOriginalRtPeakBounds;
             }
 
-            public IObservable<PeakChromatogram?> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel?> _peak, ChromatogramPeakInfo _peakInfo) {
+            public IObservable<PeakChromatogram?> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel?> _peak, ChromatogramPeakInfo _peakInfo, AlignmentRtAxis rtAxis) {
                 var chromatogram = new Chromatogram(_peakInfo.Chromatogram, _spot.ChromXType, _spot.ChromXUnit);
                 // Automatic alignment correction keeps the EIC on raw RT; aligned peak bounds are on another axis.
-                var chromatogramArea = _useOriginalRtPeakBounds
+                // With the alignment's saved map they are moved onto the EIC's axis, so a peak edited
+                // after alignment is shown where it now is; without it the stored bounds are shown.
+                var chromatogramArea = rtAxis.Correction is { } correction
+                    ? _peak.DefaultIfNull(p => {
+                        var map = AlignedPeakRtAxisMap.FromCorrection(correction, _peakInfo.FileID);
+                        return SelectPeakArea(chromatogram, _peakInfo, map.ToOriginal(p.ChromXsLeft.Value), map.ToOriginal(p.ChromXsRight.Value), false);
+                    })
+                    : _useOriginalRtPeakBounds
                     ? Observable.Return(SelectPeakArea(chromatogram, _peakInfo, 0d, 0d, true))
                     : _peak.DefaultIfNull(p => SelectPeakArea(chromatogram, _peakInfo, p.ChromXsLeft.Value, p.ChromXsRight.Value, false));
 

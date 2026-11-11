@@ -46,8 +46,8 @@
       },
       "CommonServiceLocator": {
         "type": "Transitive",
-        "resolved": "2.0.5",
-        "contentHash": "Md2q9f6hAuUAm6IWTybQbYvxhDAs2dqmsudVDghpg0Q+C0M2KkmiTDjeGx1PsYhnZPvp+hy1Cx99v0VPW9W6/g=="
+        "resolved": "1.0.0",
+        "contentHash": "RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ=="
       },
       "EnterpriseLibrary.Common": {
         "type": "Transitive",
@@ -95,34 +95,12 @@
         "resolved": "3.1.7",
         "contentHash": "ZF+OOJTRS7Ogzb4gG36hPKVQk3kEbp6kkUcdRjhddDq/uSGcV4BKIdYiyJipExXyE/zsqYb0ic215O9kI+fjPA=="
       },
-      "Microsoft.Bcl": {
-        "type": "Transitive",
-        "resolved": "1.1.10",
-        "contentHash": "+tTqoh/M1pyL8El3qLy30EcwnAtyvFoDZJtdG9Cbg/WdFbh4N8kyrq198XHuEL7lnJbeD0DRO8jcX5IIOh05cQ==",
-        "dependencies": {
-          "Microsoft.Bcl.Build": "1.0.14"
-        }
-      },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
         "resolved": "8.0.0",
         "contentHash": "3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw==",
         "dependencies": {
           "System.Threading.Tasks.Extensions": "4.5.4"
-        }
-      },
-      "Microsoft.Bcl.Build": {
-        "type": "Transitive",
-        "resolved": "1.0.14",
-        "contentHash": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA=="
-      },
-      "Microsoft.Net.Http": {
-        "type": "Transitive",
-        "resolved": "2.2.29",
-        "contentHash": "fc4CPEewJ30Xgal+fSq1lYIBt582A7eKlAL7O4HXiYAiTp2VTnA4osSvk7T2n8aS4xTCPVJusQk3yKLT0XSpkg==",
-        "dependencies": {
-          "Microsoft.Bcl": "1.1.10",
-          "Microsoft.Bcl.Build": "1.0.14"
         }
       },
       "Microsoft.NET.StringTools": {
@@ -143,23 +121,6 @@
         "type": "Transitive",
         "resolved": "1.50.5147",
         "contentHash": "vr5KBIqcXu2hqZ43UTwPR+jqHgMrT5tsPtJvEF+mORKoBNMh3bRWgAwic0U1sT2IVb4PR5m0GyQxnmCz8jBHWg=="
-      },
-      "Prism.Core": {
-        "type": "Transitive",
-        "resolved": "7.2.0.1422",
-        "contentHash": "U6tZ4Iq+ELyK5PedRC6E20caZXXTmTYiw5evpv0M3WcfKgih9H5G5LDBlDl+65eC5Vb4lnOaUCAtckdEl2MRxA==",
-        "dependencies": {
-          "System.ValueTuple": "4.5.0"
-        }
-      },
-      "Prism.Wpf": {
-        "type": "Transitive",
-        "resolved": "7.2.0.1422",
-        "contentHash": "njl3uLjqDXeWCbAItgDkZsWIqVnRyhknoMMXZSQdO9jKoIgb+qB/X47YT5KchCNLxLtDq3saQMf5mSZ/LQLqiQ==",
-        "dependencies": {
-          "CommonServiceLocator": "2.0.4",
-          "Prism.Core": "7.2.0.1422"
-        }
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
@@ -443,15 +404,6 @@
           "System.ValueTuple": "[4.5.0, )"
         }
       },
-      "molviewer": {
-        "type": "Project",
-        "dependencies": {
-          "CommonServiceLocator": "[2.0.5, )",
-          "NCDK": "[1.5.6, )",
-          "NCDK.Display": "[1.5.6, )",
-          "Prism.Wpf": "[7.2.0.1422, )"
-        }
-      },
       "monaexport": {
         "type": "Project",
         "dependencies": {
@@ -466,7 +418,6 @@
         "dependencies": {
           "EnterpriseLibrary.Common": "[5.0.505, )",
           "EnterpriseLibrary.Validation": "[5.0.505, )",
-          "Microsoft.Net.Http": "[2.2.29, )",
           "Newtonsoft.Json": "[13.0.3, )",
           "Unity": "[2.1.505.2, )",
           "Unity.Interception": "[2.1.505.2, )"
@@ -645,8 +596,8 @@
       },
       "CommonServiceLocator": {
         "type": "Transitive",
-        "resolved": "2.0.5",
-        "contentHash": "Md2q9f6hAuUAm6IWTybQbYvxhDAs2dqmsudVDghpg0Q+C0M2KkmiTDjeGx1PsYhnZPvp+hy1Cx99v0VPW9W6/g=="
+        "resolved": "1.0.0",
+        "contentHash": "RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ=="
       },
       "EnterpriseLibrary.Common": {
         "type": "Transitive",
@@ -694,34 +645,12 @@
         "resolved": "3.1.7",
         "contentHash": "ZF+OOJTRS7Ogzb4gG36hPKVQk3kEbp6kkUcdRjhddDq/uSGcV4BKIdYiyJipExXyE/zsqYb0ic215O9kI+fjPA=="
       },
-      "Microsoft.Bcl": {
-        "type": "Transitive",
-        "resolved": "1.1.10",
-        "contentHash": "+tTqoh/M1pyL8El3qLy30EcwnAtyvFoDZJtdG9Cbg/WdFbh4N8kyrq198XHuEL7lnJbeD0DRO8jcX5IIOh05cQ==",
-        "dependencies": {
-          "Microsoft.Bcl.Build": "1.0.14"
-        }
-      },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
         "resolved": "8.0.0",
         "contentHash": "3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw==",
         "dependencies": {
           "System.Threading.Tasks.Extensions": "4.5.4"
-        }
-      },
-      "Microsoft.Bcl.Build": {
-        "type": "Transitive",
-        "resolved": "1.0.14",
-        "contentHash": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA=="
-      },
-      "Microsoft.Net.Http": {
-        "type": "Transitive",
-        "resolved": "2.2.29",
-        "contentHash": "fc4CPEewJ30Xgal+fSq1lYIBt582A7eKlAL7O4HXiYAiTp2VTnA4osSvk7T2n8aS4xTCPVJusQk3yKLT0XSpkg==",
-        "dependencies": {
-          "Microsoft.Bcl": "1.1.10",
-          "Microsoft.Bcl.Build": "1.0.14"
         }
       },
       "Microsoft.NET.StringTools": {
@@ -742,23 +671,6 @@
         "type": "Transitive",
         "resolved": "1.50.5147",
         "contentHash": "vr5KBIqcXu2hqZ43UTwPR+jqHgMrT5tsPtJvEF+mORKoBNMh3bRWgAwic0U1sT2IVb4PR5m0GyQxnmCz8jBHWg=="
-      },
-      "Prism.Core": {
-        "type": "Transitive",
-        "resolved": "7.2.0.1422",
-        "contentHash": "U6tZ4Iq+ELyK5PedRC6E20caZXXTmTYiw5evpv0M3WcfKgih9H5G5LDBlDl+65eC5Vb4lnOaUCAtckdEl2MRxA==",
-        "dependencies": {
-          "System.ValueTuple": "4.5.0"
-        }
-      },
-      "Prism.Wpf": {
-        "type": "Transitive",
-        "resolved": "7.2.0.1422",
-        "contentHash": "njl3uLjqDXeWCbAItgDkZsWIqVnRyhknoMMXZSQdO9jKoIgb+qB/X47YT5KchCNLxLtDq3saQMf5mSZ/LQLqiQ==",
-        "dependencies": {
-          "CommonServiceLocator": "2.0.4",
-          "Prism.Core": "7.2.0.1422"
-        }
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
@@ -1053,15 +965,6 @@
           "System.ValueTuple": "[4.5.0, )"
         }
       },
-      "molviewer": {
-        "type": "Project",
-        "dependencies": {
-          "CommonServiceLocator": "[2.0.5, )",
-          "NCDK": "[1.5.6, )",
-          "NCDK.Display": "[1.5.6, )",
-          "Prism.Wpf": "[7.2.0.1422, )"
-        }
-      },
       "monaexport": {
         "type": "Project",
         "dependencies": {
@@ -1076,7 +979,6 @@
         "dependencies": {
           "EnterpriseLibrary.Common": "[5.0.505, )",
           "EnterpriseLibrary.Validation": "[5.0.505, )",
-          "Microsoft.Net.Http": "[2.2.29, )",
           "Newtonsoft.Json": "[13.0.3, )",
           "Unity": "[2.1.505.2, )",
           "Unity.Interception": "[2.1.505.2, )"
@@ -1255,8 +1157,8 @@
       },
       "CommonServiceLocator": {
         "type": "Transitive",
-        "resolved": "2.0.5",
-        "contentHash": "Md2q9f6hAuUAm6IWTybQbYvxhDAs2dqmsudVDghpg0Q+C0M2KkmiTDjeGx1PsYhnZPvp+hy1Cx99v0VPW9W6/g=="
+        "resolved": "1.0.0",
+        "contentHash": "RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ=="
       },
       "EnterpriseLibrary.Common": {
         "type": "Transitive",
@@ -1304,34 +1206,12 @@
         "resolved": "3.1.7",
         "contentHash": "ZF+OOJTRS7Ogzb4gG36hPKVQk3kEbp6kkUcdRjhddDq/uSGcV4BKIdYiyJipExXyE/zsqYb0ic215O9kI+fjPA=="
       },
-      "Microsoft.Bcl": {
-        "type": "Transitive",
-        "resolved": "1.1.10",
-        "contentHash": "+tTqoh/M1pyL8El3qLy30EcwnAtyvFoDZJtdG9Cbg/WdFbh4N8kyrq198XHuEL7lnJbeD0DRO8jcX5IIOh05cQ==",
-        "dependencies": {
-          "Microsoft.Bcl.Build": "1.0.14"
-        }
-      },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
         "resolved": "8.0.0",
         "contentHash": "3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw==",
         "dependencies": {
           "System.Threading.Tasks.Extensions": "4.5.4"
-        }
-      },
-      "Microsoft.Bcl.Build": {
-        "type": "Transitive",
-        "resolved": "1.0.14",
-        "contentHash": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA=="
-      },
-      "Microsoft.Net.Http": {
-        "type": "Transitive",
-        "resolved": "2.2.29",
-        "contentHash": "fc4CPEewJ30Xgal+fSq1lYIBt582A7eKlAL7O4HXiYAiTp2VTnA4osSvk7T2n8aS4xTCPVJusQk3yKLT0XSpkg==",
-        "dependencies": {
-          "Microsoft.Bcl": "1.1.10",
-          "Microsoft.Bcl.Build": "1.0.14"
         }
       },
       "Microsoft.NET.StringTools": {
@@ -1352,23 +1232,6 @@
         "type": "Transitive",
         "resolved": "1.50.5147",
         "contentHash": "vr5KBIqcXu2hqZ43UTwPR+jqHgMrT5tsPtJvEF+mORKoBNMh3bRWgAwic0U1sT2IVb4PR5m0GyQxnmCz8jBHWg=="
-      },
-      "Prism.Core": {
-        "type": "Transitive",
-        "resolved": "7.2.0.1422",
-        "contentHash": "U6tZ4Iq+ELyK5PedRC6E20caZXXTmTYiw5evpv0M3WcfKgih9H5G5LDBlDl+65eC5Vb4lnOaUCAtckdEl2MRxA==",
-        "dependencies": {
-          "System.ValueTuple": "4.5.0"
-        }
-      },
-      "Prism.Wpf": {
-        "type": "Transitive",
-        "resolved": "7.2.0.1422",
-        "contentHash": "njl3uLjqDXeWCbAItgDkZsWIqVnRyhknoMMXZSQdO9jKoIgb+qB/X47YT5KchCNLxLtDq3saQMf5mSZ/LQLqiQ==",
-        "dependencies": {
-          "CommonServiceLocator": "2.0.4",
-          "Prism.Core": "7.2.0.1422"
-        }
       },
       "RawDataHandler-Vendor-UnSupported": {
         "type": "Transitive",
@@ -1663,15 +1526,6 @@
           "System.ValueTuple": "[4.5.0, )"
         }
       },
-      "molviewer": {
-        "type": "Project",
-        "dependencies": {
-          "CommonServiceLocator": "[2.0.5, )",
-          "NCDK": "[1.5.6, )",
-          "NCDK.Display": "[1.5.6, )",
-          "Prism.Wpf": "[7.2.0.1422, )"
-        }
-      },
       "monaexport": {
         "type": "Project",
         "dependencies": {
@@ -1686,7 +1540,6 @@
         "dependencies": {
           "EnterpriseLibrary.Common": "[5.0.505, )",
           "EnterpriseLibrary.Validation": "[5.0.505, )",
-          "Microsoft.Net.Http": "[2.2.29, )",
           "Newtonsoft.Json": "[13.0.3, )",
           "Unity": "[2.1.505.2, )",
           "Unity.Interception": "[2.1.505.2, )"

@@ -444,7 +444,11 @@ namespace CompMs.App.Msdial.View.Core
                 Text = "Checking for updates.."
             };
             window.Show();
-            VersionUpdateNotificationService.CheckForUpdates();
+            VersionUpdateNotificationService.CheckForUpdates(latestVersion => {
+                window.Close();
+                Mouse.OverrideCursor = null;
+                return UpdateNotificationWindow.Ask(this, latestVersion);
+            });
             window.Close();
 
             Mouse.OverrideCursor = null;

@@ -208,9 +208,13 @@
       <Project>{48af1683-f885-4cfd-9171-5d0bfd023049}</Project>
       <Name>MolecularFormulaFinderStandard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MolViewer\MolViewer.csproj">
-      <Project>{6d6e44ec-a467-461f-af6b-83a9d575ef76}</Project>
-      <Name>MolViewer</Name>
+    <ProjectReference Include="..\..\Common\NCDK\NCDK.csproj">
+      <Project>{7976aefc-8382-47d3-ba50-55fa18babadf}</Project>
+      <Name>NCDK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\NCDK.Display\NCDK.Display.csproj">
+      <Project>{20e728f8-c648-4f96-ae56-b7a7a185d941}</Project>
+      <Name>NCDK.Display</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonaExport\MonaExport.csproj">
       <Project>{3232ef20-fadb-47c5-958f-4eab0eee2f91}</Project>

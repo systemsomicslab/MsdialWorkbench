@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 
 namespace CompMs.App.MsdialConsole.Parser
@@ -35,6 +36,19 @@ namespace CompMs.App.MsdialConsole.Parser
         /// a person answers N.
         /// </remarks>
         internal static List<AnalysisFileBean>? ReadInput(string input, TextReader answers, TextWriter output, bool inputRedirected, bool outputRedirected) {
+            return ReadInput(input, answers, output, inputRedirected, outputRedirected, null);
+        }
+
+        /// <summary>
+        /// As <see cref="ReadInput(string)"/>, and adds to <paramref name="orderProblems"/> each
+        /// analysis CSV row whose analytical_order or batch_order could not be read and was
+        /// replaced (see <see cref="ReadCsvContents(string, List{string})"/>).
+        /// </summary>
+        public static List<AnalysisFileBean>? ReadInput(string input, List<string>? orderProblems) {
+            return ReadInput(input, Console.In, Console.Out, Console.IsInputRedirected, Console.IsOutputRedirected, orderProblems);
+        }
+
+        internal static List<AnalysisFileBean>? ReadInput(string input, TextReader answers, TextWriter output, bool inputRedirected, bool outputRedirected, List<string>? orderProblems) {
 
             var analysisFiles = new List<AnalysisFileBean>();
 
@@ -46,7 +60,7 @@ namespace CompMs.App.MsdialConsole.Parser
             else if (isCsv(input))
             {
                 Debug.WriteLine(String.Format("{0} is CSV", input));
-                analysisFiles = AnalysisFilesParser.ReadCsvContents(input);
+                analysisFiles = AnalysisFilesParser.ReadCsvContents(input, orderProblems);
             }
             else {
                 Debug.WriteLine(String.Format("{0} is file", input));
@@ -110,7 +124,40 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
-        public static List<AnalysisFileBean> ReadCsvContents(string filepath)
+        /// <summary>
+        /// The stamp a run's per-file intermediates (.dcl, .pai, .rtc) and its alignment result are
+        /// named with: the minute the run read its files, as yyyyMMddHHmm.
+        /// </summary>
+        /// <remarks>
+        /// The stamp used to be the year, month, day, hour and minute run together without zero
+        /// padding, so different minutes gave one stamp: 2026-11-01 01:15, 2026-11-01 11:05 and
+        /// 2026-11-11 01:05 were all "2026111115". A later run then found an earlier run's .rtc
+        /// under its own name and read its legacy-corrected RTs. Zero padded, two runs share a
+        /// stamp only within one minute. It is the GUI's stamp (DatasetFileSettingModel), and
+        /// still twelve digits starting "20", which MS-DIAL Interactive's run_finalisation reads.
+        /// </remarks>
+        public static string RunStamp(DateTime time) {
+            return time.ToString("yyyyMMddHHmm", CultureInfo.InvariantCulture);
+        }
+
+        public static List<AnalysisFileBean> ReadCsvContents(string filepath) {
+            return ReadCsvContents(filepath, null);
+        }
+
+        /// <summary>
+        /// Reads the analysis files an analysis CSV lists.
+        /// </summary>
+        /// <remarks>
+        /// An analytical_order that is not a whole number from 1 up (2.5, 0, an empty cell) is
+        /// replaced by the row position, as a missing column is, and a batch_order that is not a
+        /// whole number by 1. Both used to happen without a word, and the automatic RT
+        /// correction interpolates a Blank's model from its neighbours by these numbers: a Blank
+        /// given 2.5 to sit between orders 2 and 3, fourth in the list, became order 4 and copied
+        /// the file after it. Each replacement is now said on the console and added to
+        /// <paramref name="orderProblems"/>, so that LcmsProcess can refuse a run that would
+        /// interpolate Blanks on it. A whole number written as a real number ("3.0") is read.
+        /// </remarks>
+        public static List<AnalysisFileBean> ReadCsvContents(string filepath, List<string>? orderProblems)
         {
             var csvData = new List<string[]>();
             // read csv file
@@ -179,7 +226,7 @@ namespace CompMs.App.MsdialConsole.Parser
             var analysisFiles = new List<AnalysisFileBean>();
             int counter = 0;
             var dt = DateTime.Now;
-            var dtString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+            var dtString = RunStamp(dt);
 
             foreach (var line in csvData)
             {
@@ -208,14 +255,22 @@ namespace CompMs.App.MsdialConsole.Parser
                     afAcqType = AcquisitionType.DDA;
 
                 int afBatch;
-                var afBatchRes = int.TryParse(line[5], out afBatch);
-                if (!afBatchRes)
+                if (line[5] is null) {
                     afBatch = 1;
+                }
+                else if (!TryReadWholeNumber(line[5], out afBatch)) {
+                    afBatch = 1;
+                    Replaced($"batch_order '{line[5]}' of {afFilename} is not a whole number; batch 1 is used instead");
+                }
 
                 int afAnalyticalOrder;
-                var afAnalyticalOrderRes = int.TryParse(line[6], out afAnalyticalOrder);
-                if (!afAnalyticalOrderRes)
+                if (line[6] is null) {
                     afAnalyticalOrder = counter + 1;
+                }
+                else if (!TryReadWholeNumber(line[6], out afAnalyticalOrder) || afAnalyticalOrder < 1) {
+                    afAnalyticalOrder = counter + 1;
+                    Replaced($"analytical_order '{line[6]}' of {afFilename} is not a whole number from 1 to {int.MaxValue}; its row position {counter + 1} is used instead");
+                }
 
                 double afInjectVolume;
                 var afInjectVolumeRes = double.TryParse(line[7], out afInjectVolume);
@@ -245,6 +300,27 @@ namespace CompMs.App.MsdialConsole.Parser
             }
 
             return analysisFiles;
+
+            void Replaced(string problem) {
+                Console.WriteLine($"Warning: {problem}.");
+                orderProblems?.Add(problem);
+            }
+        }
+
+        // A whole number, also written as a real number ("3.0"), in the invariant culture.
+        private static bool TryReadWholeNumber(string text, out int value) {
+            var trimmed = text.Trim();
+            if (int.TryParse(trimmed, NumberStyles.Integer, CultureInfo.InvariantCulture, out value)) {
+                return true;
+            }
+            if (double.TryParse(trimmed, NumberStyles.Float, CultureInfo.InvariantCulture, out var real)
+                && Math.Abs(real - Math.Round(real)) < 1e-9
+                && real >= int.MinValue && real <= int.MaxValue) {
+                value = (int)Math.Round(real);
+                return true;
+            }
+            value = 0;
+            return false;
         }
 
         public static bool isExistMultipleFormats(List<AnalysisFileBean> files) {
@@ -271,7 +347,7 @@ namespace CompMs.App.MsdialConsole.Parser
             var analysisFiles = new List<AnalysisFileBean>();
             int counter = 0;
             var dt = DateTime.Now;
-            var dtString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+            var dtString = RunStamp(dt);
 
             foreach (var filepath in filePaths)
             {
