@@ -120,7 +120,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             Assert.AreEqual(1.5, actual.Score);
             Assert.IsNull(actual.RuleVersion);
             Assert.IsFalse(actual.CorroboratedByAdduct);
-            Assert.IsNull(actual.CorroboratedByPolarity);
+            // MessagePack 3 leaves the initialiser (an empty array) in place for an absent key; MessagePack 1.x read null.
+            Assert.AreEqual(0, actual.CorroboratedByPolarity.Length);
         }
 
         [TestMethod]

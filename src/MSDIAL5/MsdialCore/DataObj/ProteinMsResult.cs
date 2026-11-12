@@ -203,7 +203,6 @@ namespace CompMs.MsdialCore.DataObj {
             return false;
         }
 
-        [IgnoreMember]
         private int SampleCount {
             get {
                 if (MatchedPeptideResults.IsEmptyOrNull()) return 0;

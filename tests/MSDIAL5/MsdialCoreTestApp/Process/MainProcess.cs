@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.Help;
 using System.IO;
 using System.Linq;
 
@@ -337,7 +338,7 @@ public static class MainProcess
         var cmd = new Command("msn", "Run molecular networking data processing");
         var inputOpt = new Option<string>("--input", "-i")
         {
-            Description = "Input folder containing the files to be processed or a single file",
+            Description = "Input folder or file. Supported files: .msp, .mddata, .pai, .pai2, .arf, and .arf2.",
             Required = true,
         };
         var outputOpt = new Option<string>("--output", "-o")
@@ -352,11 +353,24 @@ public static class MainProcess
         };
         var targetFileOpt = new Option<FileInfo>("--targetFile", "-t")
         {
-            Description = "Option",
+            Description = "Optional target MSP library file for mapping input compounds.",
+        };
+        var spectrumFileOpt = new Option<FileInfo>("--spectrum", "-s")
+        {
+            Description = "Associated MS/MS spectrum file for binary peak-list input. Supported files: .dcl.",
+        };
+        var analysisFileOpt = new Option<string>("--analysis-file")
+        {
+            Description = "Analysis file name for .mddata input. Takes precedence over --alignment when both are specified.",
+        };
+        var alignmentOpt = new Option<bool>("--alignment")
+        {
+            Description = "Use the project's alignment result for .mddata input. Ignored when --analysis-file is specified.",
+            DefaultValueFactory = _ => true,
         };
         var ionmodeOpt = new Option<string>("--ionmode", "-ionmode")
         {
-            Description = "Ion mode for MS/MS data processing. Valid options are 'Positive' or 'Negative'",
+            Description = "Ion mode for MS/MS data processing. Valid options are 'Positive' or 'Negative'.",
             DefaultValueFactory = _ => "Positive",
         };
         var overwriteOpt = new Option<bool>("--overwrite", "-overwrite")
@@ -366,12 +380,13 @@ public static class MainProcess
         };
         var allEdgeExportOpt = new Option<bool>("--all-edge-export", "-a")
         {
-            Description = "Option to export all edges in the molecular network. Default is false.",
+            Description = "Export all edges in the molecular network. [default: false]",
             DefaultValueFactory = _ => false,
         };
+        var helpOpt = root.Options.OfType<HelpOption>().Single();
         inputOpt.Validators.Add(result => {
-            var input = result.GetValueOrDefault<FileSystemInfo>();
-            if (input is null || !input.Exists) {
+            var input = result.GetValueOrDefault<string>();
+            if (string.IsNullOrEmpty(input) || (!File.Exists(input) && !Directory.Exists(input))) {
                 result.AddError("Input path does not exist.");
             }
         });
@@ -385,12 +400,19 @@ public static class MainProcess
         cmd.Options.Add(outputOpt);
         cmd.Options.Add(methodOpt);
         cmd.Options.Add(targetFileOpt);
+        cmd.Options.Add(spectrumFileOpt);
+        cmd.Options.Add(analysisFileOpt);
+        cmd.Options.Add(alignmentOpt);
         cmd.Options.Add(ionmodeOpt);
         cmd.Options.Add(overwriteOpt);
         cmd.Options.Add(allEdgeExportOpt);
         cmd.Validators.Add(result => {
-            string input = result.GetRequiredValue(inputOpt);
-            string output = result.GetRequiredValue(outputOpt);
+            if (result.GetResult(helpOpt) is not null) {
+                return;
+            }
+
+            var input = result.GetRequiredValue(inputOpt);
+            var output = result.GetRequiredValue(outputOpt);
 
             if (!Directory.Exists(input) && !File.Exists(input)) {
                 result.AddError("Input path does not exist.");
@@ -414,6 +436,9 @@ public static class MainProcess
                 var output = Path.GetFullPath(parseResult.GetRequiredValue(outputOpt));
                 var methodFile = parseResult.GetRequiredValue(methodOpt);
                 var targetFile = parseResult.GetValue(targetFileOpt);
+                var spectrumFile = parseResult.GetValue(spectrumFileOpt);
+                var analysisFileName = parseResult.GetValue(analysisFileOpt);
+                var alignment = parseResult.GetValue(alignmentOpt);
                 var ionmode = parseResult.GetRequiredValue(ionmodeOpt);
                 var overwrite = parseResult.GetValue(overwriteOpt);
                 var allEdgeExport = parseResult.GetValue(allEdgeExportOpt);
@@ -426,6 +451,22 @@ public static class MainProcess
                         return new MoleculerNetworkProcess().Run(input, output, methodFile.FullName, ionmode, overwrite);
                 }
                 else {
+                    if (Path.GetExtension(input).Equals(".mddata", StringComparison.OrdinalIgnoreCase)) {
+                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment, analysisFileName);
+                    }
+                    var binaryInput = Path.GetExtension(input).Equals(".pai", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(input).Equals(".pai2", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(input).Equals(".arf", StringComparison.OrdinalIgnoreCase)
+                        || Path.GetExtension(input).Equals(".arf2", StringComparison.OrdinalIgnoreCase);
+                    if (binaryInput) {
+                        if (spectrumFile is null || !spectrumFile.Exists) {
+                            throw new FileNotFoundException("A --spectrum file is required for binary peak-list input.", spectrumFile?.FullName);
+                        }
+                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode);
+                    }
+                    if (spectrumFile != null) {
+                        throw new ArgumentException("--spectrum is only used with .pai, .pai2, .arf, or .arf2 input.");
+                    }
                     if (targetFile != null && targetFile.Exists) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);
                     }

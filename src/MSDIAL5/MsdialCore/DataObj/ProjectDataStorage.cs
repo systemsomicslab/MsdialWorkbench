@@ -43,13 +43,11 @@ namespace CompMs.MsdialCore.DataObj
         [Key(nameof(ProjectParameters))]
         public ReadOnlyCollection<ProjectBaseParameter> ProjectParameters { get; }
 
-        [IgnoreMember]
         private List<ProjectBaseParameter> InnerProjectParameters { get; }
 
         [IgnoreMember]
         public ReadOnlyCollection<IMsdialDataStorage<ParameterBase>> Storages { get; }
 
-        [IgnoreMember]
         private List<IMsdialDataStorage<ParameterBase>> InnerStorages { get; }
 
         private static readonly string ParameterKey = "Parameter";

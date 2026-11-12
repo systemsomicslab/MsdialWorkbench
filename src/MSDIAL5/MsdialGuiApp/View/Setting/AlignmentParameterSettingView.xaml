@@ -90,6 +90,143 @@
                         </DataTemplate>
                     </ItemsControl.Resources>
                 </ItemsControl>
+
+                <!-- The automatic alignment RT correction (LC-MS only). Its values come from the project
+                     and go back into it only when alignment runs; the correction's reference file becomes
+                     the alignment reference, as in the Console. -->
+                <Expander Header="Automatic alignment RT correction"
+                          DataContext="{Binding AutomaticRtCorrection}"
+                          Visibility="{Binding IsAvailable, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}"
+                          IsExpanded="{Binding Execute.Value, Mode=OneTime}"
+                          AutomationProperties.AutomationId="Expander_AutomaticRtCorrection"
+                          Margin="0,4,0,0">
+                    <StackPanel Margin="16,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
+                                <Setter Property="Height" Value="30"/>
+                            </Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                                <Setter Property="Height" Value="24"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                <Setter Property="IsReadOnly" Value="{Binding IsReadOnly, Mode=OneTime}"/>
+                            </Style>
+                        </StackPanel.Resources>
+
+                        <ui:LabeledContent PrependLabel="Execute for alignment:">
+                            <CheckBox IsChecked="{Binding Execute.Value}"
+                                      IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                                      AutomationProperties.AutomationId="CheckBox_ExecuteAutomaticRtCorrection"
+                                      ToolTip="Maps every file's RT onto a reference file's RT for alignment only. Peak lists and annotation stay on each file's measured RT; aligned peaks and spot RTs are on the reference file's RT. The correction's reference file becomes the alignment reference."
+                                      VerticalContentAlignment="Center"/>
+                        </ui:LabeledContent>
+
+                        <StackPanel IsEnabled="{Binding Execute.Value}">
+                            <ui:LabeledContent PrependLabel="Anchor mode:">
+                                <ComboBox ItemsSource="{Binding AnchorModes, Mode=OneTime}"
+                                          SelectedItem="{Binding AnchorMode.Value}"
+                                          IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                                          ToolTip="Automatic: anchors chosen from the detected peaks. UserOnly: only the library's True rows. Hybrid: the True rows, automatic anchors filling the RT bins they leave empty, and the False rows kept out."
+                                          Height="24" VerticalContentAlignment="Center"/>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="Anchor library:"
+                                               IsEnabled="{Binding UsesLibrary.Value}">
+                                <DockPanel>
+                                    <Button Content="Browse..."
+                                            Command="{Binding BrowseAnchorLibraryCommand}"
+                                            IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                                            DockPanel.Dock="Right" Width="72" Height="24" Margin="4,0,0,0"/>
+                                    <TextBox Text="{Binding AnchorLibraryFilePath.Value}"
+                                             HorizontalContentAlignment="Left"
+                                             ToolTip="The seven-column anchor library (Name, RT, RT tol., m/z, m/z tol., minimum height, True/False), read strictly. Used in UserOnly and Hybrid mode."/>
+                                </DockPanel>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="User anchor peak selection:"
+                                               IsEnabled="{Binding UsesLibrary.Value}">
+                                <ComboBox ItemsSource="{Binding PeakSelectionModes, Mode=OneTime}"
+                                          SelectedItem="{Binding AnchorPeakSelectionMode.Value}"
+                                          IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                                          ToolTip="How a user anchor's peak is chosen when its m/z and RT window holds more than one peak."
+                                          Height="24" VerticalContentAlignment="Center"/>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="RT weight (Weighted selection):"
+                                               AppendLabel="(0-1)">
+                                <ui:LabeledContent.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource BooleanAll}">
+                                        <Binding Path="UsesLibrary.Value"/>
+                                        <Binding Path="UsesRtWeight.Value"/>
+                                    </MultiBinding>
+                                </ui:LabeledContent.IsEnabled>
+                                <TextBox Text="{Binding AnchorPeakSelectionRtWeight.Value}"/>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="Reference file:">
+                                <ComboBox ItemsSource="{Binding ReferenceChoices, Mode=OneTime}"
+                                          SelectedItem="{Binding Reference.Value}"
+                                          DisplayMemberPath="Label"
+                                          IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                                          ToolTip="Automatic lets the correction choose the reference file (in UserOnly and Hybrid: the most user anchors, then the closest to the library RTs)."
+                                          Height="24" VerticalContentAlignment="Center"/>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="Local support window:" AppendLabel="min">
+                                <TextBox Text="{Binding LocalSupportRtWindow.Value}"
+                                         ToolTip="Half-width in which an anchor's offset is compared with its neighbours'. 0 compares it with the file's median offset only."/>
+                            </ui:LabeledContent>
+
+                            <ui:LabeledContent PrependLabel="Minimum anchors:">
+                                <TextBox Text="{Binding MinimumAnchorCount.Value}"
+                                         ToolTip="Anchors the reference file needs. With user anchors, another file is corrected from 2."/>
+                            </ui:LabeledContent>
+
+                            <Expander Header="Advanced" Margin="0,4,0,0">
+                                <StackPanel Margin="16,0">
+                                    <ui:LabeledContent PrependLabel="Maximum anchors:">
+                                        <TextBox Text="{Binding MaximumAnchorCount.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="RT bin width:" AppendLabel="min">
+                                        <TextBox Text="{Binding RtBinWidth.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Match RT tolerance:" AppendLabel="min">
+                                        <TextBox Text="{Binding MatchRtTolerance.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Minimum sample coverage:" AppendLabel="(0-1)">
+                                        <TextBox Text="{Binding MinimumSampleCoverage.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Intensity quantile:" AppendLabel="(0-1)">
+                                        <TextBox Text="{Binding IntensityQuantile.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Maximum peak width quantile:" AppendLabel="(0-1)">
+                                        <TextBox Text="{Binding MaximumPeakWidthQuantile.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Minimum S/N:">
+                                        <TextBox Text="{Binding MinimumSignalToNoise.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Minimum Gaussian similarity:" AppendLabel="(0-1)">
+                                        <TextBox Text="{Binding MinimumGaussianSimilarity.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Minimum ideal slope:" AppendLabel="(0-1)">
+                                        <TextBox Text="{Binding MinimumIdealSlope.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Outlier MAD threshold:">
+                                        <TextBox Text="{Binding OutlierMadThreshold.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Reference centrality weight:" AppendLabel="(0-1)">
+                                        <TextBox Text="{Binding ReferenceCentralityWeight.Value}"/>
+                                    </ui:LabeledContent>
+                                    <ui:LabeledContent PrependLabel="Interpolate Blanks by analytical order:">
+                                        <CheckBox IsChecked="{Binding InterpolateBlankByAnalyticalOrder.Value}"
+                                                  IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                                                  VerticalContentAlignment="Center"/>
+                                    </ui:LabeledContent>
+                                </StackPanel>
+                            </Expander>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
             </StackPanel>
         </GroupBox>
 

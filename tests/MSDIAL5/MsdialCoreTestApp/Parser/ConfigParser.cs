@@ -85,6 +85,7 @@ namespace CompMs.App.MsdialConsole.Parser
             private const byte UNKNOWN = 0;
             private const byte APPLIED = 1;
             private const byte UNUSABLE = 2;
+            private const byte NOT_APPLICABLE = 3;
 
             private readonly byte _state;
 
@@ -95,6 +96,11 @@ namespace CompMs.App.MsdialConsole.Parser
             public static MethodKeyOutcome Applied => new MethodKeyOutcome(APPLIED);
             public static MethodKeyOutcome UnknownKey => new MethodKeyOutcome(UNKNOWN);
             public static MethodKeyOutcome UnusableValue => new MethodKeyOutcome(UNUSABLE);
+            /// <summary>
+            /// A key this Console knows and the mode being read has no use for: the automatic
+            /// alignment RT correction's keys outside LC-MS. Neither applied nor a misspelling.
+            /// </summary>
+            public static MethodKeyOutcome NotApplicable => new MethodKeyOutcome(NOT_APPLICABLE);
 
             public static implicit operator MethodKeyOutcome(bool applied) {
                 return applied ? Applied : UnknownKey;
@@ -103,6 +109,7 @@ namespace CompMs.App.MsdialConsole.Parser
             public bool IsApplied => _state == APPLIED;
             public bool IsUnknownKey => _state == UNKNOWN;
             public bool IsUnusableValue => _state == UNUSABLE;
+            public bool IsNotApplicable => _state == NOT_APPLICABLE;
         }
 
         /// <summary>
@@ -333,7 +340,10 @@ namespace CompMs.App.MsdialConsole.Parser
             private readonly List<string> _applied = new List<string>();
             private readonly List<string> _unrecognised = new List<string>();
             private readonly List<string> _unusable = new List<string>();
+            private readonly List<string> _unusableKeys = new List<string>();
             private readonly List<string> _blank = new List<string>();
+            private readonly List<(string Key, string Value)> _notApplicable = new List<(string Key, string Value)>();
+            private readonly List<Dictionary<string, object?>> _overridden = new List<Dictionary<string, object?>>();
             private readonly Dictionary<string, Occurrences> _occurrences = new Dictionary<string, Occurrences>(StringComparer.OrdinalIgnoreCase);
             private readonly List<Occurrences> _occurrenceOrder = new List<Occurrences>();
 
@@ -363,12 +373,38 @@ namespace CompMs.App.MsdialConsole.Parser
                 }
                 else if (outcome.IsUnusableValue) {
                     _unusable.Add($"{method}: {value}");
+                    _unusableKeys.Add(method);
+                }
+                else if (outcome.IsNotApplicable) {
+                    _notApplicable.Add((method, value));
                 }
                 else {
                     _applied.Add(method);
                     occurrences.Used = value;
                 }
             }
+
+            /// <summary>
+            /// Records that the run does not use the value it applied for <paramref name="key"/>:
+            /// another setting replaces it. The key leaves "applied" for "overridden", with the
+            /// value the method file gave and why, so a check comparing declared and used settings
+            /// is not told the declared value governed the run.
+            /// </summary>
+            public void Override(string key, string reason) {
+                var removed = _applied.RemoveAll(applied => string.Equals(applied, key, StringComparison.OrdinalIgnoreCase));
+                if (removed == 0) {
+                    return;
+                }
+                var written = _occurrences.TryGetValue(key, out var occurrences) ? occurrences : null;
+                _overridden.Add(new Dictionary<string, object?> {
+                    ["key"] = written?.Key ?? key,
+                    ["value"] = written?.Used,
+                    ["reason"] = reason,
+                });
+            }
+
+            /// <summary>The keys, as written, whose values a reader claimed and could not read.</summary>
+            public IReadOnlyList<string> UnusableKeys => _unusableKeys;
 
             private Occurrences Count(string method) {
                 if (!_occurrences.TryGetValue(method, out var occurrences)) {
@@ -450,6 +486,9 @@ namespace CompMs.App.MsdialConsole.Parser
                         ["unusable"] = _unusable,
                         ["blank"] = _blank,
                         ["repeated"] = Repeated.ToList(),
+                        // Added after the lists above; a reader that addresses them by name is unaffected.
+                        ["not_applicable"] = _notApplicable.Select(entry => entry.Key).ToList(),
+                        ["overridden"] = _overridden,
                     };
                     var directory = Path.GetDirectoryName(Path.GetFullPath(filepath));
                     if (string.IsNullOrEmpty(directory)) {
@@ -510,10 +549,23 @@ namespace CompMs.App.MsdialConsole.Parser
                         : $"the last line applied was used: '{repeated.Used}'";
                     Console.WriteLine($"Method file '{name}': the parameter '{repeated.Key}' is written on {repeated.Count} lines; {used}.");
                 }
+                foreach (var (key, _) in _notApplicable) {
+                    Console.WriteLine($"Method file '{name}': '{key}' belongs to the automatic alignment RT correction, which only LC-MS runs have; it had NO EFFECT in this mode.");
+                }
+                foreach (var overridden in _overridden) {
+                    Console.WriteLine($"Method file '{name}': '{overridden["key"]}: {overridden["value"]}' is not used: {overridden["reason"]}.");
+                }
                 // Last, so the record and every other finding above are already out when this refuses the run.
                 var blankFilteringConflict = BlankFilteringConflict(Used);
                 if (blankFilteringConflict != null) {
                     throw new FormatException($"Method file '{name}': {blankFilteringConflict}");
+                }
+                // A preview stops before anything is saved beside the raw data. A mode without the
+                // correction has no preview to stop at, and running in full instead would do
+                // exactly what the person asked it not to do yet.
+                var preview = _notApplicable.LastOrDefault(entry => string.Equals(entry.Key, AutomaticRtCorrectionPreviewOnlyKey, StringComparison.OrdinalIgnoreCase));
+                if (preview.Key is not null && !string.Equals(preview.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase)) {
+                    throw new FormatException($"Method file '{name}': '{preview.Key}: {preview.Value}' asks for an automatic alignment RT correction preview, which only LC-MS runs have; the run is refused rather than run in full.");
                 }
             }
 
@@ -537,7 +589,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
                             () => Either(ExcludedMassListLine(param, method, value),
-                                () => ReadGcmsSpecificParameter(param, method, value))));
+                                () => Either(ReadGcmsSpecificParameter(param, method, value),
+                                    () => AutomaticRtCorrectionLineOutsideLcms(method)))));
                     }
                 }
             }
@@ -553,6 +606,16 @@ namespace CompMs.App.MsdialConsole.Parser
 
      
         public static MsdialLcmsParameter ReadForLcmsParameter(string filepath) {
+            return ReadForLcmsParameter(filepath, out _);
+        }
+
+        /// <summary>
+        /// As <see cref="ReadForLcmsParameter(string)"/>, and the keys, as written, whose values
+        /// could not be read: each kept its built-in default. LcmsProcess refuses a run in which
+        /// one of them is a setting of the automatic alignment RT correction it runs (see
+        /// <see cref="IsAutomaticRtCorrectionKey(string)"/>).
+        /// </summary>
+        public static MsdialLcmsParameter ReadForLcmsParameter(string filepath, out IReadOnlyList<string> unusableKeys) {
             var param = new MsdialLcmsParameter();
             var keys = new MethodFileKeys();
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
@@ -565,6 +628,13 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
             }
+            if (param.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
+                // LcmsProcess aligns on the correction's reference file, whatever this key says:
+                // the corrected RTs are that file's axis. The record says so rather than listing
+                // the key as applied.
+                keys.Override(AlignmentReferenceFileIdKey, "the alignment uses the automatic RT correction's reference file, whose RT axis the corrected RTs are on");
+            }
+            unusableKeys = keys.UnusableKeys;
             keys.Report(filepath);
             ResolveFilePaths(param, filepath);
             return param;
@@ -591,11 +661,13 @@ namespace CompMs.App.MsdialConsole.Parser
         /// is assigned": their setting lives on the parameter, which is assigned here, in the
         /// same pass. They are LC-MS keys rather than common ones because only LC-MS processing
         /// runs the check (hooks A and B), and a key read by every mode would be recorded as
-        /// applied in a GC-MS run that never uses it.
+        /// applied in a GC-MS run that never uses it. The automatic alignment RT correction's keys
+        /// are here for that reason too, and are assigned here as well.
         ///
         /// Only the LC-MS reader asks. No other mode calls these readers, so in a GC-MS, DIMS,
         /// IMMS or LC-IM-MS method file the same keys really have no effect and are still
-        /// reported as unrecognised.
+        /// reported as unrecognised, except the automatic RT correction's, which those modes
+        /// record as not applicable.
         /// </remarks>
         private static MethodKeyOutcome ReadLcmsConsoleParameter(MsdialLcmsParameter param, string method, string value) {
             foreach (var line in LcmsConsoleLines) {
@@ -607,6 +679,94 @@ namespace CompMs.App.MsdialConsole.Parser
             return MethodKeyOutcome.UnknownKey;
         }
 
+        private const string AutomaticRtCorrectionPreviewOnlyKey = "Automatic RT correction preview only";
+        private const string AlignmentReferenceFileIdKey = "Alignment reference file ID";
+
+        // Every key of the automatic alignment RT correction, lower case. Only LC-MS reads them.
+        private static readonly HashSet<string> AutomaticRtCorrectionKeys = new HashSet<string>(StringComparer.Ordinal) {
+            "execute automatic rt correction for alignment",
+            "automatic rt correction reference file id",
+            "automatic rt correction rt bin width",
+            "automatic rt correction match rt tolerance",
+            "automatic rt correction minimum anchors",
+            "automatic rt correction maximum anchors",
+            "automatic rt correction minimum sample coverage",
+            "automatic rt correction intensity quantile",
+            "automatic rt correction maximum peak width quantile",
+            "automatic rt correction minimum signal to noise",
+            "automatic rt correction minimum gaussian similarity",
+            "automatic rt correction minimum ideal slope",
+            "automatic rt correction outlier mad threshold",
+            "automatic rt correction reference centrality weight",
+            "automatic rt correction interpolate blanks by analytical order",
+            "automatic rt correction local support rt window",
+            "automatic rt correction anchor mode",
+            "automatic rt correction anchor library file path",
+            "automatic rt correction anchor peak selection mode",
+            "automatic rt correction anchor peak selection rt weight",
+            "automatic rt correction preview only",
+        };
+
+        /// <summary>
+        /// Whether <paramref name="key"/>, in any letter case, is a setting of the automatic
+        /// alignment RT correction, its preview switch included.
+        /// </summary>
+        public static bool IsAutomaticRtCorrectionKey(string key) {
+            return key is not null && AutomaticRtCorrectionKeys.Contains(key.Trim().ToLowerInvariant());
+        }
+
+        /// <summary>
+        /// Read one setting of the automatic alignment RT correction, which only LC-MS runs.
+        /// </summary>
+        /// <remarks>
+        /// These keys were read by ReadCommonParameter, which every mode calls, so a GC-MS, IMMS,
+        /// LC-IM-MS or DIMS method file had them recorded as applied while nothing in those modes
+        /// reads the setting. Only the LC-MS reader asks this; the other modes record the keys as
+        /// not applicable (<see cref="AutomaticRtCorrectionLineOutsideLcms(string)"/>).
+        /// </remarks>
+        public static MethodKeyOutcome ReadAutomaticRtCorrectionParameter(ParameterBase param, string method, string value) {
+            if (value.IsEmptyOrNull()) return false;
+            if (method.IsEmptyOrNull()) return false;
+            method = method.ToLowerInvariant();
+            var valueLower = value.ToLowerInvariant();
+            switch (method) {
+                case "execute automatic rt correction for alignment": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.Execute = v);
+                case "automatic rt correction reference file id": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceFileId = v);
+                case "automatic rt correction rt bin width": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.RtBinWidth = (float)v);
+                case "automatic rt correction match rt tolerance": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MatchRtTolerance = (float)v);
+                case "automatic rt correction minimum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumAnchorCount = v);
+                case "automatic rt correction maximum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumAnchorCount = v);
+                case "automatic rt correction minimum sample coverage": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSampleCoverage = (float)v);
+                case "automatic rt correction intensity quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.IntensityQuantile = (float)v);
+                case "automatic rt correction maximum peak width quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumPeakWidthQuantile = (float)v);
+                case "automatic rt correction minimum signal to noise": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSignalToNoise = (float)v);
+                case "automatic rt correction minimum gaussian similarity": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumGaussianSimilarity = (float)v);
+                case "automatic rt correction minimum ideal slope": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumIdealSlope = (float)v);
+                case "automatic rt correction outlier mad threshold": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold = (float)v);
+                case "automatic rt correction reference centrality weight": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight = (float)v);
+                case "automatic rt correction interpolate blanks by analytical order": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder = v);
+                case "automatic rt correction local support rt window": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow = (float)v);
+                case "automatic rt correction anchor mode": return AnchorMode(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorMode = v);
+                case "automatic rt correction anchor library file path": return Assign(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath = v);
+                case "automatic rt correction anchor peak selection mode": return Named<RetentionTimeCorrectionPeakSelectionMode>(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionMode = v);
+                case "automatic rt correction anchor peak selection rt weight":
+                    return Number(valueLower, v => {
+                        if (v < 0d || v > 1d) throw new FormatException($"Anchor peak selection RT weight must be between 0 and 1, not {v}.");
+                        param.AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionRtWeight = (float)v;
+                    });
+                default: return false;
+            }
+        }
+
+        /// <summary>
+        /// Outside LC-MS, an automatic alignment RT correction key is not applicable: it is
+        /// recorded as such, not as applied, and not as a misspelling. A preview asked for there
+        /// refuses the run (see MethodFileKeys.Report).
+        /// </summary>
+        private static MethodKeyOutcome AutomaticRtCorrectionLineOutsideLcms(string method) {
+            return IsAutomaticRtCorrectionKey(method) ? MethodKeyOutcome.NotApplicable : MethodKeyOutcome.UnknownKey;
+        }
+
         private static readonly Func<MsdialLcmsParameter, string, string, MethodKeyOutcome>[] LcmsConsoleLines = {
             (param, method, value) => MspAnnotatorSettingsFilePathLine(method, value, _ => { }),
             (param, method, value) => TextAnnotatorSettingsFilePathLine(method, value, _ => { }),
@@ -615,6 +775,7 @@ namespace CompMs.App.MsdialConsole.Parser
             (param, method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
             (param, method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
             (param, method, value) => AutomaticRtCorrectionPreviewOnlyLine(method, value, _ => { }),
+            (param, method, value) => ReadAutomaticRtCorrectionParameter(param, method, value),
             (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
         };
 
@@ -792,7 +953,7 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         private static MethodKeyOutcome AlignmentLightModeLine(string method, string value, Action<bool> assign) {
-            switch (method.ToLower()) {
+            switch (method.ToLowerInvariant()) {
                 case "alignment light mode":
                 case "alignment light":
                 case "console alignment light mode":
@@ -815,7 +976,7 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         private static MethodKeyOutcome DetailedAlignmentProvenanceLine(string method, string value, Action<bool> assign) {
-            switch (method.ToLower()) {
+            switch (method.ToLowerInvariant()) {
                 case "detailed alignment provenance":
                 case "export detailed alignment provenance":
                     return TrueOrFalse(value, assign);
@@ -825,7 +986,7 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         private static MethodKeyOutcome AnnotationCandidateExportLine(string method, string value, Action<bool> assign) {
-            switch (method.ToLower()) {
+            switch (method.ToLowerInvariant()) {
                 case "annotation candidates":
                 case "export annotation candidates":
                     return TrueOrFalse(value, assign);
@@ -847,7 +1008,7 @@ namespace CompMs.App.MsdialConsole.Parser
         // nor stops a later one from applying. The key record never asks about a blank value
         // either, because it lists it as blank first.
         private static MethodKeyOutcome MspAnnotatorSettingsFilePathLine(string method, string value, Action<string> assign) {
-            switch (method.ToLower()) {
+            switch (method.ToLowerInvariant()) {
                 case "msp annotator settings file path":
                 case "msp annotation settings file path":
                 case "msp search settings file path":
@@ -858,7 +1019,7 @@ namespace CompMs.App.MsdialConsole.Parser
         }
 
         private static MethodKeyOutcome TextAnnotatorSettingsFilePathLine(string method, string value, Action<string> assign) {
-            switch (method.ToLower()) {
+            switch (method.ToLowerInvariant()) {
                 case "text annotator settings file path":
                 case "text library annotator settings file path":
                 case "text db annotator settings file path":
@@ -1214,7 +1375,8 @@ namespace CompMs.App.MsdialConsole.Parser
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        keys.Read(method, value, () => ReadCommonParameter(param, method, value));
+                        keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
+                            () => AutomaticRtCorrectionLineOutsideLcms(method)));
                     }
                 }
             }
@@ -1232,7 +1394,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
                             () => Either(ExcludedMassListLine(param, method, value),
-                                () => ReadLcImMsSpecificParameter(param, method, value))));
+                                () => Either(ReadLcImMsSpecificParameter(param, method, value),
+                                    () => AutomaticRtCorrectionLineOutsideLcms(method)))));
                     }
                 }
             }
@@ -1250,7 +1413,8 @@ namespace CompMs.App.MsdialConsole.Parser
                     if (isReadable) {
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
                             () => Either(ExcludedMassListLine(param, method, value),
-                                () => ReadImmsSpecificParameter(param, method, value))));
+                                () => Either(ReadImmsSpecificParameter(param, method, value),
+                                    () => AutomaticRtCorrectionLineOutsideLcms(method)))));
                     }
                 }
             }
@@ -1425,8 +1589,8 @@ namespace CompMs.App.MsdialConsole.Parser
         public static MethodKeyOutcome ReadGcmsSpecificParameter(MsdialGcmsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
-            method = method.ToLower();
-            var valueLower = value.ToLower();
+            method = method.ToLowerInvariant();
+            var valueLower = value.ToLowerInvariant();
             switch (method) {
                 case "ri index file pathes":
                 case "ri index file paths":
@@ -1458,8 +1622,8 @@ namespace CompMs.App.MsdialConsole.Parser
         public static MethodKeyOutcome ReadLcImMsSpecificParameter(MsdialLcImMsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
-            method = method.ToLower();
-            value = value.ToLower();
+            method = method.ToLowerInvariant();
+            value = value.ToLowerInvariant();
             switch (method) {
                 case "drift time begin": return Number(value, v => param.DriftTimeBegin = (float)v);
                 case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
@@ -1479,8 +1643,8 @@ namespace CompMs.App.MsdialConsole.Parser
         public static MethodKeyOutcome ReadImmsSpecificParameter(MsdialImmsParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
-            method = method.ToLower();
-            value = value.ToLower();
+            method = method.ToLowerInvariant();
+            value = value.ToLowerInvariant();
             switch (method) {
                 case "drift time begin": return Number(value, v => param.DriftTimeBegin = (float)v);
                 case "drift time end": return Number(value, v => param.DriftTimeEnd = (float)v);
@@ -1496,8 +1660,8 @@ namespace CompMs.App.MsdialConsole.Parser
         private static MethodKeyOutcome ReadMoleculerNetworkingParameter(MolecularSpectrumNetworkingBaseParameter param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
-            method = method.ToLower();
-            var valueLower = value.ToLower();
+            method = method.ToLowerInvariant();
+            var valueLower = value.ToLowerInvariant();
             switch (method) {
                 case "mnrttolerance":
                     return Number(valueLower, v => param.MnRtTolerance = (float)v);
@@ -1571,8 +1735,8 @@ namespace CompMs.App.MsdialConsole.Parser
         public static MethodKeyOutcome ReadCommonParameter(ParameterBase param, string method, string value) {
             if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
-            method = method.ToLower();
-            var valueLower = value.ToLower();
+            method = method.ToLowerInvariant();
+            var valueLower = value.ToLowerInvariant();
             switch (method) {
                 //Data type
                 case "ms1 data type":
@@ -1792,30 +1956,6 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ms1 factor for alignment": return Number(valueLower, v => param.Ms1AlignmentFactor = (float)v);
                 case "force insert peaks in gap filling": return TrueOrFalse(valueLower, v => param.IsForceInsertForGapFilling = v);
                 case "together with alignment": return TrueOrFalse(valueLower, v => param.TogetherWithAlignment = v);
-                case "execute automatic rt correction for alignment": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.Execute = v);
-                case "automatic rt correction reference file id": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceFileId = v);
-                case "automatic rt correction rt bin width": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.RtBinWidth = (float)v);
-                case "automatic rt correction match rt tolerance": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MatchRtTolerance = (float)v);
-                case "automatic rt correction minimum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumAnchorCount = v);
-                case "automatic rt correction maximum anchors": return Count(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumAnchorCount = v);
-                case "automatic rt correction minimum sample coverage": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSampleCoverage = (float)v);
-                case "automatic rt correction intensity quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.IntensityQuantile = (float)v);
-                case "automatic rt correction maximum peak width quantile": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MaximumPeakWidthQuantile = (float)v);
-                case "automatic rt correction minimum signal to noise": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumSignalToNoise = (float)v);
-                case "automatic rt correction minimum gaussian similarity": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumGaussianSimilarity = (float)v);
-                case "automatic rt correction minimum ideal slope": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.MinimumIdealSlope = (float)v);
-                case "automatic rt correction outlier mad threshold": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.OutlierMadThreshold = (float)v);
-                case "automatic rt correction reference centrality weight": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.ReferenceCentralityWeight = (float)v);
-                case "automatic rt correction interpolate blanks by analytical order": return TrueOrFalse(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.InterpolateBlankByAnalyticalOrder = v);
-                case "automatic rt correction local support rt window": return Number(valueLower, v => param.AlignmentBaseParam.AutomaticRtCorrection.LocalSupportRtWindow = (float)v);
-                case "automatic rt correction anchor mode": return AnchorMode(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorMode = v);
-                case "automatic rt correction anchor library file path": return Assign(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorLibraryFilePath = v);
-                case "automatic rt correction anchor peak selection mode": return Named<RetentionTimeCorrectionPeakSelectionMode>(value, v => param.AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionMode = v);
-                case "automatic rt correction anchor peak selection rt weight":
-                    return Number(valueLower, v => {
-                        if (v < 0d || v > 1d) throw new FormatException($"Anchor peak selection RT weight must be between 0 and 1, not {v}.");
-                        param.AlignmentBaseParam.AutomaticRtCorrection.AnchorPeakSelectionRtWeight = (float)v;
-                    });
 
                 //Filtering
                 case "peak count filter": return Number(valueLower, v => param.PeakCountFilter = (float)v);

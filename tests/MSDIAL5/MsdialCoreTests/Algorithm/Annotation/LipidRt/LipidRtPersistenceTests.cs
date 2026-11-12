@@ -104,7 +104,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             var withNil = MessagePackSerializer.Serialize(new PeakWithNothingAtKeys54And55 { MasterPeakID = 42 });
             Assert.AreEqual(MessagePackType.Nil, MessagePackBinary.GetMessagePackType(withNil, OffsetOf(withNil, 54)));
 
-            Assert.ThrowsException<System.InvalidOperationException>(() => MessagePackSerializer.Deserialize<PeakAsMsdial56ReadsIt>(withNil));
+            Assert.ThrowsException<MessagePackSerializationException>(() => MessagePackSerializer.Deserialize<PeakAsMsdial56ReadsIt>(withNil));
         }
 
         [TestMethod]

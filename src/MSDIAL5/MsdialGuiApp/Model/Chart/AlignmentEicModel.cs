@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Func<PeakItem, double> verticalSelector) {
 
             return new AlignmentEicModel(
-                source.DefaultIfNull(s => new AlignedChromatograms(s, loader.LoadEicAsObservable(s))),
+                source.DefaultIfNull(s => new AlignedChromatograms(s, loader.LoadEicAsObservable(s), loader.LoadRtAxesAsObservable(s))),
                 AnalysisFiles,
                 Param,
                 filePropertiesModel,

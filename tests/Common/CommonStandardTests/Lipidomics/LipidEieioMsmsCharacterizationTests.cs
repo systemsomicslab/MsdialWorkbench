@@ -2694,8 +2694,8 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [DataTestMethod()]
-        [DeploymentItem(@"Resources\Lipidomics\LipidEieioMsmsCharacterizationTests\PC_O-16_0_18_1(9)_[M+H]+.msp.txt", @"Resources\Lipidomics\LipidEieioMsmsCharacterizationTests")]
-        [DataRow(@"Resources\Lipidomics\LipidEieioMsmsCharacterizationTests\PC_O-16_0_18_1(9)_[M+H]+.msp.txt", "PC O-16:0/18:1")]
+        [DeploymentItem(@"Resources\Lipidomics\PC_O-16_0_18_1(9)_[M+H]+.msp.txt", @"Resources\Lipidomics")]
+        [DataRow(@"Resources\Lipidomics\PC_O-16_0_18_1(9)_[M+H]+.msp.txt", "PC O-16:0/18:1")]
         public void EtherPC_O_CharacterizationTest(string path, string expected)
         {
             var target = MspFileParser.MspFileReader(path)[0];

@@ -81,17 +81,22 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 var handler = (handlers?.TryGetValue(f.AnalysisFileId, out var h) ?? false) ? h : null;
                 return new FileProp(f, brush, handler);
             }).ToList();
-            return spotChromatograms.DefaultIfNull(s => s.Chromatograms.CombineLatest(s.Spot.AlignedPeakPropertiesModelProperty, (chromatograms, peaks) => {
+            return spotChromatograms.DefaultIfNull(s => s.Chromatograms.CombineLatest(s.Spot.AlignedPeakPropertiesModelProperty, s.RtAxes, (chromatograms, peaks, rtAxes) => {
                 if (peaks is null) {
                     return Observable.Return<PeakPropertiesLegacy?>(null);
                 }
                 var peakPropArr = fileProps.ZipInternal(peaks).Where(pair => pair.Item1.File.AnalysisFileIncluded)
                     .Zip(chromatograms, (pair, chromatogram) => {
                         using var smoothed = chromatogram.Convert().ChromatogramSmoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
-                        var offset = pair.Item2.ChromXsTop.Value - s.Spot.TimesCenter;
+                        // The chromatogram is on the file's measured RT axis. When the alignment
+                        // corrected RTs the aligned peak is not, so its top is first moved onto the
+                        // chromatogram's axis; the shift then puts that top at the spot RT.
+                        var rtAxis = rtAxes.For(pair.Item1.File.AnalysisFileId);
+                        var top = rtAxis.IsCorrected ? rtAxis.ToOriginal(pair.Item2.ChromXsTop.Value) : pair.Item2.ChromXsTop.Value;
+                        var offset = top - s.Spot.TimesCenter;
                         var speaks = smoothed.AsPeakArray();
                         return pair.Item1.Brush.Select(b => {
-                            var peakProp = new PeakPropertyLegacy(pair.Item2, b, speaks, pair.Item1.Handler);
+                            var peakProp = new PeakPropertyLegacy(pair.Item2, b, speaks, pair.Item1.Handler) { RtAxis = rtAxis };
                             peakProp.SetAlignOffSet(offset);
                             peakProp.AverageRt = s.Spot.TimesCenter;
                             return peakProp;

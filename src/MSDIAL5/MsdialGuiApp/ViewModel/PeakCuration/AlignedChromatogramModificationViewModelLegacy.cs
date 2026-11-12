@@ -7,6 +7,7 @@ using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Chromatogram.ManualPeakModification;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -39,6 +40,9 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public ReadOnlyReactivePropertySlim<PeakPropertyLegacy[]> PeakPropertyList { get; }
         public bool IsRI => _model.IsRI.Value;
 
+        /// <summary>What the person must know about the RT axes of the panels; empty when they are one axis.</summary>
+        public ReadOnlyReactivePropertySlim<string> AxisNote { get; }
+
         public DelegateCommand UpdateChromsCommand => _updateChromsCommand ??= new DelegateCommand(UpdateChroms);
         private DelegateCommand? _updateChromsCommand = null;
 
@@ -66,6 +70,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             }).AddTo(Disposables);
 
             PeakPropertyList = model.ObservablePeakProperties.Select(props => props?.Properties ?? []).ToReadOnlyReactivePropertySlim(initialValue: []).AddTo(Disposables);
+            AxisNote = model.ObservablePeakProperties.Select(props => props?.AxisNote ?? string.Empty).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
         }
 
         public void UpdateAlignedChromUC() {
@@ -106,6 +111,25 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
 
         public PeakPropertyLegacy[] Properties { get; }
 
+        /// <summary>
+        /// What the person must know about the axes: the chromatograms are on each file's measured RT
+        /// axis while the aligned peaks are not, and which files cannot be written. Empty when the
+        /// alignment did not correct RTs.
+        /// </summary>
+        public string AxisNote {
+            get {
+                if (!Properties.Any(p => p.RtAxis.IsCorrected)) {
+                    return string.Empty;
+                }
+                var note = "RT axes: every chromatogram, marker and range here is on each file's measured RT; Update writes the aligned peaks on the aligned (reference file) RT axis.";
+                var refused = Properties.Where(p => !p.RtAxis.CanWrite).ToList();
+                if (refused.Count > 0) {
+                    note += $" Not written: {string.Join(", ", refused.Select(p => p.Model.FileName))} ({refused[0].RtAxis.Note})";
+                }
+                return note;
+            }
+        }
+
         public void UpdatePeakInfo() {
             if (Properties.IsEmptyOrNull()) {
                 return;
@@ -116,10 +140,17 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                 if (p.Accessory is null) {
                     return;
                 }
+                if (!p.RtAxis.CanWrite) {
+                    // Where this aligned peak lies on the measured axis is not known, so a range chosen
+                    // on that axis cannot be written onto it.
+                    continue;
+                }
 
-                p.Model.ChromXsLeft.SetChromX(ChromX.Convert(p.Accessory.Chromatogram.RtLeft, _spot.ChromXType, _spot.ChromXUnit));
-                p.Model.ChromXsTop.SetChromX(ChromX.Convert(p.Accessory.Chromatogram.RtTop, _spot.ChromXType, _spot.ChromXUnit));
-                p.Model.ChromXsRight.SetChromX(ChromX.Convert(p.Accessory.Chromatogram.RtRight, _spot.ChromXType, _spot.ChromXUnit));
+                // The range was chosen on the chromatogram's axis, the file's measured RT; the aligned
+                // peak's fields are on the aligned axis.
+                p.Model.ChromXsLeft.SetChromX(ChromX.Convert(p.ToAlignedAxis(p.Accessory.Chromatogram.RtLeft), _spot.ChromXType, _spot.ChromXUnit));
+                p.Model.ChromXsTop.SetChromX(ChromX.Convert(p.ToAlignedAxis(p.Accessory.Chromatogram.RtTop), _spot.ChromXType, _spot.ChromXUnit));
+                p.Model.ChromXsRight.SetChromX(ChromX.Convert(p.ToAlignedAxis(p.Accessory.Chromatogram.RtRight), _spot.ChromXType, _spot.ChromXUnit));
 
                 rtList.Add(p.Accessory.Chromatogram.RtTop);
 
@@ -131,6 +162,11 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                 p.Model.SignalToNoise = p.Accessory.Chromatogram.SignalToNoise;
             }
 
+            if (rtList.Count == 0) {
+                // No file could be written (an alignment that corrected RTs without its map, every
+                // peak edited by hand): the spot is left as it was too.
+                return;
+            }
             if (rtList.Max() > 0) {
                 Properties[0].AverageRt = rtList.Average();
             }
@@ -160,6 +196,24 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public double PeakHeight { get; set; }
         public Accessory? Accessory { get; set; }
         public bool Include { get; set; } = true;
+
+        /// <summary>
+        /// How the aligned peak (<see cref="Model"/>) moves between its file's measured RT axis, the
+        /// axis of <see cref="SmoothedPeakList"/>, and the aligned RT axis of its ChromXs.
+        /// </summary>
+        public AlignedPeakRtAxisMap RtAxis { get; set; } = AlignedPeakRtAxisMap.NotCorrected;
+
+        /// <summary>The aligned peak's top on the chromatogram's axis.</summary>
+        public double OriginalTop => ToChromatogramAxis(Model.ChromXsTop.Value);
+        /// <summary>The aligned peak's left edge on the chromatogram's axis.</summary>
+        public double OriginalLeft => ToChromatogramAxis(Model.ChromXsLeft.Value);
+        /// <summary>The aligned peak's right edge on the chromatogram's axis.</summary>
+        public double OriginalRight => ToChromatogramAxis(Model.ChromXsRight.Value);
+
+        /// <summary>A value of the chromatogram's axis (the file's measured RT) on the aligned axis.</summary>
+        public double ToAlignedAxis(double value) => RtAxis.IsCorrected ? RtAxis.ToAligned(value) : value;
+
+        private double ToChromatogramAxis(double value) => RtAxis.IsCorrected ? RtAxis.ToOriginal(value) : value;
 
         public PeakPropertyLegacy(AlignmentChromPeakFeatureModel bean, Brush brush, List<ChromatogramPeak> speaks, RetentionIndexHandler? riHandler) {
             Model = bean;
@@ -286,6 +340,14 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                 xtitle = "Retention index";
             else if (isDrift)
                 xtitle = "Mobility";
+            // When the alignment corrected RTs, the chromatograms are on each file's measured RT and the
+            // aligned panel shifts each onto the spot's (aligned) RT: the axes say which.
+            var isCorrected = !isRI && !isDrift && peakProperties!.Any(p => p.RtAxis.IsCorrected);
+            if (isCorrected) {
+                xtitle = type == PeakModType.Aligned
+                    ? "Aligned retention time (min; each file shifted onto the spot RT)"
+                    : "Original retention time (min; each file's measured RT)";
+            }
 
 
             var area = new Area() {
@@ -332,9 +394,9 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                     }
                     point.Accessory = new Accessory();
                     point.Accessory.SetChromatogram(
-                        (float)prop.Model.ChromXsTop.Value, 
-                        (float)prop.Model.ChromXsLeft.Value, 
-                        (float)prop.Model.ChromXsRight.Value,
+                        (float)prop.OriginalTop, 
+                        (float)prop.OriginalLeft, 
+                        (float)prop.OriginalRight,
                         prop.Model.EstimatedNoise, 
                         prop.Model.SignalToNoise);
                 }
@@ -345,9 +407,9 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                     point.Accessory = new Accessory();
                     if (prop.Accessory == null) {
                         point.Accessory.SetChromatogram(
-                            (float)prop.Model.ChromXsTop.Value - prop.AlignOffset,
-                            (float)prop.Model.ChromXsLeft.Value - prop.AlignOffset,
-                            (float)prop.Model.ChromXsRight.Value - prop.AlignOffset,
+                            (float)prop.OriginalTop - prop.AlignOffset,
+                            (float)prop.OriginalLeft - prop.AlignOffset,
+                            (float)prop.OriginalRight - prop.AlignOffset,
                             prop.Model.EstimatedNoise,
                             prop.Model.SignalToNoise);
                     }
@@ -366,9 +428,9 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
                     point.Accessory = new Accessory();
                     if (prop.Accessory == null) {
                         point.Accessory.SetChromatogram(
-                            (float)prop.Model.ChromXsTop.Value,
-                            (float)prop.Model.ChromXsLeft.Value,
-                            (float)prop.Model.ChromXsRight.Value,
+                            (float)prop.OriginalTop,
+                            (float)prop.OriginalLeft,
+                            (float)prop.OriginalRight,
                             prop.Model.EstimatedNoise,
                             prop.Model.SignalToNoise);
                     }

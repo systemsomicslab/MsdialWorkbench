@@ -33,7 +33,6 @@ namespace CompMs.MsdialCore.DataObj
         AnnotationQueryFactoryStorage CreateAnnotationQueryFactoryStorage();
     }
 
-    [MessagePackObject]
     public abstract class MsdialDataStorageBase
     {
         [Key(0)]

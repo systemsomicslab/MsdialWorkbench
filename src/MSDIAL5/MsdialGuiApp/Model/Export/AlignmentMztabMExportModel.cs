@@ -47,6 +47,7 @@ internal sealed class AlignmentMztabMExportModel : BindableBase, IAlignmentResul
         var spots = _peakSpotSupplyer.Supply(alignmentFile, default); // TODO: cancellation
         var msdecs = alignmentFile.LoadMSDecResults();
         var accessor = _accessPeakMeta.GetAccessor();
+        _exporter.RetentionTimeAxisNote = AlignmentRtAxisNote.For(alignmentFile);
 
         foreach (var type in _types.Where(t => t.ShouldExport)) {
             var filename = string.Format(filenameTemplate, type.TargetLabel);

@@ -6,6 +6,7 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.Legacy;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -205,7 +206,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     return b;
                 }).Replay(1).RefCount());
             return spotChromatograms.ObserveOn(TaskPoolScheduler.Default).DefaultIfNull(s =>
-                s.Spot.AlignedPeakPropertiesModelProperty.CombineLatest(s.Chromatograms, (peaks, chromatograms) => {
+                s.Spot.AlignedPeakPropertiesModelProperty.CombineLatest(s.Chromatograms, s.RtAxes, (peaks, chromatograms, rtAxes) => {
                     if (peaks is null) {
                         return Observable.Return(new SampleTableRows([]));
                     }
@@ -214,7 +215,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
                             if (!cls2brsh.TryGetValue(pair.Item1.AnalysisFileClass, out var brush)) {
                                 brush = Observable.Return(ChartBrushes.GetChartBrush(pair.Item1.AnalysisFileId));
                             }
-                            var row = brush.Select(b => GetSampleTableRow(s.Spot, pair.Item2, chromatogram, pair.Item1, b, parameter.CentroidMs1Tolerance));
+                            var rtAxis = rtAxes.For(pair.Item1.AnalysisFileId);
+                            var row = brush.Select(b => GetSampleTableRow(s.Spot, pair.Item2, chromatogram, pair.Item1, b, parameter.CentroidMs1Tolerance, rtAxis));
                             return row;
                         }).CombineLatest();
                     var rows_ = rows.Select(rs_ => new SampleTableRows(new ObservableCollection<SampleTableRow>(rs_)));
@@ -228,7 +230,11 @@ namespace CompMs.App.Msdial.View.PeakCuration
             PeakChromatogram chromatogram,
             AnalysisFileBean file,
             SolidColorBrush brush,
-            float ms1Tolerance) {
+            float ms1Tolerance,
+            AlignedPeakRtAxisMap rtAxis) {
+            // The chromatogram is on the file's measured RT axis; when the alignment corrected RTs the
+            // aligned peak is not, and its bounds are moved onto the chromatogram's axis to be drawn.
+            double OnChromatogramAxis(double value) => rtAxis.IsCorrected ? rtAxis.ToOriginal(value) : value;
 
             var chromatogramBean = new ChromatogramBeanLegacy(
                 true,
@@ -248,15 +254,18 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 "",
                 (float)alignmentProp.MassCenter,
                 ms1Tolerance,
-                (float)peak.ChromXsTop.Value,
-                (float)peak.ChromXsLeft.Value,
-                (float)peak.ChromXsRight.Value);
+                (float)OnChromatogramAxis(peak.ChromXsTop.Value),
+                (float)OnChromatogramAxis(peak.ChromXsLeft.Value),
+                (float)OnChromatogramAxis(peak.ChromXsRight.Value));
             return new SampleTableRow(
                 alignmentProp,
                 peak,
                 vm,
                 file.AnalysisFileClass,
-                alignmentProp.RepresentativeFileID == peak.FileID ? peak.FileID : 0);
+                alignmentProp.RepresentativeFileID == peak.FileID ? peak.FileID : 0)
+            {
+                RtAxis = rtAxis,
+            };
         }
     }
 
@@ -348,6 +357,12 @@ namespace CompMs.App.Msdial.View.PeakCuration
         private Drawing? _drawing;
         public SolidColorBrush? BackgroundColInt { set; get; }
         public SolidColorBrush? BackgroundColArea { set; get; }
+
+        /// <summary>
+        /// How the aligned peak moves between its file's measured RT axis, the chromatogram's, and the
+        /// aligned RT axis of its ChromXs.
+        /// </summary>
+        public AlignedPeakRtAxisMap RtAxis { get; set; } = AlignedPeakRtAxisMap.NotCorrected;
         #endregion
         //private List<SolidColorBrush> redColorList = new List<SolidColorBrush>();
 

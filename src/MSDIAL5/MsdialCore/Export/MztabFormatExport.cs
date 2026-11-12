@@ -60,6 +60,13 @@ namespace CompMs.MsdialCore.Export
 
         public string Separator { get; } = "\t";
 
+        /// <summary>
+        /// When set, says in the metadata section which RT axis the file's retention times are on
+        /// (an alignment the automatic RT correction moved onto a reference file's axis). Must hold no
+        /// tab, comma or bracket. Null, the default, writes nothing.
+        /// </summary>
+        public string? RetentionTimeAxisNote { get; set; }
+
         private readonly Dictionary<string, string> _annotatorID2DataBaseID;
 
         public void MztabFormatExporterCore(
@@ -932,6 +939,11 @@ namespace CompMs.MsdialCore.Export
             // to stay readable by a validator.
             for (int i = 0; i < libraryStatistics.Count; i++) {
                 mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "custom[" + (i + 1) + "]", libraryStatistics[i] }));
+            }
+            // Which RT axis the retention times of this file are on, when the alignment moved them onto
+            // a reference file's axis: in the next custom[n], for the reason the library statistics are.
+            if (!string.IsNullOrEmpty(RetentionTimeAxisNote)) {
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "custom[" + (libraryStatistics.Count + 1) + "]", "[,, MS-DIAL retention time axis, " + RetentionTimeAxisNote + "]" }));
             }
 
             var normalizedCommentList = new List<string>();

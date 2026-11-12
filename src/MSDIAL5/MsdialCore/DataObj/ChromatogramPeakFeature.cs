@@ -311,7 +311,7 @@ namespace CompMs.MsdialCore.DataObj
             set => matchResults = value;
         }
 
-        [Key(50)]
+        //[Key(50)]
         private MsScanMatchResultContainer matchResults;
 
         [IgnoreMember]
