@@ -95,12 +95,15 @@ namespace CompMs.App.Msdial.Model.Setting
                 msfinderQueryFiles.Add(msfinderQueryFile);
             }
 
+            var rawDataList = MsfinderQueryReader.ReadAll(msfinderQueryFiles, _analysisParam, fullpath);
+
             if (_parameter.IsFormulaFinder) {
                 var paramfile = Path.Combine(fullpath, $"batchparam-{dt:yyyy_MM_dd_HH_mm_ss}.txt");
                 MsFinderIniParser.Write(_analysisParam, paramfile);
 
-                foreach (var msfinderQueryFile in msfinderQueryFiles) {
-                    var rawData = RawDataParcer.RawDataFileReader(msfinderQueryFile.RawDataFilePath, _analysisParam);
+                for (var i = 0; i < msfinderQueryFiles.Count; i++) {
+                    var msfinderQueryFile = msfinderQueryFiles[i];
+                    var rawData = rawDataList[i];
                     var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(ProductIonDB, NeutralLossDB, ExistFormulaDB, rawData, _analysisParam);
                     FormulaResultParcer.FormulaResultsWriter(msfinderQueryFile.FormulaFilePath, formulaResults);
                 }
