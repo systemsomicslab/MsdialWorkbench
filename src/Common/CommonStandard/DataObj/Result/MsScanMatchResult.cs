@@ -36,6 +36,7 @@ namespace CompMs.Common.DataObj.Result {
         /// for the two to be tagged apart. Nothing about it is specific to GC-MS.
         /// </remarks>
         PredictedMsp,
+        StagedLipid,
     }
 
     /// <summary>
@@ -210,8 +211,8 @@ namespace CompMs.Common.DataObj.Result {
         /// </summary>
         /// <remarks>
         /// ONLY WHERE MS-DIAL ACTUALLY KNOWS. <see cref="DataBaseSource.PredictedMsp"/> is the
-        /// analyst saying so, and the EAD lipid databases are built in memory by MS-DIAL itself from
-        /// a lipid generator, so neither is a guess.
+        /// analyst saying so, and the EAD and staged lipid databases are built in memory by MS-DIAL
+        /// itself from a lipid generator, so neither is a guess.
         ///
         /// <see cref="DataBaseSource.Lbm"/> is deliberately NOT here even though .lbm2 spectra are
         /// in silico, and the reason is a defect rather than a principle: MassAnnotationSettingModel
@@ -231,6 +232,7 @@ namespace CompMs.Common.DataObj.Result {
                 case DataBaseSource.EieioLipid:
                 case DataBaseSource.OadLipid:
                 case DataBaseSource.EidLipid:
+                case DataBaseSource.StagedLipid:
                     return true;
                 default:
                     return false;

@@ -92,7 +92,7 @@ namespace CompMs.Common.Lipidomics
             var (maxAcylDb, maxAlkylDb, maxSphingoDb) = ((dbRemain + minAcylDb) * Math.Sign(chains.AcylChainCount), (dbRemain + minAlkylDb) * Math.Sign(chains.AlkylChainCount), (dbRemain + minSphingoDb) * Math.Sign(chains.SphingoChainCount));
             var (minAcylOx, minAlkylOx, minSphingoOx) = (0, 0, chains.SphingoChainCount * 2);
             var oxRemain = chains.OxidizedCount - minAcylOx - minAlkylOx - minSphingoOx;
-            var (maxAcylOx, maxAlkylOx, maxSphingoOx) = ((dbRemain + minAcylOx) * Math.Sign(chains.AcylChainCount), (dbRemain + minAlkylOx) * Math.Sign(chains.AlkylChainCount), (dbRemain + minSphingoOx) * Math.Sign(chains.SphingoChainCount));
+            var (maxAcylOx, maxAlkylOx, maxSphingoOx) = ((oxRemain + minAcylOx) * Math.Sign(chains.AcylChainCount), (oxRemain + minAlkylOx) * Math.Sign(chains.AlkylChainCount), (oxRemain + minSphingoOx) * Math.Sign(chains.SphingoChainCount));
 
             var css = Distribute(chains.CarbonCount, minAcylCarbon, maxAcylCarbon, minAlkylCarbon, maxAlkylCarbon, minSphingoCarbon, maxSphingoCarbon).ToArray();
             var dbss = Distribute(chains.DoubleBondCount, minAcylDb, maxAcylDb, minAlkylDb, maxAlkylDb, minSphingoDb, maxSphingoDb).ToArray();

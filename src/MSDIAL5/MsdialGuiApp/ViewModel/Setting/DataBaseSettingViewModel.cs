@@ -139,6 +139,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
+            IsStagedLipidDataBase = DBSource
+                .Select(src => src == DataBaseSource.StagedLipid)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            AdductPresetSetting = new LipidAdductPresetSettingViewModel(model).AddTo(Disposables);
+
             IsEditable = isEditableModel.Where(m => m == Model).ToConstant(true)
                 .Merge(notEditableModel.Where(m => m == Model).ToConstant(false))
                 .ToReadOnlyReactivePropertySlim()
@@ -166,7 +172,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DataBaseSource.Fasta,
             DataBaseSource.EieioLipid,
             DataBaseSource.OadLipid,
-            DataBaseSource.EidLipid
+            DataBaseSource.EidLipid,
+            DataBaseSource.StagedLipid
         ]);
 
         public ProteomicsParameterVM ProteomicsParameterVM { get; }
@@ -204,6 +211,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         private static readonly string LbmExtension = "Lbm file(*.lbm)|*.lbm?";
         private static readonly string FastaExtension = "FASTA file(*.fasta)|*.fasta";
         private static readonly string TextExtension = "Text library(*.txt)|*.txt";
+        private static readonly string LipidSeedExtension = "Lipid seed library(*.tsv)|*.tsv";
         private List<string> OrderingExtensions() {
             var filters = new List<string>
             {
@@ -211,6 +219,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                  LbmExtension,
                  FastaExtension,
                  TextExtension,
+                 LipidSeedExtension,
                  "All(*)|*"
             };
             switch (DBSource.Value) {
@@ -225,6 +234,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 case DataBaseSource.Lbm:
                     filters.Remove(LbmExtension);
                     filters.Insert(0, LbmExtension);
+                    break;
+                case DataBaseSource.StagedLipid:
+                    filters.Remove(LipidSeedExtension);
+                    filters.Insert(0, LipidSeedExtension);
                     break;
                 case DataBaseSource.Msp:
                 default:
@@ -250,6 +263,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> IsProteomicsDataBase { get; }
 
+        public ReadOnlyReactivePropertySlim<bool> IsStagedLipidDataBase { get; }
+
+        /// <summary>The adduct preset of a staged lipid database.</summary>
+        public LipidAdductPresetSettingViewModel AdductPresetSetting { get; }
+
         // IDataBaseSettingViewModel interface
         IReadOnlyReactiveProperty<string> IDataBaseSettingViewModel.DataBaseID => DataBaseID;
         IReadOnlyReactiveProperty<DataBaseSource> IDataBaseSettingViewModel.DBSource => DBSource;
@@ -263,9 +281,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             DataBaseID = Observable.Return(model.DataBaseID).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             DBSource = Observable.Return(model.DBSource).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ObserveHasErrors = Observable.Return(false).ToReadOnlyReactivePropertySlim(false).AddTo(Disposables);
+            // The adduct preset stays editable: changing it re-applies the preset when the database is built.
+            IsStagedLipidDataBase = model.DBSource == DataBaseSource.StagedLipid;
+            AdductPresetSetting = new LipidAdductPresetSettingViewModel(model).AddTo(Disposables);
         }
 
         public DataBaseSettingModel Model { get; }
+
+        public bool IsStagedLipidDataBase { get; }
+
+        public LipidAdductPresetSettingViewModel AdductPresetSetting { get; }
 
         public ReadOnlyReactivePropertySlim<string?> DataBaseID { get; }
 

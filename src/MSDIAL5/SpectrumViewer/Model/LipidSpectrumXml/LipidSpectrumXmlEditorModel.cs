@@ -127,23 +127,10 @@ namespace CompMs.App.SpectrumViewer.Model.LipidSpectrumXml
             return def != null && int.TryParse((string)def.Element("Chain"), out chainCount);
         }
 
-        // The generator XML occasionally splits a single LbmClass's ion rules by chain subtype
-        // with a "_P" (plasmalogen)/"_O" (alkyl ether) suffix that isn't itself an LbmClass member
-        // (e.g. "EtherLPE_P"/"EtherLPE_O" both belong to LbmClass.EtherLPE). Only these two known,
-        // unambiguous suffixes are stripped here; the many other XML class names with no LbmClass
-        // equivalent (N-acyl amino acid/ganglioside conjugates, etc.) are left unresolved rather
-        // than guessed at.
+        // Same XML-name-to-LbmClass mapping the annotation side uses (strips the "_P"/"_O" subtype
+        // suffix only; other names without an LbmClass equivalent stay unresolved).
         private static bool TryResolveLbmClass(string rawClassName, out LbmClass lbmClass) {
-            if (System.Enum.TryParse(rawClassName, out lbmClass)) {
-                return true;
-            }
-            foreach (var suffix in new[] { "_P", "_O" }) {
-                if (rawClassName != null && rawClassName.EndsWith(suffix)
-                    && System.Enum.TryParse(rawClassName.Substring(0, rawClassName.Length - suffix.Length), out lbmClass)) {
-                    return true;
-                }
-            }
-            return false;
+            return LipidSpectrumModelSelector.TryResolveLbmClass(rawClassName, out lbmClass);
         }
 
         public string ConstantsFilePath {

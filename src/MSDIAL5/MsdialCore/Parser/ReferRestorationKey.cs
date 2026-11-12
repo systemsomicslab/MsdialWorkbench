@@ -159,4 +159,31 @@ namespace CompMs.MsdialCore.Parser
             return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }
+
+    [MessagePack.MessagePackObject]
+    public class StagedLipidRestorationKey : IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, StagedLipidDatabase>
+    {
+        public StagedLipidRestorationKey(string key, int priority, MsRefSearchParameterBase msRefSearchParameter) {
+            Key = key;
+            Priority = priority;
+            MsRefSearchParameter = msRefSearchParameter;
+        }
+
+        [MessagePack.Key(nameof(Key))]
+        public string Key { get; }
+
+        [MessagePack.Key(nameof(Priority))]
+        public int Priority { get; }
+
+        [MessagePack.Key(nameof(MsRefSearchParameter))]
+        public MsRefSearchParameterBase MsRefSearchParameter { get; set; }
+
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, StagedLipidDatabase> Accept(ILoadAnnotatorVisitor visitor, StagedLipidDatabase database) {
+            return visitor.Visit(this, database);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Accept(IAnnotationQueryFactoryGenerationVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, StagedLipidDatabase database) {
+            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+        }
+    }
 }

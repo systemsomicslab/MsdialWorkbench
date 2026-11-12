@@ -161,6 +161,19 @@
                         VerticalAlignment="Center"
                         Width="128"/>
             </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Adduct preset:" Visibility="{Binding IsStagedLipidDataBase.Value, Converter={StaticResource BooleanToVisibility}}"
+                               ToolTip="{Binding AdductPresetSetting.PresetFolder, Mode=OneTime, StringFormat='Which adducts to expect per lipid class. User presets are read from {0}'}">
+                <StackPanel Orientation="Horizontal" DataContext="{Binding AdductPresetSetting}">
+                    <ComboBox ItemsSource="{Binding Presets}"
+                              SelectedItem="{Binding Preset.Value}"
+                              DisplayMemberPath="Name"
+                              Width="180"/>
+                    <Button Content="Load preset..."
+                            Command="{Binding ImportCommand, Mode=OneTime}"
+                            Margin="4,0,0,0"
+                            Width="96"/>
+                </StackPanel>
+            </ui:LabeledContent>
             <GroupBox Header="Peptide database setting"
                       BorderThickness="0"
                       Visibility="{Binding IsProteomicsDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
@@ -240,6 +253,19 @@
                                Content="{Binding DataBaseID.Value}"/>
             <ui:LabeledContent PrependLabel="Database type"
                                Content="{Binding DBSource.Value}"/>
+            <ui:LabeledContent PrependLabel="Adduct preset:" Visibility="{Binding IsStagedLipidDataBase, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}"
+                               ToolTip="{Binding AdductPresetSetting.PresetFolder, Mode=OneTime, StringFormat='Which adducts to expect per lipid class. User presets are read from {0}'}">
+                <StackPanel Orientation="Horizontal" DataContext="{Binding AdductPresetSetting}">
+                    <ComboBox ItemsSource="{Binding Presets}"
+                              SelectedItem="{Binding Preset.Value}"
+                              DisplayMemberPath="Name"
+                              Width="180"/>
+                    <Button Content="Load preset..."
+                            Command="{Binding ImportCommand, Mode=OneTime}"
+                            Margin="4,0,0,0"
+                            Width="96"/>
+                </StackPanel>
+            </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
 

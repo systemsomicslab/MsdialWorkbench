@@ -42,7 +42,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(2, chains.OxidizedCount);
             Assert.AreEqual(2, chains.ChainCount);
             Assert.AreEqual(537.5120937402901, chains.Mass, 1e-5);
-            Assert.AreEqual("34:1;2O", chains.ToString());
+            Assert.AreEqual("34:1;O2", chains.ToString());
         }
 
         [DataTestMethod]

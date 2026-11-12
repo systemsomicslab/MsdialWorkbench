@@ -35,6 +35,10 @@ namespace CompMs.MsdialCore.Parser
         public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit(ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) {
             throw new NotImplementedException();
         }
+
+        public ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, StagedLipidDatabase> Visit(StagedLipidRestorationKey key, StagedLipidDatabase database) {
+            return new StagedLipidDatabaseAnnotator(database, key.Key, key.Priority, key.MsRefSearchParameter);
+        }
     }
 
     public sealed class StandardAnnotationQueryFactoryGenerationVisitor : IAnnotationQueryFactoryGenerationVisitor {
@@ -64,6 +68,10 @@ namespace CompMs.MsdialCore.Parser
 
         public IAnnotationQueryFactory<MsScanMatchResult> Visit(EadLipidDatabaseRestorationKey key, IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> finder) {
             throw new NotImplementedException();
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(StagedLipidRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            return new AnnotationQueryFactory(finder, _peakPickParameter, key.MsRefSearchParameter, ignoreIsotopicPeak: true);
         }
     }
 }

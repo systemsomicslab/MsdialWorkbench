@@ -35,6 +35,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 Restore(dataBaseStorage.MetabolomicsDataBases, databases, annotators, annotatorFactory, parameter);
                 Restore(dataBaseStorage.ProteomicsDataBases, databases, annotators, annotatorFactory, parameter);
                 Restore(dataBaseStorage.EadLipidomicsDatabases, databases, annotators, annotatorFactory, parameter);
+                Restore(dataBaseStorage.StagedLipidDatabases, databases, annotators, annotatorFactory, parameter);
                 annotators.Sort((a, b) => b.Priority.CompareTo(a.Priority));
             }
             DataBaseModels = new ObservableCollection<DataBaseSettingModel>(databases);
@@ -179,6 +180,7 @@ namespace CompMs.App.Msdial.Model.Setting
             SetAnnotatorContainer(result, refer);
             SetProteomicsAnnotatorContainer(result, refer);
             SetEadLipidomicsAnnotatorContainer(result, refer);
+            SetStagedLipidAnnotatorContainer(result, refer);
             IsCompleted = true;
             return result;
         }
@@ -267,6 +269,37 @@ namespace CompMs.App.Msdial.Model.Setting
                                 results.Add(new EadLipidAnnotatorParameterPair(key, queryFactory));
                             }
                             storage.AddEadLipidomicsDataBase(db, results);
+                        });
+                        tasks.Add(task);
+                    }
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
+                });
+            _broker.Publish(request);
+        }
+
+        private void SetStagedLipidAnnotatorContainer(DataBaseStorage storage, IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?> refer) {
+            var request = new ProcessMessageRequest("Loading lipid seed libraries...",
+                async () =>
+                {
+                    var tasks = new List<Task>();
+                    foreach (var group in AnnotatorModels.OfType<IStagedLipidAnnotatorSettingModel>().GroupBy(m => m.DataBaseSettingModel)) {
+                        var task = Task.Run(() =>
+                        {
+                            var dbModel = group.Key;
+                            var db = dbModel.CreateStagedLipidDatabase();
+                            if (db is null) {
+                                return;
+                            }
+                            var results = new List<IAnnotatorParameterPair<StagedLipidDatabase>>();
+                            foreach (var annotatorModel in group) {
+                                var index = AnnotatorModels.IndexOf(annotatorModel);
+                                var queryFactory = annotatorModel.CreateAnnotationQueryFactory(AnnotatorModels.Count - index, db, refer);
+                                var key = annotatorModel.CreateRestorationKey(AnnotatorModels.Count - index);
+                                results.Add(new StagedLipidAnnotatorParameterPair(key, queryFactory));
+                            }
+                            lock (dbLock) {
+                                storage.AddStagedLipidDataBase(db, results);
+                            }
                         });
                         tasks.Add(task);
                     }

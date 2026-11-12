@@ -1,0 +1,4 @@
+# XML rule sets whose own generated spectrum does not pass the staged evaluator (StagedLipidSelfConsistencyTests).
+# These are reported for review, not fixed. Columns (tab separated): LipidClass, Adduct, Check, Reason.
+LipidClass	Adduct	Check	Reason
+PI_Cer	[M-H]-	level	The class-diagnostic inositol-loss ion (NLofC6H10O5) has theoretical Intensity 5 but its own DiagnosticIonIntensity is 10, so the generated spectrum never passes its own class check.

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
@@ -10,6 +11,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +23,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly MoleculeDataBase? _metabolomicsDB;
         private readonly ShotgunProteomicsDB? _proteomicsDB;
         private readonly EadLipidDatabase? _eadLipidDatabase;
+        private readonly StagedLipidDatabase? _stagedLipidDatabase;
         private readonly ParameterBase _parameter;
 
         public DataBaseSettingModel(ParameterBase parameter) {
@@ -46,6 +49,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     _proteomicsDB = pdb;
                     DBSource = pdb.DataBaseSource;
                     ProteomicsParameter = pdb.ProteomicsParameter;
+                    break;
+                case StagedLipidDatabase sdb:
+                    _stagedLipidDatabase = sdb;
+                    DBSource = DataBaseSource.StagedLipid;
                     break;
                 case EadLipidDatabase ldb:
                     _eadLipidDatabase = ldb;
@@ -79,6 +86,35 @@ namespace CompMs.App.Msdial.Model.Setting
         private DataBaseSource _dBSource = DataBaseSource.None;
 
         public LipidQueryBean LipidQueryContainer { get; }
+
+        /// <summary>Where the lipid adduct presets come from (the user's folder and settings by default).</summary>
+        public LipidAdductPresetStore AdductPresetStore { get; set; } = LipidAdductPresetStore.Default;
+
+        public IonMode IonMode => _parameter.ProjectParam.IonMode;
+
+        public IReadOnlyList<LipidAdductPreset> GetAdductPresets() => AdductPresetStore.GetPresets(IonMode);
+
+        /// <summary>
+        /// The adduct preset of a staged lipid database. A new database starts from the store's default; a
+        /// restored one shows the preset it was built with and keeps its stored adducts unless this is changed.
+        /// </summary>
+        public LipidAdductPreset? AdductPreset {
+            get => _adductPreset ?? (_adductPreset = InitialAdductPreset());
+            set {
+                if (SetProperty(ref _adductPreset, value)) {
+                    _isAdductPresetChanged = true;
+                }
+            }
+        }
+        private LipidAdductPreset? _adductPreset;
+        private bool _isAdductPresetChanged;
+
+        private LipidAdductPreset? InitialAdductPreset() {
+            if (_stagedLipidDatabase is null) {
+                return AdductPresetStore.GetDefault(IonMode);
+            }
+            return GetAdductPresets().FirstOrDefault(p => p.Name == _stagedLipidDatabase.AdductPresetName);
+        }
 
         public ProteomicsParameter ProteomicsParameter { get; }
 
@@ -116,6 +152,8 @@ namespace CompMs.App.Msdial.Model.Setting
                     return CreateOadLipidDatabase();
                 case DataBaseSource.EidLipid:
                     return CreateEidLipidDatabase();
+                case DataBaseSource.StagedLipid:
+                    return CreateStagedLipidDatabase();
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }
@@ -169,6 +207,41 @@ namespace CompMs.App.Msdial.Model.Setting
                 default:
                     return null;
             }
+        }
+
+        public StagedLipidDatabase? CreateStagedLipidDatabase() {
+            switch (DBSource) {
+                case DataBaseSource.StagedLipid:
+                    var db = _stagedLipidDatabase ?? LoadStagedLipidDatabase();
+                    // A restored database keeps the adducts it was built with unless the preset was changed.
+                    if ((_isAdductPresetChanged || db.AllowedAdducts is null) && AdductPreset is LipidAdductPreset preset) {
+                        db.ApplyAdductPreset(preset);
+                        AdductPresetStore.MarkUsed(preset, IonMode);
+                    }
+                    return db;
+                default:
+                    return null;
+            }
+        }
+
+        // The seed file format is provisional (see LipidSeedTsvReader). Unreadable lines are reported and
+        // skipped; the readable seeds are still used.
+        private StagedLipidDatabase LoadStagedLipidDatabase() {
+            var seeds = LipidSeedTsvReader.Read(DataBasePath, out var errors);
+            if (errors.Count > 0) {
+                const int shown = 10;
+                var lines = errors.Take(shown).Select(e => e.ToString());
+                if (errors.Count > shown) {
+                    lines = lines.Append($"... and {errors.Count - shown} more");
+                }
+                MessageBroker.Default.Publish(new ErrorMessageBoxRequest
+                {
+                    ButtonType = System.Windows.MessageBoxButton.OK,
+                    Content = $"{errors.Count} line(s) of {DataBasePath} were skipped; {seeds.Count} seed(s) were read.{Environment.NewLine}" + string.Join(Environment.NewLine, lines),
+                    Caption = "Some lipid seeds could not be read.",
+                });
+            }
+            return new StagedLipidDatabase(DataBaseID, seeds);
         }
 
         /// <summary>
