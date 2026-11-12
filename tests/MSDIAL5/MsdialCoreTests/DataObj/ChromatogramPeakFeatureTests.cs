@@ -50,18 +50,18 @@ namespace CompMs.MsdialCore.DataObj.Tests
             MessagePackDefaultHandler.SaveToStream(peak, memory);
             memory.Seek(0, SeekOrigin.Begin);
             var actual = MessagePackDefaultHandler.LoadFromStream<FakeChromatogramPeakFeature>(memory);
-            Assert.AreEqual(peak.ChromScanIdLeft, actual.ChromScanIdLeft);
-            Assert.AreEqual(peak.ChromScanIdTop, actual.ChromScanIdTop);
-            Assert.AreEqual(peak.ChromScanIdRight, actual.ChromScanIdRight);
-            Assert.AreEqual(peak.ChromXsLeft.Value, actual.ChromXsLeft.Value);
-            Assert.AreEqual(peak.ChromXsTop.Value, actual.ChromXsTop.Value);
-            Assert.AreEqual(peak.ChromXsRight.Value, actual.ChromXsRight.Value);
-            Assert.AreEqual(peak.PeakHeightLeft, actual.PeakHeightLeft);
-            Assert.AreEqual(peak.PeakHeightTop, actual.PeakHeightTop);
-            Assert.AreEqual(peak.PeakHeightRight, actual.PeakHeightRight);
-            Assert.AreEqual(peak.PeakAreaAboveZero, actual.PeakAreaAboveZero);
-            Assert.AreEqual(peak.PeakAreaAboveBaseline, actual.PeakAreaAboveBaseline);
-            Assert.AreEqual(peak.Mass, actual.Mass);
+            Assert.AreEqual(peak.PeakFeature.ChromScanIdLeft, actual.ChromScanIdLeft);
+            Assert.AreEqual(peak.PeakFeature.ChromScanIdTop, actual.ChromScanIdTop);
+            Assert.AreEqual(peak.PeakFeature.ChromScanIdRight, actual.ChromScanIdRight);
+            Assert.AreEqual(peak.PeakFeature.ChromXsLeft.Value, actual.ChromXsLeft.Value);
+            Assert.AreEqual(peak.PeakFeature.ChromXsTop.Value, actual.ChromXsTop.Value);
+            Assert.AreEqual(peak.PeakFeature.ChromXsRight.Value, actual.ChromXsRight.Value);
+            Assert.AreEqual(peak.PeakFeature.PeakHeightLeft, actual.PeakHeightLeft);
+            Assert.AreEqual(peak.PeakFeature.PeakHeightTop, actual.PeakHeightTop);
+            Assert.AreEqual(peak.PeakFeature.PeakHeightRight, actual.PeakHeightRight);
+            Assert.AreEqual(peak.PeakFeature.PeakAreaAboveZero, actual.PeakAreaAboveZero);
+            Assert.AreEqual(peak.PeakFeature.PeakAreaAboveBaseline, actual.PeakAreaAboveBaseline);
+            Assert.AreEqual(peak.PeakFeature.Mass, actual.Mass);
         }
 
         [TestMethod]

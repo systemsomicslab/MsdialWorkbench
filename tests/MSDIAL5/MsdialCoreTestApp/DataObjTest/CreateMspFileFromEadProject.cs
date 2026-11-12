@@ -93,9 +93,9 @@ namespace MsdialPrivateConsoleApp {
                 var maxIntensity = double.MinValue;
                 for (int i = 0; i < peaks.Count; i++) {
                     var peak = peaks[i];
-                    if (Math.Abs(peak.Mass - theoreticalMz) < 0.01) {
-                        if (maxIntensity < peak.PeakHeightTop) {
-                            maxIntensity = peak.PeakHeightTop;
+                    if (Math.Abs(peak.PeakFeature.Mass - theoreticalMz) < 0.01) {
+                        if (maxIntensity < peak.PeakFeature.PeakHeightTop) {
+                            maxIntensity = peak.PeakFeature.PeakHeightTop;
                             bestID = i;
                         }
                     }
@@ -109,7 +109,7 @@ namespace MsdialPrivateConsoleApp {
                 }
 
                 var bestPeak = peaks[bestID];
-                var rt = bestPeak.ChromXsTop.RT.Value;
+                var rt = bestPeak.PeakFeature.ChromXsTop.RT.Value;
                 if (Math.Abs(rt - 0.5) > 0.5) {
                     var error = "retention time of peak is strange for " + file.AnalysisFileName;
                     Console.WriteLine(error);

@@ -99,8 +99,8 @@ public sealed class Ms2Dec {
         if (peakWidth >= summary.AveragePeakWidthOnDtAxis + summary.StdevPeakWidthOnDtAxis * 3) peakWidth = summary.AveragePeakWidthOnDtAxis + summary.StdevPeakWidthOnDtAxis * 3; // width should be less than mean + 3*sigma for excluding redundant peak feature
         if (peakWidth <= summary.MedianPeakWidthOnDtAxis) peakWidth = summary.MedianPeakWidthOnDtAxis; // currently, the median peak width is used for very narrow peak feature
 
-        var minDT = (float)(dtChromPeak.ChromXsTop.Value - peakWidth * 1.5F);
-        var maxDT = (float)(dtChromPeak.ChromXsTop.Value + peakWidth * 1.5F);
+        var minDT = (float)(dtChromPeak.PeakFeature.ChromXsTop.Value - peakWidth * 1.5F);
+        var maxDT = (float)(dtChromPeak.PeakFeature.ChromXsTop.Value + peakWidth * 1.5F);
 
         var ms2ChromPeaksList = DataAccess.GetAccumulatedMs2PeakListList(provider, rtChromPeak, curatedSpectra, minDT, maxDT, param.IonMode);
         var smoothedMs2ChromPeaksList = new List<ExtractedIonChromatogram>();

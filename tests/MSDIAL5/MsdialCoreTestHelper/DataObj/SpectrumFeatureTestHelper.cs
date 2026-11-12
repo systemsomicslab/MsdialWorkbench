@@ -37,7 +37,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     public static class QuantifiedChromatogramPeakTestHelper {
         public static QuantifiedChromatogramPeak CreateSample() {
             return new QuantifiedChromatogramPeak(
-                new ChromatogramPeakFeature { MasterPeakID = 1, Mass = 100d, },
+                new ChromatogramPeakFeature { MasterPeakID = 1, PeakFeature = { Mass = 100d, }, },
                 new ChromatogramPeakShape { AmplitudeOrderValue = 1, AmplitudeScoreValue = 1, },
                 100, 50, 150);
         }

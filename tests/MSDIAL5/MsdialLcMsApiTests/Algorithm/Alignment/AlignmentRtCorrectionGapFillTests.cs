@@ -92,8 +92,8 @@ public class AlignmentRtCorrectionGapFillTests {
             Assert.AreEqual(4.3d, late[0].ChromXs.RT.Value, 1e-9);
             Assert.AreEqual(6.3d, late[1].ChromXs.RT.Value, 1e-9);
             var edges = (ChromatogramPeakFeature)late[0];
-            Assert.AreEqual(4.25d, edges.ChromXsLeft.RT.Value, 1e-9);
-            Assert.AreEqual(4.35d, edges.ChromXsRight.RT.Value, 1e-9);
+            Assert.AreEqual(4.25d, edges.PeakFeature.ChromXsLeft.RT.Value, 1e-9);
+            Assert.AreEqual(4.35d, edges.PeakFeature.ChromXsRight.RT.Value, 1e-9);
             CollectionAssert.AreEquivalent(new[] { 4d, 6d },
                 MsdialPeakSerializer.LoadChromatogramPeakFeatures(files[1].PeakAreaBeanInformationFilePath).Select(peak => peak.ChromXs.RT.Value).ToArray(),
                 "the peak file keeps the original RTs");

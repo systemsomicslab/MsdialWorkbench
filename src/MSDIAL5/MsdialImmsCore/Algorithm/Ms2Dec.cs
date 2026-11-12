@@ -48,7 +48,7 @@ public sealed class Ms2Dec
         IupacDatabase iupac, double targetCE = -1) {
 
         var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
-        var precursorMz = chromPeakFeature.Mass;
+        var precursorMz = chromPeakFeature.PeakFeature.Mass;
 
         if (targetSpecID < 0 || targetSpecID >= provider.Count())
             return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
@@ -147,14 +147,14 @@ public sealed class Ms2Dec
             peakWidth = summary.AveragePeakWidthOnDtAxis + summary.StdevPeakWidthOnDtAxis * 3; // width should be less than mean + 3*sigma for excluding redundant peak feature
         if (peakWidth <= summary.MedianPeakWidthOnDtAxis)
             peakWidth = summary.MedianPeakWidthOnDtAxis; // currently, the median peak width is used for very narrow peak feature
-        var startDt = (float)(chromPeakFeature.ChromXsTop.Value - peakWidth * 1.5F);
-        var endDt = (float)(chromPeakFeature.ChromXsTop.Value + peakWidth * 1.5F);
+        var startDt = (float)(chromPeakFeature.PeakFeature.ChromXsTop.Value - peakWidth * 1.5F);
+        var endDt = (float)(chromPeakFeature.PeakFeature.ChromXsTop.Value + peakWidth * 1.5F);
 
         //preparing MS1 and MS/MS chromatograms
         //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
         var rawSpectra = new RawSpectra(provider, ionMode, type);
         var chromatogramRange = new ChromatogramRange(startDt, endDt, ChromXType.Drift, ChromXUnit.Msec);
-        return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(chromPeakFeature.Mass, centroidMs1Tolerance), chromatogramRange);
+        return rawSpectra.GetMS1ExtractedChromatogram(new MzRange(chromPeakFeature.PeakFeature.Mass, centroidMs1Tolerance), chromatogramRange);
     }
 
     //private static List<List<ChromatogramPeak>> GetMs2PeaksList(
