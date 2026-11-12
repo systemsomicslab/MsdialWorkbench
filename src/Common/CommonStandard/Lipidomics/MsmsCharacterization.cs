@@ -17133,7 +17133,7 @@ AdductIon adduct)
                             }
                         }
                     }
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "e", theoreticalMz, adduct,
                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
@@ -17179,7 +17179,7 @@ AdductIon adduct)
                         }
                     }
                 }
-                return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "", theoreticalMz, adduct,
+                return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "e", theoreticalMz, adduct,
                   totalCarbon, totalDoubleBond, 0, candidates, 2);
 
 
