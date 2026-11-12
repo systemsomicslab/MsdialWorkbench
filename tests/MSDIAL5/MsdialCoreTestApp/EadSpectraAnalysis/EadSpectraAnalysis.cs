@@ -156,7 +156,6 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
         public static void TestMolecularNetworkingFunctions(string inputfile, string outputdir) {
             var minimumPeakMatch = 4;
             var matchThreshold = 0.9;
-            var maxEdgeNumPerNode = 10;
             var maxPrecursorDiff = 400.0;
             var maxPrecursorDiff_Percent = 100;
             var records = MspFileParser.MspFileReader(inputfile);
