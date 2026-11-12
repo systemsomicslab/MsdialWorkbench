@@ -13233,7 +13233,7 @@ AdductIon adduct)
                     if (isClassIon1Found != true) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
+                        var diagnosticMz2 = theoreticalMz - CH3 - MassDiffDictionary.ProtonMass - HCOOadduct;
                         var threshold2 = 50.0;
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon2Found) return null;
