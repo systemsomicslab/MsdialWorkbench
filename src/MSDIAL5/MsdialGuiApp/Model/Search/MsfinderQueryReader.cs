@@ -3,7 +3,6 @@ using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace CompMs.App.Msdial.Model.Search {
@@ -17,15 +16,10 @@ namespace CompMs.App.Msdial.Model.Search {
             }
         }
 
-        public static List<RawData> ReadAll(IReadOnlyList<MsfinderQueryFile> queryFiles, AnalysisParamOfMsfinder parameter, string folderPath) {
-            if (queryFiles.Count == 0) {
+        public static void EnsureNotEmpty(int queryCount, string folderPath) {
+            if (queryCount == 0) {
                 throw new InvalidDataException($"No MS-FINDER input files (*.mat) were found in '{folderPath}'.");
             }
-            var result = new List<RawData>(queryFiles.Count);
-            foreach (var queryFile in queryFiles) {
-                result.Add(Read(queryFile, parameter));
-            }
-            return result;
         }
     }
 }

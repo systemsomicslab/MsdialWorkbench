@@ -95,22 +95,25 @@ namespace CompMs.App.Msdial.Model.Setting
                 msfinderQueryFiles.Add(msfinderQueryFile);
             }
 
-            var rawDataList = MsfinderQueryReader.ReadAll(msfinderQueryFiles, _analysisParam, fullpath);
+            MsfinderQueryReader.EnsureNotEmpty(msfinderQueryFiles.Count, fullpath);
 
             if (_parameter.IsFormulaFinder) {
                 var paramfile = Path.Combine(fullpath, $"batchparam-{dt:yyyy_MM_dd_HH_mm_ss}.txt");
                 MsFinderIniParser.Write(_analysisParam, paramfile);
 
-                for (var i = 0; i < msfinderQueryFiles.Count; i++) {
-                    var msfinderQueryFile = msfinderQueryFiles[i];
-                    var rawData = rawDataList[i];
+                foreach (var msfinderQueryFile in msfinderQueryFiles) {
+                    var rawData = MsfinderQueryReader.Read(msfinderQueryFile, _analysisParam);
                     var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(ProductIonDB, NeutralLossDB, ExistFormulaDB, rawData, _analysisParam);
                     FormulaResultParcer.FormulaResultsWriter(msfinderQueryFile.FormulaFilePath, formulaResults);
                 }
             }
             if (_parameter.IsStructureFinder) {                
                 var finder = new StructureFinderBatchProcess();
-                finder.Process(msfinderQueryFiles, _analysisParam, ExistStructureDB, userDefinedStructureDB, MineStructureDB, FragmentOntologyDB, mspDB, EiFragmentDB);
+                foreach (var msfinderQueryFile in msfinderQueryFiles) {
+                    var rawData = MsfinderQueryReader.Read(msfinderQueryFile, _analysisParam);
+                    if (rawData.Name is null) continue;
+                    finder.SingleSearchOfStructureFinder(msfinderQueryFile, rawData, _analysisParam, ExistStructureDB, userDefinedStructureDB, MineStructureDB, FragmentOntologyDB, mspDB, EiFragmentDB);
+                }
             }
 
             if (_currentAlignmentModel.Value.AlignmentSpotSource.Spots is null) {
