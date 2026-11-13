@@ -1,0 +1,449 @@
+{
+  "date": "2026-11-13",
+  "baselineCommit": "c7830d66e1dbbf9077858f4a4154413f48940400",
+  "candidate": "Uncommitted PR1 changes on the baseline; runtime source hashes below.",
+  "machine": {
+    "cpu": "Intel Core i7-1160G7",
+    "physicalRamKiB": 16555320,
+    "os": "Windows 11 Pro",
+    "osVersion": "10.0.26300"
+  },
+  "configuration": {
+    "target": "net48",
+    "platform": "x64",
+    "optimize": true,
+    "configuration": "Debug vendor unsupported",
+    "sdk": "10.0.402",
+    "messagePackVersion": "3.1.7",
+    "pairs": 3,
+    "records": 30000,
+    "peaksPerRecord": 64
+  },
+  "binarySha256": {
+    "baseline": {
+      "Common.dll": "950dc6c4b5b376f71d71e19a29badbac90d52003e0f9f4cbc93e0fbfed105476",
+      "MsdialCore.dll": "5c06c2c99971c992a0bb3b307e0ccc74e5b553b41c81bb9507b411e2668fff37",
+      "MessagePack.dll": "cbad1d33e8ba3bd1405ad3964bf67b1846f1847d72f90c2b3c6257b3998ff24b",
+      "CompactLibraryBenchmark.exe": "7b4062baba6e99960a26945ab547bace8f96cd9925a4534fe956df885c29646c"
+    },
+    "candidate": {
+      "Common.dll": "76436648122396580918d63558a63309547d37355fba8e39b061d3d11b9fc4af",
+      "MsdialCore.dll": "137dd13fba25b48a9780b71f797cac24a15c6964050391e8a7adef4817a3bcac",
+      "MessagePack.dll": "cbad1d33e8ba3bd1405ad3964bf67b1846f1847d72f90c2b3c6257b3998ff24b",
+      "CompactLibraryBenchmark.exe": "7b4062baba6e99960a26945ab547bace8f96cd9925a4534fe956df885c29646c"
+    }
+  },
+  "candidateRuntimeSourceSha256": {
+    "src/Common/CommonStandard/Algorithm/Function/FrameBinnedSpectrum.cs": "2d90c11c6b00311638973c2ef85c55d994e83fbcca10631039a45def2597f77c",
+    "src/Common/CommonStandard/Algorithm/Scoring/MsScanMatching.cs": "90dc8006ac5c04e0bc2253eb8d1db7cb1063e2b1e5d2f3b3303a2127d43807ed",
+    "src/Common/CommonStandard/Components/MoleculeMsReference.cs": "374547d1f3cc90cb864be8b034131575530c1c40dc9bb34647a138866d2c524b",
+    "src/Common/CommonStandard/Components/SpectrumPeakData.cs": "8d98dbfdf6913cfc79453553798ec7fc7f2ed10e602adc980b3606ffc6467e89",
+    "src/Common/CommonStandard/MessagePack/LargeListMessagePack.cs": "65f2548d8e782d843a15a92f22954a9f55a08018d6622a240ec909838939b020",
+    "src/Common/CommonStandard/Parser/MspFileParcer.cs": "3f3b40454fac180e4fd660a7faeb97227023c79c536be5157895f4f633dd6a02",
+    "src/MSDIAL5/MsdialCore/Algorithm/Annotation/MsReferenceScorer.cs": "3d790318d351ad07269170cbf6a9431c4fdfa9ec3a8caffd35718a690b2033e1",
+    "src/MSDIAL5/MsdialCore/DataObj/CompactLibraryResolver.cs": "ce55fc182c8e89bbeb83fbc4a6d2429b0d585bec57141823f181d51beb6d2b6a",
+    "src/MSDIAL5/MsdialCore/DataObj/LibraryFingerprint.cs": "e4900647fa0f9c67cc98a8f14e32659f9529814fdd639aabd0a744e42d0142e5",
+    "src/MSDIAL5/MsdialCore/DataObj/MoleculeDataBase.cs": "24e477f0b80030796751df502aa3905140f4772f807cb55b88644cb3dd48978a",
+    "src/MSDIAL5/MsdialCore/DataObj/MsdialDataStorage.cs": "2ad4334bd9c356bac1208bf21c10dc5645dfb647da425114442d1120b3e0e9c9",
+    "src/MSDIAL5/MsdialCore/Utility/LibraryHandler.cs": "62932a0b5c02d76e855842974fb411e826f72b1326532861a4bc77804fe5f700",
+    "src/MSDIAL5/MsdialGuiApp/Model/Setting/GcmsIdentificationSettingModel.cs": "b9ede2a3eb4495d136556e4d6a299b75737203e18c2e19a068e769c834e22066"
+  },
+  "runs": [
+    {
+      "importMs": 1852.4947000000002,
+      "records": 30000,
+      "retainedManagedBytes": 211462440,
+      "compactAfterImport": 0,
+      "eiPassMs": [
+        254.8785,
+        243.8488,
+        251.1656
+      ],
+      "eiResultSha256": "60e80a05e2b3ae7b87c799a51e06c6f4589b94054ba13035bb32c232fcd592b4",
+      "lcPassMs": [
+        462.4058,
+        444.30760000000004,
+        409.7002
+      ],
+      "lcResultSha256": "c237ce29b5dd0655290c4279d1f58eef95e3051f18db07a27590204a3a5bcf01",
+      "compactAfterScoring": 0,
+      "saveMs": 1225.7779,
+      "compactAfterSave": 0,
+      "loadMs": 1446.517,
+      "loadedRetainedManagedBytes": 215520136,
+      "compactAfterLoad": 0,
+      "inputSha256": "b4ce72be26dcca59756f0e82797a92bc735336e6f1fa4e96d16dc5aea5624ba8",
+      "archiveSha256": "0cf12a12de15d8b71ba86697a62d00d78b9cffc687d039bae588d0305a5e390a",
+      "archiveBytes": 20886329,
+      "processPeakWorkingSetBytes": 661008384,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "integer",
+      "pair": 1,
+      "version": "baseline"
+    },
+    {
+      "importMs": 1623.7391,
+      "records": 30000,
+      "retainedManagedBytes": 33862440,
+      "compactAfterImport": 30000,
+      "eiPassMs": [
+        226.8512,
+        227.5791,
+        230.1173
+      ],
+      "eiResultSha256": "60e80a05e2b3ae7b87c799a51e06c6f4589b94054ba13035bb32c232fcd592b4",
+      "lcPassMs": [
+        396.89520000000005,
+        415.4959,
+        404.2848
+      ],
+      "lcResultSha256": "c237ce29b5dd0655290c4279d1f58eef95e3051f18db07a27590204a3a5bcf01",
+      "compactAfterScoring": 30000,
+      "saveMs": 1213.125,
+      "compactAfterSave": 30000,
+      "loadMs": 1269.2651,
+      "loadedRetainedManagedBytes": 37920136,
+      "compactAfterLoad": 30000,
+      "inputSha256": "b4ce72be26dcca59756f0e82797a92bc735336e6f1fa4e96d16dc5aea5624ba8",
+      "archiveSha256": "0cf12a12de15d8b71ba86697a62d00d78b9cffc687d039bae588d0305a5e390a",
+      "archiveBytes": 20886329,
+      "processPeakWorkingSetBytes": 482123776,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "integer",
+      "pair": 1,
+      "version": "candidate"
+    },
+    {
+      "importMs": 1405.7548000000002,
+      "records": 30000,
+      "retainedManagedBytes": 33862440,
+      "compactAfterImport": 30000,
+      "eiPassMs": [
+        230.6113,
+        229.7958,
+        218.97320000000002
+      ],
+      "eiResultSha256": "60e80a05e2b3ae7b87c799a51e06c6f4589b94054ba13035bb32c232fcd592b4",
+      "lcPassMs": [
+        430.7096,
+        410.25100000000003,
+        435.0833
+      ],
+      "lcResultSha256": "c237ce29b5dd0655290c4279d1f58eef95e3051f18db07a27590204a3a5bcf01",
+      "compactAfterScoring": 30000,
+      "saveMs": 1202.5359,
+      "compactAfterSave": 30000,
+      "loadMs": 1599.8311,
+      "loadedRetainedManagedBytes": 37920136,
+      "compactAfterLoad": 30000,
+      "inputSha256": "b4ce72be26dcca59756f0e82797a92bc735336e6f1fa4e96d16dc5aea5624ba8",
+      "archiveSha256": "0cf12a12de15d8b71ba86697a62d00d78b9cffc687d039bae588d0305a5e390a",
+      "archiveBytes": 20886329,
+      "processPeakWorkingSetBytes": 482492416,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "integer",
+      "pair": 2,
+      "version": "candidate"
+    },
+    {
+      "importMs": 1876.1209000000001,
+      "records": 30000,
+      "retainedManagedBytes": 211462440,
+      "compactAfterImport": 0,
+      "eiPassMs": [
+        246.0926,
+        256.1419,
+        266.1171
+      ],
+      "eiResultSha256": "60e80a05e2b3ae7b87c799a51e06c6f4589b94054ba13035bb32c232fcd592b4",
+      "lcPassMs": [
+        452.2798,
+        442.3163,
+        409.684
+      ],
+      "lcResultSha256": "c237ce29b5dd0655290c4279d1f58eef95e3051f18db07a27590204a3a5bcf01",
+      "compactAfterScoring": 0,
+      "saveMs": 1240.8132,
+      "compactAfterSave": 0,
+      "loadMs": 1475.6395,
+      "loadedRetainedManagedBytes": 215520136,
+      "compactAfterLoad": 0,
+      "inputSha256": "b4ce72be26dcca59756f0e82797a92bc735336e6f1fa4e96d16dc5aea5624ba8",
+      "archiveSha256": "0cf12a12de15d8b71ba86697a62d00d78b9cffc687d039bae588d0305a5e390a",
+      "archiveBytes": 20886329,
+      "processPeakWorkingSetBytes": 661348352,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "integer",
+      "pair": 2,
+      "version": "baseline"
+    },
+    {
+      "importMs": 1900.2320000000002,
+      "records": 30000,
+      "retainedManagedBytes": 211462440,
+      "compactAfterImport": 0,
+      "eiPassMs": [
+        252.4486,
+        247.137,
+        253.6356
+      ],
+      "eiResultSha256": "60e80a05e2b3ae7b87c799a51e06c6f4589b94054ba13035bb32c232fcd592b4",
+      "lcPassMs": [
+        439.0072,
+        418.8852,
+        428.1209
+      ],
+      "lcResultSha256": "c237ce29b5dd0655290c4279d1f58eef95e3051f18db07a27590204a3a5bcf01",
+      "compactAfterScoring": 0,
+      "saveMs": 1219.5366000000001,
+      "compactAfterSave": 0,
+      "loadMs": 1451.7326,
+      "loadedRetainedManagedBytes": 215520136,
+      "compactAfterLoad": 0,
+      "inputSha256": "b4ce72be26dcca59756f0e82797a92bc735336e6f1fa4e96d16dc5aea5624ba8",
+      "archiveSha256": "0cf12a12de15d8b71ba86697a62d00d78b9cffc687d039bae588d0305a5e390a",
+      "archiveBytes": 20886329,
+      "processPeakWorkingSetBytes": 660885504,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "integer",
+      "pair": 3,
+      "version": "baseline"
+    },
+    {
+      "importMs": 1480.4679,
+      "records": 30000,
+      "retainedManagedBytes": 33862440,
+      "compactAfterImport": 30000,
+      "eiPassMs": [
+        233.10590000000002,
+        241.21120000000002,
+        226.4514
+      ],
+      "eiResultSha256": "60e80a05e2b3ae7b87c799a51e06c6f4589b94054ba13035bb32c232fcd592b4",
+      "lcPassMs": [
+        412.7336,
+        441.2056,
+        401.0321
+      ],
+      "lcResultSha256": "c237ce29b5dd0655290c4279d1f58eef95e3051f18db07a27590204a3a5bcf01",
+      "compactAfterScoring": 30000,
+      "saveMs": 1221.1762,
+      "compactAfterSave": 30000,
+      "loadMs": 1587.5007,
+      "loadedRetainedManagedBytes": 37920136,
+      "compactAfterLoad": 30000,
+      "inputSha256": "b4ce72be26dcca59756f0e82797a92bc735336e6f1fa4e96d16dc5aea5624ba8",
+      "archiveSha256": "0cf12a12de15d8b71ba86697a62d00d78b9cffc687d039bae588d0305a5e390a",
+      "archiveBytes": 20886329,
+      "processPeakWorkingSetBytes": 482238464,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "integer",
+      "pair": 3,
+      "version": "candidate"
+    },
+    {
+      "importMs": 3064.5763,
+      "records": 30000,
+      "retainedManagedBytes": 211462440,
+      "compactAfterImport": 0,
+      "eiPassMs": [
+        270.3514,
+        284.6691,
+        289.8601
+      ],
+      "eiResultSha256": "6c643b004e1e1049be38dc671701339b163c38fa361629db3f07eaaadade0811",
+      "lcPassMs": [
+        493.17510000000004,
+        520.6853,
+        442.29990000000004
+      ],
+      "lcResultSha256": "f53bcd8f92a485d66d322f009b55ee9a6f8acf1abfecdb86dede15f03941d012",
+      "compactAfterScoring": 0,
+      "saveMs": 1308.2369,
+      "compactAfterSave": 0,
+      "loadMs": 1495.4081,
+      "loadedRetainedManagedBytes": 215520136,
+      "compactAfterLoad": 0,
+      "inputSha256": "1f899da2db06dc2cd07ab9f2bfe70660a9f1b956f6da58101c82f7212ab3cd78",
+      "archiveSha256": "2b3c11c66160b98ef18c24be228fb1490ae4eaa6a980d62595bb3da663dc10c3",
+      "archiveBytes": 17716048,
+      "processPeakWorkingSetBytes": 651751424,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "fractional",
+      "pair": 1,
+      "version": "baseline"
+    },
+    {
+      "importMs": 2322.0128,
+      "records": 30000,
+      "retainedManagedBytes": 56902440,
+      "compactAfterImport": 30000,
+      "eiPassMs": [
+        197.8853,
+        208.3925,
+        221.1132
+      ],
+      "eiResultSha256": "6c643b004e1e1049be38dc671701339b163c38fa361629db3f07eaaadade0811",
+      "lcPassMs": [
+        402.5033,
+        390.189,
+        436.49580000000003
+      ],
+      "lcResultSha256": "f53bcd8f92a485d66d322f009b55ee9a6f8acf1abfecdb86dede15f03941d012",
+      "compactAfterScoring": 30000,
+      "saveMs": 1264.1944,
+      "compactAfterSave": 30000,
+      "loadMs": 1301.2534,
+      "loadedRetainedManagedBytes": 60960136,
+      "compactAfterLoad": 30000,
+      "inputSha256": "1f899da2db06dc2cd07ab9f2bfe70660a9f1b956f6da58101c82f7212ab3cd78",
+      "archiveSha256": "2b3c11c66160b98ef18c24be228fb1490ae4eaa6a980d62595bb3da663dc10c3",
+      "archiveBytes": 17716048,
+      "processPeakWorkingSetBytes": 500903936,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "fractional",
+      "pair": 1,
+      "version": "candidate"
+    },
+    {
+      "importMs": 2267.0489000000002,
+      "records": 30000,
+      "retainedManagedBytes": 56902440,
+      "compactAfterImport": 30000,
+      "eiPassMs": [
+        209.2725,
+        221.72500000000002,
+        217.37
+      ],
+      "eiResultSha256": "6c643b004e1e1049be38dc671701339b163c38fa361629db3f07eaaadade0811",
+      "lcPassMs": [
+        415.0547,
+        367.50010000000003,
+        458.5521
+      ],
+      "lcResultSha256": "f53bcd8f92a485d66d322f009b55ee9a6f8acf1abfecdb86dede15f03941d012",
+      "compactAfterScoring": 30000,
+      "saveMs": 1167.8313,
+      "compactAfterSave": 30000,
+      "loadMs": 1276.8853000000001,
+      "loadedRetainedManagedBytes": 60960136,
+      "compactAfterLoad": 30000,
+      "inputSha256": "1f899da2db06dc2cd07ab9f2bfe70660a9f1b956f6da58101c82f7212ab3cd78",
+      "archiveSha256": "2b3c11c66160b98ef18c24be228fb1490ae4eaa6a980d62595bb3da663dc10c3",
+      "archiveBytes": 17716048,
+      "processPeakWorkingSetBytes": 501018624,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "fractional",
+      "pair": 2,
+      "version": "candidate"
+    },
+    {
+      "importMs": 3555.8859,
+      "records": 30000,
+      "retainedManagedBytes": 211462440,
+      "compactAfterImport": 0,
+      "eiPassMs": [
+        298.07,
+        268.3037,
+        268.0534
+      ],
+      "eiResultSha256": "6c643b004e1e1049be38dc671701339b163c38fa361629db3f07eaaadade0811",
+      "lcPassMs": [
+        444.0002,
+        450.8174,
+        451.8145
+      ],
+      "lcResultSha256": "f53bcd8f92a485d66d322f009b55ee9a6f8acf1abfecdb86dede15f03941d012",
+      "compactAfterScoring": 0,
+      "saveMs": 1200.364,
+      "compactAfterSave": 0,
+      "loadMs": 1499.2707,
+      "loadedRetainedManagedBytes": 215520136,
+      "compactAfterLoad": 0,
+      "inputSha256": "1f899da2db06dc2cd07ab9f2bfe70660a9f1b956f6da58101c82f7212ab3cd78",
+      "archiveSha256": "2b3c11c66160b98ef18c24be228fb1490ae4eaa6a980d62595bb3da663dc10c3",
+      "archiveBytes": 17716048,
+      "processPeakWorkingSetBytes": 651923456,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "fractional",
+      "pair": 2,
+      "version": "baseline"
+    },
+    {
+      "importMs": 3078.9343000000003,
+      "records": 30000,
+      "retainedManagedBytes": 211462440,
+      "compactAfterImport": 0,
+      "eiPassMs": [
+        333.2105,
+        342.8976,
+        270.5539
+      ],
+      "eiResultSha256": "6c643b004e1e1049be38dc671701339b163c38fa361629db3f07eaaadade0811",
+      "lcPassMs": [
+        435.26340000000005,
+        488.24550000000005,
+        419.02160000000003
+      ],
+      "lcResultSha256": "f53bcd8f92a485d66d322f009b55ee9a6f8acf1abfecdb86dede15f03941d012",
+      "compactAfterScoring": 0,
+      "saveMs": 1457.1132,
+      "compactAfterSave": 0,
+      "loadMs": 2263.8514,
+      "loadedRetainedManagedBytes": 215520136,
+      "compactAfterLoad": 0,
+      "inputSha256": "1f899da2db06dc2cd07ab9f2bfe70660a9f1b956f6da58101c82f7212ab3cd78",
+      "archiveSha256": "2b3c11c66160b98ef18c24be228fb1490ae4eaa6a980d62595bb3da663dc10c3",
+      "archiveBytes": 17716048,
+      "processPeakWorkingSetBytes": 651730944,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "fractional",
+      "pair": 3,
+      "version": "baseline"
+    },
+    {
+      "importMs": 2625.4187,
+      "records": 30000,
+      "retainedManagedBytes": 56902440,
+      "compactAfterImport": 30000,
+      "eiPassMs": [
+        264.4388,
+        317.1309,
+        339.5059
+      ],
+      "eiResultSha256": "6c643b004e1e1049be38dc671701339b163c38fa361629db3f07eaaadade0811",
+      "lcPassMs": [
+        581.2511000000001,
+        388.05580000000003,
+        375.4459
+      ],
+      "lcResultSha256": "f53bcd8f92a485d66d322f009b55ee9a6f8acf1abfecdb86dede15f03941d012",
+      "compactAfterScoring": 30000,
+      "saveMs": 1170.4383,
+      "compactAfterSave": 30000,
+      "loadMs": 1277.4558,
+      "loadedRetainedManagedBytes": 60960136,
+      "compactAfterLoad": 30000,
+      "inputSha256": "1f899da2db06dc2cd07ab9f2bfe70660a9f1b956f6da58101c82f7212ab3cd78",
+      "archiveSha256": "2b3c11c66160b98ef18c24be228fb1490ae4eaa6a980d62595bb3da663dc10c3",
+      "archiveBytes": 17716048,
+      "processPeakWorkingSetBytes": 500322304,
+      "runtime": "4.0.30319.42000",
+      "is64Bit": true,
+      "mode": "fractional",
+      "pair": 3,
+      "version": "candidate"
+    }
+  ]
+}

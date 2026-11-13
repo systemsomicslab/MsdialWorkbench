@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <Optimize>true</Optimize>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>CompactLibraryBenchmark</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Build against either version's prebuilt Core output; the harness uses shared APIs only. -->
+    <Reference Include="Common"><HintPath>$(LibraryAssemblyDirectory)/Common.dll</HintPath></Reference>
+    <Reference Include="MsdialCore"><HintPath>$(LibraryAssemblyDirectory)/MsdialCore.dll</HintPath></Reference>
+    <Reference Include="MessagePack"><HintPath>$(LibraryAssemblyDirectory)/MessagePack.dll</HintPath></Reference>
+    <Reference Include="MessagePack.Annotations"><HintPath>$(LibraryAssemblyDirectory)/MessagePack.Annotations.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(LibraryAssemblyDirectory)/Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+  <Target Name="RequireLibraryAssemblyDirectory" BeforeTargets="ResolveReferences" Condition="'$(LibraryAssemblyDirectory)' == ''">
+    <Error Text="Set LibraryAssemblyDirectory to the version's optimized net48 MsdialCore output directory." />
+  </Target>
+</Project>
