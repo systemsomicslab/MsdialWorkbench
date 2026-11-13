@@ -56,7 +56,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
@@ -92,25 +92,31 @@
         </GroupBox>
 
         <GroupBox Grid.Row="1" Grid.ColumnSpan="2">
-            <Grid>
-                <Label Content="Method: " Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" />
-                <RadioButton Content="Modified dot product" 
-                     Name="RadioButton_ModifiedDot" 
-                     Grid.Row="1"
-                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ModDotLegacy}" 
-                     HorizontalAlignment="Left" 
-                     VerticalAlignment="Center" 
-                     VerticalContentAlignment="Center" Margin="100,0,0,0" />
+            <StackPanel Margin="5,0,5,4">
+                <Label Content="Method: " HorizontalAlignment="Left" />
+                <RadioButton Content="Modified dot product (legacy, matched peaks only)"
+                     Name="RadioButton_ModifiedDot"
+                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ModDotLegacy}"
+                     HorizontalAlignment="Left"
+                     VerticalContentAlignment="Center" Margin="20,2,0,2" />
                 <RadioButton Content="Bonanza score"
-                     Name="RadioButton_Bonanza" 
-                     Grid.Row="1" 
-                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Bonanza}" 
-                     HorizontalAlignment="Left" 
-                     VerticalAlignment="Center" 
-                     VerticalContentAlignment="Center" 
-                     Margin="260,0,0,0" />
-
-            </Grid>
+                     Name="RadioButton_Bonanza"
+                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Bonanza}"
+                     HorizontalAlignment="Left"
+                     VerticalContentAlignment="Center" Margin="20,2,0,2" />
+                <RadioButton Content="Modified cosine (GNPS)"
+                     Name="RadioButton_ModifiedCosine"
+                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ModifiedCosine}"
+                     HorizontalAlignment="Left"
+                     VerticalContentAlignment="Center" Margin="20,2,0,2" />
+                <StackPanel Orientation="Horizontal" Margin="40,0,0,0"
+                            IsEnabled="{Binding ElementName=RadioButton_ModifiedCosine, Path=IsChecked}">
+                    <Label Content="Precursor window [Da]:" VerticalAlignment="Center" />
+                    <TextBox Name="TextBox_PrecursorWindow"
+                             Text="{Binding PrecursorWindow.Value}"
+                             VerticalContentAlignment="Center" Width="120" Height="24" />
+                </StackPanel>
+            </StackPanel>
         </GroupBox>
 
         <Label Content="Mass tolerance [Da]: " Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Grid.ColumnSpan="2" />

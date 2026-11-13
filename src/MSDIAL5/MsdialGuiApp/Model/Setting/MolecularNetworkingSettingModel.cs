@@ -37,6 +37,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             MaxPrecursorDifference = _parameter.MaxPrecursorDifference;
             MaxPrecursorDifferenceAsPercent = _parameter.MaxPrecursorDifferenceAsPercent;
             MsmsSimilarityCalc = _parameter.MsmsSimilarityCalc;
+            PrecursorWindow = _parameter.MnPrecursorWindow;
             ExportFolderPath = _parameter.ExportFolderPath;
 
             AvailableFileResult = currentFileModel.Select(m => m != null).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -121,6 +122,13 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private MsmsSimilarityCalc msmsSimilarityCalc;
 
+        /// <summary>Modified cosine only: peaks within this many Da of the precursor are removed before scoring.</summary>
+        public double PrecursorWindow {
+            get => precursorWindow;
+            set => SetProperty(ref precursorWindow, value);
+        }
+        private double precursorWindow;
+
         public string ExportFolderPath {
             get => exportFolderPath;
             set => SetProperty(ref exportFolderPath, value);
@@ -156,6 +164,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             _parameter.MaxPrecursorDifference = MaxPrecursorDifference;
             _parameter.MaxPrecursorDifferenceAsPercent = MaxPrecursorDifferenceAsPercent;
             _parameter.MsmsSimilarityCalc = MsmsSimilarityCalc;
+            _parameter.MnPrecursorWindow = PrecursorWindow;
             _parameter.ExportFolderPath = ExportFolderPath;
         }
 
