@@ -443,6 +443,19 @@ public static class MainProcess
                 var overwrite = parseResult.GetValue(overwriteOpt);
                 var allEdgeExport = parseResult.GetValue(allEdgeExportOpt);
 
+                // A target the run cannot use must stop it: networking the input against itself
+                // instead would write a plausible file that answers a different question.
+                if (targetFile is not null) {
+                    if (!targetFile.Exists) {
+                        Console.Error.WriteLine($"The --targetFile {targetFile.FullName} does not exist.");
+                        return MsnExitCode.UnusableInput;
+                    }
+                    if (Directory.Exists(input)) {
+                        Console.Error.WriteLine("--targetFile is used only with a single MSP input file, not with an input folder.");
+                        return MsnExitCode.UnusableInput;
+                    }
+                }
+
                 if (Directory.Exists(input)) {
                     if (allEdgeExport){
                         return new MoleculerNetworkProcess().Run4AllEdgeGeneration(input, output, methodFile.FullName, ionmode, overwrite);
@@ -451,13 +464,18 @@ public static class MainProcess
                         return new MoleculerNetworkProcess().Run(input, output, methodFile.FullName, ionmode, overwrite);
                 }
                 else {
-                    if (Path.GetExtension(input).Equals(".mddata", StringComparison.OrdinalIgnoreCase)) {
-                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment, analysisFileName);
-                    }
+                    var isProject = Path.GetExtension(input).Equals(".mddata", StringComparison.OrdinalIgnoreCase);
                     var binaryInput = Path.GetExtension(input).Equals(".pai", StringComparison.OrdinalIgnoreCase)
                         || Path.GetExtension(input).Equals(".pai2", StringComparison.OrdinalIgnoreCase)
                         || Path.GetExtension(input).Equals(".arf", StringComparison.OrdinalIgnoreCase)
                         || Path.GetExtension(input).Equals(".arf2", StringComparison.OrdinalIgnoreCase);
+                    if ((isProject || binaryInput) && targetFile is not null) {
+                        Console.Error.WriteLine("--targetFile is used only with an MSP input file.");
+                        return MsnExitCode.UnusableInput;
+                    }
+                    if (isProject) {
+                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment, analysisFileName);
+                    }
                     if (binaryInput) {
                         if (spectrumFile is null || !spectrumFile.Exists) {
                             throw new FileNotFoundException("A --spectrum file is required for binary peak-list input.", spectrumFile?.FullName);
@@ -467,7 +485,7 @@ public static class MainProcess
                     if (spectrumFile != null) {
                         throw new ArgumentException("--spectrum is only used with .pai, .pai2, .arf, or .arf2 input.");
                     }
-                    if (targetFile != null && targetFile.Exists) {
+                    if (targetFile != null) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);
                     }
                     else {
@@ -475,10 +493,14 @@ public static class MainProcess
                     }
                 }
             }
+            catch (MethodFileException ex) {
+                Console.Error.WriteLine(ex.Message);
+                return MsnExitCode.UnusableInput;
+            }
             catch (Exception ex) {
                 var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
-                Console.WriteLine(msg);
-                return 1;
+                Console.Error.WriteLine(msg);
+                return MsnExitCode.Failure;
             }
         });
 

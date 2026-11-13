@@ -46,8 +46,32 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             }
         }
 
+        /// <summary>
+        /// The v1 ID of an MSP record: its DatabaseUniqueIdentifier, or else its ordinal in the
+        /// unfiltered file (ScanID).
+        /// </summary>
+        /// <remarks>
+        /// The record is always the one the loop scored. The ID used to be looked up as
+        /// <c>cRecords[edge.source]</c>, but edge.source is the ScanID, an ordinal in the UNFILTERED
+        /// file, while cRecords holds only the records of the selected ion mode that have peaks. Any
+        /// file with a record filtered out before the scored ones gave the wrong ID or threw
+        /// ArgumentOutOfRangeException.
+        /// </remarks>
+        internal static string V1RecordId(MoleculeMsReference record) {
+            return !record.DatabaseUniqueIdentifier.IsEmptyOrNull() ? record.DatabaseUniqueIdentifier : record.ScanID.ToString();
+        }
+
+        private const int ProgressInterval = 100;
+
+        // Whole lines on standard error: standard output may be a pipe or redirected to a file, and
+        // cursor positioning throws IOException when no console is attached.
+        private static void ReportProgress(int done, int total) {
+            if (done % ProgressInterval == 0 || done == total) {
+                Console.Error.WriteLine("{0} / {1}", done, total);
+            }
+        }
+
         public int Map2TargetFile(string targetFile, string inputFile, string methodFile, string outputfile, string ionMode) {
-            var dt = DateTime.Now;
             var param = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
             var counter = 0;
 
@@ -62,7 +86,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             foreach (var record in i_cRecords)
                 record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
 
-            using (var sw = new StreamWriter(outputfile)) {
+            AtomicOutputFile.Write(outputfile, sw => {
                 WriteEdgeHeader(sw, param.MsmsSimilarityCalc);
                 for (int i = 0; i < i_cRecords.Count; i++) {
                     for (int j = 0; j < t_cRecords.Count; j++) {
@@ -71,23 +95,16 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                             param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent,
                             param.MsmsSimilarityCalc);
                         if (edge != null) {
-                            var source = !i_cRecords[edge.source].DatabaseUniqueIdentifier.IsEmptyOrNull() ? i_cRecords[edge.source].DatabaseUniqueIdentifier : edge.source.ToString();
-                            var target = !t_cRecords[edge.target].DatabaseUniqueIdentifier.IsEmptyOrNull() ? t_cRecords[edge.target].DatabaseUniqueIdentifier : edge.target.ToString();
-                            sw.WriteLine(source + "\t" + target + "\t" + String.Join("\t", edge.scores));
+                            sw.WriteLine(V1RecordId(i_cRecords[i]) + "\t" + V1RecordId(t_cRecords[j]) + "\t" + String.Join("\t", edge.scores));
                         }
                     }
-                    counter++;
-                    if (counter % 100 == 0) {
-                        Console.Write("{0} / {1}", counter, i_cRecords.Count);
-                        Console.SetCursorPosition(0, Console.CursorTop);
-                    }
+                    ReportProgress(++counter, i_cRecords.Count);
                 }
-            }
-            return 1;
-        } 
+            });
+            return 0;
+        }
 
         public int Run4Onefile(string intputfile, string outputfile, string methodFile, string ionMode) {
-            var dt = DateTime.Now;
             var param = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
             var counter = 0;
 
@@ -97,7 +114,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             Console.WriteLine("Total records count: {0}", cRecords.Count);
             foreach (var record in cRecords)
                 record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
-            using (var sw = new StreamWriter(outputfile)) {
+            AtomicOutputFile.Write(outputfile, sw => {
                 WriteEdgeHeader(sw, param.MsmsSimilarityCalc);
                 for (int i = 0; i < cRecords.Count; i++) {
                     for (int j = i + 1; j < cRecords.Count; j++) {
@@ -106,19 +123,13 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                             param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent,
                             param.MsmsSimilarityCalc);
                         if (edge != null) {
-                            var source = !cRecords[edge.source].DatabaseUniqueIdentifier.IsEmptyOrNull() ? cRecords[edge.source].DatabaseUniqueIdentifier : edge.source.ToString();
-                            var target = !cRecords[edge.target].DatabaseUniqueIdentifier.IsEmptyOrNull() ? cRecords[edge.target].DatabaseUniqueIdentifier : edge.target.ToString();
-                            sw.WriteLine(source + "\t" + target + "\t" + String.Join("\t", edge.scores));
+                            sw.WriteLine(V1RecordId(cRecords[i]) + "\t" + V1RecordId(cRecords[j]) + "\t" + String.Join("\t", edge.scores));
                         }
                     }
-                    counter++;
-                    if (counter % 100 == 0) {
-                        Console.Write("{0} / {1}", counter, cRecords.Count);
-                        Console.SetCursorPosition(0, Console.CursorTop);
-                    }
+                    ReportProgress(++counter, cRecords.Count);
                 }
-            }
-            return 1;
+            });
+            return 0;
         }
 
         public int Run4Binary(string inputFile, string dclFile, string outputFile, string methodFile, string ionMode) {
@@ -158,20 +169,21 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             }
 
             // Same pairing as the MSP path (Run4Onefile): every unordered pair is scored once.
-            using var writer = new StreamWriter(outputFile, false);
-            WriteEdgeHeader(writer, parameter.MsmsSimilarityCalc);
-            for (var i = 0; i < scans.Count; i++) {
-                for (var j = i + 1; j < scans.Count; j++) {
-                    var edge = MoleculerNetworkingBase.GetEdge(scans[i], scans[j], parameter.MnMassTolerance,
-                        parameter.MinimumPeakMatch, parameter.MnSpectrumSimilarityCutOff, parameter.MaxEdgeNumberPerNode,
-                        parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent,
-                        parameter.MsmsSimilarityCalc);
-                    if (edge != null) {
-                        writer.WriteLine($"{spots[i].ID}\t{spots[j].ID}\t{String.Join("\t", edge.scores)}");
+            AtomicOutputFile.Write(outputFile, writer => {
+                WriteEdgeHeader(writer, parameter.MsmsSimilarityCalc);
+                for (var i = 0; i < scans.Count; i++) {
+                    for (var j = i + 1; j < scans.Count; j++) {
+                        var edge = MoleculerNetworkingBase.GetEdge(scans[i], scans[j], parameter.MnMassTolerance,
+                            parameter.MinimumPeakMatch, parameter.MnSpectrumSimilarityCutOff, parameter.MaxEdgeNumberPerNode,
+                            parameter.MaxPrecursorDifference, parameter.MaxPrecursorDifferenceAsPercent,
+                            parameter.MsmsSimilarityCalc);
+                        if (edge != null) {
+                            writer.WriteLine($"{spots[i].ID}\t{spots[j].ID}\t{String.Join("\t", edge.scores)}");
+                        }
                     }
                 }
-            }
-            return 1;
+            });
+            return 0;
         }
 
         private static IonMode ParseIonMode(string ionMode) {
@@ -232,20 +244,20 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     var sameFileOffset = inputA == inputB ? 1 : 0;
 
                     // Console.WriteLine("Start {0} vs {1}", Path.GetFileNameWithoutExtension(inputA), Path.GetFileNameWithoutExtension(inputB));
-                    MoleculerNetworkingBase.ExportAllEdges(outputPath, inputA, inputB, recordsA, recordsB, param.MnMassTolerance,
+                    AtomicOutputFile.Produce(outputPath, partialPath => MoleculerNetworkingBase.ExportAllEdges(partialPath, inputA, inputB, recordsA, recordsB, param.MnMassTolerance,
                         param.MinimumPeakMatch, param.MnSpectrumSimilarityCutOff, param.MaxEdgeNumberPerNode + sameFileOffset,
                         param.MaxPrecursorDifference, param.MaxPrecursorDifferenceAsPercent,
                         param.MsmsSimilarityCalc,
-                        null);
+                        null));
                     lock (syncObj) {
                         progress++;
-                        Console.WriteLine("Progress {0} in {1}/{2} by time {3} sec for Query1 {4} vs Query2 {5}", outputName, progress, files.Count, stopwatch.ElapsedMilliseconds * 0.001, recordsA.Count, recordsB.Count);
+                        Console.Error.WriteLine("Progress {0} in {1}/{2} by time {3} sec for Query1 {4} vs Query2 {5}", outputName, progress, files.Count, stopwatch.ElapsedMilliseconds * 0.001, recordsA.Count, recordsB.Count);
                     }
                 });
                 counter++;
-                Console.WriteLine("Done {0}/{1} by time {2} sec", counter, files.Count, masterSW.ElapsedMilliseconds * 0.001);
+                Console.Error.WriteLine("Done {0}/{1} by time {2} sec", counter, files.Count, masterSW.ElapsedMilliseconds * 0.001);
             }
-            return 1;
+            return 0;
         }
 
         public int Run(string inputDir, string outputDir, string methodFile, string ionMode, bool isOverwrite) {
@@ -301,17 +313,17 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     ExportEdges(outputPath, edges, inputA, inputB);
                     lock (syncObj) {
                         progress++;
-                        Console.WriteLine("Progress {0} in {1}/{2} by time {3} sec for Query1 {4} vs Query2 {5}", outputName, progress, files.Count, stopwatch.ElapsedMilliseconds * 0.001, recordsA.Count, recordsB.Count);
+                        Console.Error.WriteLine("Progress {0} in {1}/{2} by time {3} sec for Query1 {4} vs Query2 {5}", outputName, progress, files.Count, stopwatch.ElapsedMilliseconds * 0.001, recordsA.Count, recordsB.Count);
                     }
                 });
                 counter++;
-                Console.WriteLine("Done {0}/{1} by time {2} sec", counter, files.Count, masterSW.ElapsedMilliseconds * 0.001);
+                Console.Error.WriteLine("Done {0}/{1} by time {2} sec", counter, files.Count, masterSW.ElapsedMilliseconds * 0.001);
             }
-            return 1;
+            return 0;
         }
 
         private void ExportEdges(string path, List<EdgeData> edges, string inputA, string inputB) {
-            using (var sw = new StreamWriter(path, false)) {
+            AtomicOutputFile.Write(path, sw => {
                 if (edges.IsEmptyOrNull()) return;
                 var fedge = edges.FirstOrDefault();
                 if (fedge.scores.Count > 2) {
@@ -339,7 +351,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                         sw.WriteLine(edge.source + "\t" + edge.target + "\t" + String.Join("\t", edge.scores));
                     }
                 }
-            }
+            });
         }
 
         private List<string> ReadInput(string inputDir) {
