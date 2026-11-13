@@ -22,6 +22,46 @@ namespace CompMs.Common.Algorithm.Scoring {
         public double Intensity { get; set; }
         public double MatchedIntensity { get; set; }
     }
+
+    /// <summary>One pair of <see cref="MsScanMatching.MatchLegacy"/>: indices into r and e, and whether it is a product-ion match.</summary>
+    public readonly struct LegacyMatchedPair {
+        public LegacyMatchedPair(int rIndex, int eIndex, bool isProductIonMatched) {
+            RIndex = rIndex;
+            EIndex = eIndex;
+            IsProductIonMatched = isProductIonMatched;
+        }
+
+        public int RIndex { get; }
+        public int EIndex { get; }
+        public bool IsProductIonMatched { get; }
+    }
+
+    /// <summary>The result of <see cref="MsScanMatching.MatchLegacy"/>. The used flags are its own arrays, never the peaks'.</summary>
+    public sealed class LegacyMatch {
+        private readonly IReadOnlyList<SpectrumPeak> _e;
+
+        internal LegacyMatch(IReadOnlyList<SpectrumPeak> e, bool[] eUsed, bool[] rUsed, List<MatchedPeak> matchedPeaks, List<LegacyMatchedPair> pairs) {
+            _e = e;
+            EUsed = eUsed;
+            RUsed = rUsed;
+            MatchedPeaks = matchedPeaks;
+            Pairs = pairs;
+        }
+
+        /// <summary>Whether each e peak was used, in list order.</summary>
+        public bool[] EUsed { get; }
+        /// <summary>Whether each r peak was used, in list order. The same array as <see cref="EUsed"/> when e and r are one list.</summary>
+        public bool[] RUsed { get; }
+        /// <summary>The matched pairs in r order, as the kernels sum them.</summary>
+        public List<MatchedPeak> MatchedPeaks { get; }
+        /// <summary>The matched pairs as indices, in r order.</summary>
+        public IReadOnlyList<LegacyMatchedPair> Pairs { get; }
+
+        // The used flags of whichever list the scan's spectrum is.
+        internal bool[] UsedOf(IMSScanProperty prop) {
+            return ReferenceEquals(prop.Spectrum, _e) ? EUsed : RUsed;
+        }
+    }
     public static class MsScanMatching {
         private static bool IsComparedAvailable<T>(IReadOnlyCollection<T> obj1, IReadOnlyCollection<T> obj2) {
             return obj1 is not null && obj2 is not null && obj1.Count != 0 && obj2.Count != 0;
@@ -879,19 +919,25 @@ namespace CompMs.Common.Algorithm.Scoring {
             return total;
         }
 
+        /// <summary>
+        /// The matched-peaks-only "modified dot product" of molecular networking, identity
+        /// <c>msdial.moddot.legacy</c>: <c>Σ I_r·I_e / (√Σ I_r² · √Σ I_e²)</c> summed over the matched
+        /// pairs only.
+        /// </summary>
+        /// <remarks>
+        /// This is not the GNPS modified cosine. Unmatched intensity never lowers it, so a single matched
+        /// pair scores 1.0. It is kept unchanged for reproducibility. The matching is
+        /// <see cref="MatchLegacy"/>'s, and the input spectra are never written to.
+        /// Returns <c>[score, matched peak count]</c>.
+        /// </remarks>
         public static double[] GetModifiedDotProductScore(
             IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da
             ) {
-            var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
-            else {
-                SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
+            var match = MatchLegacyByPrecursor(prop1, prop2, massTolerance, massToleranceType);
+            var matchedPeaks = match.MatchedPeaks;
 
             if (matchedPeaks.Count == 0) {
                 return new double[] { 0, 0 };
@@ -903,41 +949,43 @@ namespace CompMs.Common.Algorithm.Scoring {
             return new double[] { product / (Math.Sqrt(scaler1) * Math.Sqrt(scaler2)), matchedPeaks.Count };
         }
 
+        /// <summary>
+        /// The Bonanza score of molecular networking, identity <c>msdial.bonanza.v1</c>:
+        /// <c>P / (P + Σ_unmatched I1² + Σ_unmatched I2²)</c> with <c>P = Σ_matched I_r·I_e</c>.
+        /// </summary>
+        /// <remarks>
+        /// The input spectra are never written to. Returns <c>[score, matched peak count]</c>.
+        /// </remarks>
         public static double[] GetBonanzaScore(
             IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da) {
-            var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
-            else {
-                SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
+            var match = MatchLegacyByPrecursor(prop1, prop2, massTolerance, massToleranceType);
+            var matchedPeaks = match.MatchedPeaks;
 
             if (matchedPeaks.Count == 0) {
                 return new double[] { 0, 0 };
             }
 
             var product = matchedPeaks.Sum(n => n.Intensity * n.MatchedIntensity);
-            var scaler1 = prop1.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
-            var scaler2 = prop2.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
+            var scaler1 = UnmatchedSquareSum(prop1.Spectrum, match.UsedOf(prop1));
+            var scaler2 = UnmatchedSquareSum(prop2.Spectrum, match.UsedOf(prop2));
             return new double[] { product / (product + scaler1 + scaler2), matchedPeaks.Count };
         }
 
+        /// <summary>
+        /// Bonanza, matched count, the matched-only modified dot product and the matched-only
+        /// product-ion cosine of one legacy matching: <c>[bonanza, matched, moddot, cosine]</c>.
+        /// </summary>
+        /// <remarks>The input spectra are never written to.</remarks>
         public static double[] GetBonanzaModifiedDotCosineScores(
             IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da) {
-            var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
-            else {
-                SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
+            var match = MatchLegacyByPrecursor(prop1, prop2, massTolerance, massToleranceType);
+            var matchedPeaks = match.MatchedPeaks;
 
             if (matchedPeaks.Count == 0) {
                 return new double[] { 0, 0, 0, 0 };
@@ -945,8 +993,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             // bonanza
             var product = matchedPeaks.Sum(n => n.Intensity * n.MatchedIntensity);
-            var scaler1 = prop1.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
-            var scaler2 = prop2.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
+            var scaler1 = UnmatchedSquareSum(prop1.Spectrum, match.UsedOf(prop1));
+            var scaler2 = UnmatchedSquareSum(prop2.Spectrum, match.UsedOf(prop2));
             var bonanza = product / (product + scaler1 + scaler2);
 
             // modified dot
@@ -961,6 +1009,23 @@ namespace CompMs.Common.Algorithm.Scoring {
             var cosine = scaler1 == 0 || scaler2 == 0 ? 0.0 : product / (Math.Sqrt(scaler1) * Math.Sqrt(scaler2));
 
             return new double[] { bonanza, matchedPeaks.Count, modifieddot, cosine };
+        }
+
+        // The sum of squared intensities of the peaks the matching did not use, in list order and as the
+        // same LINQ expression the kernels always used, so that the floating-point summation order, and
+        // therefore every bit of the result, is unchanged.
+        private static double UnmatchedSquareSum(List<SpectrumPeak> peaks, bool[] used) {
+            return peaks.Where((n, index) => !used[index]).Sum(n => Math.Pow(n.Intensity, 2));
+        }
+
+        // The spectrum with the smaller precursor takes the e role; on equal precursors, prop2 does.
+        private static LegacyMatch MatchLegacyByPrecursor(IMSScanProperty prop1, IMSScanProperty prop2, double massTolerance, MassToleranceType massToleranceType) {
+            if (prop1.PrecursorMz < prop2.PrecursorMz) {
+                return MatchLegacy(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType);
+            }
+            else {
+                return MatchLegacy(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType);
+            }
         }
 
         public static double[] GetCosineScore(
@@ -988,6 +1053,14 @@ namespace CompMs.Common.Algorithm.Scoring {
             return new double[] { sqscore, matched };
         }
 
+        /// <summary>
+        /// Match two spectra the way molecular networking always has, and set the
+        /// <see cref="SpectrumPeak.IsMatched"/> flags of both lists to the result.
+        /// </summary>
+        /// <remarks>
+        /// Kept for compatibility. It writes to its inputs, so it must not be called on spectra another
+        /// thread may be reading; no networking kernel calls it any more. Use <see cref="MatchLegacy"/>.
+        /// </remarks>
         public static void SearchMatchedPeaks(
             List<SpectrumPeak> ePeaks,
             double ePrecursor, // small precursor
@@ -996,9 +1069,37 @@ namespace CompMs.Common.Algorithm.Scoring {
             double massTolerance,
             MassToleranceType massTolType,
             out List<MatchedPeak> matchedPeaks) {
-            matchedPeaks = new List<MatchedPeak>();
-            foreach (var e in ePeaks) e.IsMatched = false;
-            foreach (var e in rPeaks) e.IsMatched = false;
+            var match = MatchLegacy(ePeaks, ePrecursor, rPeaks, rPrecursor, massTolerance, massTolType);
+            for (int j = 0; j < ePeaks.Count; j++) ePeaks[j].IsMatched = match.EUsed[j];
+            for (int i = 0; i < rPeaks.Count; i++) rPeaks[i].IsMatched = match.RUsed[i];
+            matchedPeaks = match.MatchedPeaks;
+        }
+
+        /// <summary>
+        /// The peak matching of the molecular-networking kernels. It writes nothing to its inputs.
+        /// </summary>
+        /// <remarks>
+        /// <para>e is the spectrum with the smaller precursor and r the one with the larger. For each r
+        /// peak in list order, every e peak not yet used is a candidate when it lies within the tolerance
+        /// of the r peak (a product-ion match, tested first) or, shifted by the precursor difference
+        /// rPrecursor − ePrecursor, within the tolerance of it (a neutral-loss match). Both tests are
+        /// strict (<c>&lt;</c>). The candidate with the smallest |I_e − I_r| wins, the first one on a tie,
+        /// and both peaks are then used.</para>
+        /// <para>This is the loop SearchMatchedPeaks always ran, with the used flags held in local
+        /// arrays instead of <see cref="SpectrumPeak.IsMatched"/>. When e and r are the same list the
+        /// two arrays are one array, exactly as the shared flags were.</para>
+        /// </remarks>
+        public static LegacyMatch MatchLegacy(
+            IReadOnlyList<SpectrumPeak> ePeaks,
+            double ePrecursor,
+            IReadOnlyList<SpectrumPeak> rPeaks,
+            double rPrecursor,
+            double massTolerance,
+            MassToleranceType massTolType) {
+            var eUsed = new bool[ePeaks.Count];
+            var rUsed = ReferenceEquals(ePeaks, rPeaks) ? eUsed : new bool[rPeaks.Count];
+            var matchedPeaks = new List<MatchedPeak>();
+            var pairs = new List<LegacyMatchedPair>();
 
             //match definition: if product ion or neutral loss are within the mass tolerance, it will be recognized as MATCH.
             //The smallest intensity difference will be recognized as highest match.
@@ -1011,7 +1112,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 var isProduct = false;
                 for (int j = 0; j < ePeaks.Count; j++) {
                     var ePeak = ePeaks[j];
-                    if (ePeak.IsMatched == true) continue;
+                    if (eUsed[j]) continue;
                     if (Math.Abs(ePeak.Mass - rPeak.Mass) < massTol) {
                         var intensityDiff = Math.Abs(ePeak.Intensity - rPeak.Intensity);
                         if (intensityDiff < minIntensityDiff) {
@@ -1031,8 +1132,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 if (minPeakID >= 0) {
-                    rPeak.IsMatched = true;
-                    ePeaks[minPeakID].IsMatched = true;
+                    rUsed[i] = true;
+                    eUsed[minPeakID] = true;
+                    pairs.Add(new LegacyMatchedPair(i, minPeakID, isProduct));
                     matchedPeaks.Add(
                         new MatchedPeak() {
                             Mass = rPeak.Mass,
@@ -1043,6 +1145,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         });
                 }
             }
+            return new LegacyMatch(ePeaks, eUsed, rUsed, matchedPeaks, pairs);
         }
 
         public static List<SpectrumPeak> GetProcessedSpectrum(

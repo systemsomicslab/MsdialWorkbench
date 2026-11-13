@@ -47,6 +47,9 @@
     <None Update="Resources\Parser\txt_with_blank_end_line.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\SimilarityGolden\legacy-mn-golden.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

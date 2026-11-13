@@ -17,6 +17,8 @@ Alignment results are the default for `.mddata` input. Use `--analysis-file` to 
 
 A project records peak lists and alignment results as `.pai` and `.arf`, but they are written to disk as `.pai2` and `.arf2`; `msn` accepts either name. Binary input is networked like an MSP file: every pair of spectra in the selected ion mode is scored once, the node IDs are the master peak or master alignment IDs, and `MaxEdgeNumberPerNode` is not applied. With `MsmsSimilarityCalc: All` the header names the Bonanza, modified dot product, and cosine score columns.
 
+For MSP input, each row's IDs are the scored records' `DatabaseUniqueIdentifier`, or else their 0-based ordinal in the unfiltered file. `msn` exits 0 on success, 1 on a runtime failure, and 2 when it does not start because of a method-file value it cannot use (an unknown `MsmsSimilarityCalc`, an unreadable number) or a `--targetFile` that does not exist or does not apply to the input. Every output file is written as `<output>.partial` and renamed when it is complete, so a failed run leaves no file that looks finished. Progress goes to standard error as whole lines.
+
 ## Language
 
 **Peak**:
