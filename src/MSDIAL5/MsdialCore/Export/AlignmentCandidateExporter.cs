@@ -1,6 +1,7 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
@@ -35,6 +36,15 @@ namespace CompMs.MsdialCore.Export;
 /// match against a library of predicted spectra reads exactly like an acquired one here: the source
 /// column says MspDB for both, and is_reference_matched is true for both. They are appended rather than
 /// inserted so that a reader that addresses the earlier columns by position keeps working.
+///
+/// The name column is the name the match result stores, verbatim. For a lipid that is often the dual
+/// "class|chains" form, and a reader that predicts what the Console normalize step compares (it matches
+/// a standard's name against the whole stored name and each of its parts) needs exactly that. The two
+/// columns after the evidence record are what the other exports publish instead:
+/// name_at_supported_level is the half of a dual name the evidence supports, chosen from the record by
+/// <see cref="AnnotationName.AtSupportedLevel"/> as .mdalign, the exported spectra and mzTab-M choose it,
+/// and is_lipid_chains_match is the record flag that choice reads. They are appended for the same reason
+/// the evidence columns were.
 /// </remarks>
 public sealed class AlignmentCandidateExporter
 {
@@ -80,6 +90,8 @@ public sealed class AlignmentCandidateExporter
         "matched_peaks_percentage",
         "measured_terms",
         "evidence_source",
+        "name_at_supported_level",
+        "is_lipid_chains_match",
     ];
 
     private readonly IMatchResultRefer<MoleculeMsReference?, MsScanMatchResult?>? _refer;
@@ -136,6 +148,7 @@ public sealed class AlignmentCandidateExporter
         // when a product-ion spectrum was actually compared against a reference spectrum. The rendering
         // differs, an empty cell here against the text "null" there, but the condition must not.
         var spectrumScored = AnnotationScoreFormat.IsComputed(candidate, hadProductIonSpectrum);
+        var storedName = string.IsNullOrEmpty(candidate.Name) ? reference?.Name : candidate.Name;
         WriteRow(writer, [
             spot.MasterAlignmentID.ToString(CultureInfo.InvariantCulture),
             spot.AlignmentID.ToString(CultureInfo.InvariantCulture),
@@ -148,7 +161,7 @@ public sealed class AlignmentCandidateExporter
             SourceText(candidate.Source),
             candidate.Priority.ToString(CultureInfo.InvariantCulture),
             candidate.LibraryID.ToString(CultureInfo.InvariantCulture),
-            Sanitize(string.IsNullOrEmpty(candidate.Name) ? reference?.Name : candidate.Name),
+            Sanitize(storedName),
             Sanitize(reference?.Formula?.FormulaString),
             Sanitize(string.IsNullOrEmpty(reference?.CompoundClass) ? reference?.Ontology : reference?.CompoundClass),
             Sanitize(string.IsNullOrEmpty(candidate.InChIKey) ? reference?.InChIKey : candidate.InChIKey),
@@ -184,6 +197,10 @@ public sealed class AlignmentCandidateExporter
             // "null" for the same state.
             AnnotationEvidenceFormat.IsTermsRecorded(candidate) ? AnnotationEvidenceFormat.TermList(candidate.MeasuredTerms) : NotApplicable,
             AnnotationEvidenceFormat.IsSourceRecorded(candidate) ? AnnotationEvidenceFormat.Source(candidate) : NotApplicable,
+            // The name the other exports publish: the supported half of a dual lipid name, chosen from
+            // the record. No WithoutPrefix, because a match result's name is never prefixed.
+            Sanitize(AnnotationName.AtSupportedLevel(storedName, candidate.IsLipidChainsMatch)),
+            BooleanText(candidate.IsLipidChainsMatch),
         ]);
     }
 
