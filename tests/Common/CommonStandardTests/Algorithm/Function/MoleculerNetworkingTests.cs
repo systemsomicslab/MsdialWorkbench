@@ -100,7 +100,7 @@ namespace CompMs.Common.Algorithm.Function.Tests
         private static MolecularNetworkingQuery CreateQuery() {
             return new MolecularNetworkingQuery
             {
-                MsmsSimilarityCalc = MsmsSimilarityCalc.ModDot,
+                MsmsSimilarityCalc = MsmsSimilarityCalc.ModDotLegacy,
                 MassTolerance = 0.05,
                 SpectrumSimilarityCutOff = 0d,
                 MinimumPeakMatch = 1d,
@@ -180,6 +180,73 @@ namespace CompMs.Common.Algorithm.Function.Tests
             var expected = new List<(int, int)> { (2, 3), (2, 4), };
             CollectionAssert.AreEqual(expected, actual);
             Assert.AreEqual(1d, reports.Last(), 1e-12);
+        }
+
+        /// <summary>
+        /// CalculateEdgeScore used to handle only Bonanza and ModDot; any other setting scored [0, 0]
+        /// and so gave no edge. Every setting now scores, and each edge carries its kernel identity.
+        /// </summary>
+        [DataTestMethod]
+        [DataRow(MsmsSimilarityCalc.ModDotLegacy, "msdial.moddot.legacy?")]
+        [DataRow(MsmsSimilarityCalc.Bonanza, "msdial.bonanza.v1?")]
+        [DataRow(MsmsSimilarityCalc.Cosine, "msdial.simpledot (unregistered)")]
+        [DataRow(MsmsSimilarityCalc.All, "msdial.bonanza.v1?")]
+        [DataRow(MsmsSimilarityCalc.ModifiedCosine, "gnps.modified_cosine?assign=greedy&")]
+        public void EverySimilaritySettingProducesEdgesNamedByItsKernel(MsmsSimilarityCalc calc, string identityPrefix) {
+            var (spots, scans) = CreatePeakScans(new[] { 0, 1, 2, }, new[] { 700d, 710d, 720d, }, new[] { true, true, true, });
+            var query = CreateQuery();
+            query.MsmsSimilarityCalc = calc;
+            query.MassTolerance = 0.025;
+            query.RelativeAbundanceCutOff = 1d;
+
+            var instance = new MoleculerNetworkingBase().GetMolecularNetworkInstance(spots, scans, query, report: null);
+
+            Assert.AreEqual(3, instance.Root.edges.Count, calc.ToString());
+            Assert.IsTrue(instance.Root.edges.All(edge => edge.data.score > 0d), calc.ToString());
+            Assert.IsTrue(instance.Root.edges.All(edge => edge.data.comment.StartsWith(identityPrefix, System.StringComparison.Ordinal)), instance.Root.edges[0].data.comment);
+        }
+
+        [TestMethod]
+        public void AnUnknownSavedSimilaritySettingGivesNoSpectralEdges() {
+            var (spots, scans) = CreatePeakScans(new[] { 0, 1, }, new[] { 700d, 710d, }, new[] { true, true, });
+            var query = CreateQuery();
+            query.MsmsSimilarityCalc = (MsmsSimilarityCalc)99;
+
+            var instance = new MoleculerNetworkingBase().GetMolecularNetworkInstance(spots, scans, query, report: null);
+
+            Assert.AreEqual(0, instance.Root.edges.Count);
+        }
+
+        /// <summary>
+        /// The builder pairs spots and scans by position. The GUI's "use current filtering" passed the
+        /// filtered spots with the FULL MS/MS list, so spot k was scored with the k-th spectrum of the
+        /// file. Here spots 1 and 3 are kept; zipped with all scans they get scans 0 and 1, which share a
+        /// spectrum, and an edge appears between spots whose own spectra share nothing. Selecting the
+        /// kept spots' own scans (by ID, as the GUI callers now do) gives no edge.
+        /// </summary>
+        [TestMethod]
+        public void AFilteredSpotListMustBePairedWithItsOwnScans() {
+            var spots = Enumerable.Range(0, 4).Select(id => new TestSpot { ID = id, Name = "Unknown", Ontology = ONTOLOGY, Mass = 700d, Intensity = 100d, }).ToList();
+            var scans = new List<IMSScanProperty> {
+                ScanWith(0, 100d, 150d, 200d), ScanWith(1, 100d, 150d, 200d), ScanWith(2, 300d, 350d, 400d), ScanWith(3, 500d, 550d, 600d),
+            };
+            var filtered = new List<TestSpot> { spots[1], spots[3], };
+            var query = CreateQuery();
+            query.MinimumPeakMatch = 2d;
+
+            var byPosition = new MoleculerNetworkingBase().GetMolecularNetworkInstance(filtered, scans, query, report: null);
+            var byId = new MoleculerNetworkingBase().GetMolecularNetworkInstance(filtered, filtered.Select(spot => scans[spot.ID]).ToList(), query, report: null);
+
+            Assert.AreEqual(1, byPosition.Root.edges.Count, "the defect: spectra of spots 0 and 1 attached to spots 1 and 3");
+            Assert.AreEqual(0, byId.Root.edges.Count);
+        }
+
+        private static IMSScanProperty ScanWith(int id, params double[] masses) {
+            var scan = new MSScanProperty(id, 700d, new RetentionTime(1d), IonMode.Positive);
+            foreach (var mass in masses) {
+                scan.AddPeak(mass, 1000d);
+            }
+            return scan;
         }
     }
 }

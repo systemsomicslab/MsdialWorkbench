@@ -97,7 +97,7 @@
                 <RadioButton Content="Modified dot product" 
                      Name="RadioButton_ModifiedDot" 
                      Grid.Row="1"
-                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ModDot}" 
+                     IsChecked="{Binding Path=MsmsSimilarityCalc.Value, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ModDotLegacy}" 
                      HorizontalAlignment="Left" 
                      VerticalAlignment="Center" 
                      VerticalContentAlignment="Center" Margin="100,0,0,0" />

@@ -73,6 +73,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 MaxEdgeNumberPerNode = parameter.MaxEdgeNumberPerNode,
                 MaxPrecursorDifference = parameter.MaxPrecursorDifference,
                 MaxPrecursorDifferenceAsPercent = parameter.MaxPrecursorDifferenceAsPercent,
+                PrecursorWindow = parameter.MnPrecursorWindow,
+                IntensityPower = parameter.MnIntensityPower,
             };
         }
     }
