@@ -240,6 +240,28 @@ public sealed class MsnCommandTests
     }
 
     [TestMethod]
+    public void ASpectrumFileWithAnMspInputIsRejectedWithTwo() {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), [new MspRecord("a", 400d, "Positive", null, 0, SharedSpectrum)]);
+        var dcl = Path.Combine(_scratch, "sample.dcl");
+        File.WriteAllText(dcl, string.Empty);
+        var output = Path.Combine(_scratch, "out.pairs");
+
+        Assert.AreEqual(MsnExitCode.UnusableInput, Invoke("msn", "-i", msp, "-s", dcl, "-o", output, "-m", DefaultMethod(), "--ionmode", "Positive"));
+        Assert.IsFalse(File.Exists(output));
+    }
+
+    [TestMethod]
+    public void APeakListWithoutItsSpectrumFileIsRejectedWithTwo() {
+        var peaks = Path.Combine(_scratch, "sample.pai2");
+        File.WriteAllText(peaks, string.Empty);
+        var output = Path.Combine(_scratch, "out.pairs");
+
+        Assert.AreEqual(MsnExitCode.UnusableInput, Invoke("msn", "-i", peaks, "-o", output, "-m", DefaultMethod(), "--ionmode", "Positive"));
+        Assert.AreEqual(MsnExitCode.UnusableInput, Invoke("msn", "-i", peaks, "-s", Path.Combine(_scratch, "missing.dcl"), "-o", output, "-m", DefaultMethod(), "--ionmode", "Positive"));
+        Assert.IsFalse(File.Exists(output));
+    }
+
+    [TestMethod]
     public void ATargetFileWithAnInputFolderIsRejectedWithTwo() {
         var folder = Path.Combine(_scratch, "in");
         Directory.CreateDirectory(folder);

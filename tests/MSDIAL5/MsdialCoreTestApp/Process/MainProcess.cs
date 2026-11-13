@@ -478,12 +478,16 @@ public static class MainProcess
                     }
                     if (binaryInput) {
                         if (spectrumFile is null || !spectrumFile.Exists) {
-                            throw new FileNotFoundException("A --spectrum file is required for binary peak-list input.", spectrumFile?.FullName);
+                            Console.Error.WriteLine(spectrumFile is null
+                                ? "A --spectrum file (.dcl) is required for binary peak-list input."
+                                : $"The --spectrum file {spectrumFile.FullName} does not exist.");
+                            return MsnExitCode.UnusableInput;
                         }
                         return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode);
                     }
                     if (spectrumFile != null) {
-                        throw new ArgumentException("--spectrum is only used with .pai, .pai2, .arf, or .arf2 input.");
+                        Console.Error.WriteLine("--spectrum is only used with .pai, .pai2, .arf, or .arf2 input.");
+                        return MsnExitCode.UnusableInput;
                     }
                     if (targetFile != null) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);
