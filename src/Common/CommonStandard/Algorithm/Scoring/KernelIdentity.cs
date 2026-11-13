@@ -144,7 +144,7 @@ namespace CompMs.Common.Algorithm.Scoring
             var given = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (var part in identity.Substring(question + 1).Split('&')) {
                 var equals = part.IndexOf('=');
-                if (equals <= 0) {
+                if (equals <= 0 || part.IndexOf('=', equals + 1) >= 0) {
                     throw new FormatException($"'{part}' is not a key=value pair.");
                 }
                 var key = part.Substring(0, equals);
@@ -182,7 +182,11 @@ namespace CompMs.Common.Algorithm.Scoring
             foreach (var pair in given) {
                 canonical[pair.Key] = CanonicalValue(pair.Key, pair.Value);
             }
-            return new ParsedKernelIdentity(baseName, canonical);
+            var parsed = new ParsedKernelIdentity(baseName, canonical);
+            if (prep == "mn" && parsed.Number("prep.minmz") > parsed.Number("prep.maxmz")) {
+                throw new FormatException("prep.minmz exceeds prep.maxmz.");
+            }
+            return parsed;
         }
 
         /// <summary>The canonical form of an identity of a base this assembly computes.</summary>
@@ -204,17 +208,28 @@ namespace CompMs.Common.Algorithm.Scoring
                         }
                         return FormatNumber(number);
                     }
+                case "tol": {
+                        var number = ReadNumber(key, value);
+                        if (number == 0d) {
+                            throw new FormatException("tol must be greater than 0.");
+                        }
+                        return FormatNumber(number);
+                    }
                 default:
                     return FormatNumber(ReadNumber(key, value));
             }
         }
 
+        // The grammar's number spelling: plain decimal, no exponent, no sign other than a leading '-'.
+        private static readonly System.Text.RegularExpressions.Regex DecimalSpelling =
+            new System.Text.RegularExpressions.Regex(@"\A-?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)\z", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+        // Every number of the grammar is finite and >= 0 (-0 reads as 0).
         private static double ReadNumber(string key, string value) {
-            if (value.Length == 0
-                || char.IsWhiteSpace(value[0]) || char.IsWhiteSpace(value[value.Length - 1])
-                || !double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)
-                || double.IsNaN(number) || double.IsInfinity(number)) {
-                throw new FormatException($"{key} must be a finite number, not '{value}'.");
+            if (!DecimalSpelling.IsMatch(value)
+                || !double.TryParse(value, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number)
+                || double.IsNaN(number) || double.IsInfinity(number) || number < 0d) {
+                throw new FormatException($"{key} must be a finite number >= 0 written in plain decimal, not '{value}'.");
             }
             return number;
         }

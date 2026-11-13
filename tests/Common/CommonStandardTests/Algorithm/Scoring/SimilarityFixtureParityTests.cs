@@ -92,7 +92,7 @@ public class SimilarityFixtureParityTests
                     ["implementations"] = new JArray("python"),
                     ["a"] = new JObject { ["precursor_mz"] = 250.0, ["peaks"] = new JArray() },
                     ["b"] = new JObject { ["precursor_mz"] = 250.0, ["peaks"] = new JArray() },
-                    ["expected"] = new JArray(),
+                    ["expected"] = new JArray { new JObject { ["kernel_id"] = "msdial.moddot.legacy?prep=none&tol=0.025", ["score"] = 0.5 } },
                 },
                 new JObject {
                     ["id"] = "moddot-nan",
@@ -206,6 +206,12 @@ internal sealed class SimilarityFixtureRun
     public List<FileCounts> Files { get; } = new List<FileCounts>();
     public List<string> Failures { get; } = new List<string>();
     public List<string> IdentityFailures { get; } = new List<string>();
+    /// <summary>
+    /// Not asserted: expectations marked for Python only that the C# kernels reproduce anyway, and
+    /// those they do not (or cannot compute). Reported so the fixture owner can mark the first "csharp".
+    /// </summary>
+    public List<string> PythonOnlyReproduced { get; } = new List<string>();
+    public List<string> PythonOnlyNotReproduced { get; } = new List<string>();
 
     public static string Sha256(byte[] bytes) {
         using (var sha = SHA256.Create()) {
@@ -215,7 +221,9 @@ internal sealed class SimilarityFixtureRun
 
     public string Report() {
         return string.Join(Environment.NewLine, Files.Select(f =>
-            $"{f.Path} ({f.Kind}): run {f.Passed + f.Failed}, passed {f.Passed}, failed {f.Failed}, skipped: not csharp {f.SkippedNotCsharp}, unsupported id {f.SkippedUnsupported}, null score {f.SkippedNullScore}"));
+            $"{f.Path} ({f.Kind}): run {f.Passed + f.Failed}, passed {f.Passed}, failed {f.Failed}, skipped: not csharp {f.SkippedNotCsharp}, unsupported id {f.SkippedUnsupported}, null score {f.SkippedNullScore}")
+            .Concat(new[] { "Python-only expectations C# reproduces: " + string.Join(", ", PythonOnlyReproduced) })
+            .Concat(new[] { "Python-only expectations C# does not reproduce or compute: " + string.Join(", ", PythonOnlyNotReproduced) }));
     }
 
     public static SimilarityFixtureRun Run(string directory) {
@@ -280,48 +288,57 @@ internal sealed class SimilarityFixtureRun
 
     private void KernelCase(FileCounts counts, JToken testCase) {
         var id = (string?)testCase["id"];
-        if (!IsForCsharp(testCase)) {
-            counts.SkippedNotCsharp++;
-            return;
-        }
         var a = Spectrum(testCase["a"]!);
         var b = Spectrum(testCase["b"]!);
+        // Counted per expectation: one is run when the case and the expectation (if it says) include csharp.
+        var caseForCsharp = IsForCsharp(testCase);
         foreach (var expected in testCase["expected"]!) {
             var kernelId = (string)expected["kernel_id"]!;
-            IMsmsSimilarityKernel kernel;
-            try {
-                kernel = MsmsSimilarityKernelFactory.FromIdentity(kernelId);
-            }
-            catch (NotSupportedException) {
-                counts.SkippedUnsupported++;
-                continue;
-            }
-            catch (FormatException ex) {
-                Fail(counts, $"{id} {kernelId}: the identity does not parse: {ex.Message}");
-                continue;
-            }
-            if (expected["score"] is null || expected["score"]!.Type == JTokenType.Null) {
-                counts.SkippedNullScore++;
-                continue;
-            }
-            var tolerance = expected["abs_tol"] is JToken t && t.Type != JTokenType.Null ? (double)t : 1e-9;
-            var pa = Preprocessed(kernel, a);
-            var pb = Preprocessed(kernel, b);
             var errors = new List<string>();
-            Check(errors, "", kernel.Score(pa, pb), expected, tolerance);
-            if ((bool?)expected["swap_invariant"] == true) {
-                Check(errors, " swapped", kernel.Score(pb, pa), expected, tolerance);
+            var outcome = Evaluate(expected, a, b, errors);
+            if (!caseForCsharp || (expected["implementations"] is JArray && !IsForCsharp(expected))) {
+                counts.SkippedNotCsharp++;
+                (outcome == Outcome.Passed ? PythonOnlyReproduced : PythonOnlyNotReproduced).Add($"{counts.Path}:{id}:{kernelId}");
+                continue;
             }
-            if (expected["msdial_pairs"] is JObject pairs) {
-                CheckPairs(errors, kernel, pa, pb, pairs);
-            }
-            if (errors.Count == 0) {
-                counts.Passed++;
-            }
-            else {
-                Fail(counts, $"{id} {kernelId}: {string.Join("; ", errors)}");
+            switch (outcome) {
+                case Outcome.Unsupported: counts.SkippedUnsupported++; break;
+                case Outcome.NullScore: counts.SkippedNullScore++; break;
+                case Outcome.Passed: counts.Passed++; break;
+                default: Fail(counts, $"{id} {kernelId}: {string.Join("; ", errors)}"); break;
             }
         }
+    }
+
+    private enum Outcome { Passed, Failed, Unsupported, NullScore }
+
+    private static Outcome Evaluate(JToken expected, MSScanProperty a, MSScanProperty b, List<string> errors) {
+        var kernelId = (string)expected["kernel_id"]!;
+        IMsmsSimilarityKernel kernel;
+        try {
+            kernel = MsmsSimilarityKernelFactory.FromIdentity(kernelId);
+        }
+        catch (NotSupportedException) {
+            return Outcome.Unsupported;
+        }
+        catch (FormatException ex) {
+            errors.Add($"the identity does not parse: {ex.Message}");
+            return Outcome.Failed;
+        }
+        if (expected["score"] is null || expected["score"]!.Type == JTokenType.Null) {
+            return Outcome.NullScore;
+        }
+        var tolerance = expected["abs_tol"] is JToken t && t.Type != JTokenType.Null ? (double)t : 1e-9;
+        var pa = Preprocessed(kernel, a);
+        var pb = Preprocessed(kernel, b);
+        Check(errors, "", kernel.Score(pa, pb), expected, tolerance);
+        if ((bool?)expected["swap_invariant"] == true) {
+            Check(errors, " swapped", kernel.Score(pb, pa), expected, tolerance);
+        }
+        if (expected["msdial_pairs"] is JObject pairs) {
+            CheckPairs(errors, kernel, pa, pb, pairs);
+        }
+        return errors.Count == 0 ? Outcome.Passed : Outcome.Failed;
     }
 
     private static void Check(List<string> errors, string label, SimilarityScore actual, JToken expected, double tolerance) {
@@ -344,7 +361,11 @@ internal sealed class SimilarityFixtureRun
     }
 
     private static void CheckPairs(List<string> errors, IMsmsSimilarityKernel kernel, MSScanProperty a, MSScanProperty b, JObject pairs) {
-        var tolerance = ((LegacyKernelBase)kernel).Tolerance;
+        if (kernel is not LegacyKernelBase legacy) {
+            errors.Add("msdial_pairs given for a kernel that is not an msdial one");
+            return;
+        }
+        var tolerance = legacy.Tolerance;
         // The smaller precursor takes the e role; on equal precursors the second spectrum does.
         var eIsA = a.PrecursorMz < b.PrecursorMz;
         if ((string?)pairs["e"] != (eIsA ? "a" : "b")) {
@@ -362,37 +383,49 @@ internal sealed class SimilarityFixtureRun
 
     private void PrepCase(FileCounts counts, JToken testCase) {
         var id = (string?)testCase["id"];
-        if (!IsForCsharp(testCase)) {
-            counts.SkippedNotCsharp++;
-            return;
-        }
         var prepId = (string)testCase["prep_id"]!;
-        MnPreprocessing preprocessing;
+        MnPreprocessing? preprocessing = null;
+        string? parseError = null;
         try {
             // The kernel part is irrelevant; it lets the shared parser read and check the prep keys.
             var parsed = KernelIdentity.Parse("msdial.moddot.legacy?" + prepId + "&tol=0.025");
-            if (parsed.Text("prep") == "mn" && parsed.Number("prep.topk") != 0d) {
-                counts.SkippedUnsupported++;
-                return;
+            if (!(parsed.Text("prep") == "mn" && parsed.Number("prep.topk") != 0d)) {
+                preprocessing = parsed.Preprocessing() ?? MnPreprocessing.None;
             }
-            preprocessing = parsed.Preprocessing() ?? MnPreprocessing.None;
         }
         catch (FormatException ex) {
-            Fail(counts, $"{id} {prepId}: does not parse: {ex.Message}");
+            parseError = ex.Message;
+        }
+        if (!IsForCsharp(testCase)) {
+            counts.SkippedNotCsharp++;
+            (preprocessing is not null && PrepMatches(preprocessing, testCase) ? PythonOnlyReproduced : PythonOnlyNotReproduced).Add($"{counts.Path}:{id}");
             return;
         }
+        if (parseError is not null) {
+            Fail(counts, $"{id} {prepId}: does not parse: {parseError}");
+            return;
+        }
+        if (preprocessing is null) {
+            counts.SkippedUnsupported++;
+            return;
+        }
+        if (PrepMatches(preprocessing, testCase)) {
+            counts.Passed++;
+        }
+        else {
+            var input = Spectrum(testCase["input"]!);
+            var actual = preprocessing.Apply(input.Spectrum, input.PrecursorMz);
+            Fail(counts, $"{id}: expected [{string.Join(" ", testCase["expected_peaks"]!.Select(p => $"{(double)p[0]!:R}:{(double)p[1]!:R}"))}], actual [{string.Join(" ", actual.Select(p => $"{p.Mass:R}:{p.Intensity:R}"))}]");
+        }
+    }
+
+    private static bool PrepMatches(MnPreprocessing preprocessing, JToken testCase) {
         var input = Spectrum(testCase["input"]!);
         var actual = preprocessing.Apply(input.Spectrum, input.PrecursorMz);
         var expected = testCase["expected_peaks"]!.Select(p => ((double)p[0]!, (double)p[1]!)).ToList();
         var tolerance = testCase["abs_tol"] is JToken t && t.Type != JTokenType.Null ? (double)t : 1e-9;
-        var ok = actual.Count == expected.Count
+        return actual.Count == expected.Count
             && actual.Zip(expected, (x, y) => Math.Abs(x.Mass - y.Item1) <= tolerance && Math.Abs(x.Intensity - y.Item2) <= tolerance).All(v => v);
-        if (ok) {
-            counts.Passed++;
-        }
-        else {
-            Fail(counts, $"{id}: expected [{string.Join(" ", expected.Select(p => $"{p.Item1:R}:{p.Item2:R}"))}], actual [{string.Join(" ", actual.Select(p => $"{p.Mass:R}:{p.Intensity:R}"))}]");
-        }
     }
 
     private void IdentityCase(FileCounts counts, JToken testCase) {

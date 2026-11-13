@@ -1,0 +1,3339 @@
+{
+ "format": "msdial-similarity-fixtures",
+ "format_version": 1,
+ "kind": "kernel_pairs",
+ "source": {
+  "filename": "MSMS-Public_all-neg-VS20.msp",
+  "md5": "2cc3f3843d7c139e807611553b966202",
+  "doi": "10.5281/zenodo.21904103",
+  "license": "CC BY 4.0"
+ },
+ "cases": [
+  {
+   "id": "vs20-00",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 637.43211,
+    "peaks": [
+     [
+      85.027,
+      1000.0
+     ],
+     [
+      101.022,
+      340.0
+     ],
+     [
+      113.027,
+      340.0
+     ],
+     [
+      161.046,
+      774.0
+     ],
+     [
+      476.372,
+      340.0
+     ],
+     [
+      637.43,
+      736.0
+     ],
+     [
+      637.449,
+      321.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 667.44267,
+    "peaks": [
+     [
+      101.024,
+      15.0
+     ],
+     [
+      113.023,
+      13.0
+     ],
+     [
+      161.045,
+      55.0
+     ],
+     [
+      459.374,
+      11.0
+     ],
+     [
+      459.394,
+      10.0
+     ],
+     [
+      621.438,
+      129.0
+     ],
+     [
+      622.439,
+      39.0
+     ],
+     [
+      622.456,
+      14.0
+     ],
+     [
+      667.443,
+      1000.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 0.6716794056856031,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        1,
+        2,
+        "product"
+       ],
+       [
+        2,
+        3,
+        "product"
+       ],
+       [
+        8,
+        5,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.38912067782216053,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        1,
+        2,
+        "product"
+       ],
+       [
+        2,
+        3,
+        "product"
+       ],
+       [
+        8,
+        5,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 0.9776728722140527,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        1,
+        2,
+        "product"
+       ],
+       [
+        2,
+        3,
+        "product"
+       ],
+       [
+        8,
+        5,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.484339092378433,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.484339092378433,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.13113692726641535,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.8321855131677319,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        1,
+        2,
+        "product"
+       ],
+       [
+        2,
+        3,
+        "product"
+       ],
+       [
+        6,
+        5,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.4757754469057108,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        1,
+        2,
+        "product"
+       ],
+       [
+        2,
+        3,
+        "product"
+       ],
+       [
+        6,
+        5,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9908725953851838,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        1,
+        2,
+        "product"
+       ],
+       [
+        2,
+        3,
+        "product"
+       ],
+       [
+        6,
+        5,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.616666693117155,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.616666693117155,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.2967121543353972,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    1,
+    3
+   ]
+  },
+  {
+   "id": "vs20-01",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 683.43759,
+    "peaks": [
+     [
+      161.046,
+      16.0
+     ],
+     [
+      637.431,
+      45.0
+     ],
+     [
+      638.439,
+      18.0
+     ],
+     [
+      683.436,
+      1000.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 683.43759,
+    "peaks": [
+     [
+      89.023,
+      15.0
+     ],
+     [
+      101.023,
+      14.0
+     ],
+     [
+      113.024,
+      16.0
+     ],
+     [
+      119.035,
+      16.0
+     ],
+     [
+      143.033,
+      16.0
+     ],
+     [
+      161.046,
+      65.0
+     ],
+     [
+      179.052,
+      18.0
+     ],
+     [
+      475.377,
+      58.0
+     ],
+     [
+      476.386,
+      20.0
+     ],
+     [
+      637.432,
+      238.0
+     ],
+     [
+      638.437,
+      90.0
+     ],
+     [
+      639.434,
+      16.0
+     ],
+     [
+      683.438,
+      1000.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 0.9788599386593418,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        5,
+        "product"
+       ],
+       [
+        1,
+        9,
+        "product"
+       ],
+       [
+        2,
+        10,
+        "product"
+       ],
+       [
+        3,
+        12,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.994569649907793,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        5,
+        "product"
+       ],
+       [
+        1,
+        9,
+        "product"
+       ],
+       [
+        2,
+        10,
+        "product"
+       ],
+       [
+        3,
+        12,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 0.9788599386593418,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        5,
+        "product"
+       ],
+       [
+        1,
+        9,
+        "product"
+       ],
+       [
+        2,
+        10,
+        "product"
+       ],
+       [
+        3,
+        12,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9763364336646261,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9763364336646261,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.8834872764532602,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9592159292254022,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        5,
+        "product"
+       ],
+       [
+        1,
+        9,
+        "product"
+       ],
+       [
+        2,
+        10,
+        "product"
+       ],
+       [
+        3,
+        12,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.8615371818429981,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        5,
+        "product"
+       ],
+       [
+        1,
+        9,
+        "product"
+       ],
+       [
+        2,
+        10,
+        "product"
+       ],
+       [
+        3,
+        12,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9592159292254022,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        5,
+        "product"
+       ],
+       [
+        1,
+        9,
+        "product"
+       ],
+       [
+        2,
+        10,
+        "product"
+       ],
+       [
+        3,
+        12,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9000957288741464,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 4
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9000957288741464,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.755317985473464,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    4,
+    5
+   ]
+  },
+  {
+   "id": "vs20-02",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 749.44815,
+    "peaks": [
+     [
+      473.365,
+      344.0
+     ],
+     [
+      603.389,
+      311.0
+     ],
+     [
+      749.42,
+      311.0
+     ],
+     [
+      749.457,
+      1000.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 765.47945,
+    "peaks": [
+     [
+      89.021,
+      25.0
+     ],
+     [
+      101.024,
+      37.0
+     ],
+     [
+      145.052,
+      31.0
+     ],
+     [
+      159.033,
+      31.0
+     ],
+     [
+      161.043,
+      66.0
+     ],
+     [
+      163.058,
+      25.0
+     ],
+     [
+      205.073,
+      42.0
+     ],
+     [
+      365.112,
+      25.0
+     ],
+     [
+      620.42,
+      25.0
+     ],
+     [
+      765.482,
+      1000.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 1.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        9,
+        3,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.7554644633293772,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        9,
+        3,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 0.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        9,
+        3,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.8679579192612377,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.8679579192612377,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 1.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        9,
+        2,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.5535202579547955,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        9,
+        2,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        9,
+        2,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.7142854363061002,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 1
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.7142854363061002,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    6,
+    7
+   ]
+  },
+  {
+   "id": "vs20-03",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 765.47945,
+    "peaks": [
+     [
+      71.845,
+      13.0
+     ],
+     [
+      101.024,
+      42.0
+     ],
+     [
+      119.045,
+      12.0
+     ],
+     [
+      143.039,
+      17.0
+     ],
+     [
+      161.045,
+      58.0
+     ],
+     [
+      603.434,
+      23.0
+     ],
+     [
+      765.48,
+      1000.0
+     ],
+     [
+      765.525,
+      17.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 783.49002,
+    "peaks": [
+     [
+      103.04,
+      54.0
+     ],
+     [
+      161.055,
+      49.0
+     ],
+     [
+      517.393,
+      54.0
+     ],
+     [
+      637.438,
+      73.0
+     ],
+     [
+      783.456,
+      127.0
+     ],
+     [
+      783.487,
+      1000.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 0.9999597316567942,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        1,
+        4,
+        "product"
+       ],
+       [
+        5,
+        6,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.9705085375625656,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        1,
+        4,
+        "product"
+       ],
+       [
+        5,
+        6,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 1.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        1,
+        4,
+        "product"
+       ],
+       [
+        5,
+        6,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9850580190551214,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9850580190551214,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9995838363648681,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        1,
+        4,
+        "product"
+       ],
+       [
+        4,
+        6,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.7979532435850605,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        1,
+        4,
+        "product"
+       ],
+       [
+        4,
+        6,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 1.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        1,
+        4,
+        "product"
+       ],
+       [
+        4,
+        6,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.8874184540225522,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 2
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.8874184540225522,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    8,
+    9
+   ]
+  },
+  {
+   "id": "vs20-04",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 783.49002,
+    "peaks": [
+     [
+      71.015,
+      73.0
+     ],
+     [
+      89.023,
+      43.0
+     ],
+     [
+      89.027,
+      49.0
+     ],
+     [
+      101.025,
+      26.0
+     ],
+     [
+      113.027,
+      30.0
+     ],
+     [
+      119.032,
+      65.0
+     ],
+     [
+      131.036,
+      44.0
+     ],
+     [
+      143.028,
+      21.0
+     ],
+     [
+      143.04,
+      19.0
+     ],
+     [
+      145.041,
+      20.0
+     ],
+     [
+      153.692,
+      19.0
+     ],
+     [
+      161.047,
+      147.0
+     ],
+     [
+      179.053,
+      19.0
+     ],
+     [
+      179.061,
+      46.0
+     ],
+     [
+      432.795,
+      19.0
+     ],
+     [
+      537.323,
+      20.0
+     ],
+     [
+      621.416,
+      37.0
+     ],
+     [
+      621.438,
+      148.0
+     ],
+     [
+      621.466,
+      23.0
+     ],
+     [
+      622.433,
+      85.0
+     ],
+     [
+      783.485,
+      1000.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 783.49002,
+    "peaks": [
+     [
+      89.023,
+      12.0
+     ],
+     [
+      101.023,
+      31.0
+     ],
+     [
+      125.023,
+      24.0
+     ],
+     [
+      161.045,
+      127.0
+     ],
+     [
+      163.051,
+      12.0
+     ],
+     [
+      245.064,
+      22.0
+     ],
+     [
+      417.78,
+      14.0
+     ],
+     [
+      418.059,
+      10.0
+     ],
+     [
+      459.411,
+      12.0
+     ],
+     [
+      460.392,
+      11.0
+     ],
+     [
+      461.382,
+      22.0
+     ],
+     [
+      621.424,
+      53.0
+     ],
+     [
+      622.454,
+      55.0
+     ],
+     [
+      779.854,
+      10.0
+     ],
+     [
+      783.49,
+      1000.0
+     ],
+     [
+      783.554,
+      10.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 0.9987745223973654,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        1,
+        0,
+        "product"
+       ],
+       [
+        3,
+        1,
+        "product"
+       ],
+       [
+        11,
+        3,
+        "product"
+       ],
+       [
+        16,
+        11,
+        "product"
+       ],
+       [
+        19,
+        12,
+        "product"
+       ],
+       [
+        20,
+        14,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.9584782387468596,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        1,
+        0,
+        "product"
+       ],
+       [
+        3,
+        1,
+        "product"
+       ],
+       [
+        11,
+        3,
+        "product"
+       ],
+       [
+        16,
+        11,
+        "product"
+       ],
+       [
+        19,
+        12,
+        "product"
+       ],
+       [
+        20,
+        14,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 0.9987745223973654,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        1,
+        0,
+        "product"
+       ],
+       [
+        3,
+        1,
+        "product"
+       ],
+       [
+        11,
+        3,
+        "product"
+       ],
+       [
+        16,
+        11,
+        "product"
+       ],
+       [
+        19,
+        12,
+        "product"
+       ],
+       [
+        20,
+        14,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9835553047768782,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9835553047768782,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.768366177274844,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9720414397429145,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        1,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        9,
+        3,
+        "product"
+       ],
+       [
+        13,
+        11,
+        "product"
+       ],
+       [
+        14,
+        12,
+        "product"
+       ],
+       [
+        15,
+        14,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.7205325169489926,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        1,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        9,
+        3,
+        "product"
+       ],
+       [
+        13,
+        11,
+        "product"
+       ],
+       [
+        14,
+        12,
+        "product"
+       ],
+       [
+        15,
+        14,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9720414397429145,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        1,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        9,
+        3,
+        "product"
+       ],
+       [
+        13,
+        11,
+        "product"
+       ],
+       [
+        14,
+        12,
+        "product"
+       ],
+       [
+        15,
+        14,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.8250962096055822,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 6
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.8250962096055822,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.5333990683252647,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    10,
+    11
+   ]
+  },
+  {
+   "id": "vs20-05",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 795.45363,
+    "peaks": [
+     [
+      101.021,
+      12.0
+     ],
+     [
+      471.349,
+      21.0
+     ],
+     [
+      585.38,
+      13.0
+     ],
+     [
+      603.372,
+      12.0
+     ],
+     [
+      603.394,
+      35.0
+     ],
+     [
+      749.445,
+      1000.0
+     ],
+     [
+      750.448,
+      391.0
+     ],
+     [
+      751.454,
+      72.0
+     ],
+     [
+      795.451,
+      319.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 799.48493,
+    "peaks": [
+     [
+      89.02,
+      12.0
+     ],
+     [
+      89.029,
+      12.0
+     ],
+     [
+      90.025,
+      21.0
+     ],
+     [
+      100.452,
+      13.0
+     ],
+     [
+      101.026,
+      13.0
+     ],
+     [
+      113.022,
+      24.0
+     ],
+     [
+      119.033,
+      25.0
+     ],
+     [
+      143.028,
+      16.0
+     ],
+     [
+      159.029,
+      11.0
+     ],
+     [
+      161.043,
+      43.0
+     ],
+     [
+      179.054,
+      11.0
+     ],
+     [
+      211.157,
+      17.0
+     ],
+     [
+      221.068,
+      12.0
+     ],
+     [
+      245.059,
+      12.0
+     ],
+     [
+      462.879,
+      17.0
+     ],
+     [
+      475.365,
+      12.0
+     ],
+     [
+      475.385,
+      26.0
+     ],
+     [
+      475.403,
+      12.0
+     ],
+     [
+      476.39,
+      11.0
+     ],
+     [
+      637.43,
+      28.0
+     ],
+     [
+      638.446,
+      23.0
+     ],
+     [
+      639.42,
+      19.0
+     ],
+     [
+      639.453,
+      11.0
+     ],
+     [
+      670.942,
+      11.0
+     ],
+     [
+      799.483,
+      1000.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 0.998257073210067,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        4,
+        0,
+        "product"
+       ],
+       [
+        15,
+        1,
+        "neutral_loss"
+       ],
+       [
+        24,
+        8,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.21477427076749284,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        4,
+        0,
+        "product"
+       ],
+       [
+        15,
+        1,
+        "neutral_loss"
+       ],
+       [
+        24,
+        8,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 1.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        4,
+        0,
+        "product"
+       ],
+       [
+        15,
+        1,
+        "neutral_loss"
+       ],
+       [
+        24,
+        8,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.28339382025940146,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.28339382025940146,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.007620341391353591,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9967226981258818,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        3,
+        0,
+        "product"
+       ],
+       [
+        14,
+        1,
+        "neutral_loss"
+       ],
+       [
+        20,
+        7,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.24567670888711515,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        3,
+        0,
+        "product"
+       ],
+       [
+        14,
+        1,
+        "neutral_loss"
+       ],
+       [
+        20,
+        7,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 1.0,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        3,
+        0,
+        "product"
+       ],
+       [
+        14,
+        1,
+        "neutral_loss"
+       ],
+       [
+        20,
+        7,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.3747091757409669,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 3
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.3747091757409669,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.032846750325183915,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    12,
+    13
+   ]
+  },
+  {
+   "id": "vs20-06",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 811.48493,
+    "peaks": [
+     [
+      101.022,
+      36.0
+     ],
+     [
+      103.041,
+      10.0
+     ],
+     [
+      113.022,
+      16.0
+     ],
+     [
+      159.028,
+      10.0
+     ],
+     [
+      161.046,
+      77.0
+     ],
+     [
+      163.06,
+      25.0
+     ],
+     [
+      205.068,
+      11.0
+     ],
+     [
+      619.418,
+      60.0
+     ],
+     [
+      620.419,
+      28.0
+     ],
+     [
+      765.477,
+      1000.0
+     ],
+     [
+      766.483,
+      463.0
+     ],
+     [
+      767.486,
+      119.0
+     ],
+     [
+      768.491,
+      16.0
+     ],
+     [
+      811.484,
+      313.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 811.48493,
+    "peaks": [
+     [
+      101.023,
+      27.0
+     ],
+     [
+      113.021,
+      18.0
+     ],
+     [
+      159.03,
+      11.0
+     ],
+     [
+      161.046,
+      56.0
+     ],
+     [
+      603.422,
+      25.0
+     ],
+     [
+      765.479,
+      1000.0
+     ],
+     [
+      766.48,
+      433.0
+     ],
+     [
+      767.486,
+      125.0
+     ],
+     [
+      768.472,
+      11.0
+     ],
+     [
+      768.499,
+      10.0
+     ],
+     [
+      811.484,
+      192.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 0.9943501975479434,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        3,
+        2,
+        "product"
+       ],
+       [
+        4,
+        3,
+        "product"
+       ],
+       [
+        9,
+        5,
+        "product"
+       ],
+       [
+        10,
+        6,
+        "product"
+       ],
+       [
+        11,
+        7,
+        "product"
+       ],
+       [
+        12,
+        8,
+        "product"
+       ],
+       [
+        13,
+        10,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.9953739057208978,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        3,
+        2,
+        "product"
+       ],
+       [
+        4,
+        3,
+        "product"
+       ],
+       [
+        9,
+        5,
+        "product"
+       ],
+       [
+        10,
+        6,
+        "product"
+       ],
+       [
+        11,
+        7,
+        "product"
+       ],
+       [
+        12,
+        8,
+        "product"
+       ],
+       [
+        13,
+        10,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 0.9943501975479434,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        3,
+        2,
+        "product"
+       ],
+       [
+        4,
+        3,
+        "product"
+       ],
+       [
+        9,
+        5,
+        "product"
+       ],
+       [
+        10,
+        6,
+        "product"
+       ],
+       [
+        11,
+        7,
+        "product"
+       ],
+       [
+        12,
+        8,
+        "product"
+       ],
+       [
+        13,
+        10,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9921182386591185,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.9921182386591185,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.9572286201140936,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9963160382569592,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        3,
+        2,
+        "product"
+       ],
+       [
+        4,
+        3,
+        "product"
+       ],
+       [
+        9,
+        5,
+        "product"
+       ],
+       [
+        10,
+        6,
+        "product"
+       ],
+       [
+        11,
+        7,
+        "product"
+       ],
+       [
+        12,
+        8,
+        "product"
+       ],
+       [
+        13,
+        9,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9248755651266005,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        3,
+        2,
+        "product"
+       ],
+       [
+        4,
+        3,
+        "product"
+       ],
+       [
+        9,
+        5,
+        "product"
+       ],
+       [
+        10,
+        6,
+        "product"
+       ],
+       [
+        11,
+        7,
+        "product"
+       ],
+       [
+        12,
+        8,
+        "product"
+       ],
+       [
+        13,
+        9,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9963160382569592,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9,
+     "msdial_pairs": {
+      "e": "b",
+      "pairs": [
+       [
+        0,
+        0,
+        "product"
+       ],
+       [
+        2,
+        1,
+        "product"
+       ],
+       [
+        3,
+        2,
+        "product"
+       ],
+       [
+        4,
+        3,
+        "product"
+       ],
+       [
+        9,
+        5,
+        "product"
+       ],
+       [
+        10,
+        6,
+        "product"
+       ],
+       [
+        11,
+        7,
+        "product"
+       ],
+       [
+        12,
+        8,
+        "product"
+       ],
+       [
+        13,
+        9,
+        "product"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9589229434325184,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 9
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9589229434325183,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.8783536087866848,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    14,
+    15
+   ]
+  },
+  {
+   "id": "vs20-07",
+   "purpose": "Consecutive qualifying public records",
+   "tags": [],
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "a": {
+    "precursor_mz": 815.47985,
+    "peaks": [
+     [
+      89.024,
+      58.0
+     ],
+     [
+      101.024,
+      37.0
+     ],
+     [
+      119.037,
+      18.0
+     ],
+     [
+      125.025,
+      15.0
+     ],
+     [
+      131.035,
+      56.0
+     ],
+     [
+      149.045,
+      318.0
+     ],
+     [
+      150.049,
+      13.0
+     ],
+     [
+      161.044,
+      11.0
+     ],
+     [
+      191.057,
+      41.0
+     ],
+     [
+      221.064,
+      38.0
+     ],
+     [
+      293.085,
+      102.0
+     ],
+     [
+      294.09,
+      18.0
+     ],
+     [
+      311.095,
+      28.0
+     ],
+     [
+      769.473,
+      488.0
+     ],
+     [
+      770.481,
+      187.0
+     ],
+     [
+      771.476,
+      47.0
+     ],
+     [
+      771.509,
+      17.0
+     ],
+     [
+      815.48,
+      1000.0
+     ]
+    ]
+   },
+   "b": {
+    "precursor_mz": 829.4955,
+    "peaks": [
+     [
+      101.022,
+      21.0
+     ],
+     [
+      113.023,
+      11.0
+     ],
+     [
+      161.044,
+      27.0
+     ],
+     [
+      163.059,
+      21.0
+     ],
+     [
+      205.068,
+      12.0
+     ],
+     [
+      475.376,
+      76.0
+     ],
+     [
+      619.419,
+      14.0
+     ],
+     [
+      637.431,
+      50.0
+     ],
+     [
+      638.431,
+      15.0
+     ],
+     [
+      783.49,
+      1000.0
+     ],
+     [
+      784.492,
+      464.0
+     ],
+     [
+      785.496,
+      114.0
+     ],
+     [
+      829.497,
+      434.0
+     ]
+    ]
+   },
+   "expected": [
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=none&tol=0.025",
+     "score": 0.7308512735135007,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        2,
+        7,
+        "product"
+       ],
+       [
+        3,
+        5,
+        "neutral_loss"
+       ],
+       [
+        4,
+        8,
+        "neutral_loss"
+       ],
+       [
+        9,
+        13,
+        "neutral_loss"
+       ],
+       [
+        10,
+        14,
+        "neutral_loss"
+       ],
+       [
+        11,
+        15,
+        "neutral_loss"
+       ],
+       [
+        12,
+        17,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=none&tol=0.025",
+     "score": 0.9721571129585765,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        2,
+        7,
+        "product"
+       ],
+       [
+        3,
+        5,
+        "neutral_loss"
+       ],
+       [
+        4,
+        8,
+        "neutral_loss"
+       ],
+       [
+        9,
+        13,
+        "neutral_loss"
+       ],
+       [
+        10,
+        14,
+        "neutral_loss"
+       ],
+       [
+        11,
+        15,
+        "neutral_loss"
+       ],
+       [
+        12,
+        17,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=none&tol=0.025",
+     "score": 0.8134263116479306,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        2,
+        7,
+        "product"
+       ],
+       [
+        3,
+        5,
+        "neutral_loss"
+       ],
+       [
+        4,
+        8,
+        "neutral_loss"
+       ],
+       [
+        9,
+        13,
+        "neutral_loss"
+       ],
+       [
+        10,
+        14,
+        "neutral_loss"
+       ],
+       [
+        11,
+        15,
+        "neutral_loss"
+       ],
+       [
+        12,
+        17,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.7232460288333235,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=none&tol=0.025",
+     "score": 0.7232460288333235,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=none&weighting=none",
+     "score": 0.01848971767513863,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    },
+    {
+     "kernel_id": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.8900653037914487,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        2,
+        7,
+        "product"
+       ],
+       [
+        3,
+        5,
+        "neutral_loss"
+       ],
+       [
+        4,
+        8,
+        "neutral_loss"
+       ],
+       [
+        9,
+        13,
+        "neutral_loss"
+       ],
+       [
+        10,
+        14,
+        "neutral_loss"
+       ],
+       [
+        11,
+        15,
+        "neutral_loss"
+       ],
+       [
+        12,
+        16,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.786519538937698,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        2,
+        7,
+        "product"
+       ],
+       [
+        3,
+        5,
+        "neutral_loss"
+       ],
+       [
+        4,
+        8,
+        "neutral_loss"
+       ],
+       [
+        9,
+        13,
+        "neutral_loss"
+       ],
+       [
+        10,
+        14,
+        "neutral_loss"
+       ],
+       [
+        11,
+        15,
+        "neutral_loss"
+       ],
+       [
+        12,
+        16,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "msdial.cosine_matched.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.9397584931072248,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8,
+     "msdial_pairs": {
+      "e": "a",
+      "pairs": [
+       [
+        0,
+        1,
+        "product"
+       ],
+       [
+        2,
+        7,
+        "product"
+       ],
+       [
+        3,
+        5,
+        "neutral_loss"
+       ],
+       [
+        4,
+        8,
+        "neutral_loss"
+       ],
+       [
+        9,
+        13,
+        "neutral_loss"
+       ],
+       [
+        10,
+        14,
+        "neutral_loss"
+       ],
+       [
+        11,
+        15,
+        "neutral_loss"
+       ],
+       [
+        12,
+        16,
+        "neutral_loss"
+       ]
+      ]
+     }
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.7950404228481612,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 8
+    },
+    {
+     "kernel_id": "gnps.modified_cosine?assign=optimal&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025",
+     "score": 0.7950404228481611,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python"
+     ]
+    },
+    {
+     "kernel_id": "entropy.li2021?bin=0.05&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&weighting=none",
+     "score": 0.06454393879908249,
+     "abs_tol": 1e-09,
+     "swap_invariant": true,
+     "implementations": [
+      "python",
+      "csharp"
+     ],
+     "matched_peak_count": 0
+    }
+   ],
+   "source_record_indices": [
+    16,
+    17
+   ]
+  }
+ ]
+}

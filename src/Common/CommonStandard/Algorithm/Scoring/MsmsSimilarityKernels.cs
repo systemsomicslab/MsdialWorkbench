@@ -195,7 +195,8 @@ namespace CompMs.Common.Algorithm.Scoring
     /// <summary>
     /// <c>msdial.cosine_matched.legacy</c>: the fourth value of
     /// <see cref="MsScanMatching.GetBonanzaModifiedDotCosineScores"/>, a cosine over the product-ion
-    /// pairs with matched-only norms. Its matched count is the number of product-ion pairs.
+    /// pairs with matched-only norms. Its matched count is that of the whole matching (product-ion
+    /// and neutral-loss pairs), the second value, as the shared kernel definition reports it.
     /// </summary>
     public sealed class CosineMatchedLegacyKernel : LegacyKernelBase
     {
@@ -203,15 +204,7 @@ namespace CompMs.Common.Algorithm.Scoring
 
         public override double[] ScoreItems(IMSScanProperty a, IMSScanProperty b) {
             var all = MsScanMatching.GetBonanzaModifiedDotCosineScores(a, b, Tolerance);
-            var products = all[1] == 0d ? 0 : CountProductIonPairs(a, b);
-            return new[] { all[3], products };
-        }
-
-        private int CountProductIonPairs(IMSScanProperty a, IMSScanProperty b) {
-            var match = a.PrecursorMz < b.PrecursorMz
-                ? MsScanMatching.MatchLegacy(a.Spectrum, a.PrecursorMz, b.Spectrum, b.PrecursorMz, Tolerance, MassToleranceType.Da)
-                : MsScanMatching.MatchLegacy(b.Spectrum, b.PrecursorMz, a.Spectrum, a.PrecursorMz, Tolerance, MassToleranceType.Da);
-            return match.Pairs.Count(pair => pair.IsProductIonMatched);
+            return new[] { all[3], all[1] };
         }
     }
 

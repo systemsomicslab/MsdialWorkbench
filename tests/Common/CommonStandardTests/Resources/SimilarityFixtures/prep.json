@@ -1,0 +1,489 @@
+{
+ "format": "msdial-similarity-fixtures",
+ "format_version": 1,
+ "kind": "prep",
+ "cases": [
+  {
+   "id": "base-before-filter",
+   "purpose": "Above-precursor maximum controls relative cutoff",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      100,
+      5
+     ],
+     [
+      150,
+      10
+     ],
+     [
+      250,
+      1000
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     150,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "above-precursor-boundary",
+   "purpose": "Just below, equal and above P+0.05",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      200.04999,
+      4
+     ],
+     [
+      200.05,
+      4
+     ],
+     [
+      200.05001,
+      4
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=0&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     200.04999,
+     100.0
+    ],
+    [
+     200.05,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "absolute-cutoff",
+   "purpose": "Absolute cutoff is inclusive",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      90,
+      4.99999
+     ],
+     [
+      100,
+      5
+     ],
+     [
+      110,
+      6
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=5&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     100,
+     91.2870929175277
+    ],
+    [
+     110,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "relative-equality",
+   "purpose": "Keep intensity exactly at one percent",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      90,
+      0.99999
+     ],
+     [
+      100,
+      1
+     ],
+     [
+      150,
+      100
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     100,
+     10.0
+    ],
+    [
+     150,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "frame-summing",
+   "purpose": "Sum in m/z order and retain intensity apex",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      100.1,
+      3
+     ],
+     [
+      100.2,
+      7
+     ],
+     [
+      101.1,
+      5
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     100.2,
+     100.0
+    ],
+    [
+     101.1,
+     70.71067811865474
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "frame-apex-tie",
+   "purpose": "First strict greater apex means lower m/z",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      100.1,
+      5
+     ],
+     [
+      100.9,
+      5
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     100.1,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "unsorted",
+   "purpose": "Stable m/z ordering before framing",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      101.3,
+      7
+     ],
+     [
+      100.8,
+      5
+     ],
+     [
+      100.1,
+      5
+     ],
+     [
+      100.1,
+      5
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     100.1,
+     100.0
+    ],
+    [
+     101.3,
+     68.31300510639733
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "empty",
+   "purpose": "Empty stays empty",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": []
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "precursor-retained",
+   "purpose": "Default MN keeps the precursor",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      200,
+      1
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     200,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "power-scale",
+   "purpose": "Explicit intensity power and scale",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      100,
+      2
+     ],
+     [
+      110,
+      4
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=2&prep.precwin=0&prep.rel=1&prep.scale=10&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     100,
+     2.5
+    ],
+    [
+     110,
+     10.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "precursor-window",
+   "purpose": "Inclusive Python precursor-window removal",
+   "implementations": [
+    "python"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      182.99999,
+      1
+     ],
+     [
+      183,
+      1
+     ],
+     [
+      200,
+      1
+     ],
+     [
+      217,
+      1
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=none&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=17&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     182.99999,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "topk",
+   "purpose": "Sliding top-k uses strictly greater intensities and inclusive window",
+   "implementations": [
+    "python"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      50,
+      10
+     ],
+     [
+      75,
+      10
+     ],
+     [
+      100,
+      5
+     ],
+     [
+      100.00001,
+      4
+     ],
+     [
+      175,
+      3
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=1&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     50,
+     100.0
+    ],
+    [
+     75,
+     100.0
+    ],
+    [
+     175,
+     54.77225575051661
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "mass-range",
+   "purpose": "Keep min and max equality",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      9.99999,
+      1
+     ],
+     [
+      10,
+      2
+     ],
+     [
+      150,
+      3
+     ],
+     [
+      150.00001,
+      4
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=150&prep.minmz=10&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     10,
+     81.64965809277261
+    ],
+    [
+     150,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  },
+  {
+   "id": "frame-off",
+   "purpose": "No framing preserves order at the low-level API",
+   "implementations": [
+    "python",
+    "csharp"
+   ],
+   "input": {
+    "precursor_mz": 200,
+    "peaks": [
+     [
+      110,
+      3
+     ],
+     [
+      100,
+      4
+     ]
+    ]
+   },
+   "prep_id": "prep=mn&prep.above=0.05&prep.abs=0&prep.frame=0&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50",
+   "expected_peaks": [
+    [
+     110,
+     86.60254037844386
+    ],
+    [
+     100,
+     100.0
+    ]
+   ],
+   "abs_tol": 1e-09
+  }
+ ]
+}
