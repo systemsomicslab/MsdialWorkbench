@@ -207,7 +207,8 @@ namespace CompMs.Common.Algorithm.Function
             // Every setting is scored; ModifiedCosine, Cosine and All used to give [0, 0] and so no edge.
             var scoreitem = MsmsSimilarityKernelFactory.ScoreItems(query.MsmsSimilarityCalc, prop1, prop2, query.MassTolerance);
             if (scoreitem[1] < query.MinimumPeakMatch) return null; 
-            if (scoreitem[0] < query.SpectrumSimilarityCutOff * 0.01) return null;
+            // Written so that a NaN score fails: NaN < cutoff is false.
+            if (!(scoreitem[0] >= query.SpectrumSimilarityCutOff * 0.01)) return null;
 
             return scoreitem;
         }
@@ -229,7 +230,7 @@ namespace CompMs.Common.Algorithm.Function
             var scoreitem = GetMsnScoreItems(peak1, peak2, massTolerance, msmsSimilarityCalc);
             if (scoreitem == null) return null;
             if (scoreitem[1] < minimumPeakMatch) return null;
-            if (scoreitem[0] < matchThreshold * 0.01) return null;
+            if (!(scoreitem[0] >= matchThreshold * 0.01)) return null; // a NaN score fails
 
             var edge = new EdgeData() {
                 score = scoreitem[0], matchpeakcount = scoreitem[1], source = peak1.ScanID, target = peak2.ScanID,
@@ -269,7 +270,7 @@ namespace CompMs.Common.Algorithm.Function
                     scoreitem = GetMsnScoreItems(prop1, prop2, massTolerance, msmsSimilarityCalc);
                     if (scoreitem == null) continue;
                     if (scoreitem[1] < minimumPeakMatch) continue;
-                    if (scoreitem[0] < matchThreshold * 0.01) continue;
+                    if (!(scoreitem[0] >= matchThreshold * 0.01)) continue; // a NaN score fails
 
                     if (node2links.ContainsKey(i)) {
                         node2links[i].Add(new LinkNode() { Score = scoreitem, Node = peaks2[j], Index = j });

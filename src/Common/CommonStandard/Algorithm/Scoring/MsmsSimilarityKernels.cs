@@ -288,6 +288,7 @@ namespace CompMs.Common.Algorithm.Scoring
         /// <item>Stable ascending sort by w, then reversed (so on equal w the later candidate comes first);
         /// a pair is accepted when both its peaks are still unused.</item>
         /// <item>score = Σ accepted w / (√Σ_all (mA^mzp·IA^ip)² · √Σ_all (mB^mzp·IB^ip)²); 0 when a norm is 0.</item>
+        /// <item>If any peak weight is not finite, the result is NaN with 0 matched peaks.</item>
         /// </list>
         /// </remarks>
         public static SimilarityScore Compute(IReadOnlyList<SpectrumPeak> a, double precursorA, IReadOnlyList<SpectrumPeak> b, double precursorB, double tolerance, double mzPower, double intensityPower) {
@@ -297,6 +298,12 @@ namespace CompMs.Common.Algorithm.Scoring
             var mzB = sortedB.Select(peak => peak.Mass).ToArray();
             var powerA = sortedA.Select(peak => Math.Pow(peak.Mass, mzPower) * Math.Pow(peak.Intensity, intensityPower)).ToArray();
             var powerB = sortedB.Select(peak => Math.Pow(peak.Mass, mzPower) * Math.Pow(peak.Intensity, intensityPower)).ToArray();
+            // A non-finite weight (an all-zero spectrum scaled to its base peak gives 0/0) makes the
+            // score undefined: NaN with no pairs, as the shared definition has it, never a count of
+            // pairs that would let the score pass a minimum-match gate.
+            if (powerA.Any(IsNotFinite) || powerB.Any(IsNotFinite)) {
+                return new SimilarityScore(double.NaN, 0);
+            }
 
             var candidates = new List<(int I, int J, double W)>();
             AddCandidates(candidates, mzA, mzB, 0d, tolerance, powerA, powerB);
@@ -338,6 +345,8 @@ namespace CompMs.Common.Algorithm.Scoring
                 }
             }
         }
+
+        private static bool IsNotFinite(double value) => double.IsNaN(value) || double.IsInfinity(value);
 
         private static double SumOfSquares(double[] values) {
             var sum = 0d;

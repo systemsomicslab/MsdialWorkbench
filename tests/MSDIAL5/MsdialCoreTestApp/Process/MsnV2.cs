@@ -200,7 +200,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking
                     if (queryScans[0][i].Spectrum.Count == 0 || targetScans[0][j].Spectrum.Count == 0) continue;
                     scores[0] = kernels[0].Score(queryScans[0][i], targetScans[0][j]);
                     if (scores[0].Matched < parameter.MinimumPeakMatch) continue;
-                    if (scores[0].Score < parameter.MnSpectrumSimilarityCutOff * 0.01) continue;
+                    if (!(scores[0].Score >= parameter.MnSpectrumSimilarityCutOff * 0.01)) continue; // a NaN score fails
                 }
                 else {
                     scores[0] = kernels[0].Score(queryScans[0][i], targetScans[0][j]);

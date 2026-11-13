@@ -206,6 +206,43 @@ namespace CompMs.Common.Algorithm.Function.Tests
             Assert.IsTrue(instance.Root.edges.All(edge => edge.data.comment.StartsWith(identityPrefix, System.StringComparison.Ordinal)), instance.Root.edges[0].data.comment);
         }
 
+        /// <summary>
+        /// All-zero spectra make the modified cosine NaN. The cutoff gate used to read
+        /// "score &lt; cutoff → drop", which a NaN never satisfies, so NaN edges were kept.
+        /// </summary>
+        [DataTestMethod]
+        [DataRow(0d)]
+        [DataRow(50d)]
+        public void ANaNScoreNeverBecomesAnEdge(double cutoff) {
+            var spots = Enumerable.Range(0, 2).Select(id => new TestSpot { ID = id, Name = "Unknown", Ontology = ONTOLOGY, Mass = 700d, Intensity = 100d, }).ToList();
+            var scans = spots.Select(spot => {
+                var scan = new MSScanProperty(spot.ID, 700d, new RetentionTime(1d), IonMode.Positive);
+                scan.AddPeak(100d, 0d);
+                scan.AddPeak(200d, 0d);
+                return (IMSScanProperty)scan;
+            }).ToList();
+            var query = CreateQuery();
+            query.MsmsSimilarityCalc = MsmsSimilarityCalc.ModifiedCosine;
+            query.MinimumPeakMatch = 0d;
+            query.SpectrumSimilarityCutOff = cutoff;
+            query.RelativeAbundanceCutOff = 0d;
+
+            var instance = new MoleculerNetworkingBase().GetMolecularNetworkInstance(spots, scans, query, report: null);
+
+            Assert.AreEqual(0, instance.Root.edges.Count);
+        }
+
+        [TestMethod]
+        public void TheConsoleEdgeGateDropsANaNScore() {
+            var a = new MSScanProperty(0, 700d, new RetentionTime(1d), IonMode.Positive) { Spectrum = new List<SpectrumPeak> { new SpectrumPeak(100d, double.NaN), }, };
+            var b = new MSScanProperty(1, 700d, new RetentionTime(1d), IonMode.Positive) { Spectrum = new List<SpectrumPeak> { new SpectrumPeak(100d, 1d), }, };
+
+            var edge = MoleculerNetworkingBase.GetEdge(a, b, 0.025, minimumPeakMatch: 0d, matchThreshold: 0d, maxEdgeNumPerNode: 10d,
+                maxPrecursorDiff: 400d, maxPrecursorDiff_Percent: 50d, MsmsSimilarityCalc.ModifiedCosine);
+
+            Assert.IsNull(edge);
+        }
+
         [TestMethod]
         public void AnUnknownSavedSimilaritySettingGivesNoSpectralEdges() {
             var (spots, scans) = CreatePeakScans(new[] { 0, 1, }, new[] { 700d, 710d, }, new[] { true, true, });

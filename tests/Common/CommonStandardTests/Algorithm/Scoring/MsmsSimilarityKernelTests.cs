@@ -169,6 +169,29 @@ public class MsmsSimilarityKernelTests
         Assert.AreEqual(1d, score.Score, 1e-15);
     }
 
+    /// <summary>
+    /// The shared fixture case kernels.json:moddot-zero-nan with greedy modified cosine on MN prep
+    /// (marked python-only in catalog 99d3e1a): an all-zero spectrum normalised to its base peak is
+    /// 0/0, so every weight is NaN. The result is (NaN, 0), not NaN with one matched pair.
+    /// </summary>
+    [TestMethod]
+    public void NonFiniteWeightsGiveNaNWithNoMatchedPeaks() {
+        var kernel = MsmsSimilarityKernelFactory.FromIdentity(
+            "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025");
+        var a = Scan(200d, (100d, 0d));
+        var b = Scan(214d, (100d, 0d));
+        var pa = Scan(200d, kernel.Preprocess(a.Spectrum, 200d).Select(p => (p.Mass, p.Intensity)).ToArray());
+        var pb = Scan(214d, kernel.Preprocess(b.Spectrum, 214d).Select(p => (p.Mass, p.Intensity)).ToArray());
+
+        foreach (var score in new[] { kernel.Score(pa, pb), kernel.Score(pb, pa) }) {
+            Assert.IsTrue(double.IsNaN(score.Score));
+            Assert.AreEqual(0, score.Matched);
+        }
+        var raw = ModifiedCosine(Scan(300d, (100d, double.PositiveInfinity)), Scan(300d, (100d, 1d)));
+        Assert.IsTrue(double.IsNaN(raw.Score));
+        Assert.AreEqual(0, raw.Matched);
+    }
+
     [TestMethod]
     public void AnEmptySpectrumScoresZero() {
         var a = Scan(300d);

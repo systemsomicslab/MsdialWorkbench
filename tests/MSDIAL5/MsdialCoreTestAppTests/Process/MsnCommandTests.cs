@@ -294,6 +294,25 @@ public sealed class MsnCommandTests
     }
 
     [TestMethod]
+    public void ANaNPrimaryScoreIsNotWrittenWithoutAllPairsButIsWithIt() {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), [
+            new MspRecord("z0", 400d, "Positive", null, 0, [(100.05, 0d), (150.07, 0d)]),
+            new MspRecord("z1", 414d, "Positive", null, 1, [(100.05, 0d), (164.07, 0d)]),
+        ]);
+        var method = WriteMethod("MsmsSimilarityCalc: ModifiedCosine", "MinimumPeakMatch: 0", "MnSpectrumSimilarityCutOff: 0", "MnRelativeAbundanceCutOff: 0");
+        var gated = Path.Combine(_scratch, "gated.tsv");
+        var all = Path.Combine(_scratch, "all.tsv");
+
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", gated, "-m", method, "--ionmode", "Positive", "--format", "v2"));
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", all, "-m", method, "--ionmode", "Positive", "--format", "v2", "--all-pairs"));
+
+        Assert.AreEqual(0, File.ReadAllText(gated).Split('\n').Count(line => line.Length > 0 && !line.StartsWith("#")) - 1);
+        var row = File.ReadAllText(all).Split('\n').Where(line => line.Length > 0 && !line.StartsWith("#")).Skip(1).Single().Split('\t');
+        Assert.AreEqual("NaN", row[15]);
+        Assert.AreEqual("0", row[16]);
+    }
+
+    [TestMethod]
     public void WithoutAllPairsTheCutoffAndMinimumMatchOfThePrimaryKernelApply() {
         var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), V2Records());
         var method = WriteMethod("MsmsSimilarityCalc: Bonanza", "MinimumPeakMatch: 3", "MnSpectrumSimilarityCutOff: 0", "MaxPrecursorDifference: 400", "MnRelativeAbundanceCutOff: 0");
