@@ -383,6 +383,29 @@ public static class MainProcess
             Description = "Export all edges in the molecular network. [default: false]",
             DefaultValueFactory = _ => false,
         };
+        var formatOpt = new Option<string>("--format")
+        {
+            Description = "Output format: v1 (default; ID, ID, scores) or v2 (metadata lines, record ID columns, one score and matched column per kernel identity).",
+            DefaultValueFactory = _ => "v1",
+        };
+        var allPairsOpt = new Option<bool>("--all-pairs")
+        {
+            Description = "v2 only: write every scored pair, ignoring MinimumPeakMatch and the similarity cutoff. MaxPrecursorDifference still applies.",
+        };
+        var kernelsOpt = new Option<string>("--kernels")
+        {
+            Description = "v2 only: comma-separated kernels (ModifiedCosine, ModDotLegacy, Bonanza, All). The first is primary. Default: the method file's MsmsSimilarityCalc.",
+        };
+        var redactOpt = new Option<string>("--redact-identity")
+        {
+            Description = "v2 only: blank the name, InChIKey and database ID of the query, the target, both, or none. In self mode any value blanks both sides.",
+            DefaultValueFactory = _ => "none",
+        };
+        var threadsOpt = new Option<int>("--threads")
+        {
+            Description = "v2 only: threads that score query blocks in parallel. The output is identical for any value.",
+            DefaultValueFactory = _ => 1,
+        };
         var helpOpt = root.Options.OfType<HelpOption>().Single();
         inputOpt.Validators.Add(result => {
             var input = result.GetValueOrDefault<string>();
@@ -406,6 +429,11 @@ public static class MainProcess
         cmd.Options.Add(ionmodeOpt);
         cmd.Options.Add(overwriteOpt);
         cmd.Options.Add(allEdgeExportOpt);
+        cmd.Options.Add(formatOpt);
+        cmd.Options.Add(allPairsOpt);
+        cmd.Options.Add(kernelsOpt);
+        cmd.Options.Add(redactOpt);
+        cmd.Options.Add(threadsOpt);
         cmd.Validators.Add(result => {
             if (result.GetResult(helpOpt) is not null) {
                 return;
@@ -442,6 +470,11 @@ public static class MainProcess
                 var ionmode = parseResult.GetRequiredValue(ionmodeOpt);
                 var overwrite = parseResult.GetValue(overwriteOpt);
                 var allEdgeExport = parseResult.GetValue(allEdgeExportOpt);
+                var v2 = ReadMsnV2Options(parseResult.GetValue(formatOpt), parseResult.GetValue(allPairsOpt),
+                    parseResult.GetValue(kernelsOpt), parseResult.GetValue(redactOpt), parseResult.GetValue(threadsOpt));
+                if (v2 is not null && Directory.Exists(input)) {
+                    throw new MsnUsageException("--format v2 takes a single input file, not an input folder.");
+                }
 
                 // A target the run cannot use must stop it: networking the input against itself
                 // instead would write a plausible file that answers a different question.
@@ -474,16 +507,19 @@ public static class MainProcess
                         return MsnExitCode.UnusableInput;
                     }
                     if (isProject) {
-                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment, analysisFileName);
+                        return new MoleculerNetworkProcess().Run4Project(input, output, methodFile.FullName, ionmode, alignment, analysisFileName, v2);
                     }
                     if (binaryInput) {
                         if (spectrumFile is null || !spectrumFile.Exists) {
                             throw new FileNotFoundException("A --spectrum file is required for binary peak-list input.", spectrumFile?.FullName);
                         }
-                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode);
+                        return new MoleculerNetworkProcess().Run4Binary(input, spectrumFile.FullName, output, methodFile.FullName, ionmode, v2);
                     }
                     if (spectrumFile != null) {
                         throw new ArgumentException("--spectrum is only used with .pai, .pai2, .arf, or .arf2 input.");
+                    }
+                    if (v2 is not null) {
+                        return new MoleculerNetworkProcess().RunV2(input, targetFile?.FullName, output, methodFile.FullName, ionmode, v2);
                     }
                     if (targetFile != null) {
                         return new MoleculerNetworkProcess().Map2TargetFile(targetFile.FullName, input, methodFile.FullName, output, ionmode);
@@ -497,6 +533,10 @@ public static class MainProcess
                 Console.Error.WriteLine(ex.Message);
                 return MsnExitCode.UnusableInput;
             }
+            catch (MsnUsageException ex) {
+                Console.Error.WriteLine(ex.Message);
+                return MsnExitCode.UnusableInput;
+            }
             catch (Exception ex) {
                 var msg = String.Format("{0} -- {1} -- {2}", ex.InnerException, ex.Message, ex.StackTrace);
                 Console.Error.WriteLine(msg);
@@ -505,6 +545,42 @@ public static class MainProcess
         });
 
         root.Add(cmd);
+    }
+
+    /// <summary>
+    /// The v2 options, or null for v1. Options that only v2 has are refused with v1, rather than
+    /// ignored.
+    /// </summary>
+    internal static MsnV2Options? ReadMsnV2Options(string? format, bool allPairs, string? kernels, string? redact, int threads) {
+        var isV2 = string.Equals(format, "v2", StringComparison.OrdinalIgnoreCase);
+        if (!isV2 && !string.Equals(format ?? "v1", "v1", StringComparison.OrdinalIgnoreCase)) {
+            throw new MsnUsageException($"Unknown --format '{format}'. Use v1 or v2.");
+        }
+        if (!Enum.TryParse<MsnRedaction>(redact ?? "none", ignoreCase: true, out var redaction)
+            || !Enum.IsDefined(typeof(MsnRedaction), redaction)
+            || (redact ?? "none").Any(char.IsDigit)) {
+            throw new MsnUsageException($"Unknown --redact-identity '{redact}'. Use none, query, target or both.");
+        }
+        if (!isV2) {
+            if (allPairs || !string.IsNullOrEmpty(kernels) || redaction != MsnRedaction.None || threads != 1) {
+                throw new MsnUsageException("--all-pairs, --kernels, --redact-identity and --threads are used only with --format v2.");
+            }
+            return null;
+        }
+        if (threads < 1) {
+            throw new MsnUsageException("--threads must be at least 1.");
+        }
+        List<MsmsSimilarityCalc>? calcs = null;
+        if (!string.IsNullOrWhiteSpace(kernels)) {
+            calcs = new List<MsmsSimilarityCalc>();
+            foreach (var name in kernels!.Split(',')) {
+                var outcome = ConfigParser.SimilarityCalc(name, calcs.Add);
+                if (!outcome.IsApplied) {
+                    throw new MsnUsageException($"Unknown kernel '{name.Trim()}' in --kernels. Use {string.Join(", ", Enum.GetNames(typeof(MsmsSimilarityCalc)))}.");
+                }
+            }
+        }
+        return new MsnV2Options { AllPairs = allPairs, Kernels = calcs, Redaction = redaction, Threads = threads, };
     }
 
     /// <summary>

@@ -82,9 +82,9 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             var i_cRecords = i_records.Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
 
             foreach (var record in t_cRecords)
-                record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+                record.Spectrum = MsnSettings.Preprocess(param, record.Spectrum, record.PrecursorMz);
             foreach (var record in i_cRecords)
-                record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+                record.Spectrum = MsnSettings.Preprocess(param, record.Spectrum, record.PrecursorMz);
 
             AtomicOutputFile.Write(outputfile, sw => {
                 WriteEdgeHeader(sw, param.MsmsSimilarityCalc);
@@ -113,7 +113,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
             Console.WriteLine("Total records count: {0}", cRecords.Count);
             foreach (var record in cRecords)
-                record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+                record.Spectrum = MsnSettings.Preprocess(param, record.Spectrum, record.PrecursorMz);
             AtomicOutputFile.Write(outputfile, sw => {
                 WriteEdgeHeader(sw, param.MsmsSimilarityCalc);
                 for (int i = 0; i < cRecords.Count; i++) {
@@ -132,28 +132,53 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return 0;
         }
 
-        public int Run4Binary(string inputFile, string dclFile, string outputFile, string methodFile, string ionMode) {
+        /// <summary>
+        /// <c>msn --format v2</c> on MSP input: the input with itself (<paramref name="targetFile"/>
+        /// null) or with a target library.
+        /// </summary>
+        public int RunV2(string inputFile, string? targetFile, string outputFile, string methodFile, string ionMode, MsnV2Options options) {
             var parameter = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
+            MsnV2.Kernels(parameter, options);
+            var query = MsnV2.LoadMsp(inputFile, ionMode);
+            var target = targetFile is null ? null : MsnV2.LoadMsp(targetFile, ionMode);
+            Console.WriteLine("Total records count: {0}", query.Records.Count);
+            MsnV2.Write(outputFile, query, target, ionMode, parameter, options);
+            return MsnExitCode.Success;
+        }
+
+        public int Run4Binary(string inputFile, string dclFile, string outputFile, string methodFile, string ionMode, MsnV2Options? v2 = null) {
+            var parameter = ConfigParser.ReadForMoleculerNetworkingParameter(methodFile);
+            if (v2 is not null) {
+                MsnV2.Kernels(parameter, v2);
+            }
             if (Path.GetExtension(inputFile).Equals(".arf", StringComparison.OrdinalIgnoreCase)
                 || Path.GetExtension(inputFile).Equals(".arf2", StringComparison.OrdinalIgnoreCase)) {
                 var input = MolecularNetworkingInputLoader.LoadAlignment(inputFile, dclFile);
-                return RunInput(input, outputFile, parameter, ionMode);
+                return v2 is null ? RunInput(input, outputFile, parameter, ionMode) : RunInputV2(input, inputFile, outputFile, parameter, ionMode, v2);
             }
             else {
                 var input = MolecularNetworkingInputLoader.LoadAnalysis(inputFile, dclFile);
-                return RunInput(input, outputFile, parameter, ionMode);
+                return v2 is null ? RunInput(input, outputFile, parameter, ionMode) : RunInputV2(input, inputFile, outputFile, parameter, ionMode, v2);
             }
         }
 
-        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string analysisFileName = null) {
+        private static int RunInputV2<T>(MolecularNetworkingInput<T> input, string inputFile, string outputFile, MolecularSpectrumNetworkingBaseParameter parameter, string ionMode, MsnV2Options options) where T : CompMs.Common.Interfaces.IMoleculeProperty, CompMs.Common.Interfaces.IChromatogramPeak {
+            // A project names its peak lists .pai/.arf; they are stored as .pai2/.arf2.
+            var stored = File.Exists(inputFile) ? inputFile : inputFile + "2";
+            var query = MsnV2.LoadBinary(input, stored, ParseIonMode(ionMode));
+            MsnV2.Write(outputFile, query, null, ionMode, parameter, options);
+            return MsnExitCode.Success;
+        }
+
+        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string analysisFileName = null, MsnV2Options? v2 = null) {
             var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
             if (alignment && string.IsNullOrWhiteSpace(analysisFileName)) {
                 var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => MolecularNetworkingInputLoader.StoredFileExists(file.FilePath));
                 if (alignmentFile is null) throw new FileNotFoundException("No alignment result file was found in the project.", projectFile);
-                return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode);
+                return Run4Binary(alignmentFile.FilePath, alignmentFile.SpectraFilePath, outputFile, methodFile, ionMode, v2);
             }
             var analysisFile = MolecularNetworkingInputLoader.SelectAnalysisFile(storage.AnalysisFiles, analysisFileName, projectFile);
-            return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode);
+            return Run4Binary(analysisFile.PeakAreaBeanInformationFilePath, analysisFile.DeconvolutionFilePath, outputFile, methodFile, ionMode, v2);
         }
 
         private static int RunInput<T>(MolecularNetworkingInput<T> input, string outputFile, MolecularSpectrumNetworkingBaseParameter parameter, string ionMode) where T : CompMs.Common.Interfaces.IMoleculeProperty, CompMs.Common.Interfaces.IChromatogramPeak {
@@ -163,9 +188,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             var spots = selected.Select(item => item.spot).ToList();
             var scans = selected.Select(item => item.scan).ToList();
             for (var i = 0; i < scans.Count; i++) {
-                scans[i].Spectrum = MsScanMatching.GetProcessedSpectrum(scans[i].Spectrum, scans[i].PrecursorMz,
-                    absoluteAbundanceCutOff: parameter.MnAbsoluteAbundanceCutOff,
-                    relativeAbundanceCutOff: parameter.MnRelativeAbundanceCutOff);
+                scans[i].Spectrum = MsnSettings.Preprocess(parameter, scans[i].Spectrum, scans[i].PrecursorMz);
             }
 
             // Same pairing as the MSP path (Run4Onefile): every unordered pair is scored once.
@@ -223,7 +246,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 var recordsA = LibraryHandler.ReadMspLibrary(inputA).Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
                 if (recordsA.Count <= 1) continue;
                 foreach (var record in recordsA)
-                    record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+                    record.Spectrum = MsnSettings.Preprocess(param, record.Spectrum, record.PrecursorMz);
                 var progress = 0;
                 Parallel.For(i, files.Count, j => {
                     var stopwatch = Stopwatch.StartNew();
@@ -239,7 +262,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     if (recordsB.Count <= 1) return;
 
                     foreach (var record in recordsB)
-                        record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+                        record.Spectrum = MsnSettings.Preprocess(param, record.Spectrum, record.PrecursorMz);
 
                     var sameFileOffset = inputA == inputB ? 1 : 0;
 
@@ -280,7 +303,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                 var recordsA = LibraryHandler.ReadMspLibrary(inputA).Where(n => n.IonMode.ToString() == ionMode && n.Spectrum?.Count() > 0).ToList();
                 if (recordsA.Count <= 1) continue;
                 foreach (var record in recordsA) 
-                    record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+                    record.Spectrum = MsnSettings.Preprocess(param, record.Spectrum, record.PrecursorMz);
                 var progress = 0;
                 Parallel.For(i, files.Count, j => {
                     var stopwatch = Stopwatch.StartNew();
@@ -296,7 +319,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
                     if (recordsB.Count <= 1) return;
 
                     foreach (var record in recordsB)
-                        record.Spectrum = MsScanMatching.GetProcessedSpectrum(record.Spectrum, record.PrecursorMz, absoluteAbundanceCutOff: param.MnAbsoluteAbundanceCutOff, relativeAbundanceCutOff: param.MnRelativeAbundanceCutOff);
+                        record.Spectrum = MsnSettings.Preprocess(param, record.Spectrum, record.PrecursorMz);
 
                     var sameFileOffset = inputA == inputB ? 1 : 0;
 
