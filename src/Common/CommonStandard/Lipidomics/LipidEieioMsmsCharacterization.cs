@@ -4016,8 +4016,8 @@ namespace CompMs.Common.Lipidomics
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
                             if (foundCount == 2)
                             {
-                                var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("SM_d9", LbmClass.SM_d9, "d", sphCarbon, sphDouble,
-                                   acylCarbon, acylDouble, averageIntensity);
+                                var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("SM_d9", LbmClass.SM_d9, "d", sphCarbonNum, sphDoubleNum,
+                                   acylCarbonNum, acylDoubleNum, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
