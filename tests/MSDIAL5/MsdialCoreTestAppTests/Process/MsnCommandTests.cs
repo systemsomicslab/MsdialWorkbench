@@ -174,10 +174,218 @@ public sealed class MsnCommandTests
     [DataRow("BONANZA")]
     [DataRow("Bonanza")]
     [DataRow("all")]
+    [DataRow("modifiedcosine")]
+    [DataRow("ModDotLegacy")]
     public void AKernelNameIsReadInAnyLetterCase(string name) {
         var parameter = ConfigParser.ReadForMoleculerNetworkingParameter(WriteMethod($"MsmsSimilarityCalc: {name}"));
 
         Assert.AreEqual(name.ToLowerInvariant(), parameter.MsmsSimilarityCalc.ToString().ToLowerInvariant());
+    }
+
+    [TestMethod]
+    public void TheOldNameModDotIsReadAsModDotLegacyWithANotice() {
+        var error = new StringWriter();
+        var original = Console.Error;
+        Console.SetError(error);
+        try {
+            var parameter = ConfigParser.ReadForMoleculerNetworkingParameter(WriteMethod("MsmsSimilarityCalc: ModDot"));
+
+            Assert.AreEqual(MsmsSimilarityCalc.ModDotLegacy, parameter.MsmsSimilarityCalc);
+        }
+        finally {
+            Console.SetError(original);
+        }
+        StringAssert.Contains(error.ToString(), "ModDot is read as ModDotLegacy");
+    }
+
+    [TestMethod]
+    public void ThePrecursorWindowAndIntensityPowerAreRead() {
+        var parameter = ConfigParser.ReadForMoleculerNetworkingParameter(WriteMethod("MnPrecursorWindow: 0", "MnIntensityPower: 0.5"));
+
+        Assert.AreEqual(0d, parameter.MnPrecursorWindow);
+        Assert.AreEqual(0.5, parameter.MnIntensityPower);
+        Assert.AreEqual(17d, ConfigParser.ReadForMoleculerNetworkingParameter(WriteMethod("MsmsSimilarityCalc: Bonanza")).MnPrecursorWindow, "the default");
+        Assert.ThrowsException<MethodFileException>(() => ConfigParser.ReadForMoleculerNetworkingParameter(WriteMethod("MnPrecursorWindow: -1")));
+        Assert.ThrowsException<MethodFileException>(() => ConfigParser.ReadForMoleculerNetworkingParameter(WriteMethod("MnIntensityPower: 0")));
+    }
+
+    // ---- v2 ----
+
+    private static List<MspRecord> V2Records() => [
+        new MspRecord("hit A", 400d, "Positive", "DB-A", 10, SharedSpectrum, "AAAAAAAAAAAAAA-BBBBBBBBBB-N", "[M+H]+"),
+        new MspRecord("no peaks", 400d, "Positive", "DB-X", 11, []),
+        new MspRecord("Unknown", 414d, "Positive", null, 12, [(100.05, 300d), (164.07, 1000d), (200.1, 500d)]),
+        new MspRecord("other mode", 400d, "Negative", null, 13, SharedSpectrum),
+        new MspRecord("hit\tC", 400.01, "Positive", "DB-C", 14, [(100.05, 300d), (150.07, 900d)], "CCCCCCCCCCCCCC-DDDDDDDDDD-N", "[M+Na]+"),
+        new MspRecord("no precursor", 0d, "Positive", null, 15, SharedSpectrum),
+    ];
+
+    private (int ExitCode, string[] Lines) RunV2(string msp, string? target, params string[] options) {
+        var output = Path.Combine(_scratch, $"v2-{Guid.NewGuid():N}.tsv");
+        var args = new List<string> { "msn", "-i", msp, "-o", output, "-m", DefaultMethod(), "--ionmode", "Positive", "--format", "v2" };
+        if (target is not null) args.AddRange(["-t", target]);
+        args.AddRange(options);
+        var exitCode = Invoke(args.ToArray());
+        return (exitCode, File.Exists(output) ? File.ReadAllText(output).Split('\n').Where(line => line.Length > 0).ToArray() : []);
+    }
+
+    [TestMethod]
+    public void V2WritesMetadataThenOneRowPerPairWithBothRecordsIdentified() {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), V2Records());
+
+        var (exitCode, lines) = RunV2(msp, null, "--all-pairs", "--kernels", "ModifiedCosine,ModDotLegacy,Bonanza");
+
+        Assert.AreEqual(MsnExitCode.Success, exitCode);
+        var meta = lines.TakeWhile(line => line.StartsWith("#")).ToList();
+        CollectionAssert.Contains(meta, "#msn_format=2");
+        CollectionAssert.Contains(meta, "#mode=self");
+        CollectionAssert.Contains(meta, "#target_file=self");
+        CollectionAssert.Contains(meta, "#all_pairs=true");
+        CollectionAssert.Contains(meta, "#excluded_query=no_peaks=1,wrong_ionmode=1,precursor_le_0=1");
+        Assert.IsTrue(meta.Any(line => line.StartsWith("#query_file=query.msp sha256=", StringComparison.Ordinal)));
+        Assert.IsFalse(meta.Any(line => line.Contains(_scratch)), "no absolute path in the header");
+        var primary = meta.Single(line => line.StartsWith("#primary=", StringComparison.Ordinal));
+        StringAssert.StartsWith(primary, "#primary=gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.025&");
+
+        var header = lines[meta.Count].Split('\t');
+        CollectionAssert.AreEqual(new[] { "q_ordinal", "q_peak_id", "q_db_id", "q_name", "q_inchikey", "q_precursor_mz", "q_adduct" }, header.Take(7).ToArray());
+        Assert.AreEqual("precursor_delta", header[14]);
+        Assert.AreEqual(15 + 2 * 3, header.Length);
+        StringAssert.StartsWith(header[15], "score[gnps.modified_cosine?");
+        StringAssert.StartsWith(header[17], "score[msdial.moddot.legacy?");
+        StringAssert.StartsWith(header[19], "score[msdial.bonanza.v1?");
+
+        var rows = lines.Skip(meta.Count + 1).Select(line => line.Split('\t')).ToList();
+        // Records 0, 2 and 4 are usable: C(3,2) pairs in (q, t) ordinal order.
+        CollectionAssert.AreEqual(new[] { "0|2", "0|4", "2|4" }, rows.Select(r => r[0] + "|" + r[7]).ToArray());
+        CollectionAssert.AreEqual(new[] { "0", "10", "DB-A", "hit A", "AAAAAAAAAAAAAA-BBBBBBBBBB-N" }, rows[0].Take(5).ToArray());
+        Assert.AreEqual("hit C", rows[1][10], "a tab in a name becomes a space");
+        Assert.AreEqual("[M+Na]+", rows[1][13]);
+        Assert.IsTrue(rows.All(r => r.Length == header.Length));
+    }
+
+    [TestMethod]
+    public void RedactionBlanksNamesInChIKeysAndDatabaseIdsButKeepsOrdinalsAndPeakIds() {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), V2Records());
+
+        var (exitCode, lines) = RunV2(msp, null, "--all-pairs", "--redact-identity", "both");
+
+        Assert.AreEqual(MsnExitCode.Success, exitCode);
+        Assert.IsFalse(lines.Any(line => line.Contains("hit") || line.Contains("DB-") || line.Contains("AAAAAAAAAAAAAA")), string.Join("\n", lines));
+        var rows = lines.SkipWhile(line => line.StartsWith("#")).Skip(1).Select(line => line.Split('\t')).ToList();
+        Assert.AreEqual(3, rows.Count);
+        Assert.IsTrue(rows.All(r => r[2] == "" && r[3] == "" && r[4] == "" && r[9] == "" && r[10] == "" && r[11] == ""));
+        CollectionAssert.AreEqual(new[] { "10", "10", "12" }, rows.Select(r => r[1]).ToArray());
+    }
+
+    [TestMethod]
+    public void QueryRedactionAgainstATargetKeepsTheTargetIdentities() {
+        var query = WriteMsp(Path.Combine(_scratch, "query.msp"), V2Records());
+        var target = WriteMsp(Path.Combine(_scratch, "target.msp"), [new MspRecord("public", 400d, "Positive", "PUB-1", null, SharedSpectrum, "PPPPPPPPPPPPPP-QQQQQQQQQQ-N")]);
+
+        var (exitCode, lines) = RunV2(query, target, "--all-pairs", "--redact-identity", "query");
+
+        Assert.AreEqual(MsnExitCode.Success, exitCode);
+        var rows = lines.SkipWhile(line => line.StartsWith("#")).Skip(1).Select(line => line.Split('\t')).ToList();
+        Assert.AreEqual(3, rows.Count, "three usable queries against one target");
+        Assert.IsTrue(rows.All(r => r[2] == "" && r[3] == "" && r[4] == ""));
+        Assert.IsTrue(rows.All(r => r[9] == "PUB-1" && r[10] == "public"));
+        Assert.IsTrue(lines.Any(line => line.StartsWith("#target_file=target.msp sha256=", StringComparison.Ordinal)));
+    }
+
+    [TestMethod]
+    public void ANaNPrimaryScoreIsNotWrittenWithoutAllPairsButIsWithIt() {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), [
+            new MspRecord("z0", 400d, "Positive", null, 0, [(100.05, 0d), (150.07, 0d)]),
+            new MspRecord("z1", 414d, "Positive", null, 1, [(100.05, 0d), (164.07, 0d)]),
+        ]);
+        var method = WriteMethod("MsmsSimilarityCalc: ModifiedCosine", "MinimumPeakMatch: 0", "MnSpectrumSimilarityCutOff: 0", "MnRelativeAbundanceCutOff: 0");
+        var gated = Path.Combine(_scratch, "gated.tsv");
+        var all = Path.Combine(_scratch, "all.tsv");
+
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", gated, "-m", method, "--ionmode", "Positive", "--format", "v2"));
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", all, "-m", method, "--ionmode", "Positive", "--format", "v2", "--all-pairs"));
+
+        Assert.AreEqual(0, File.ReadAllText(gated).Split('\n').Count(line => line.Length > 0 && !line.StartsWith("#")) - 1);
+        var row = File.ReadAllText(all).Split('\n').Where(line => line.Length > 0 && !line.StartsWith("#")).Skip(1).Single().Split('\t');
+        Assert.AreEqual("NaN", row[15]);
+        Assert.AreEqual("0", row[16]);
+    }
+
+    [TestMethod]
+    public void WithoutAllPairsTheCutoffAndMinimumMatchOfThePrimaryKernelApply() {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), V2Records());
+        var method = WriteMethod("MsmsSimilarityCalc: Bonanza", "MinimumPeakMatch: 3", "MnSpectrumSimilarityCutOff: 0", "MaxPrecursorDifference: 400", "MnRelativeAbundanceCutOff: 0");
+        var output = Path.Combine(_scratch, "cut.tsv");
+
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", output, "-m", method, "--ionmode", "Positive", "--format", "v2"));
+
+        var rows = File.ReadAllText(output).Split('\n').Where(line => line.Length > 0 && !line.StartsWith("#")).Skip(1).ToList();
+        // Only records 0 and 2 share three peaks (the third through the precursor shift).
+        Assert.AreEqual(1, rows.Count, string.Join("\n", rows));
+    }
+
+    [TestMethod]
+    public void TheOutputIsByteIdenticalForAnyThreadCount() {
+        var records = Enumerable.Range(0, 120)
+            .Select(i => new MspRecord($"r{i}", 300d + i % 37, "Positive", null, i, [(100.05, 300d), (150.07 + i % 7, 1000d), (200.1 + i % 3, 500d), (250d + i % 11, 200d)]))
+            .ToList();
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), records);
+        var one = Path.Combine(_scratch, "one.tsv");
+        var eight = Path.Combine(_scratch, "eight.tsv");
+
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", one, "-m", DefaultMethod(), "--ionmode", "Positive", "--format", "v2", "--all-pairs", "--kernels", "All,ModifiedCosine", "--threads", "1"));
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", eight, "-m", DefaultMethod(), "--ionmode", "Positive", "--format", "v2", "--all-pairs", "--kernels", "All,ModifiedCosine", "--threads", "8"));
+
+        CollectionAssert.AreEqual(File.ReadAllBytes(one), File.ReadAllBytes(eight));
+        Assert.AreEqual(120 * 119 / 2, File.ReadAllText(one).Split('\n').Count(line => line.Length > 0 && !line.StartsWith("#")) - 1);
+    }
+
+    [DataTestMethod]
+    [DataRow("--format", "v1", "--all-pairs")]
+    [DataRow("--format", "v1", "--kernels", "Bonanza")]
+    [DataRow("--format", "v1", "--redact-identity", "both")]
+    [DataRow("--format", "v3")]
+    [DataRow("--format", "v2", "--kernels", "Cosine")]
+    [DataRow("--format", "v2", "--kernels", "Bonanza,Foo")]
+    [DataRow("--format", "v2", "--redact-identity", "names")]
+    [DataRow("--format", "v2", "--threads", "0")]
+    public void OptionsTheRunCannotHonourStopItWithTwo(params string[] options) {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), V2Records());
+        var output = Path.Combine(_scratch, "out.tsv");
+
+        var exitCode = Invoke(new[] { "msn", "-i", msp, "-o", output, "-m", DefaultMethod(), "--ionmode", "Positive" }.Concat(options).ToArray());
+
+        Assert.AreEqual(MsnExitCode.UnusableInput, exitCode, string.Join(" ", options));
+        Assert.IsFalse(File.Exists(output));
+    }
+
+    [TestMethod]
+    public void AMethodFileCosineIsRefusedInV2AndStillRunsInV1() {
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), V2Records());
+        var method = WriteMethod("MsmsSimilarityCalc: Cosine", "MinimumPeakMatch: 1", "MnSpectrumSimilarityCutOff: 0");
+
+        Assert.AreEqual(MsnExitCode.UnusableInput, Invoke("msn", "-i", msp, "-o", Path.Combine(_scratch, "v2.tsv"), "-m", method, "--ionmode", "Positive", "--format", "v2"));
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", Path.Combine(_scratch, "v1.tsv"), "-m", method, "--ionmode", "Positive"));
+    }
+
+    [TestMethod]
+    public void V1WithModifiedCosineUsesItsOwnPreprocessing() {
+        // The precursor-adjacent peaks are removed by the 17 Da window, so these two records share
+        // only 100.05: one match, below a MinimumPeakMatch of 2.
+        var msp = WriteMsp(Path.Combine(_scratch, "query.msp"), [
+            new MspRecord("a", 400d, "Positive", null, 0, [(100.05, 300d), (399d, 1000d)]),
+            new MspRecord("b", 400d, "Positive", null, 1, [(100.05, 300d), (399d, 1000d)]),
+        ]);
+        var output = Path.Combine(_scratch, "v1.pairs");
+
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", output, "-m",
+            WriteMethod("MsmsSimilarityCalc: ModifiedCosine", "MinimumPeakMatch: 2", "MnSpectrumSimilarityCutOff: 0"), "--ionmode", "Positive"));
+        Assert.AreEqual(1, File.ReadAllLines(output).Length, "header only");
+
+        Assert.AreEqual(MsnExitCode.Success, Invoke("msn", "-i", msp, "-o", output, "-m",
+            WriteMethod("MsmsSimilarityCalc: ModifiedCosine", "MnPrecursorWindow: 0", "MinimumPeakMatch: 2", "MnSpectrumSimilarityCutOff: 0"), "--ionmode", "Positive"));
+        Assert.AreEqual(2, File.ReadAllLines(output).Length, "with the window off both peaks match");
     }
 
     [DataTestMethod]

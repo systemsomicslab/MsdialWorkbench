@@ -9,7 +9,7 @@
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingExportSettingViewModel}}"
         mc:Ignorable="d"
-        Title="Export setting of molecular spectrum networking data" Height="620" Width="465">
+        Title="Export setting of molecular spectrum networking data" Height="710" Width="465">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="44*"/>

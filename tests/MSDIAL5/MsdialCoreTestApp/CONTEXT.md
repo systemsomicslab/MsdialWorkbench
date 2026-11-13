@@ -19,6 +19,32 @@ A project records peak lists and alignment results as `.pai` and `.arf`, but the
 
 For MSP input, each row's IDs are the scored records' `DatabaseUniqueIdentifier`, or else their 0-based ordinal in the unfiltered file. `msn` exits 0 on success, 1 on a runtime failure, and 2 when it does not start because of a method-file value it cannot use (an unknown `MsmsSimilarityCalc`, an unreadable number) or a `--targetFile` that does not exist or does not apply to the input. Every output file is written as `<output>.partial` and renamed when it is complete, so a failed run leaves no file that looks finished. Progress goes to standard error as whole lines.
 
+## Molecular networking kernels
+
+`MsmsSimilarityCalc` is one of `ModDotLegacy` (the old `ModDot`, still accepted with a notice), `Bonanza` (the default), `Cosine`, `All` and `ModifiedCosine`. Every score `msn --format v2` writes, and every spectral edge the GUI builds, is named by a **kernel identity** in the shared grammar of the MS-DIAL spectrum catalog: `<base>?<key>=<value>&…`, keys sorted, every key present, numbers in plain decimal. With the default method-file values:
+
+```text
+msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025
+msdial.bonanza.v1?…the same keys…
+msdial.cosine_matched.legacy?…the same keys…   (the fourth value of All)
+gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=mn&prep.above=0.025&prep.abs=0&prep.frame=0&prep.maxmz=10000&prep.minmz=0&prep.pow=1&prep.precwin=17&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025
+```
+
+**ModDotLegacy is not the GNPS modified cosine.** It sums over the matched pairs only, so a single matched pair scores 1.0. `ModifiedCosine` is the GNPS-normalised modified cosine (matchms 0.34.0 `ModifiedCosineGreedy`): full spectrum norms, inclusive tolerance, peaks within `MnPrecursorWindow` Da (default 17) of the precursor removed, no 1-Da framing, intensities raised to `MnIntensityPower` (default 1). `Cosine` (a squared simple dot product) has no registered identity and is available in v1 only.
+
+## `msn --format v2`
+
+```text
+MSDIALCUI msn -i <query.msp> [-t <target.msp>] -o <out.tsv> -m <mn-parameter.txt> --ionmode Negative --format v2 [--all-pairs] [--kernels ModifiedCosine,ModDotLegacy,Bonanza] [--redact-identity none|query|target|both] [--threads N]
+```
+
+- `#` lines first: console version and commit, mode, input file names and sha256 (never a path), the kernel identities, the cutoffs in force, excluded records by reason, redaction.
+- Columns: `q_ordinal q_peak_id q_db_id q_name q_inchikey q_precursor_mz q_adduct`, the same for `t_`, `precursor_delta` (q − t), then `score[<identity>]` and `matched[<identity>]` per kernel. The ordinal is the record's 0-based index in the unfiltered file; `peak_id` is `PEAKID` from the COMMENT (the catalog join key) or, for binary input, the spot ID.
+- `--all-pairs` writes every pair within `MaxPrecursorDifference`, ignoring `MinimumPeakMatch` and the cutoff. Otherwise those apply to the first kernel.
+- `--redact-identity` blanks names, InChIKeys and database IDs and keeps ordinals and PEAKIDs; in self mode any value blanks both sides. MS-DIAL alignment `.mdmsp` names can carry private-library hits, so redact them when the output is shared.
+- Rows are in (query, target) order and the file is byte-identical for any `--threads`.
+- The MSP reader parses precursor m/z, peak m/z and intensity in single precision; an implementation that recomputes scores from the same MSP must do the same.
+
 ## Language
 
 **Peak**:

@@ -399,13 +399,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                     spots = _filter.Filter(Ms1Spots).ToList();
                 }
                 var peaks = _alignmentFileModel.LoadMSDecResults();
+                // The builder pairs spots and scans by position, so a filtered spot list needs its own scans.
+                var scans = spots.Select(spot => peaks[spot.MasterAlignmentID]).ToList();
 
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
                 }
                 var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
                 var builder = new MoleculerNetworkingBase();
-                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
+                var network = builder.GetMolecularNetworkInstance(spots, scans, query, notify);
                 var rootObj = network.Root;
                 for (int i = 0; i < rootObj.nodes.Count; i++) {
                     var node = rootObj.nodes[i];

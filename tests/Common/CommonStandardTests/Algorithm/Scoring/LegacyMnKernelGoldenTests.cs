@@ -320,7 +320,7 @@ public class LegacyMnKernelGoldenTests
             ["gui_edges"] = new JObject
             {
                 ["Bonanza"] = new JArray(GuiEdges(MsmsSimilarityCalc.Bonanza).Select(e => new JArray(e.Select(Encode)))),
-                ["ModDot"] = new JArray(GuiEdges(MsmsSimilarityCalc.ModDot).Select(e => new JArray(e.Select(Encode)))),
+                ["ModDot"] = new JArray(GuiEdges(MsmsSimilarityCalc.ModDotLegacy).Select(e => new JArray(e.Select(Encode)))),
             },
         };
     }
@@ -400,7 +400,7 @@ public class LegacyMnKernelGoldenTests
 
     [TestMethod]
     public void GuiModDotNetworkKeepsItsEdgesAndScores() {
-        AssertGuiEdges(LoadGolden(), "ModDot", (MsmsSimilarityCalc)0);
+        AssertGuiEdges(LoadGolden(), "ModDot", MsmsSimilarityCalc.ModDotLegacy);
     }
 
     private static void AssertGuiEdges(JObject golden, string name, MsmsSimilarityCalc calc) {

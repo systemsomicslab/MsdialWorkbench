@@ -1,0 +1,87 @@
+{
+ "format": "msdial-similarity-fixtures",
+ "format_version": 1,
+ "kind": "kernel_ids",
+ "cases": [
+  {
+   "id": "id-00",
+   "input": "msdial.moddot.legacy",
+   "canonical": "msdial.moddot.legacy?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025"
+  },
+  {
+   "id": "id-01",
+   "input": "msdial.bonanza.v1",
+   "canonical": "msdial.bonanza.v1?prep=mn&prep.above=0.05&prep.abs=0&prep.frame=1&prep.maxmz=10000&prep.minmz=0&prep.pow=0.5&prep.precwin=0&prep.rel=1&prep.scale=100&prep.topk=0&prep.topkwin=50&tol=0.025"
+  },
+  {
+   "id": "id-02",
+   "input": "entropy.li2021",
+   "canonical": "entropy.li2021?bin=0.05&prep=none&weighting=none"
+  },
+  {
+   "id": "id-03",
+   "input": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025",
+   "canonical": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025"
+  },
+  {
+   "id": "id-04",
+   "input": "gnps.modified_cosine",
+   "canonical": "error"
+  },
+  {
+   "id": "id-05",
+   "input": "msdial.bonanza.v1?prep=none",
+   "canonical": "error"
+  },
+  {
+   "id": "id-06",
+   "input": "msdial.bonanza.v1?prep=none&tol=0.025&unknown=1",
+   "canonical": "error"
+  },
+  {
+   "id": "id-07",
+   "input": "msdial.bonanza.v1?tol=0.0250&prep=none",
+   "canonical": "msdial.bonanza.v1?prep=none&tol=0.025"
+  },
+  {
+   "id": "id-08",
+   "input": "gnps.modified_cosine?prep=none&assign=greedy&ipow=1.0&mzpow=-0&tol=0.0250",
+   "canonical": "gnps.modified_cosine?assign=greedy&ipow=1&mzpow=0&prep=none&tol=0.025"
+  },
+  {
+   "id": "id-09",
+   "input": "msdial.cosine_matched.legacy",
+   "canonical": "error"
+  },
+  {
+   "id": "id-10",
+   "input": "entropy.li2021?bin=0.05&prep=none&weighting=true",
+   "canonical": "error"
+  },
+  {
+   "id": "id-11",
+   "input": "msdial.bonanza.v1?prep=none&tol=0.025&tol=0.025",
+   "canonical": "error"
+  },
+  {
+   "id": "id-12",
+   "input": "msdial.bonanza.v1?prep=none&tol=NaN",
+   "canonical": "error"
+  },
+  {
+   "id": "id-13",
+   "input": "msdial.bonanza.v1?prep=none&tol=0",
+   "canonical": "error"
+  },
+  {
+   "id": "id-14",
+   "input": "unknown?prep=none&tol=1",
+   "canonical": "error"
+  },
+  {
+   "id": "id-15",
+   "input": "msdial.bonanza.v1?prep=none&tol=1e-2",
+   "canonical": "error"
+  }
+ ]
+}

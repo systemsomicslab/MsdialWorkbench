@@ -1676,6 +1676,19 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
+        /// <summary>
+        /// Read a molecular-networking similarity: ModDotLegacy, Bonanza, Cosine, All or
+        /// ModifiedCosine in any letter case, or the old name ModDot, which is read as ModDotLegacy
+        /// with a notice.
+        /// </summary>
+        internal static MethodKeyOutcome SimilarityCalc(string text, Action<MsmsSimilarityCalc> assign) {
+            if (string.Equals(text.Trim(), "ModDot", StringComparison.OrdinalIgnoreCase)) {
+                Console.Error.WriteLine("MsmsSimilarityCalc: ModDot is read as ModDotLegacy (msdial.moddot.legacy, the modified dot product over matched peaks only).");
+                return Assign(MsmsSimilarityCalc.ModDotLegacy, assign);
+            }
+            return Named(text, assign);
+        }
+
         /// <remarks>
         /// The numbers are kept as the doubles they are written as. They used to be cast to float, so
         /// an MnMassTolerance of 0.025 ran as 0.0250000004; that differs only for a peak pair exactly
@@ -1688,11 +1701,15 @@ namespace CompMs.App.MsdialConsole.Parser
                 // A kernel name that cannot be read must not leave the default kernel running unseen.
                 return value.IsEmptyOrNull()
                     ? MethodKeyOutcome.UnusableValue
-                    : Named<MsmsSimilarityCalc>(value, v => param.MsmsSimilarityCalc = v);
+                    : SimilarityCalc(value, v => param.MsmsSimilarityCalc = v);
             }
             if (value.IsEmptyOrNull()) return false;
             var valueLower = value.ToLowerInvariant();
             switch (method) {
+                case "mnprecursorwindow":
+                    return Number(valueLower, v => param.MnPrecursorWindow = v >= 0d ? v : throw new ArgumentOutOfRangeException(nameof(v)));
+                case "mnintensitypower":
+                    return Number(valueLower, v => param.MnIntensityPower = v > 0d ? v : throw new ArgumentOutOfRangeException(nameof(v)));
                 case "mnrttolerance":
                     return Number(valueLower, v => param.MnRtTolerance = v);
                 case "mnioncorrelationsimilaritycutoff":
