@@ -1,4 +1,6 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.FormulaGenerator.DataObj;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
@@ -156,5 +158,97 @@ namespace CompMs.Common.Lipidomics
             }
             return null;
         }
+    }
+
+    public class SpbLipidParser : ILipidParser
+    {
+        public string Target { get; } = "SPB";
+
+        private static readonly SpbChainParser chainsParser = new SpbChainParser();
+        public static readonly string Pattern = $"^SPB\\s*(?<sn>{chainsParser.Pattern})$";
+        private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
+
+        public ILipid Parse(string lipidStr)
+        {
+            var match = pattern.Match(lipidStr);
+            if (match.Success)
+            {
+                var group = match.Groups;
+                var chains = chainsParser.Parse(group["sn"].Value);
+                var chainOxNum = 0;
+                if (group["oxpos"].Success)
+                {
+                    var oxposnum = group["oxpos"].Captures.Cast<Capture>().Select(c => int.Parse(c.Value)).ToArray().Length;
+                    if (oxposnum > 2)
+                    {
+                        chainOxNum = oxposnum;
+                    }
+                }
+                else if (group["oxnum"].Success)
+                {
+                    chainOxNum = int.Parse(group["oxnum"].Value);
+                }
+                switch (chainOxNum)
+                {
+                    case 2:
+                        if (group["db"].Value == "0")
+                        {
+                            return new Lipid(LbmClass.DHSph, chains.Mass + MassDiffDictionary.HydrogenMass, chains);
+                        }
+                        else
+                        {
+                            return new Lipid(LbmClass.Sph, chains.Mass + MassDiffDictionary.HydrogenMass, chains);
+                        }
+                    case 3:
+                        return new Lipid(LbmClass.PhytoSph, chains.Mass + MassDiffDictionary.HydrogenMass, chains);
+                }
+
+            }
+            return null;
+        }
+    }
+    public class SpbChainParser : TotalChainParser
+    {
+        public int ChainCount { get; }
+        public int Capacity { get; }
+        public string Pattern { get; }
+        private readonly Regex Expression;
+
+        private static readonly int chainCount = 1;
+        private static readonly int capacity = 1;
+        private static readonly bool atLeastSpeciesLevel = true;
+
+        public SpbChainParser()
+            : base(chainCount: chainCount, capacity: capacity, hasSphingosine: true, hasEther: false, atLeastSpeciesLevel: atLeastSpeciesLevel)
+        {
+            ChainCount = chainCount;
+            Capacity = capacity;
+            var submolecularLevelPattern = $"(?<TotalChain>(?<Chain>{SphingoChainParser.Pattern}))";
+            var molecularSpeciesLevelPattern =
+                $"(?<MolecularSpeciesLevel>(?<Chain>{SphingoChainParser.Pattern}))";
+            var positionLevelPattern =
+                $@"(?<PositionLevel>(?<Chain>{SphingoChainParser.Pattern}))";
+            var patterns = new[] { positionLevelPattern, molecularSpeciesLevelPattern, };
+            var totalPattern = string.Join("|", atLeastSpeciesLevel ? patterns : patterns.Append(submolecularLevelPattern));
+            var totalExpression = new Regex(totalPattern, RegexOptions.Compiled);
+            Pattern = totalPattern;
+            Expression = totalExpression;
+        }
+        public new ITotalChain Parse(string lipidStr)
+        {
+            var match = Expression.Match(lipidStr);
+            if (match.Success)
+            {
+                var groups = match.Groups;
+                var chains = ParsePositionLevelChains(groups);
+                return new MolecularSpeciesLevelChains(
+                            chains.GetDeterminedChains()
+                                .Concat(Enumerable.Range(0, Capacity - chains.ChainCount).Select(_ => new AcylChain(0, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition())))
+                                .ToArray()
+                        );
+            }
+            return null;
+        }
+
     }
 }
