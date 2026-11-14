@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Utility {
             error = string.Empty;
             switch (extension) {
                 case ".msp":
-                    return MspFileParser.MspFileReader(filepath);
+                    return MspFileParser.MspFileReader(filepath, compactSpectra: true);
                 case ".lbm":
                 case ".lbm2":
                     return ReadLipidMsLibrary(filepath, param);
@@ -55,17 +55,22 @@ namespace CompMs.MsdialCore.Utility {
             else if (extension == ".lbm2")
                 mspQueries = MspFileParser.ReadSerializedLbmLibrary(filepath, queries, ionMode, solventType, collosionType);
 
+            if (mspQueries != null) {
+                foreach (var reference in mspQueries) { reference?.TryCompactSpectrum(); }
+            }
             return mspQueries;
         }
 
         public static List<MoleculeMsReference> ReadMspLibrary(string filepath) {
             List<MoleculeMsReference> mspQueries = null;
             var extension = System.IO.Path.GetExtension(filepath).ToLower();
-            if (extension.Contains("2"))
+            if (extension.Contains("2")) {
                 mspQueries = MspFileParser.ReadSerializedMspObject(filepath);
-            else
-                mspQueries = MspFileParser.MspFileReader(filepath);
-
+                foreach (var reference in mspQueries) { reference?.TryCompactSpectrum(); }
+            }
+            else {
+                mspQueries = MspFileParser.MspFileReader(filepath, compactSpectra: true);
+            }
             return mspQueries;
         }
 

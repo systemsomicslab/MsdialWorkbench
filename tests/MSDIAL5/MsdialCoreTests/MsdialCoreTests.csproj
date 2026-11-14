@@ -29,4 +29,7 @@
     <None Update="Resources\Export\*" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\Serialization\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
