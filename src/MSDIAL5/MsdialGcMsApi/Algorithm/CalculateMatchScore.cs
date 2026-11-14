@@ -10,6 +10,7 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialGcMsApi.Algorithm
 {
@@ -103,13 +104,17 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             return _mspDB[result.LibraryIDWhenOrdered];
         }
 
-        public IEnumerable<MsScanMatchResult> CalculateMatches(IMSScanProperty msScan) {
+        public IEnumerable<MsScanMatchResult> CalculateMatches(IMSScanProperty msScan) => CalculateMatches(msScan, default);
+
+        public IEnumerable<MsScanMatchResult> CalculateMatches(IMSScanProperty msScan, CancellationToken token) {
+            token.ThrowIfCancellationRequested();
             var rValue = RetentionType == RetentionType.RT ? msScan.ChromXs.RT.Value : msScan.ChromXs.RI.Value;
             var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(msScan, _searchParameter);
 
             var tolerance = Tolerance;
             var (startID, endID) = RetrieveMspBounds(rValue, tolerance);
             for (int i = startID; i < endID; i++) {
+                token.ThrowIfCancellationRequested();
                 var refQuery = _mspDB[i];
                 var refRetention = RetentionType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
                 System.Diagnostics.Debug.Assert(Math.Abs(rValue - refRetention) < tolerance);
