@@ -72,6 +72,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
+            query.GetCancellationToken().ThrowIfCancellationRequested();
             var result = scorer.Score(query, reference);
             // The peak and the reference are no longer in scope here, so the requirement is
             // read from the record the scorer just wrote from those same two values.
