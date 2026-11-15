@@ -49,6 +49,17 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        /// <summary>
+        /// The value of <see cref="FragmentHitsScore(List{Peak}, List{ProductIon}, double, MassToleranceType)"/> from the
+        /// peak counts, which do not change between the candidate formulas of one spectrum.
+        /// </summary>
+        public static double FragmentHitsScore(int peakCount, int monoisotopicPeakCount, int productIonCount)
+        {
+            if (peakCount == 0) return 0;
+            if (productIonCount == 0) return 0;
+            return (double)productIonCount / (double)monoisotopicPeakCount;
+        }
+
         public static double NeutralLossScore(List<NeutralLoss> neutralLossResult, double ms2Tol, MassToleranceType massTolType, double neutralLossNum)
         {
             var devi = 0.0;
