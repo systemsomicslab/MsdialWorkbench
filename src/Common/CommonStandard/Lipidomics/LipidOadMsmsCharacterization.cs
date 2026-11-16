@@ -722,9 +722,9 @@ namespace CompMs.Common.Lipidomics {
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
                             if (sn2CarbonNum <= 0 || sn2DoubleNum < 0) continue;
-                            var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
+                            var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
-                            var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+                            var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
