@@ -12420,7 +12420,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sph1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
+                            var sph1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass  - H2O;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph1 - 2 * H2O;
                             var sph4 = sph1 - 3 * H2O;
@@ -12440,8 +12440,8 @@ AdductIon adduct)
 
                             if (foundCount >= 3)
                             { // 
-                                var molecule = LipidMsmsCharacterizationUtility.getCeramideoxMoleculeObjAsLevel2("Cer", LbmClass.Cer_NP, "t", sphCarbon, sphDouble,
-                                    acylCarbon, acylDouble, 1, averageIntensity);
+                                var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("Cer", LbmClass.Cer_NP, "t", sphCarbon, sphDouble,
+                                    acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
@@ -13233,7 +13233,7 @@ AdductIon adduct)
                     if (isClassIon1Found != true) return null;
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
-                        var diagnosticMz2 = theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
+                        var diagnosticMz2 = theoreticalMz - CH3 - HCOOadduct + Electron;
                         var threshold2 = 50.0;
                         var isClassIon2Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
                         if (isClassIon2Found) return null;
@@ -17133,7 +17133,7 @@ AdductIon adduct)
                             }
                         }
                     }
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "e", theoreticalMz, adduct,
                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
@@ -17179,7 +17179,7 @@ AdductIon adduct)
                         }
                     }
                 }
-                return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "", theoreticalMz, adduct,
+                return LipidMsmsCharacterizationUtility.returnAnnotationResult("SMGDG", LbmClass.EtherSMGDG, "e", theoreticalMz, adduct,
                   totalCarbon, totalDoubleBond, 0, candidates, 2);
 
 
