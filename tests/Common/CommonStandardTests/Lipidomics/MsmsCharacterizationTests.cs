@@ -166,6 +166,81 @@ namespace CompMs.Common.Lipidomics.Tests
             //    Console.WriteLine($"{result.AnnotationLevel}");
             //
         }
+
+        [TestMethod()]
+        public void CeramideNPTest()
+        {
+            //NAME: Cer 18:1;O3/16:0
+            //PRECURSORTYPE: [M+HCOO]-
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 598.505212,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 598.505212, Intensity =10, },
+                    new SpectrumPeak { Mass = 552.499733, Intensity =999, },
+                    new SpectrumPeak { Mass = 534.489169, Intensity =100, },
+                    new SpectrumPeak { Mass = 516.478604, Intensity =200, },
+                    new SpectrumPeak { Mass = 310.275153, Intensity =700, },
+                    new SpectrumPeak { Mass = 298.275153, Intensity =700, },
+                    new SpectrumPeak { Mass = 296.259503, Intensity =200, },
+                    new SpectrumPeak { Mass = 280.264588, Intensity =200, },
+                    new SpectrumPeak { Mass = 265.217304, Intensity =500, },
+                    new SpectrumPeak { Mass = 255.232954, Intensity =500, },
+                    new SpectrumPeak { Mass = 254.248938, Intensity =250, },
+                    new SpectrumPeak { Mass = 253.217304, Intensity =200, },
+                    new SpectrumPeak { Mass = 223.206739, Intensity =50, },
+                }
+            };
+            //PRECURSORTYPE: [M+H]+
+            var target2 = new MSScanProperty
+            {
+                PrecursorMz = 554.514286,
+                Spectrum = new List<SpectrumPeak>
+                {
+                new SpectrumPeak { Mass = 554.514286, Intensity =50, },
+                new SpectrumPeak { Mass = 536.503721, Intensity =800, },
+                new SpectrumPeak { Mass = 518.493157, Intensity =200, },
+                new SpectrumPeak { Mass = 298.274056, Intensity =800, },
+                new SpectrumPeak { Mass = 280.263491, Intensity =800, },
+                new SpectrumPeak { Mass = 262.252926, Intensity =999, },
+                new SpectrumPeak { Mass = 254.247841, Intensity =300, },
+                new SpectrumPeak { Mass = 250.252926, Intensity =200, },
+
+                }
+            };
+            var totalCarbon = 34;
+            var totalDbBond = 1;
+            var totalOxidized = 0;
+            var sn1Carbon = 18;
+            var sn1DbBond = 1;
+            var sn2Carbon = 16;
+            var sn2DbBond = 0;
+
+            //public static LipidMolecule JudgeIfHexceramidens(IMSScanProperty msScanProp, double ms2Tolerance,
+            //double theoreticalMz, int totalCarbon, int totalDoubleBond, // If the candidate PC 46:6, totalCarbon = 46 and totalDoubleBond = 6
+            //int minSphCarbon, int maxSphCarbon, int minSphDoubleBond, int maxSphDoubleBond,
+            //AdductIon adduct)
+
+            var result = LipidMsmsCharacterization.JudgeIfCeramidenp(target, 0.025,
+                598.505212f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon("[M+HCOO]-"));
+
+            var result2 = LipidMsmsCharacterization.JudgeIfCeramidenp(target2, 0.025,
+                554.514286f, totalCarbon, totalDbBond,
+                         sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
+                         adduct = AdductIon.GetAdductIon("[M+H]+"));
+            Console.WriteLine($"Cer_NP test (Cer 34:1;O3|HexCer 18:1;O3/16:0)");
+            Console.WriteLine($"[M+HCOO]-");
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+            Console.WriteLine($"[M+H]+");
+            Console.WriteLine($"LipidName:{result2.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
+        }
+
+
         [TestMethod()]
         public void HexCeramideNSTest()
         {
@@ -2607,12 +2682,12 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             var lipidname = "SG 27:1;O;Hex;PE";
             var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-            var totalCarbon = molecule.TotalCarbonCount; 
-            var totalDbBond = molecule.TotalDoubleBondCount; 
+            var totalCarbon = molecule.TotalCarbonCount;
+            var totalDbBond = molecule.TotalDoubleBondCount;
             var totalOxidized = molecule.TotalOxidizedCount;
 
-            var result = LipidMsmsCharacterization.JudgeIfSpehex(lipidname,target, 0.025,
-                689.450045f, totalCarbon, totalDbBond, 
+            var result = LipidMsmsCharacterization.JudgeIfSpehex(lipidname, target, 0.025,
+                689.450045f, totalCarbon, totalDbBond,
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE));
             Console.WriteLine($"SPEHexTest");
             Console.WriteLine(PRECURSORTYPE);
@@ -2668,7 +2743,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var totalOxidized = molecule.TotalOxidizedCount;
 
             var result01 = LipidMsmsCharacterization.JudgeIfSpghex(lipidname, target01, 0.025,
-                molMsRef01.PrecursorMz, totalCarbon, totalDbBond, 
+                molMsRef01.PrecursorMz, totalCarbon, totalDbBond,
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE01));
             Console.WriteLine($"SPGHexTest");
             Console.WriteLine(PRECURSORTYPE01);
@@ -2676,7 +2751,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"AnnotationLevel:{result01.AnnotationLevel}");
 
             var result02 = LipidMsmsCharacterization.JudgeIfSpghex(lipidname, target02, 0.025,
-                molMsRef02.PrecursorMz, totalCarbon, totalDbBond, 
+                molMsRef02.PrecursorMz, totalCarbon, totalDbBond,
                          adduct = AdductIon.GetAdductIon(PRECURSORTYPE02));
             Console.WriteLine($"SPGHexTest");
             Console.WriteLine(PRECURSORTYPE02);
