@@ -231,7 +231,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 554.514286f, totalCarbon, totalDbBond,
                          sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond,
                          adduct = AdductIon.GetAdductIon("[M+H]+"));
-            Console.WriteLine($"Cer_NP test (Cer 34:1;O3|HexCer 18:1;O3/16:0)");
+            Console.WriteLine($"Cer_NP test (Cer 34:1;O3|Cer 18:1;O3/16:0)");
             Console.WriteLine($"[M+HCOO]-");
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
