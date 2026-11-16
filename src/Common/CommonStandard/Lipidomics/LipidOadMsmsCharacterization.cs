@@ -1250,7 +1250,7 @@ namespace CompMs.Common.Lipidomics {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
-                    // seek PreCursor -197(C5HMassDiffDictionary.CarbonMassNO5P)
+                    // seek PreCursor -197(C5H12NO5P)
                     var threshold = 10.0;
                     var diagnosticMz = theoreticalMz
                         - (MassDiffDictionary.CarbonMass * 5
