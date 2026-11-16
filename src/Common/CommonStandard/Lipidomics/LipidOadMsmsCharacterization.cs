@@ -744,11 +744,12 @@ namespace CompMs.Common.Lipidomics {
                                     sn2CarbonNum, sn2DoubleNum, averageIntensity);
                                 candidates.Add(molecule);
                             }
-                            return LipidMsmsCharacterizationUtility.returnAnnotationResult("PS", LbmClass.PS, "", theoreticalMz, adduct,
-                              totalCarbon, totalDoubleBond, 0, candidates, 2);
+
                         }
 
                     }
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PS", LbmClass.PS, "", theoreticalMz, adduct,
+                              totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
