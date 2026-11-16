@@ -464,7 +464,7 @@ namespace CompMs.Common.Lipidomics
                         break;
                     case LbmClass.ASM:
                         result = LipidMsmsCharacterization.JudgeIfAcylsm(msScanProp, ms2tol, refMz,
-                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond, adduct);
+                             totalCarbon, totalDbBond, sn1MinCarbon, totalCarbon, sn1MinDbBond, totalDbBond, sn2MinCarbon, sn2MaxCarbon, sn2MinDbBond, sn2MaxDbBond, adduct);
                         break;
                     case LbmClass.Cer_EBDS:
                         result = LipidMsmsCharacterization.JudgeIfAcylcerbds(msScanProp, ms2tol, refMz,

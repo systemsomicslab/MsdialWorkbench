@@ -6,6 +6,8 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NCDK.FaulonSignatures.Chemistry;
+using NCDK.LibIO.MD;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -2655,6 +2657,83 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"LipidName:{result.LipidName}");
             Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
 
+        }
+
+        [TestMethod()]
+        public void ASMCharacterizationTest()
+        {
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 941.8045,
+                Spectrum = new List<SpectrumPeak>
+        {
+            new SpectrumPeak { Mass = 941.804517, Intensity = 50 },
+            new SpectrumPeak { Mass = 685.564287, Intensity = 10 },
+            new SpectrumPeak { Mass = 184.073321, Intensity = 999 },
+        },
+            };
+            var target2 = new MSScanProperty
+            {
+                PrecursorMz = 985.7954,
+                Spectrum = new List<SpectrumPeak>
+        {
+            new SpectrumPeak { Mass = 985.795443, Intensity = 150 },
+            new SpectrumPeak { Mass = 925.774314, Intensity = 999 },
+            new SpectrumPeak { Mass = 669.534084, Intensity = 150 },
+            new SpectrumPeak { Mass = 255.232954, Intensity = 125 },
+            new SpectrumPeak { Mass = 168.043118, Intensity = 100 },
+        },
+            };
+
+            string lipidName = "SM 34:1;O2(FA 16:0)";
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(lipidName, "ASM");
+
+            Assert.IsTrue(molecule.IsValidatedFormat);
+            Assert.AreEqual(LbmClass.ASM, molecule.LipidClass);
+            Assert.AreEqual(lipidName, molecule.LipidName);
+
+            var totalCarbon = molecule.TotalCarbonCount;
+            var totalDbBond = molecule.TotalDoubleBondCount;
+            var cerCarbon = molecule.Sn1CarbonCount;
+            var cerDbBond = molecule.Sn1DoubleBondCount;
+            var extCarbon = molecule.Sn2CarbonCount;
+            var extDbBond = molecule.Sn2DoubleBondCount;
+
+
+            var result = LipidMsmsCharacterization.JudgeIfAcylsm(
+                target, 0.025, target.PrecursorMz, totalCarbon, totalDbBond,
+                cerCarbon, cerCarbon, cerDbBond, cerDbBond,
+                extCarbon, extCarbon, extDbBond, extDbBond,
+                AdductIon.GetAdductIon("[M+H]+"));
+
+            var result2 = LipidMsmsCharacterization.JudgeIfAcylsm(
+            target2, 0.025, target2.PrecursorMz, totalCarbon, totalDbBond,
+            cerCarbon, cerCarbon, cerDbBond, cerDbBond,
+            extCarbon, extCarbon, extDbBond, extDbBond,
+            AdductIon.GetAdductIon("[M+HCOO]-"));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(LbmClass.ASM, result.LipidClass);
+            Assert.AreEqual("SM 34:1;O2(FA 16:0)", result.LipidName);
+            Assert.AreEqual(2, result.AnnotationLevel);
+
+            Console.WriteLine($"ASM test (SM 34:1;O2(FA 16:0))");
+
+            Console.WriteLine("lipid parser");
+            Console.WriteLine(molecule.SublevelLipidName+"|"+ molecule.Sn1AcylChainString + "(FA "+ molecule.Sn2AcylChainString + ")");
+
+            Console.WriteLine("[M+H]+ annotation");
+            Console.WriteLine($"LipidName:{result.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result.AnnotationLevel}");
+
+            Assert.IsNotNull(result2);
+            Assert.AreEqual(LbmClass.ASM, result2.LipidClass);
+            Assert.AreEqual("SM 34:1;O2(FA 16:0)", result2.LipidName);
+            Assert.AreEqual(2, result2.AnnotationLevel);
+
+            Console.WriteLine("[M+HCOO]- annotation");
+            Console.WriteLine($"LipidName:{result2.LipidName}");
+            Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
         }
         [TestMethod()]
         public void SPEHexTest()

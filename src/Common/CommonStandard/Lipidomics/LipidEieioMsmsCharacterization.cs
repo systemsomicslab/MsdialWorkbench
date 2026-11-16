@@ -1675,25 +1675,29 @@ namespace CompMs.Common.Lipidomics
                     if (isClassIon1Found != true) return null;
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
-                    var acylCarbon = totalCarbon - sphCarbon - extCarbon;
-                    var acylDouble = totalDoubleBond - sphDouble - extDouble;
-
-                    var extAcylloss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + Electron;  // 
-                    var query = new List<SpectrumPeak> {
+                    var cerCarbon = totalCarbon - extCarbon;
+                    var cerDouble = totalDoubleBond - extDouble;
+                    var canAnnotateChains =
+                        extCarbon > 0 && extDouble >= 0 &&
+                        cerCarbon > 0 && cerDouble >= 0;
+                    if (canAnnotateChains)
+                    {
+                        var extAcylloss = theoreticalMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + Electron;  // 
+                        var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = extAcylloss, Intensity = 1 },
                                     };
 
-                    var foundCount = 0;
-                    var averageIntensity = 0.0;
-                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+                        var foundCount = 0;
+                        var averageIntensity = 0.0;
+                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                    if (foundCount == 1)
-                    { // 
-                        var molecule = LipidMsmsCharacterizationUtility.getAsmMoleculeObjAsLevel2_0("SM", LbmClass.ASM, "d", sphCarbon + acylCarbon,
-                               sphDouble + acylDouble, extCarbon, extDouble, averageIntensity);
-                        candidates.Add(molecule);
+                        if (foundCount == 1)
+                        { // 
+                            var molecule = LipidMsmsCharacterizationUtility.getAsmMoleculeObjAsLevel2_0("SM", LbmClass.ASM, "d", cerCarbon,
+                                   cerDouble, extCarbon, extDouble, averageIntensity);
+                            candidates.Add(molecule);
+                        }
                     }
-
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("SM", LbmClass.ASM, "d", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 3);
                 }
