@@ -227,26 +227,19 @@ namespace CompMs.Common.FormulaGenerator {
             // and so the selection and truncation among them, differ from run to run.
             var resultsByCarbon = new List<FormulaResult>[Math.Max(maxCnum, 1)];
 
-            var syncObj = new object();
-            var sw = new Stopwatch();
-            sw.Start();
+            // One deadline for the whole search of this spectrum (see SearchDeadline). Carbon counts not started
+            // when it passes are skipped, and the ones in progress stop enumerating and scoring at their next check.
+            var deadline = new SearchDeadline(param.FormulaPredictionTimeOut);
 
             Parallel.For(1, maxCnum, (c, state) => {
-                var formulaResults = GetFormulaResults(c, rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adduct, isotopeCheck,
-                    maxReportNumber, existFormulaDB, fragmentData);
-
-                if (formulaResults != null && formulaResults.Count != 0) {
-                    lock (syncObj) {
-                        var lap = sw.ElapsedMilliseconds * 0.001 / 60.0; // min
-                        if (param.FormulaPredictionTimeOut > 0 && param.FormulaPredictionTimeOut < lap) {
-                            Debug.WriteLine("Calculation stopped.");
-                            state.Stop();
-                        }
-                        resultsByCarbon[c] = formulaResults;
-                    }
+                if (deadline.HasPassed) {
+                    state.Stop();
+                    return;
                 }
+                resultsByCarbon[c] = GetFormulaResults(c, rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adduct, isotopeCheck,
+                    maxReportNumber, existFormulaDB, fragmentData, deadline);
             });
-            sw.Stop();
+            if (deadline.HasPassed) Debug.WriteLine("Formula prediction stopped at the time-out.");
 
             foreach (var formulaResults in resultsByCarbon) {
                 if (formulaResults == null) continue;
@@ -259,7 +252,7 @@ namespace CompMs.Common.FormulaGenerator {
 
         private List<FormulaResult> GetFormulaResults(int c, RawData rawData, AnalysisParamOfMsfinder param, double mass, double ms1Tol, double m1Intensity, double m2Intensity,
             AdductIon adduct, bool isotopeCheck, int maxReportNumber,
-            List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData) {
+            List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData, SearchDeadline deadline) {
 
             var formulaResults = new List<FormulaResult>();
             var xMer = adduct.AdductIonXmer;
@@ -298,13 +291,12 @@ namespace CompMs.Common.FormulaGenerator {
             var cBaseMass = (double)c * cMass;
             var isHydrogenShiftAdduct = SevenGoldenRulesCheck.IsHydrogenShiftAdduct(adduct);
 
-            // Candidates are collected in enumeration order and scored afterwards (ScorePendingCandidates), in
+            // Candidates are collected in enumeration order and scored in batches (ScorePendingCandidates), in
             // parallel, so that a carbon count with many candidates does not keep one thread busy while the others
-            // have finished; the results keep the enumeration order.
+            // have finished; the results keep the enumeration order. Scoring a batch as soon as it is full keeps
+            // the memory bounded and, at the time-out, keeps the results of the candidates enumerated so far.
             var pending = new List<PendingCandidate>();
 
-            var sw = new Stopwatch();
-            sw.Start();
             for (int i = EnumerationBound.FirstNotBelow(cBaseMass, iMass, maxBrClSPSiFONHmass, lowerMass, maxInum); i <= maxInum; i++) {
                 var ciMass = cBaseMass + (double)i * iMass;
                 if (ciMass > upperMass) break;
@@ -340,6 +332,9 @@ namespace CompMs.Common.FormulaGenerator {
 
                                         for (int o = EnumerationBound.FirstNotBelow(cibrclspsifMass, oMass, maxNHmass, lowerMass, maxOnum); o <= maxOnum; o++) {
 
+                                            // Checked once per oxygen count; the nitrogen and hydrogen loops inside are short.
+                                            if (deadline.HasPassed) return formulaResults;
+
                                             if (rawData.OxygenNumberFromLabeledExperiment >= 0 && o != rawData.OxygenNumberFromLabeledExperiment / xMer) continue;
 
                                             var cibrclspsifoMass = cibrclspsifMass + (double)o * oMass;
@@ -374,10 +369,10 @@ namespace CompMs.Common.FormulaGenerator {
                                                         pending.Add(new PendingCandidate(new Formula(c, h, n, o, p, s, f, cl, br, i, si), false));
                                                     }
 
-                                                    if (IsTimedOut(param, sw)) {
-                                                        Debug.WriteLine("Calculation stopped.");
-                                                        return ScorePendingCandidates(pending, sw, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
-                                                            existFormulaDB, fragmentData);
+                                                    if (pending.Count >= PendingBatchSize
+                                                        && !ScorePendingCandidates(pending, formulaResults, deadline, param, mass, ms1Tol, m1Intensity, m2Intensity,
+                                                            isotopeCheck, adduct, existFormulaDB, fragmentData)) {
+                                                        return formulaResults;
                                                     }
                                                 }
                                             }
@@ -390,8 +385,9 @@ namespace CompMs.Common.FormulaGenerator {
                 }
             }
 
-            return ScorePendingCandidates(pending, sw, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
+            ScorePendingCandidates(pending, formulaResults, deadline, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
                 existFormulaDB, fragmentData);
+            return formulaResults;
         }
 
         private struct PendingCandidate {
@@ -403,42 +399,77 @@ namespace CompMs.Common.FormulaGenerator {
             public bool NeedsRuleCheck { get; }
         }
 
-        private static bool IsTimedOut(AnalysisParamOfMsfinder param, Stopwatch sw) {
-            var lap = sw.ElapsedMilliseconds * 0.001 / 60.0; // min
-            return param.FormulaPredictionTimeOut > 0 && param.FormulaPredictionTimeOut < lap;
-        }
+        /// <summary>The number of enumerated candidates of one carbon count that are scored together.</summary>
+        private const int PendingBatchSize = 16384;
 
         /// <summary>
-        /// Scores the candidates of one carbon count in parallel and returns their results in enumeration order.
-        /// When the formula prediction time-out passes, scoring stops and the results of the leading candidates
-        /// that were scored are returned, as the sequential loop returned the results it had so far.
+        /// Scores a batch of candidates of one carbon count in parallel, appends their results to
+        /// <paramref name="formulaResults"/> in enumeration order and empties the batch. When the time-out passes,
+        /// scoring stops, only the results of the leading candidates that were all scored are appended, and the
+        /// method returns false.
         /// </summary>
-        private List<FormulaResult> ScorePendingCandidates(List<PendingCandidate> pending, Stopwatch sw, AnalysisParamOfMsfinder param,
-            double mass, double ms1Tol, double m1Intensity, double m2Intensity, bool isotopeCheck, AdductIon adduct,
+        private bool ScorePendingCandidates(List<PendingCandidate> pending, List<FormulaResult> formulaResults, SearchDeadline deadline,
+            AnalysisParamOfMsfinder param, double mass, double ms1Tol, double m1Intensity, double m2Intensity, bool isotopeCheck, AdductIon adduct,
             List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData) {
 
-            var scored = new FormulaResult[pending.Count];
-            var end = pending.Count;
-            if (pending.Count > 0) {
-                var loopResult = Parallel.For(0, pending.Count, (k, state) => {
-                    if (IsTimedOut(param, sw)) {
-                        state.Break();
-                        return;
-                    }
-                    var candidate = pending[k];
-                    scored[k] = candidate.NeedsRuleCheck
-                        ? TryGetFormulaResultCandidate(candidate.Formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct, existFormulaDB, fragmentData)
-                        : GetScoredFormulaResult(candidate.Formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct, existFormulaDB, fragmentData);
-                });
-                if (loopResult.LowestBreakIteration.HasValue) end = (int)loopResult.LowestBreakIteration.Value;
-            }
-            sw.Stop();
+            if (pending.Count == 0) return !deadline.HasPassed;
 
-            var formulaResults = new List<FormulaResult>();
+            var scored = new FormulaResult[pending.Count];
+            var loopResult = Parallel.For(0, pending.Count, (k, state) => {
+                if (deadline.HasPassed) {
+                    state.Break();
+                    return;
+                }
+                var candidate = pending[k];
+                scored[k] = candidate.NeedsRuleCheck
+                    ? TryGetFormulaResultCandidate(candidate.Formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct, existFormulaDB, fragmentData)
+                    : GetScoredFormulaResult(candidate.Formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct, existFormulaDB, fragmentData);
+            });
+            var end = loopResult.LowestBreakIteration.HasValue ? (int)loopResult.LowestBreakIteration.Value : pending.Count;
+
             for (int k = 0; k < end; k++) {
                 if (scored[k] != null) formulaResults.Add(scored[k]);
             }
-            return formulaResults;
+            pending.Clear();
+            return loopResult.IsCompleted;
+        }
+
+        /// <summary>
+        /// The formula prediction time-out, <see cref="AnalysisParamOfMsfinder.FormulaPredictionTimeOut"/> in minutes
+        /// (zero or less: none), as a bound on the candidate search of one spectrum. It is measured from the start of
+        /// the search over all carbon counts, not per carbon count, and checked while candidates are enumerated and
+        /// while they are scored, so the search stops within milliseconds of it. Ranking the candidates found and
+        /// completing the reported ones (product-ion and neutral-loss assignments) follow, which takes a few seconds
+        /// when millions of candidates were scored.
+        /// <para>
+        /// A search that reaches the time-out returns the candidates scored by then: every candidate of the carbon
+        /// counts that finished, and for a carbon count in progress the leading candidates in enumeration order;
+        /// carbon counts not yet started contribute none. Which carbon counts finish depends on thread scheduling,
+        /// so a timed-out spectrum can return different candidates from run to run. Spectra that finish before the
+        /// time-out are not affected by it.
+        /// </para>
+        /// </summary>
+        private sealed class SearchDeadline {
+            private readonly Stopwatch stopwatch;
+            private readonly double limitMilliseconds;
+            private volatile bool hasPassed;
+
+            public SearchDeadline(double timeOutMinutes) {
+                if (timeOutMinutes > 0) {
+                    limitMilliseconds = timeOutMinutes * 60000.0;
+                    stopwatch = Stopwatch.StartNew();
+                }
+            }
+
+            public bool HasPassed {
+                get {
+                    if (stopwatch == null) return false;
+                    if (hasPassed) return true;
+                    if (stopwatch.ElapsedMilliseconds <= limitMilliseconds) return false;
+                    hasPassed = true;
+                    return true;
+                }
+            }
         }
 
         private List<FormulaResult> GetFormulaSearchResults(Formula formula, RawData rawData, AnalysisParamOfMsfinder param, 
