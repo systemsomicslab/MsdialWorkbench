@@ -272,8 +272,7 @@ namespace CompMs.Common.Lipidomics
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount >= 2)
-                            {
+                            if (foundCount >= 2) {
                                 var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PC", LbmClass.PC, sn1CarbonNum, sn1DoubleNum,
                                     sn2CarbonNum, sn2DoubleNum, averageIntensity);
                                 candidates.Add(molecule);
@@ -465,8 +464,7 @@ namespace CompMs.Common.Lipidomics
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                            if (foundCount >= 2)
-                            {
+                            if (foundCount >= 2)  {
                                 var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE", LbmClass.PE, sn1CarbonNum, sn1DoubleNum,
                                     sn2CarbonNum, sn2DoubleNum, averageIntensity);
                                 candidates.Add(molecule);
@@ -749,9 +747,9 @@ namespace CompMs.Common.Lipidomics
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
                             if (sn2CarbonNum <= 0 || sn2DoubleNum < 0) continue;
-                            var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
+                            var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
-                            var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+                            var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
@@ -771,11 +769,12 @@ namespace CompMs.Common.Lipidomics
                                     sn2CarbonNum, sn2DoubleNum, averageIntensity);
                                 candidates.Add(molecule);
                             }
-                            return LipidMsmsCharacterizationUtility.returnAnnotationResult("PS", LbmClass.PS, "", theoreticalMz, adduct,
-                              totalCarbon, totalDoubleBond, 0, candidates, 2);
+
                         }
 
                     }
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PS", LbmClass.PS, "", theoreticalMz, adduct,
+                              totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
@@ -1304,7 +1303,7 @@ namespace CompMs.Common.Lipidomics
                 if (adduct.AdductIonName == "[M-H]-")
                 {
                     if (totalCarbon > 28) return null; //  currently carbon > 28 is recognized as EtherPE
-                    // seek PreCursor -197(C5HMassDiffDictionary.CarbonMassNO5P)
+                    // seek PreCursor -197(C5H12NO5P)
                     var threshold = 10.0;
                     var diagnosticMz = theoreticalMz
                         - (MassDiffDictionary.CarbonMass * 5
@@ -3945,8 +3944,7 @@ namespace CompMs.Common.Lipidomics
                             var foundCount = 0;
                             var averageIntensity = 0.0;
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
-                            if (foundCount == 2)
-                            {
+                            if (foundCount == 2) {
                                 var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("SM_d9", LbmClass.SM_d9, "d", sphCarbonNum, sphDoubleNum,
                                    acylCarbonNum, acylDoubleNum, averageIntensity);
                                 candidates.Add(molecule);

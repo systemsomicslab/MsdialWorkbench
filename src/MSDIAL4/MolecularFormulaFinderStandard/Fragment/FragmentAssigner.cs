@@ -16,64 +16,103 @@ namespace Rfx.Riken.OsakaUniv
         /// <param name="peaklist"></param>
         /// <param name="formula"></param>
         /// <param name="analysisParam"></param>
-        public static List<ProductIon> FastFragmnetAssigner(List<Peak> peaklist, List<ProductIon> productIonDB, 
+        public static List<ProductIon> FastFragmnetAssigner(List<Peak> peaklist, List<ProductIon> productIonDB,
             Formula formula, double ms2Tol, MassToleranceType massTolType, AdductIon adductIon)
         {
-            var productIons = new List<ProductIon>();
-            double eMass = electron; if (adductIon.IonMode == IonMode.Negative) eMass = -1.0 * electron; 
+            return FastFragmnetAssigner(PrepareProductIonQuery(peaklist, productIonDB, ms2Tol, massTolType, adductIon), formula);
+        }
+
+        /// <summary>
+        /// Prepares the part of product-ion assignment that does not depend on the candidate formula: the monoisotopic
+        /// peaks, their mass tolerances, and which product-ion library entries the library search and the annotation
+        /// step look at for each peak. Formula prediction assigns the same spectrum to many candidate formulas, so it
+        /// prepares this once per spectrum and passes it to <see cref="FastFragmnetAssigner(ProductIonQuery, Formula)"/>.
+        /// </summary>
+        public static ProductIonQuery PrepareProductIonQuery(List<Peak> peaklist, List<ProductIon> productIonDB,
+            double ms2Tol, MassToleranceType massTolType, AdductIon adductIon)
+        {
+            double eMass = electron; if (adductIon.IonMode == IonMode.Negative) eMass = -1.0 * electron;
+            var peaks = new List<ProductIonQuery.QueryPeak>();
 
             foreach (var peak in peaklist)
             {
                 if (peak.Comment != "M") continue;
 
                 double mass = peak.Mz + eMass;
-                double minDiff = double.MaxValue;
                 double massTol = ms2Tol;
                 if (massTolType == MassToleranceType.Ppm)
                     massTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ms2Tol);
-                int minId = -1;
+
+                peaks.Add(new ProductIonQuery.QueryPeak(peak, mass, massTol,
+                    getLibrarySearchIndices(adductIon.IonMode, peak.Mz, massTol, productIonDB),
+                    getAnnotationIndices(adductIon.IonMode, peak.Mz, productIonDB)));
+            }
+
+            return new ProductIonQuery(productIonDB, adductIon, peaks.ToArray());
+        }
+
+        /// <summary>
+        /// Assigns a fragment formula of <paramref name="formula"/> to every monoisotopic peak of the prepared spectrum.
+        /// Gives the same result as <see cref="FastFragmnetAssigner(List{Peak}, List{ProductIon}, Formula, double, MassToleranceType, AdductIon)"/>.
+        /// </summary>
+        public static List<ProductIon> FastFragmnetAssigner(ProductIonQuery query, Formula formula)
+        {
+            var productIons = new List<ProductIon>();
+            var adductIon = query.AdductIon;
+            var productIonDB = query.ProductIonDB;
+
+            foreach (var queryPeak in query.Peaks)
+            {
+                var peak = queryPeak.Peak;
+                double mass = queryPeak.Mass;
+                double massTol = queryPeak.MassTol;
+                ProductIon productIon;
 
                 //for precursor annotation
                 if (Math.Abs(mass - formula.Mass - adductIon.AdductIonAccurateMass) < massTol)
                 {
                     var nFormula = MolecularFormulaUtility.ConvertFormulaAdductPairToPrecursorAdduct(formula, adductIon);
-                    productIons.Add(new ProductIon() { Formula = nFormula, Mass = peak.Mz, MassDiff = formula.Mass + adductIon.AdductIonAccurateMass - mass, Intensity = peak.Intensity });
-                    continue;
+                    productIon = new ProductIon() { Formula = nFormula, Mass = peak.Mz, MassDiff = formula.Mass + adductIon.AdductIonAccurateMass - mass, Intensity = peak.Intensity };
                 }
-
-                //library search
-                var fragmentFormulas = getFormulaCandidatesbyLibrarySearch(formula, adductIon.IonMode, peak.Mz, massTol, productIonDB);
-                if (fragmentFormulas == null || fragmentFormulas.Count == 0)
-                    fragmentFormulas = getValenceCheckedFragmentFormulaList(formula, adductIon.IonMode, peak.Mz, massTol);
-
-                for (int i = 0; i < fragmentFormulas.Count; i++)
+                else
                 {
-                    if (minDiff > Math.Abs(mass - fragmentFormulas[i].Mass))
+                    //library search: the closest library formula that fits in the candidate formula, the first one on ties
+                    Formula fragmentFormula = null;
+                    double minDiff = double.MaxValue;
+                    foreach (var i in queryPeak.LibrarySearchIndices)
                     {
-                        minId = i;
-                        minDiff = Math.Abs(mass - fragmentFormulas[i].Mass);
+                        var libraryFormula = productIonDB[i].Formula;
+                        if (!isFormulaComposition(libraryFormula, formula)) continue;
+                        if (minDiff > Math.Abs(mass - libraryFormula.Mass))
+                        {
+                            fragmentFormula = libraryFormula;
+                            minDiff = Math.Abs(mass - libraryFormula.Mass);
+                        }
                     }
-                }
-                if (minId >= 0)
-                    productIons.Add(new ProductIon() {
-                        Formula = fragmentFormulas[minId],
+
+                    //otherwise the closest valence-checked sub-formula
+                    if (fragmentFormula == null)
+                    {
+                        FragmentCounts counts;
+                        if (!searchValenceCheckedFragmentFormula(formula, adductIon.IonMode, peak.Mz, massTol, mass, false, out counts, null)) continue;
+                        fragmentFormula = new Formula(counts.C, counts.H, counts.N, counts.O, counts.P, counts.S, counts.F, counts.Cl, counts.Br, counts.I, counts.Si);
+                    }
+
+                    productIon = new ProductIon() {
+                        Formula = fragmentFormula,
                         Mass = peak.Mz,
-                        MassDiff = fragmentFormulas[minId].Mass - mass,
+                        MassDiff = fragmentFormula.Mass - mass,
                         Intensity = peak.Intensity
-                    }); 
-            }
+                    };
+                }
+                productIons.Add(productIon);
 
-            foreach (var ion in productIons) {
-                var startIndex = getStartIndex(ion.Mass, 0.1, productIonDB);
-                for (int i = startIndex; i < productIonDB.Count; i++) {
+                foreach (var i in queryPeak.AnnotationIndices) {
                     var ionQuery = productIonDB[i];
-                    if (ionQuery.IonMode != adductIon.IonMode) continue;
-                    if (ionQuery.Formula.Mass > ion.Mass + 0.1) break;
-
-                    if (isFormulaComposition(ion.Formula, ionQuery.Formula)) {
-                        ion.CandidateInChIKeys = ionQuery.CandidateInChIKeys;
-                        ion.CandidateOntologies = ionQuery.CandidateOntologies;
-                        ion.Frequency = ionQuery.Frequency;
+                    if (isFormulaComposition(productIon.Formula, ionQuery.Formula)) {
+                        productIon.CandidateInChIKeys = ionQuery.CandidateInChIKeys;
+                        productIon.CandidateOntologies = ionQuery.CandidateOntologies;
+                        productIon.Frequency = ionQuery.Frequency;
                         break;
                     }
                 }
@@ -82,22 +121,142 @@ namespace Rfx.Riken.OsakaUniv
             return productIons;
         }
 
-        private static List<Formula> getFormulaCandidatesbyLibrarySearch(Formula formula, IonMode ionMode, 
-            double mz, double massTol, List<ProductIon> productIonDB) {
-            var candidates = new List<Formula>();
+        /// <summary>
+        /// The number of product ions <see cref="FastFragmnetAssigner(ProductIonQuery, Formula)"/> returns for
+        /// <paramref name="formula"/>, without building them. A peak gets an ion when it matches the precursor, when a
+        /// library formula fits in the candidate, or when any valence-checked sub-formula is within tolerance, so this
+        /// only has to find one of them per peak.
+        /// </summary>
+        public static int CountProductIons(ProductIonQuery query, Formula formula)
+        {
+            var count = 0;
+            var adductIon = query.AdductIon;
+            var productIonDB = query.ProductIonDB;
+            double[] maxRemainingMasses = null;
+
+            foreach (var queryPeak in query.Peaks)
+            {
+                if (Math.Abs(queryPeak.Mass - formula.Mass - adductIon.AdductIonAccurateMass) < queryPeak.MassTol)
+                {
+                    count++;
+                    continue;
+                }
+
+                var isLibraryHit = false;
+                foreach (var i in queryPeak.LibrarySearchIndices)
+                {
+                    if (isFormulaComposition(productIonDB[i].Formula, formula))
+                    {
+                        isLibraryHit = true;
+                        break;
+                    }
+                }
+
+                if (isLibraryHit || hasValenceCheckedFragmentFormula(queryPeak, formula, adductIon.IonMode, ref maxRemainingMasses))
+                    count++;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Whether <see cref="searchValenceCheckedFragmentFormula"/> finds a sub-formula of <paramref name="formula"/> for
+        /// the peak, answered from sub-formulas found for earlier candidates when one of them fits.
+        /// </summary>
+        /// <remarks>
+        /// The enumeration emits a sub-formula when its counts are within the candidate's (hydrogen: one more in
+        /// positive mode, one fewer in negative mode), its mass is in the window, it passes the valence check, and no
+        /// level skips it, a level skipping when its partial mass plus the candidate's largest remaining mass is below
+        /// the window. Only the counts and the skip tests depend on the candidate, so a sub-formula found for an
+        /// earlier candidate (a witness) answers for this one when its counts fit and the skip tests, evaluated with
+        /// the same values as the loops, pass.
+        /// </remarks>
+        private static bool hasValenceCheckedFragmentFormula(ProductIonQuery.QueryPeak queryPeak, Formula formula, IonMode ionMode,
+            ref double[] maxRemainingMasses)
+        {
+            var hydrogen = 1; if (ionMode == IonMode.Negative) hydrogen = -1;
+            var cache = queryPeak.ExistenceCache;
+            var lowerMass = queryPeak.Peak.Mz - queryPeak.MassTol;
+
+            for (int k = 0; k < cache.WitnessCount; k++)
+            {
+                var w = cache.WitnessCounts[k];
+                if (w.C > formula.Cnum || w.H > formula.Hnum + hydrogen || w.N > formula.Nnum || w.O > formula.Onum || w.P > formula.Pnum
+                    || w.S > formula.Snum || w.F > formula.Fnum || w.Cl > formula.Clnum || w.Br > formula.Brnum || w.I > formula.Inum || w.Si > formula.Sinum)
+                    continue;
+                if (maxRemainingMasses == null) maxRemainingMasses = getMaxRemainingMasses(formula, hydrogen);
+                var partialMasses = cache.WitnessPartialMasses[k];
+                var isSkipped = false;
+                for (int level = 0; level < FragmentExistenceCache.LevelCount; level++)
+                {
+                    if (partialMasses[level] + maxRemainingMasses[level] < lowerMass)
+                    {
+                        isSkipped = true;
+                        break;
+                    }
+                }
+                if (!isSkipped) return true;
+            }
+
+            FragmentCounts counts;
+            if (searchValenceCheckedFragmentFormula(formula, ionMode, queryPeak.Peak.Mz, queryPeak.MassTol, queryPeak.Mass, true, out counts, cache.PartialMassBuffer))
+            {
+                cache.AddWitness(counts);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// The largest mass the elements after each level (I, Br, Cl, S, P, Si, F, O, N, C) can add, as the
+        /// enumeration computes it for <paramref name="formula"/>.
+        /// </summary>
+        private static double[] getMaxRemainingMasses(Formula formula, int hydrogen)
+        {
+            double maxHmass = hMass * (formula.Hnum + hydrogen);
+            double maxCHmass = maxHmass + cMass * formula.Cnum;
+            double maxNCHmass = maxCHmass + nMass * formula.Nnum;
+            double maxONCHmass = maxNCHmass + oMass * formula.Onum;
+            double maxFONCHmass = maxONCHmass + fMass * formula.Fnum;
+            double maxSiFONCHmass = maxFONCHmass + siMass * formula.Sinum;
+            double maxPSiFONCHmass = maxSiFONCHmass + pMass * formula.Pnum;
+            double maxSPSiFONCHmass = maxPSiFONCHmass + sMass * formula.Snum;
+            double maxClSPSiFONCHmass = maxSPSiFONCHmass + clMass * formula.Clnum;
+            double maxBrClSPSiFONCHmass = maxClSPSiFONCHmass + brMass * formula.Brnum;
+            return new[] {
+                maxBrClSPSiFONCHmass, maxClSPSiFONCHmass, maxSPSiFONCHmass, maxPSiFONCHmass, maxSiFONCHmass,
+                maxFONCHmass, maxONCHmass, maxNCHmass, maxCHmass, maxHmass,
+            };
+        }
+
+        /// <summary>
+        /// The product-ion library entries that the library search reaches the composition check for, in scan order.
+        /// </summary>
+        private static int[] getLibrarySearchIndices(IonMode ionMode, double mz, double massTol, List<ProductIon> productIonDB) {
+            var indices = new List<int>();
             var startIndex = getStartIndex(mz, massTol, productIonDB);
             for (int i = startIndex; i < productIonDB.Count; i++) {
                 var ionQuery = productIonDB[i];
                 if (ionQuery.IonMode != ionMode) continue;
                 if (ionQuery.Formula.Mass < mz - massTol) continue;
                 if (ionQuery.Formula.Mass > mz + massTol) break;
-
-                if (isFormulaComposition(ionQuery.Formula, formula)) {
-                    candidates.Add(ionQuery.Formula);
-                }
+                indices.Add(i);
             }
+            return indices.ToArray();
+        }
 
-            return candidates;
+        /// <summary>
+        /// The product-ion library entries that annotating an ion assigned at <paramref name="mz"/> looks at, in scan order.
+        /// </summary>
+        private static int[] getAnnotationIndices(IonMode ionMode, double mz, List<ProductIon> productIonDB) {
+            var indices = new List<int>();
+            var startIndex = getStartIndex(mz, 0.1, productIonDB);
+            for (int i = startIndex; i < productIonDB.Count; i++) {
+                var ionQuery = productIonDB[i];
+                if (ionQuery.IonMode != ionMode) continue;
+                if (ionQuery.Formula.Mass > mz + 0.1) break;
+                indices.Add(i);
+            }
+            return indices.ToArray();
         }
 
         private static int getStartIndex(double mass, double tol, List<ProductIon> productIonDB)
@@ -128,27 +287,107 @@ namespace Rfx.Riken.OsakaUniv
         /// <param name="analysisParam"></param>
         /// <param name="adductIon"></param>
         /// <returns></returns>
-        public static List<NeutralLoss> FastNeutralLossAssigner(List<NeutralLoss> neutralLosslist, List<NeutralLoss> neutralLossDB, 
+        public static List<NeutralLoss> FastNeutralLossAssigner(List<NeutralLoss> neutralLosslist, List<NeutralLoss> neutralLossDB,
             Formula originalFormula, double ms2Tol, MassToleranceType massTolType, AdductIon adductIon)
         {
-            var neutralLossResult = new List<NeutralLoss>();
-            //double eMass = electron; if (adductIon.IonMode == IonMode.Negative) eMass = -1.0 * electron; 
+            return FastNeutralLossAssigner(PrepareNeutralLossQuery(neutralLosslist, neutralLossDB, ms2Tol, massTolType, adductIon), originalFormula);
+        }
 
-            foreach (var nloss in neutralLosslist)
+        /// <summary>
+        /// Prepares the part of neutral-loss assignment that does not depend on the candidate formula: for every observed
+        /// neutral loss, which neutral-loss library entries are within its mass tolerance and of the right ion mode.
+        /// </summary>
+        public static NeutralLossQuery PrepareNeutralLossQuery(List<NeutralLoss> neutralLosslist, List<NeutralLoss> neutralLossDB,
+            double ms2Tol, MassToleranceType massTolType, AdductIon adductIon)
+        {
+            // Losses without any library entry in range can never be assigned, so they are left out.
+            var entries = new List<NeutralLossQuery.QueryLoss>();
+            for (int n = 0; n < neutralLosslist.Count; n++)
             {
+                var nloss = neutralLosslist[n];
                 double mass = nloss.MassLoss;
-                double minDiff = double.MaxValue;
                 double massTol = ms2Tol; if (massTolType == MassToleranceType.Ppm) massTol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ms2Tol);
-                int minID = -1;
 
+                var indices = new List<int>();
                 var startIndex = getStartIndex(mass, 0.1, neutralLossDB);
-
                 for (int i = startIndex; i < neutralLossDB.Count; i++)
                 {
                     if (mass - massTol > neutralLossDB[i].Formula.Mass) continue;
                     if (adductIon.IonMode != neutralLossDB[i].Iontype) continue;
                     if (mass + massTol < neutralLossDB[i].Formula.Mass) break;
+                    indices.Add(i);
+                }
+                if (indices.Count > 0)
+                    entries.Add(new NeutralLossQuery.QueryLoss(nloss, indices.ToArray()));
+            }
+            return new NeutralLossQuery(neutralLossDB, entries.ToArray());
+        }
 
+        /// <summary>
+        /// The number of distinct formulas, hydrogen ignored, among the neutral losses
+        /// <see cref="FastNeutralLossAssigner(NeutralLossQuery, Formula)"/> assigns to <paramref name="originalFormula"/>:
+        /// the neutral-loss hit count of formula scoring, without building the assignments.
+        /// </summary>
+        public static int CountUniqueNeutralLossFormulas(NeutralLossQuery query, Formula originalFormula)
+        {
+            var neutralLossDB = query.NeutralLossDB;
+            List<Formula> uniqueFormulas = null;
+
+            foreach (var queryLoss in query.Losses)
+            {
+                double mass = queryLoss.NeutralLoss.MassLoss;
+                double minDiff = double.MaxValue;
+                int minID = -1;
+
+                foreach (var i in queryLoss.LibraryIndices)
+                {
+                    if (isFormulaComposition(neutralLossDB[i].Formula, originalFormula))
+                    {
+                        if (minDiff > Math.Abs(mass - neutralLossDB[i].Formula.Mass))
+                        {
+                            minDiff = Math.Abs(mass - neutralLossDB[i].Formula.Mass);
+                            minID = i;
+                        }
+                    }
+                }
+                if (minID < 0) continue;
+
+                // Formulas are the same when every count but hydrogen matches; that grouping does not depend on
+                // the order of the losses, so counting here equals counting the sorted assignment list.
+                var lossFormula = neutralLossDB[minID].Formula;
+                if (uniqueFormulas == null) uniqueFormulas = new List<Formula>();
+                var isKnown = false;
+                foreach (var known in uniqueFormulas)
+                {
+                    if (MolecularFormulaUtility.isFormulaMatch(known, lossFormula, true))
+                    {
+                        isKnown = true;
+                        break;
+                    }
+                }
+                if (!isKnown) uniqueFormulas.Add(lossFormula);
+            }
+            return uniqueFormulas == null ? 0 : uniqueFormulas.Count;
+        }
+
+        /// <summary>
+        /// Assigns library neutral losses that fit in <paramref name="originalFormula"/> to the prepared neutral losses.
+        /// Gives the same result as <see cref="FastNeutralLossAssigner(List{NeutralLoss}, List{NeutralLoss}, Formula, double, MassToleranceType, AdductIon)"/>.
+        /// </summary>
+        public static List<NeutralLoss> FastNeutralLossAssigner(NeutralLossQuery query, Formula originalFormula)
+        {
+            var neutralLossResult = new List<NeutralLoss>();
+            var neutralLossDB = query.NeutralLossDB;
+
+            foreach (var queryLoss in query.Losses)
+            {
+                var nloss = queryLoss.NeutralLoss;
+                double mass = nloss.MassLoss;
+                double minDiff = double.MaxValue;
+                int minID = -1;
+
+                foreach (var i in queryLoss.LibraryIndices)
+                {
                     if (isFormulaComposition(neutralLossDB[i].Formula, originalFormula))
                     {
                         if (minDiff > Math.Abs(mass - neutralLossDB[i].Formula.Mass))
@@ -410,9 +649,24 @@ namespace Rfx.Riken.OsakaUniv
         private static double brMass = 78.91833710000;
         private static double iMass = 126.90447300000;
         
-        private static List<Formula> getValenceCheckedFragmentFormulaList(Formula formula, IonMode ionMode, double mass, double massTol)
+        /// <summary>
+        /// Enumerates the sub-formulas of <paramref name="formula"/> (one hydrogen more in positive mode, one fewer in
+        /// negative mode) whose mass is within <paramref name="massTol"/> of <paramref name="mass"/> and that pass the
+        /// valence check, and finds the one closest to <paramref name="targetMass"/>. Returns false when there is none.
+        /// With <paramref name="anyIsEnough"/>, it returns at the first such formula, for callers that only need to
+        /// know whether one exists.
+        /// </summary>
+        /// <remarks>
+        /// This used to build every such formula, sort them by mass and take the first with the smallest difference.
+        /// It now keeps only the best one while enumerating: the smallest difference, then the smaller mass, then the
+        /// earlier enumerated formula, which is the formula the sorted list would have given first. The loops start
+        /// at the first count that can still reach the mass window (see <see cref="EnumerationBound.FirstNotBelow"/>),
+        /// and no <see cref="Formula"/> is built here.
+        /// </remarks>
+        private static bool searchValenceCheckedFragmentFormula(Formula formula, IonMode ionMode, double mass, double massTol, double targetMass,
+            bool anyIsEnough, out FragmentCounts best, double[] witnessPartialMasses)
         {
-            var fragmentFormulas = new List<Formula>();
+            best = default(FragmentCounts);
             var hydrogen = 1; if (ionMode == IonMode.Negative) hydrogen = -1;
 
             double maxHmass = hMass * (formula.Hnum + hydrogen);
@@ -425,74 +679,90 @@ namespace Rfx.Riken.OsakaUniv
             double maxSPSiFONCHmass = maxPSiFONCHmass + sMass * formula.Snum;
             double maxClSPSiFONCHmass = maxSPSiFONCHmass + clMass * formula.Clnum;
             double maxBrClSPSiFONCHmass = maxClSPSiFONCHmass + brMass * formula.Brnum;
-           
-            for (int inum = 0; inum <= formula.Inum; inum++)
+
+            double lowerMass = mass - massTol;
+            double upperMass = mass + massTol;
+            int maxHnum = formula.Hnum + hydrogen;
+
+            var found = false;
+            double bestDiff = 0.0, bestMass = 0.0;
+
+            for (int inum = EnumerationBound.FirstNotBelow(0.0, iMass, maxBrClSPSiFONCHmass, lowerMass, formula.Inum); inum <= formula.Inum; inum++)
             {
-                if ((double)inum * iMass + maxBrClSPSiFONCHmass < mass - massTol) continue;
-                if ((double)inum * iMass > mass + massTol) break;
+                if ((double)inum * iMass > upperMass) break;
                 var uImass = (double)inum * iMass;
-                
-                for (int brnum = 0; brnum <= formula.Brnum; brnum++)
+
+                for (int brnum = EnumerationBound.FirstNotBelow(uImass, brMass, maxClSPSiFONCHmass, lowerMass, formula.Brnum); brnum <= formula.Brnum; brnum++)
                 {
-                    if (uImass + (double)brnum * brMass + maxClSPSiFONCHmass < mass - massTol) continue;
-                    if (uImass + (double)brnum * brMass > mass + massTol) break;
+                    if (uImass + (double)brnum * brMass > upperMass) break;
                     var uBrmass = uImass + (double)brnum * brMass;
 
-                    for (int clnum = 0; clnum <= formula.Clnum; clnum++)
+                    for (int clnum = EnumerationBound.FirstNotBelow(uBrmass, clMass, maxSPSiFONCHmass, lowerMass, formula.Clnum); clnum <= formula.Clnum; clnum++)
                     {
-                        if (uBrmass + (double)clnum * clMass + maxSPSiFONCHmass < mass - massTol) continue;
-                        if (uBrmass + (double)clnum * clMass > mass + massTol) break;
+                        if (uBrmass + (double)clnum * clMass > upperMass) break;
                         var uClmass = uBrmass + (double)clnum * clMass;
 
-                        for (int snum = 0; snum <= formula.Snum; snum++)
+                        for (int snum = EnumerationBound.FirstNotBelow(uClmass, sMass, maxPSiFONCHmass, lowerMass, formula.Snum); snum <= formula.Snum; snum++)
                         {
-                            if (uClmass + (double)snum * sMass + maxPSiFONCHmass < mass - massTol) continue;
-                            if (uClmass + (double)snum * sMass > mass + massTol) break;
+                            if (uClmass + (double)snum * sMass > upperMass) break;
                             var uSmass = uClmass + (double)snum * sMass;
 
-                            for (int pnum = 0; pnum <= formula.Pnum; pnum++)
+                            for (int pnum = EnumerationBound.FirstNotBelow(uSmass, pMass, maxSiFONCHmass, lowerMass, formula.Pnum); pnum <= formula.Pnum; pnum++)
                             {
-                                if (uSmass + (double)pnum * pMass + maxSiFONCHmass < mass - massTol) continue;
-                                if (uSmass + (double)pnum * pMass > mass + massTol) break;
+                                if (uSmass + (double)pnum * pMass > upperMass) break;
                                 var uPmass = uSmass + (double)pnum * pMass;
 
-                                for (int sinum = 0; sinum <= formula.Sinum; sinum++)
+                                for (int sinum = EnumerationBound.FirstNotBelow(uPmass, siMass, maxFONCHmass, lowerMass, formula.Sinum); sinum <= formula.Sinum; sinum++)
                                 {
-                                    if (uPmass + (double)sinum * siMass + maxFONCHmass < mass - massTol) continue;
-                                    if (uPmass + (double)sinum * siMass > mass + massTol) break;
+                                    if (uPmass + (double)sinum * siMass > upperMass) break;
                                     var uSimass = uPmass + (double)sinum * siMass;
 
-                                    for (int fnum = 0; fnum <= formula.Fnum; fnum++)
+                                    for (int fnum = EnumerationBound.FirstNotBelow(uSimass, fMass, maxONCHmass, lowerMass, formula.Fnum); fnum <= formula.Fnum; fnum++)
                                     {
-                                        if (uSimass + (double)fnum * fMass + maxONCHmass < mass - massTol) continue;
-                                        if (uSimass + (double)fnum * fMass > mass + massTol) break;
+                                        if (uSimass + (double)fnum * fMass > upperMass) break;
                                         var uFmass = uSimass + (double)fnum * fMass;
 
-                                        for (int onum = 0; onum <= formula.Onum; onum++)
+                                        for (int onum = EnumerationBound.FirstNotBelow(uFmass, oMass, maxNCHmass, lowerMass, formula.Onum); onum <= formula.Onum; onum++)
                                         {
-                                            if (uFmass + (double)onum * oMass + maxNCHmass < mass - massTol) continue;
-                                            if (uFmass + (double)onum * oMass > mass + massTol) break;
+                                            if (uFmass + (double)onum * oMass > upperMass) break;
                                             var uOmass = uFmass + (double)onum * oMass;
 
-                                            for (int nnum = 0; nnum <= formula.Nnum; nnum++)
+                                            for (int nnum = EnumerationBound.FirstNotBelow(uOmass, nMass, maxCHmass, lowerMass, formula.Nnum); nnum <= formula.Nnum; nnum++)
                                             {
-                                                if (uOmass + (double)nnum * nMass + maxCHmass < mass - massTol) continue;
-                                                if (uOmass + (double)nnum * nMass > mass + massTol) break;
+                                                if (uOmass + (double)nnum * nMass > upperMass) break;
                                                 var uNmass = uOmass + (double)nnum * nMass;
 
-                                                for (int cnum = 0; cnum <= formula.Cnum; cnum++)
+                                                for (int cnum = EnumerationBound.FirstNotBelow(uNmass, cMass, maxHmass, lowerMass, formula.Cnum); cnum <= formula.Cnum; cnum++)
                                                 {
-                                                    if (uNmass + (double)cnum * cMass + maxHmass < mass - massTol) continue;
-                                                    if (uNmass + (double)cnum * cMass > mass + massTol) break;
+                                                    if (uNmass + (double)cnum * cMass > upperMass) break;
                                                     var uCmass = uNmass + (double)cnum * cMass;
 
-                                                    for (int hnum = 0; hnum <= formula.Hnum + hydrogen; hnum++)
+                                                    for (int hnum = EnumerationBound.FirstNotBelow(uCmass, hMass, 0.0, lowerMass, maxHnum); hnum <= maxHnum; hnum++)
                                                     {
-                                                        if (uCmass + (double)hnum * hMass < mass - massTol) continue;
-                                                        if (uCmass + (double)hnum * hMass > mass + massTol) break;
-                                                        
-                                                        var fragmentFormula = new Formula(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum);
-                                                        if (SevenGoldenRulesCheck.ValenceCheckByHydrogenShift(fragmentFormula)) fragmentFormulas.Add(fragmentFormula);
+                                                        if (uCmass + (double)hnum * hMass > upperMass) break;
+                                                        if (!SevenGoldenRulesCheck.ValenceCheckByHydrogenShift(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum)) continue;
+
+                                                        // The mass a Formula would carry, which is what the candidates were sorted and compared by.
+                                                        var exactMass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum);
+                                                        var diff = Math.Abs(targetMass - exactMass);
+                                                        if (!found || diff < bestDiff || (diff == bestDiff && exactMass < bestMass))
+                                                        {
+                                                            found = true;
+                                                            bestDiff = diff; bestMass = exactMass;
+                                                            best.C = cnum; best.H = hnum; best.N = nnum; best.O = onum; best.P = pnum; best.S = snum;
+                                                            best.F = fnum; best.Cl = clnum; best.Br = brnum; best.I = inum; best.Si = sinum;
+                                                            if (anyIsEnough)
+                                                            {
+                                                                if (witnessPartialMasses != null)
+                                                                {
+                                                                    witnessPartialMasses[0] = uImass; witnessPartialMasses[1] = uBrmass; witnessPartialMasses[2] = uClmass;
+                                                                    witnessPartialMasses[3] = uSmass; witnessPartialMasses[4] = uPmass; witnessPartialMasses[5] = uSimass;
+                                                                    witnessPartialMasses[6] = uFmass; witnessPartialMasses[7] = uOmass; witnessPartialMasses[8] = uNmass;
+                                                                    witnessPartialMasses[9] = uCmass;
+                                                                }
+                                                                return true;
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -505,8 +775,7 @@ namespace Rfx.Riken.OsakaUniv
                 }
             }
 
-            fragmentFormulas = fragmentFormulas.OrderBy(n => n.Mass).ToList();
-            return fragmentFormulas;
+            return found;
         }
 
         private static List<Peak> isotopicPeakAssignmnet(List<Peak> peaklist, double massTol, MassToleranceType massTolType)

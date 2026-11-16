@@ -1609,6 +1609,18 @@ namespace CompMs.MsdialCore.Parameter
         public string ExportFolderPath { get; set; } = string.Empty;
         [Key(12)]
         public double MnAbsoluteAbundanceCutOff { get; set; } = 0.0;
+        /// <summary>
+        /// ModifiedCosine only: peaks within this many Da of the precursor are removed from both
+        /// spectra before scoring (inclusive). 0 keeps them.
+        /// </summary>
+        [Key(13)]
+        public double MnPrecursorWindow { get; set; } = 17d;
+        /// <summary>
+        /// ModifiedCosine only: the power intensities are raised to before the base peak is scaled
+        /// to 100. 1 keeps them linear (the matchms default); MS-DIAL's other MN kernels use 0.5.
+        /// </summary>
+        [Key(14)]
+        public double MnIntensityPower { get; set; } = 1d;
     }
 
     [MessagePackObject]

@@ -1,0 +1,4 @@
+# Fixtures copied byte for byte from the MS-DIAL spectrum catalog (similarity-fixtures/).
+# Their sha256 values are checked against manifest.json and SOURCE.md, so git must not
+# convert their line endings.
+* -text

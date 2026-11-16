@@ -45,7 +45,7 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
             var parentExactMass = structure.ExactMass;
             var fragmentCandidates = new List<Fragment>();
             
-            var fragmentDoneList = new List<string>(); //defined as connected atoms and bonds hash key
+            var fragmentDoneList = new HashSet<string>(); //defined as connected atoms and bonds hash key
 
             var treeDepth = 0;
             var parentID = 0;
@@ -63,12 +63,13 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
 
             var frequentlySplitableBonds = getFrequentlySplitableBonds(structure.BondDictionary);
             var splitBondsList = getSplitBondsList(splitableBonds, treeDepthMax, frequentlySplitableBonds);
+            var idMaxima = new FragmentIdMaxima(structure.AtomDictionary, structure.BondDictionary);
 			foreach (var splitBonds in splitBondsList) {
 				foreach (var bond in splitBonds.Bonds) {
 					foreach (var atom in bond.ConnectedAtoms) {
 
 						fragmentCandidate = new Fragment();
-						fragmentCandidate = RecFragmentGerenator(fragmentCandidate, atom, splitBonds.Bonds, structure.AtomDictionary, structure.BondDictionary);
+						fragmentCandidate = RecFragmentGerenator(fragmentCandidate, atom, splitBonds.Bonds, structure.AtomDictionary, structure.BondDictionary, idMaxima);
                         if (fragmentCandidate.CleavedBondDictionary.Count != splitBonds.Bonds.Count) continue; //check if fragment is done by means of the given bond pairs
 
                         var exactMass = fragmentCandidate.AtomDictionary.Values.Sum(n => n.AtomMass);
@@ -76,9 +77,8 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
                         if (exactMass < 20 || exactMass < massMin - 30) continue;
 
                         var fragmentHash = generateFragmentHash(fragmentCandidate.AtomDictionary, fragmentCandidate.BondDictionary);
-                        if (!fragmentDoneList.Contains(fragmentHash)) {
-                            fragmentDoneList.Add(fragmentHash);
-                            
+                        if (fragmentDoneList.Add(fragmentHash)) {
+
                             fragmentCandidate.TreeDepth = splitBonds.TreeDepth;
                             fragmentCandidate.ExactMass = exactMass;
                             fragmentCandidate.BondDissociationEnergy = BondEnergyCalculator.TotalBondEnergy(fragmentCandidate.CleavedBondDictionary);
@@ -114,8 +114,53 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
 		/// <summary>
 		/// Recursive code to generate fragments from the information of start atom, removed bonds, and structure information
 		/// </summary>
-		public static Fragment RecFragmentGerenator(Fragment fragment, AtomProperty startAtom, List<BondProperty> removedBonds, 
+		public static Fragment RecFragmentGerenator(Fragment fragment, AtomProperty startAtom, List<BondProperty> removedBonds,
 		                                     Dictionary<int, AtomProperty> atomDictionary, Dictionary<int, BondProperty> bondDictionary)
+		{
+            return RecFragmentGerenator(fragment, startAtom, removedBonds, atomDictionary, bondDictionary,
+                new FragmentIdMaxima(atomDictionary, bondDictionary));
+		}
+
+        /// <summary>
+        /// The largest atom and bond IDs of the structure, computed once per structure, and the largest IDs in the
+        /// fragment being built, kept up to date as atoms and bonds are added. Adding hydrogens numbers them after
+        /// both; this replaces scanning all four ID sets (Keys.Max()) at every cleaved bond.
+        /// </summary>
+        internal sealed class FragmentIdMaxima
+        {
+            public FragmentIdMaxima(Dictionary<int, AtomProperty> atomDictionary, Dictionary<int, BondProperty> bondDictionary)
+            {
+                StructureAtomIdMax = atomDictionary.Count > 0 ? atomDictionary.Keys.Max() : int.MinValue;
+                StructureBondIdMax = bondDictionary.Count > 0 ? bondDictionary.Keys.Max() : int.MinValue;
+            }
+
+            public int StructureAtomIdMax { get; }
+            public int StructureBondIdMax { get; }
+
+            // Running maxima of the keys of the fragment's dictionaries; valid while the fragment has entries.
+            public int FragmentAtomIdMax = int.MinValue;
+            public int FragmentBondIdMax = int.MinValue;
+
+            public void Reset(Fragment fragment)
+            {
+                FragmentAtomIdMax = fragment.AtomDictionary.Count > 0 ? fragment.AtomDictionary.Keys.Max() : int.MinValue;
+                FragmentBondIdMax = fragment.BondDictionary.Count > 0 ? fragment.BondDictionary.Keys.Max() : int.MinValue;
+            }
+
+            public void AddAtomId(int id) { if (id > FragmentAtomIdMax) FragmentAtomIdMax = id; }
+            public void AddBondId(int id) { if (id > FragmentBondIdMax) FragmentBondIdMax = id; }
+        }
+
+        private static Fragment RecFragmentGerenator(Fragment fragment, AtomProperty startAtom, List<BondProperty> removedBonds,
+            Dictionary<int, AtomProperty> atomDictionary, Dictionary<int, BondProperty> bondDictionary, FragmentIdMaxima idMaxima)
+        {
+            idMaxima.Reset(fragment);
+            recFragmentGerenator(fragment, startAtom, removedBonds, atomDictionary, idMaxima);
+            return fragment;
+        }
+
+		private static void recFragmentGerenator(Fragment fragment, AtomProperty startAtom, List<BondProperty> removedBonds,
+		                                     Dictionary<int, AtomProperty> atomDictionary, FragmentIdMaxima idMaxima)
 		{
 			var connectedBonds = atomDictionary[startAtom.AtomID].ConnectedBonds;
 
@@ -136,11 +181,11 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
                             if (isValenceFrexible == false) {
                                 var rBondOrder = (int)rBond.BondType + 1;
                                 var atomIdMax = fragment.AtomDictionary.Count > 0
-                                    ? Math.Max(atomDictionary.Keys.Max(), fragment.AtomDictionary.Keys.Max())
-                                    : atomDictionary.Keys.Max();
+                                    ? Math.Max(idMaxima.StructureAtomIdMax, idMaxima.FragmentAtomIdMax)
+                                    : idMaxima.StructureAtomIdMax;
                                 var bondIdMax = fragment.BondDictionary.Count > 0
-                                    ? Math.Max(bondDictionary.Keys.Max(), fragment.BondDictionary.Keys.Max())
-                                    : bondDictionary.Keys.Max();
+                                    ? Math.Max(idMaxima.StructureBondIdMax, idMaxima.FragmentBondIdMax)
+                                    : idMaxima.StructureBondIdMax;
 
                                 //Debug.WriteLine(rBondOrder + "\t" + atomIdMax + "\t" + bondIdMax);
 
@@ -149,6 +194,8 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
 
                                     //add new hydrogen atom- and its related bond
                                     insertHydrogenAtomAndBonds(fragment, startAtom, atomIdMax, bondIdMax);
+                                    idMaxima.AddAtomId(atomIdMax);
+                                    idMaxima.AddBondId(bondIdMax);
                                 }
                             }
 						}
@@ -159,18 +206,22 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
 				}
 				if (isRemovedBond == true) continue;
                 fragment.BondDictionary[cBond.BondID] = cBond;
+                idMaxima.AddBondId(cBond.BondID);
 
+                AtomProperty nextAtom = null;
                 foreach (var cAtom in cBond.ConnectedAtoms) {
-                    if (!fragment.AtomDictionary.ContainsKey(cAtom.AtomID))
+                    if (!fragment.AtomDictionary.ContainsKey(cAtom.AtomID)) {
                         fragment.AtomDictionary[cAtom.AtomID] = cAtom;
+                        idMaxima.AddAtomId(cAtom.AtomID);
+                    }
+                    if (nextAtom == null && cAtom.AtomID != startAtom.AtomID) nextAtom = cAtom;
                 }
+                if (nextAtom == null) throw new ArgumentOutOfRangeException(); // as the former ToList()[0] on an empty list
 
-				var nextAtom = cBond.ConnectedAtoms.Where(n => n.AtomID != startAtom.AtomID).ToList()[0];
 				if (atomDictionary[nextAtom.AtomID].ConnectedBonds.Count == 1) continue;
 
-				RecFragmentGerenator(fragment, nextAtom, removedBonds, atomDictionary, bondDictionary);
+				recFragmentGerenator(fragment, nextAtom, removedBonds, atomDictionary, idMaxima);
 			}
-			return fragment;
 		}
 
         private static bool checkValenceFrexibility(AtomProperty atom, BondProperty removedBond)
@@ -251,7 +302,9 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
 		/// </summary>
 		private static List<SplitBonds> getSplitBondsList(List<BondProperty> splitableBonds, int treeMax, List<BondProperty> freqFragBonds)
         {
-            var splitDones = new List<string>();
+            // Only asked "seen before?"; a set answers that in constant time, where the list was scanned for every
+            // candidate bond set (up to 5000 per structure).
+            var splitDones = new HashSet<string>();
             var splitBondsList = new List<SplitBonds>();
             var splitBondsListCopy = new List<SplitBonds>();
 
@@ -287,7 +340,7 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
         /// finally set one more bonds for those who has frequently monitored bond fragment
         /// </summary>
         private static void setSplitBonds(List<BondProperty> splitableBonds, List<SplitBonds> splitBondsList, 
-            List<string> splitDones, List<SplitBonds> splitBondsListCopy, List<BondProperty> freqFragBonds)
+            HashSet<string> splitDones, List<SplitBonds> splitBondsListCopy, List<BondProperty> freqFragBonds)
         {
             foreach (var splitBonds in splitBondsListCopy) {
                 foreach (var freqFrag in freqFragBonds) {
@@ -320,7 +373,7 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
         /// set bond pairs
         /// </summary>
         private static void setSplitBonds(List<BondProperty> splitableBonds, List<SplitBonds> splitBondsList, 
-            List<string> splitDones, List<SplitBonds> splitBondsListCopy, int cycleID)
+            HashSet<string> splitDones, List<SplitBonds> splitBondsListCopy, int cycleID)
         {
             foreach (var splitBonds in splitBondsListCopy) {
                 foreach (var sBond in splitableBonds) {
@@ -520,10 +573,8 @@ namespace Riken.Metabolomics.StructureFinder.Fragmenter
             //}
             //bondList.Sort();
 
-            var hash = string.Empty;
-            foreach (var atom in atomList) {
-                hash += atom.ToString();
-            }
+            // The same string as appending each ID to a string, without copying the growing string every time.
+            var hash = string.Concat(atomList);
             //hash += "-";
             //foreach (var bond in bondList) {
             //    hash += bond.ToString();

@@ -283,6 +283,10 @@ namespace CompMs.Common.Parameter {
         public bool IsMmnSelectedFileCentricProcess { get; set; }
 
         //timeout
+        /// <summary>
+        /// Time-out of the formula prediction of one spectrum, in minutes; zero or less means none. It bounds the
+        /// candidate search of the spectrum as a whole; a search that reaches it returns the candidates scored by then.
+        /// </summary>
         public double FormulaPredictionTimeOut { get; set; }
         public double StructurePredictionTimeOut { get; set; }
 
