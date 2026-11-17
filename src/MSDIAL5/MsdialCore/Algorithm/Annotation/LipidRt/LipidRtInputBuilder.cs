@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         /// <summary>The peaks of one analysis file, with RT on that file's own axis.</summary>
         /// <param name="predictedLibraryAnnotators">The annotators that search a library of predicted spectra, from
         /// <see cref="PredictedLibraryAnnotators"/>; their matches are not evaluated. Null when none is known.</param>
-        public static LipidRtRunInput FromPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, IonMode polarity, ISet<string> predictedLibraryAnnotators = null) {
+        public static LipidRtRunInput FromPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, IonMode polarity, ISet<string>? predictedLibraryAnnotators = null) {
             if (peaks is null) throw new ArgumentNullException(nameof(peaks));
             return Build(peaks.Select(p => (p.MasterPeakID, p.PeakFeature.ChromXsTop?.RT?.Value ?? double.NaN, p.PeakFeature.Mass, p.PeakFeature.PeakHeightTop,
                 p.AdductType?.AdductIonName, p.MatchResults?.Representative, p.Ontology, p.Name)), polarity, predictedLibraryAnnotators);
@@ -28,7 +28,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
 
         /// <summary>The spots of one alignment, with RT on the aligned axis and the average height.</summary>
         /// <param name="predictedLibraryAnnotators">As for <see cref="FromPeaks"/>.</param>
-        public static LipidRtRunInput FromSpots(IReadOnlyList<AlignmentSpotProperty> spots, IonMode polarity, ISet<string> predictedLibraryAnnotators = null) {
+        public static LipidRtRunInput FromSpots(IReadOnlyList<AlignmentSpotProperty> spots, IonMode polarity, ISet<string>? predictedLibraryAnnotators = null) {
             if (spots is null) throw new ArgumentNullException(nameof(spots));
             return Build(spots.Select(s => (s.MasterAlignmentID, s.TimesCenter?.RT?.Value ?? double.NaN, s.MassCenter, (double)s.HeightAverage,
                 s.AdductType?.AdductIonName, s.MatchResults?.Representative, s.Ontology, s.Name)), polarity, predictedLibraryAnnotators);
@@ -67,7 +67,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
             return annotators;
         }
 
-        private static LipidRtRunInput Build(IEnumerable<(int Id, double Rt, double Mz, double Height, string Adduct, MsScanMatchResult Representative, string Ontology, string Name)> objects, IonMode polarity, ISet<string> predictedLibraryAnnotators) {
+        private static LipidRtRunInput Build(IEnumerable<(int Id, double Rt, double Mz, double Height, string Adduct, MsScanMatchResult Representative, string Ontology, string Name)> objects, IonMode polarity, ISet<string>? predictedLibraryAnnotators) {
             var candidates = new List<LipidRtCandidate>();
             var context = new List<LipidRtContextPeak>();
             var rtMin = double.PositiveInfinity;

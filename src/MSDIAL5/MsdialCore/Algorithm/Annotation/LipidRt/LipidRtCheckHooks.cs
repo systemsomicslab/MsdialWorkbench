@@ -86,7 +86,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         /// known, in which case only the evidence record tells an in-silico match apart. Required rather than defaulted, here
         /// and in <see cref="RunOnSpots"/>, so that a caller written before the set existed, or a merge that restores one,
         /// does not compile instead of silently confirming a predicted-library match that records RuleBased.</param>
-        public static LipidRtUnitRun RunOnPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, ParameterBase parameter, ISet<string> predictedLibraryAnnotators) {
+        public static LipidRtUnitRun RunOnPeaks(IReadOnlyList<ChromatogramPeakFeature> peaks, ParameterBase parameter, ISet<string>? predictedLibraryAnnotators) {
             if (peaks is null) throw new ArgumentNullException(nameof(peaks));
             if (parameter is null) throw new ArgumentNullException(nameof(parameter));
             return Run(parameter,
@@ -99,7 +99,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt
         /// and before the result is saved or exported.
         /// </summary>
         /// <param name="predictedLibraryAnnotators">As for <see cref="RunOnPeaks"/>.</param>
-        public static LipidRtUnitRun RunOnSpots(IReadOnlyList<AlignmentSpotProperty> spots, ParameterBase parameter, ISet<string> predictedLibraryAnnotators) {
+        public static LipidRtUnitRun RunOnSpots(IReadOnlyList<AlignmentSpotProperty> spots, ParameterBase parameter, ISet<string>? predictedLibraryAnnotators) {
             if (spots is null) throw new ArgumentNullException(nameof(spots));
             if (parameter is null) throw new ArgumentNullException(nameof(parameter));
             return Run(parameter,
