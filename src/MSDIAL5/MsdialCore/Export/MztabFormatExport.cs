@@ -876,6 +876,12 @@ namespace CompMs.MsdialCore.Export
             mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "mzTab-version", mztabVersion }));
             mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "mzTab-ID", mzTabId }));
             mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "software[1]", software }));
+            // Written only when the MS/MS spectra were cleaned, so an export without the cleanup is exactly as before.
+            var msmsEntropyCleanup = MSDec.MsmsEntropyCleanup.Describe(meta);
+            if (msmsEntropyCleanup is not null)
+            {
+                mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "software[1]-setting[1]", "MS/MS entropy cleanup: " + msmsEntropyCleanup }));
+            }
             //mtdTable.Add(string.Join(Separator, new string[] { mtdPrefix, "software[2]", mztabExporter }));
 
             for (int i = 0; i < RawFileMetadataDic.Count; i++)

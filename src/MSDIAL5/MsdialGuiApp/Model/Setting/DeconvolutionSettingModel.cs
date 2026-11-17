@@ -8,9 +8,14 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly ChromDecBaseParameter _parameter;
 
-        public DeconvolutionSettingModel(ChromDecBaseParameter parameter, ProcessOption process) {
+        /// <param name="supportsMsmsEntropyCleanup">Whether this mode runs the MS/MS entropy cleanup (LC-MS only); otherwise its settings are neither shown nor written.</param>
+        public DeconvolutionSettingModel(ChromDecBaseParameter parameter, ProcessOption process, bool supportsMsmsEntropyCleanup = false) {
             _parameter = parameter;
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
+            SupportsMsmsEntropyCleanup = supportsMsmsEntropyCleanup;
+            IsDoMsmsEntropyCleanup = parameter.IsDoMsmsEntropyCleanup;
+            MsmsMaxSpectralEntropy = parameter.MsmsMaxSpectralEntropy;
+            MsmsEntropyCleanupProtectedPercentOfBasePeak = parameter.MsmsEntropyCleanupProtectedPercentOfBasePeak;
             SigmaWindowValue = parameter.SigmaWindowValue;
             AmplitudeCutoff = parameter.AmplitudeCutoff;
             RelativeAmplitudeCutoff = parameter.RelativeAmplitudeCutoff;
@@ -21,6 +26,26 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public bool IsReadOnly { get; }
+
+        public bool SupportsMsmsEntropyCleanup { get; }
+
+        public bool IsDoMsmsEntropyCleanup {
+            get => _isDoMsmsEntropyCleanup;
+            set => SetProperty(ref _isDoMsmsEntropyCleanup, value);
+        }
+        private bool _isDoMsmsEntropyCleanup;
+
+        public double MsmsMaxSpectralEntropy {
+            get => _msmsMaxSpectralEntropy;
+            set => SetProperty(ref _msmsMaxSpectralEntropy, value);
+        }
+        private double _msmsMaxSpectralEntropy;
+
+        public double MsmsEntropyCleanupProtectedPercentOfBasePeak {
+            get => _msmsEntropyCleanupProtectedPercentOfBasePeak;
+            set => SetProperty(ref _msmsEntropyCleanupProtectedPercentOfBasePeak, value);
+        }
+        private double _msmsEntropyCleanupProtectedPercentOfBasePeak;
 
         public float SigmaWindowValue {
             get => _sigmaWindowValue;
@@ -75,6 +100,11 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.KeptIsotopeRange = KeptIsotopeRange;
             _parameter.KeepOriginalPrecursorIsotopes = KeepOriginalPrecurosrIsotopes;
             _parameter.ExecuteChromDeconvolution = ExecuteChromDeconvolution;
+            if (SupportsMsmsEntropyCleanup) {
+                _parameter.IsDoMsmsEntropyCleanup = IsDoMsmsEntropyCleanup;
+                _parameter.MsmsMaxSpectralEntropy = MsmsMaxSpectralEntropy;
+                _parameter.MsmsEntropyCleanupProtectedPercentOfBasePeak = MsmsEntropyCleanupProtectedPercentOfBasePeak;
+            }
         }
 
         public void LoadParameter(ChromDecBaseParameter parameter) {
@@ -88,6 +118,9 @@ namespace CompMs.App.Msdial.Model.Setting
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
             ExecuteChromDeconvolution = parameter.ExecuteChromDeconvolution;
+            IsDoMsmsEntropyCleanup = parameter.IsDoMsmsEntropyCleanup;
+            MsmsMaxSpectralEntropy = parameter.MsmsMaxSpectralEntropy;
+            MsmsEntropyCleanupProtectedPercentOfBasePeak = parameter.MsmsEntropyCleanupProtectedPercentOfBasePeak;
         }
     }
 }

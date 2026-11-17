@@ -31,6 +31,7 @@ public sealed class NistRecordBuilder
         "INSTRUMENTTYPE",
         "INSTRUMENT",
         "PARAMETERCOMMENT",
+        "MSMSENTROPYCLEANUP",
     ];
 
     private readonly Dictionary<string, string> _contents = [];
@@ -212,6 +213,17 @@ public sealed class NistRecordBuilder
         }
         if (!string.IsNullOrEmpty(parameter.Comment)) {
             _contents["PARAMETERCOMMENT"] = parameter.Comment;
+        }
+    }
+
+    /// <summary>
+    /// Record that the spectrum was cleaned by the MS/MS entropy cleanup, with its setting. Nothing is written when the
+    /// project's spectra were not cleaned, so such a record is exactly as before.
+    /// </summary>
+    public void SetMsmsEntropyCleanup(ParameterBase parameter) {
+        var description = MSDec.MsmsEntropyCleanup.Describe(parameter);
+        if (description is not null) {
+            _contents["MSMSENTROPYCLEANUP"] = description;
         }
     }
 
