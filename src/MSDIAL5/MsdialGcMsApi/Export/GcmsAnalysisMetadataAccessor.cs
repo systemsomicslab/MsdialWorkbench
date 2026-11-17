@@ -60,7 +60,7 @@ namespace CompMs.MsdialGcMsApi.Export
             var reference = _refer.Refer(matchResult);
             return new Dictionary<string, string>
             {
-                ["Name"] = UnknownIfEmpty(feature.AnnotatedMSDecResult.Molecule.Name),
+                ["Name"] = UnknownIfEmpty(feature.AnnotatedMSDecResult.Molecule?.Name),
                 ["Scan"] = msdec.RawSpectrumID.ToString(),
                 ["RT (min)"] = msdec.ChromXs.RT.Value.ToString("F3"),
                 ["Retention index"] = EmptyIfNegative(msdec.ChromXs.RI.Value, "F2"),
@@ -110,7 +110,7 @@ namespace CompMs.MsdialGcMsApi.Export
         }
 
         private static string EmptyIfNegative(double value, string format) => value < 0 ? string.Empty : value.ToString(format);
-        private static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
+        private static string UnknownIfEmpty(string? value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
         private static string NegativeIfNull(double? value, string format) => value?.ToString(format) ?? "-1";
         private static MsScanMatchResult NullIfUnknown(MsScanMatchResult result) => result.IsUnknown ? null : result;
     }

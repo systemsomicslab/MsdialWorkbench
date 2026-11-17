@@ -10,6 +10,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Export.Tests
@@ -75,6 +76,22 @@ namespace CompMs.MsdialGcMsApi.Export.Tests
             Assert.AreEqual("null", content["Measured terms"]);
             Assert.AreEqual("null", content["Evidence source"]);
             Assert.AreEqual("null", content["Candidates found"]);
+        }
+
+        [TestMethod]
+        public void TheAnalysisExportKeepsTheRowForAnUnannotatedPeak() {
+            var accessor = new GcmsAnalysisMetadataAccessor(new MockRefer(), new DelegateMsScanPropertyLoader<SpectrumFeature>(f => f.AnnotatedMSDecResult.MSDecResult));
+            var exporter = new AnalysisCSVExporterFactory("\t").CreateExporter(accessor);
+            using var stream = new MemoryStream();
+
+            exporter.Export(stream, new AnalysisFileBean(), new[] { Feature(), Feature(recorded: true) }, new ExportStyle());
+
+            stream.Position = 0;
+            using var reader = new StreamReader(stream);
+            Assert.AreEqual("Name", reader.ReadLine()?.Split('\t')[0]);
+            Assert.AreEqual("Unknown", reader.ReadLine()?.Split('\t')[0]);
+            Assert.AreEqual("Test compound", reader.ReadLine()?.Split('\t')[0]);
+            Assert.IsNull(reader.ReadLine());
         }
 
         [TestMethod()]
@@ -160,9 +177,9 @@ namespace CompMs.MsdialGcMsApi.Export.Tests
                     },
                 });
             }
-            // The three-argument constructor: the two-argument one leaves Molecule null and the
-            // accessor dereferences it unguarded on the very first column.
-            var annotated = new AnnotatedMSDecResult(msdec, results, new MoleculeMsReference { Name = "Unknown", });
+            var annotated = recorded
+                ? new AnnotatedMSDecResult(msdec, results, new MoleculeMsReference { Name = "Test compound" })
+                : new AnnotatedMSDecResult(msdec, results);
             var peak = new QuantifiedChromatogramPeak(
                 new BaseChromatogramPeakFeature { Mass = 73d, PeakHeightTop = 1000d, PeakAreaAboveZero = 900d, },
                 new ChromatogramPeakShape(), 1, 0, 2);
