@@ -570,17 +570,17 @@ namespace CompMs.MsdialCore.Export
             }
         }
 
-        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeakFeature peakFeature, ProjectBaseParameter projectParameter)
+        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty? molecule, IChromatogramPeakFeature peakFeature, ProjectBaseParameter projectParameter)
         {
             SaveSpectraTableForGcmsAsMatFormatCore(stream, scan, molecule, peakFeature.Mass, peakFeature.PeakHeightTop, projectParameter);
         }
 
-        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, IChromatogramPeak peak, ProjectBaseParameter projectParameter)
+        public static void SaveSpectraTableForGcmsAsMatFormat(Stream stream, IMSScanProperty scan, IMoleculeProperty? molecule, IChromatogramPeak peak, ProjectBaseParameter projectParameter)
         {
             SaveSpectraTableForGcmsAsMatFormatCore(stream, scan, molecule, peak.Mass, peak.Intensity, projectParameter);
         }
 
-        private static void SaveSpectraTableForGcmsAsMatFormatCore(Stream stream, IMSScanProperty scan, IMoleculeProperty molecule, double quantmass, double peakHeight, ProjectBaseParameter projectParameter)
+        private static void SaveSpectraTableForGcmsAsMatFormatCore(Stream stream, IMSScanProperty scan, IMoleculeProperty? molecule, double quantmass, double peakHeight, ProjectBaseParameter projectParameter)
         {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, bufferSize: 4096, leaveOpen: true))
             {
@@ -605,9 +605,9 @@ namespace CompMs.MsdialCore.Export
                 sw.WriteLine("SPECTRUMTYPE: Centroid");
                 sw.WriteLine("INTENSITY: " + peakHeight);
 
-                sw.WriteLine("INCHIKEY: " + molecule.InChIKey);
-                sw.WriteLine("SMILES: " + molecule.SMILES);
-                sw.WriteLine("FORMULA: " + molecule.Formula);
+                sw.WriteLine("INCHIKEY: " + molecule?.InChIKey);
+                sw.WriteLine("SMILES: " + molecule?.SMILES);
+                sw.WriteLine("FORMULA: " + molecule?.Formula);
 
                 if (projectParameter.FinalSavedDate != default)
                 {
