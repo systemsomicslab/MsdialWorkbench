@@ -78,12 +78,12 @@ namespace CompMs.App.Msdial.Model.Gcms
             ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer = default!;
             switch (parameter.AlignmentIndexType) {
                 case AlignmentIndexType.RI:
-                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI)!;
+                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RI);
                     chromatogramSpotSerializer = new RIChromatogramSerializerDecorator(chromatogramSpotSerializer, parameter.GetRIHandlers());
                     break;
                 case AlignmentIndexType.RT:
                 default:
-                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT)!;
+                    chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
                     break;
             }
             var target = new ReactivePropertySlim<AlignmentSpotPropertyModel?>().AddTo(Disposables);
