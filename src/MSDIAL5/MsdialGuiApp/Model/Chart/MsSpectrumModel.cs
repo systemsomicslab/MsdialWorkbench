@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalTitles = UpperVerticalAxisSelector.GetAxisItemAsObservable()
                 .CombineLatest(LowerVerticalAxisSelector.GetAxisItemAsObservable(),
                     (upper, lower) => new AxisTitles { Titles = upper.GraphLabel == lower.GraphLabel ? [upper.GraphLabel] : [upper.GraphLabel, lower.GraphLabel] })
-            .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                .ToReadOnlyReactivePropertySlim(AxisTitles.Empty).AddTo(Disposables);
 
             var canSaveMatchedSpectrum = new[]{
                 ms2ScanMatching?.Select(s => s != null) ?? Observable.Return(false),
