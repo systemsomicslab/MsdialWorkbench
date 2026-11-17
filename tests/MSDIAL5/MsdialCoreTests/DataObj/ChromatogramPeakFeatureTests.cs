@@ -32,6 +32,8 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 Mass = 12
             };
             var peak = new ChromatogramPeakFeature(basePeak);
+
+#pragma warning disable CS0618 // Verify that the legacy properties still expose the wrapped peak's values.
             Assert.AreEqual(1, peak.ChromScanIdLeft);
             Assert.AreEqual(2, peak.ChromScanIdTop);
             Assert.AreEqual(3, peak.ChromScanIdRight);
@@ -45,6 +47,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             Assert.AreEqual(11, peak.PeakAreaAboveBaseline);
             Assert.AreEqual(12, peak.Mass);
             Assert.AreEqual(peak.Mass, peak.PrecursorMz);
+#pragma warning restore CS0618
 
             var memory = new MemoryStream();
             MessagePackDefaultHandler.SaveToStream(peak, memory);
