@@ -116,7 +116,7 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
                 spectrumFeature.QuantifiedChromatogramPeak.PeakFeature,
                 _parameter.ProjectParam);
         }
-        var setAnnotationUsecase = molecule is null ? null : new SetAnnotationUsecase(molecule, ms1BasedSpectrumFeature.MatchResults, undoManager);
+        var setAnnotationUsecase = new SetAnnotationUsecase(ms1BasedSpectrumFeature.Molecule, ms1BasedSpectrumFeature.MatchResults, undoManager);
         return new InternalMsFinderSingleSpot(dir, filePath, _molecules, parameter, setAnnotationUsecase);
     }
 
