@@ -21,5 +21,6 @@ workflows:
 dotnet test tests/MSDIAL5/MsdialCoreTestAppTests
 ```
 
-The solution-wide CI commands use no category filter and continue to run both sets. Add
-`--configuration "Release vendor unsupported"` if using the vendor-unsupported build configuration.
+Pull request and master CI runs include a dedicated `Test LC-MS integration` step. The main test
+step runs the rest of the solution's tests. Add `--configuration "Release vendor unsupported"`
+if using the vendor-unsupported build configuration.
