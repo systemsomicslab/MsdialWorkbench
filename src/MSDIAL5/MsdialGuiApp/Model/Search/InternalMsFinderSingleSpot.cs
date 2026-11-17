@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Search
         private readonly BehaviorSubject<AxisRange?> _spectrumRange;
         private readonly MoleculeDataBase _molecules;
         private readonly string _filePath;
-        private readonly SetAnnotationUsecase _setAnnotationUsecase;
+        private readonly SetAnnotationUsecase? _setAnnotationUsecase;
         private readonly AdductIon _adduct;
 
         private static readonly List<ProductIon> productIonDB = FileStorageUtility.GetProductIonDB();
@@ -137,7 +137,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, AdductIon adductType, SetAnnotationUsecase setAnnotationUsecase) {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, AdductIon adductType, SetAnnotationUsecase? setAnnotationUsecase) {
             try {
                 _parameter = parameter;
                 _folderPath = tempDir;
@@ -208,7 +208,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, SetAnnotationUsecase setAnnotationUsecase) {
+        public InternalMsFinderSingleSpot(string tempDir, string filePath, MoleculeDataBase molecules, MsfinderParameterSetting parameter, SetAnnotationUsecase? setAnnotationUsecase) {
             try {
                 _parameter = parameter;
                 _folderPath = tempDir;
@@ -441,9 +441,12 @@ namespace CompMs.App.Msdial.Model.Search
             Mouse.OverrideCursor = null;
         }
 
-        public DelegateCommand ReflectToMsdialCommand => _reflectToMsdialCommand ??= new DelegateCommand(ReflectToMsdial);
+        public DelegateCommand ReflectToMsdialCommand => _reflectToMsdialCommand ??= new DelegateCommand(ReflectToMsdial, () => _setAnnotationUsecase is not null);
         private DelegateCommand? _reflectToMsdialCommand;
         public void ReflectToMsdial() {
+            if (_setAnnotationUsecase is null) {
+                return;
+            }
             if (SelectedStructure is not null) {
                 var moleculeMsReference = new MoleculeMsReference() {
                     ScanID = _molecules.Database.Count + 1,
