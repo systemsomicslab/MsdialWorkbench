@@ -7,6 +7,10 @@
         public void TestMethod1() {
             MyClass item = new();
             MyClassModel2 model = new(item);
+            Assert.AreEqual(item.Foo, model.Foo);
+            Assert.AreEqual(item.Bar, model.Bar);
+            Assert.AreSame(item.Baz, model.Baz);
+            Assert.AreEqual(item.Qux, model.Qux);
             List<string?> changedProperties = new();
             model.PropertyChanged += (s, e) => changedProperties.Add(e.PropertyName);
 

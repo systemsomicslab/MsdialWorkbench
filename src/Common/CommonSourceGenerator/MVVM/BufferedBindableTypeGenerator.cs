@@ -96,7 +96,7 @@ using System.ComponentModel;
         public {{typeSymbol.Name}}({{valueType}} innerModel) {
             _innerModel = innerModel ?? throw new ArgumentNullException("innerModel");
 {{string.Join("\r\n", properties.Select(p => $$"""
-            {{p.Name}} = innerModel.{{p.Name}};
+            {{BackingFieldName(p.Name)}} = innerModel.{{p.Name}};
 """))}}
 
             Initialized();
@@ -128,7 +128,7 @@ using System.ComponentModel;
                 if (cares.TryGetValue(property.Name, out var care)) {
                     additionals = care;
                 }
-                var field = "_" + char.ToLower(property.Name[0]) + property.Name.Substring(1);
+                var field = BackingFieldName(property.Name);
                 var additional = string.Join("\r\n", additionals.Prepend($"{property.Name}").Select(c => $$"""
                     RaisePropertyChanged("{{c}}");
 """));
@@ -149,6 +149,9 @@ using System.ComponentModel;
 """);
             }
         }
+
+        private static string BackingFieldName(string propertyName) =>
+            "_" + char.ToLower(propertyName[0]) + propertyName.Substring(1);
 
         private static void ToGetterOnlyProperty(StringBuilder sb, INamedTypeSymbol typeSymbol, out Dictionary<string, HashSet<string>> cares) {
             var properties = typeSymbol.GetMembers()
