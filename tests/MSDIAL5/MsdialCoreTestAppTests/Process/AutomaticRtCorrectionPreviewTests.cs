@@ -13,6 +13,7 @@ namespace MsdialCoreTestAppTests.Process;
 /// after the anchors and the audit, and saves nothing beside the raw data.
 /// </summary>
 [TestClass]
+[TestCategory("Integration")]
 public sealed class AutomaticRtCorrectionPreviewTests
 {
     private static readonly (double Mz, double Rt)[] Standards = { (200.1, 2d), (300.2, 5d), (400.3, 8d) };

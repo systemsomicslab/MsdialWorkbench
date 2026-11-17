@@ -14,6 +14,7 @@ namespace MsdialCoreTestAppTests.Process;
 /// suggestions are on, and nothing at all when they are off.
 /// </remarks>
 [TestClass]
+[TestCategory("Integration")]
 public sealed class MspAnnotatorSuggestionsTests
 {
     private static readonly (double Mz, double Rt, double Height)[] Compounds = { (300.1, 3d, 100000d), (400.2, 6d, 100000d) };
