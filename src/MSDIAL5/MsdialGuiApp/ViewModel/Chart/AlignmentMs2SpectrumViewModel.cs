@@ -34,11 +34,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             HorizontalAxis = model.HorizontalAxis.ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
 
-            LowerVerticalAxis = model.LowerVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
-            LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
+            LowerVerticalAxis = model.LowerVerticalAxisSelector.GetAxisItemAsObservable().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
 
-            UpperVerticalAxis = model.UpperVerticalAxisItem.SkipNull().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
-            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperVerticalAxisItemCollection);
+            UpperVerticalAxis = model.UpperVerticalAxisSelector.GetAxisItemAsObservable().Select(item => item.AxisManager).ToReadOnlyReactivePropertySlim<IAxisManager<double>>().AddTo(Disposables);
 
             GraphTitle = Observable.Return(model.GraphLabels.GraphTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             HorizontalTitle = Observable.Return(model.GraphLabels.HorizontalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -76,11 +74,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInformation { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
+        public AxisItemSelector<double> UpperVerticalAxisSelector => _model.UpperVerticalAxisSelector;
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LowerVerticalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
+        public AxisItemSelector<double> LowerVerticalAxisSelector => _model.LowerVerticalAxisSelector;
 
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _model.Files;
         public ReactiveProperty<AnalysisFileBeanModel?> SelectedFile => _model.SelectedFile;

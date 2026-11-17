@@ -130,7 +130,7 @@
                                     </chart:MultiChart.ContextMenu>
                                     <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
                                                   Template="{StaticResource SpectrumLayersWithAnnotations}"
-                                                  core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxisItem.Value.AxisManager}">
+                                                  core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxisSelector.SelectedAxisItem.AxisManager}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <Grid/>

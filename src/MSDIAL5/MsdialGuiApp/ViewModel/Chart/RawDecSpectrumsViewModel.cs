@@ -5,7 +5,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
@@ -38,8 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
         public ReactivePropertySlim<MsSelectionItem?> SelectedMs2Id { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.DecRefSpectrumModels.LowerVerticalAxisItem;
-        public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => _model.DecRefSpectrumModels.LowerVerticalAxisItemCollection;
+        public AxisItemSelector<double> LowerVerticalAxisSelector => _model.DecRefSpectrumModels.LowerVerticalAxisSelector;
 
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }

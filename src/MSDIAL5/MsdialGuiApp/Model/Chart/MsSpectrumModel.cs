@@ -8,8 +8,6 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -24,9 +22,6 @@ namespace CompMs.App.Msdial.Model.Chart
         public MsSpectrumModel(SingleSpectrumModel upperSpectrumModel, SingleSpectrumModel lowerSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching) {
             UpperSpectrumModel = upperSpectrumModel ?? throw new ArgumentNullException(nameof(upperSpectrumModel));
             LowerSpectrumModel = lowerSpectrumModel ?? throw new ArgumentNullException(nameof(lowerSpectrumModel));
-
-            UpperVerticalAxisItem = upperSpectrumModel.VerticalAxisItemSelector.ToReactivePropertySlimAsSynchronized(selector => selector.SelectedAxisItem).AddTo(Disposables);
-            LowerVerticalAxisItem = lowerSpectrumModel.VerticalAxisItemSelector.ToReactivePropertySlimAsSynchronized(selector => selector.SelectedAxisItem).AddTo(Disposables);
 
             var upperProductSpectrumModel = upperSpectrumModel.Product(lowerSpectrumModel).AddTo(Disposables);
             upperProductSpectrumModel.IsVisible.Value = false;
@@ -58,12 +53,9 @@ namespace CompMs.App.Msdial.Model.Chart
             _upperSpectrum = upperSpectrumModel.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _lowerSpectrum = lowerSpectrumModel.MsSpectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            VerticalTitles = new[] {
-                upperSpectrumModel.VerticalAxisItemSelector.ObserveProperty(m => m.SelectedAxisItem)
-                    .Select(m => m?.GraphLabel).SkipNull().Prepend(string.Empty),
-                lowerSpectrumModel.VerticalAxisItemSelector.ObserveProperty(m => m.SelectedAxisItem)
-                    .Select(m => m?.GraphLabel).SkipNull().Prepend(string.Empty),
-            }.CombineLatest(labels => new AxisTitles() { Titles = labels.Any() && labels.AreAllEqual() ? [labels[0]] : [..labels] })
+            VerticalTitles = UpperVerticalAxisSelector.GetAxisItemAsObservable()
+                .CombineLatest(LowerVerticalAxisSelector.GetAxisItemAsObservable(),
+                    (upper, lower) => new AxisTitles { Titles = upper.GraphLabel == lower.GraphLabel ? [upper.GraphLabel] : [upper.GraphLabel, lower.GraphLabel] })
             .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var canSaveMatchedSpectrum = new[]{
@@ -83,10 +75,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
 
-        public ReactivePropertySlim<AxisItemModel<double>?> LowerVerticalAxisItem { get; }
-        public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => LowerSpectrumModel.VerticalAxisItemSelector.AxisItems;
-
-        public ReactivePropertySlim<AxisItemModel<double>?> UpperVerticalAxisItem { get; }
+        public AxisItemSelector<double> LowerVerticalAxisSelector => LowerSpectrumModel.VerticalAxisItemSelector;
+        public AxisItemSelector<double> UpperVerticalAxisSelector => UpperSpectrumModel.VerticalAxisItemSelector;
 
         public string? GraphTitle {
             get => _graphTitle;

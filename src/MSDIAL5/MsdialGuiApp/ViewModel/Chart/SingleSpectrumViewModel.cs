@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             StrokeDashArray = model.StrokeDashArray;
             IsVisible = model.IsVisible;
             IsAnnotationVisible = model.IsAnnotationVisible;
-            SelectedVerticalAxisItem = model.VerticalAxisItemSelector.GetAxisItemAsObservable().SkipNull().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            SelectedVerticalAxisItem = model.VerticalAxisItemSelector.GetAxisItemAsObservable().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             if (broker is not null) {
                 SaveCommand = model.CanSave.ToReactiveCommand().WithSubscribe(SaveSpectrum(model.Save, filter:  "NIST format(*.msp)|*.msp", broker)).AddTo(Disposables);
             }
@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public string HorizontalProperty => _model.HorizontalProperty;
         public ReadOnlyReactivePropertySlim<IAxisManager?> VerticalAxis { get; }
         public AxisItemSelector<double> VerticalAxisItemSelector => _model.VerticalPropertySelectors.AxisItemSelector;
-        public ObservableCollection<AxisItemModel<double>> VerticalAxisItems => _model.VerticalAxisItemSelector.AxisItems;
+        public ReadOnlyObservableCollection<AxisItemModel<double>> VerticalAxisItems => _model.VerticalAxisItemSelector.AxisItems;
         public ReadOnlyReactivePropertySlim<AxisItemModel<double>?> SelectedVerticalAxisItem { get; }
         public string VerticalProperty => _model.VerticalProperty;
         public ReadOnlyReactivePropertySlim<IBrushMapper> Brush { get; }

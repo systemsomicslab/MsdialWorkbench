@@ -46,10 +46,10 @@ namespace CompMs.App.Msdial.Model.Chart
         public IObservable<MsSpectrum?> MsSpectrum => _observableMsSpectrum.MsSpectrum;
         public IObservable<double> MinimumAnnotationOrder { get; }
         public AxisPropertySelectors<double> HorizontalPropertySelectors { get; }
-        public IObservable<IAxisManager<double>> HorizontalAxis => HorizontalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager);
+        public IObservable<IAxisManager<double>> HorizontalAxis => HorizontalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().Select(item => item.AxisManager);
         public string HorizontalProperty { get; }
         public AxisPropertySelectors<double> VerticalPropertySelectors { get; }
-        public IObservable<IAxisManager<double>> VerticalAxis => VerticalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager);
+        public IObservable<IAxisManager<double>> VerticalAxis => VerticalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().Select(item => item.AxisManager);
         public AxisItemSelector<double> VerticalAxisItemSelector => VerticalPropertySelectors.AxisItemSelector;
         public string VerticalProperty { get; }
         public IBrushMapper Brush { get; set; }

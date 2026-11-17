@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Utility.Tests;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.Components;
+using CompMs.Graphics.Behavior;
 using CompMs.Graphics.Chart;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -11,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -34,7 +37,22 @@ public class MsSpectrumViewTests {
             CollectionAssert.AreEqual(new[] { "Relative abundance" }, viewModel.VerticalTitles.Value.Titles);
             lower.VerticalAxisItemSelector.Select(lower.VerticalAxisItemSelector.AxisItems[1]);
             CollectionAssert.AreEqual(new[] { "Relative abundance", "Absolute abundance" }, viewModel.VerticalTitles.Value.Titles);
-            upper.VerticalAxisItemSelector.Select(upper.VerticalAxisItemSelector.AxisItems[1]);
+            var upperSelector = viewModel.UpperVerticalAxisSelector;
+            var axisPicker = new MenuItem { ItemsSource = upperSelector.AxisItems };
+            var selection = (BindingExpression)axisPicker.SetBinding(ItemSelectBehavior.SelectedItemProperty, new Binding(nameof(AxisItemSelector<double>.SelectedAxisItem)) {
+                Source = upperSelector, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.Explicit,
+            });
+            var absoluteAxis = upperSelector.AxisItems[1];
+            axisPicker.SetCurrentValue(ItemSelectBehavior.SelectedItemProperty, absoluteAxis);
+            selection.UpdateSource();
+            Assert.AreSame(absoluteAxis, upperSelector.SelectedAxisItem);
+            CollectionAssert.AreEqual(new[] { "Absolute abundance" }, viewModel.VerticalTitles.Value.Titles);
+
+            axisPicker.SetCurrentValue(ItemSelectBehavior.SelectedItemProperty, null);
+            Assert.IsNull(ItemSelectBehavior.GetSelectedItem(axisPicker), "The control can temporarily have no selection.");
+            selection.UpdateSource();
+            Assert.AreSame(absoluteAxis, upperSelector.SelectedAxisItem, "Clearing the control's selection keeps the drawing axis.");
+            Assert.AreSame(absoluteAxis.AxisManager, viewModel.UpperSpectrumViewModel.VerticalAxis.Value);
             CollectionAssert.AreEqual(new[] { "Absolute abundance" }, viewModel.VerticalTitles.Value.Titles);
         });
         TestApplication.WaitForBackgroundWork();
