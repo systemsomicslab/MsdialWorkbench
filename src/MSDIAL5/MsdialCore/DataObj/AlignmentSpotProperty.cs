@@ -336,7 +336,7 @@ namespace CompMs.MsdialCore.DataObj {
         /// clone is a new spot whose annotation a person is about to change.
         /// </remarks>
         [Key(66)]
-        public LipidRtVerdict LipidRtVerdict { get; set; }
+        public LipidRtVerdict? LipidRtVerdict { get; set; }
 
         public AlignmentSpotProperty Clone(ref int masterId, int alignmentId) {
             var driftSpots = new List<AlignmentSpotProperty>(AlignmentDriftSpotFeatures.Count);
