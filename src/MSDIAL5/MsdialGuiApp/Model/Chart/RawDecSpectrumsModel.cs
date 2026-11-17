@@ -11,12 +11,6 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
-        public RawDecSpectrumsModel(MsSpectrumModel rawRefSpectrumModels, MsSpectrumModel decRefSpectrumModels, MultiMsmsRawSpectrumLoader loader) {
-            RawRefSpectrumModels = rawRefSpectrumModels ?? throw new ArgumentNullException(nameof(rawRefSpectrumModels));
-            DecRefSpectrumModels = decRefSpectrumModels ?? throw new ArgumentNullException(nameof(decRefSpectrumModels));
-            RawLoader = loader;
-        }
-
         public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching, MultiMsmsRawSpectrumLoader? loader = null) {
             if (rawSpectrumModel is null) {
                 throw new ArgumentNullException(nameof(rawSpectrumModel));
