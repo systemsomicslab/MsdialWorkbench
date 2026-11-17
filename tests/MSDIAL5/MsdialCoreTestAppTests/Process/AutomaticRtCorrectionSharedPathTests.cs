@@ -21,6 +21,7 @@ namespace MsdialCoreTestAppTests.Process;
 /// through the same library code on the project that run saved.
 /// </summary>
 [TestClass]
+[TestCategory("Integration")]
 public sealed class AutomaticRtCorrectionSharedPathTests
 {
     private static readonly (double Mz, double Rt)[] Standards = { (200.1, 2d), (300.2, 5d), (400.3, 8d) };
