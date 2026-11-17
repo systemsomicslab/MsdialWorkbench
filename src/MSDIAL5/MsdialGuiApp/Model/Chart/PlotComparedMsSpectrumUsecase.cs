@@ -52,7 +52,6 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 GraphTitle = string.Empty,
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Abundance",
             }.AddTo(_disposables);
         }
 

@@ -38,7 +38,6 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 GraphTitle = "Measure vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
 
             IsRawSpectrumOverlayVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
@@ -55,7 +54,6 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 GraphTitle =  "Deconvolution vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
             DecRefSpectrumModels.UpperSpectraModel.Insert(0, decRawOverlaySpectrumModel);
 

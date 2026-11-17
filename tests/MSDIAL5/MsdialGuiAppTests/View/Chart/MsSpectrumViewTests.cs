@@ -20,6 +20,27 @@ namespace CompMs.App.Msdial.View.Chart.Tests;
 [TestClass]
 public class MsSpectrumViewTests {
     [TestMethod]
+    public void VerticalTitles_FollowBothSelectedAxes() {
+        TestApplication.Ensure();
+        Application.Current.Dispatcher.Invoke(() => {
+            using var source = new BehaviorSubject<MsSpectrum>(new MsSpectrum(new[] { new SpectrumPeak(100d, 50d) }));
+            using var upperObservable = new ObservableMsSpectrum(source, null, null);
+            using var lowerObservable = new ObservableMsSpectrum(source, null, null);
+            using var upper = CreateModel(upperObservable);
+            using var lower = CreateModel(lowerObservable);
+            using var model = new MsSpectrumModel(upper, lower, null);
+            using var viewModel = new MsSpectrumViewModel(model);
+
+            CollectionAssert.AreEqual(new[] { "Relative abundance" }, viewModel.VerticalTitles.Value.Titles);
+            lower.VerticalAxisItemSelector.Select(lower.VerticalAxisItemSelector.AxisItems[1]);
+            CollectionAssert.AreEqual(new[] { "Relative abundance", "Absolute abundance" }, viewModel.VerticalTitles.Value.Titles);
+            upper.VerticalAxisItemSelector.Select(upper.VerticalAxisItemSelector.AxisItems[1]);
+            CollectionAssert.AreEqual(new[] { "Absolute abundance" }, viewModel.VerticalTitles.Value.Titles);
+        });
+        TestApplication.WaitForBackgroundWork();
+    }
+
+    [TestMethod]
     public void SpectrumViews_ResolveTheirSharedLabelPlacementResource() {
         TestApplication.Ensure();
         Application.Current.Dispatcher.Invoke(() => {

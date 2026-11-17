@@ -32,7 +32,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             GraphTitle = model.ObserveProperty(m => m.GraphTitle).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
             HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
-            VerticalTitle = model.ObserveProperty(m => m.VerticalTitle).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
 
             SaveMatchedSpectrumCommand = model.CanSaveMatchedSpectrum.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveMatchedSpectrum,  filter: "tab separated values(*.txt)|*.txt"))
@@ -73,8 +72,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        [Obsolete("Use VerticalTitles instead.")]
-        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
         public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles => _model.VerticalTitles;
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }

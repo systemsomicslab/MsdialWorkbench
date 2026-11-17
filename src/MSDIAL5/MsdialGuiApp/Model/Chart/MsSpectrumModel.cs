@@ -100,12 +100,6 @@ namespace CompMs.App.Msdial.Model.Chart
         private string? _horizontalTitle;
 
         public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles { get; }
-        [Obsolete("Use VerticalTitles instead.")]
-        public string? VerticalTitle {
-            get => _verticalTitle;
-            set => SetProperty(ref _verticalTitle, value);
-        }
-        private string? _verticalTitle;
 
         public IObservable<bool> CanSaveMatchedSpectrum { get; }
 
