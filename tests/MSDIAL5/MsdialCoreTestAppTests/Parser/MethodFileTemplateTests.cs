@@ -10,6 +10,7 @@ using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -117,6 +118,20 @@ public sealed class MethodFileTemplateTests
         var differences = Differences(Snapshot(new MsdialLcmsParameter()), Snapshot(parsed), "").ToList();
 
         Assert.IsTrue(differences.Any(d => d.Contains("MinimumAmplitude") && d.Contains("500")), string.Join(Environment.NewLine, differences));
+    }
+
+    [TestMethod]
+    public void SnapshotDetectsChangesToTheForwardedModificationLists()
+    {
+        var parameter = new MsdialLcmsParameter();
+        var expected = Snapshot(parameter);
+        parameter.VariableModifications[0].IsSelected = !parameter.VariableModifications[0].IsSelected;
+        parameter.FixedModifications[0].IsSelected = !parameter.FixedModifications[0].IsSelected;
+
+        var differences = Differences(expected, Snapshot(parameter), "").ToArray();
+
+        Assert.IsTrue(differences.Any(d => d.Contains("ProteomicsParam.VariableModifications")));
+        Assert.IsTrue(differences.Any(d => d.Contains("ProteomicsParam.FixedModifications")));
     }
 
     /// <summary>
@@ -242,11 +257,16 @@ public sealed class MethodFileTemplateTests
 
     private static JToken Snapshot(ParameterBase parameter)
     {
+        // The top-level accessors forward these large lists to ProteomicsParam. Verify the
+        // forwarding and compare the lists there, instead of serializing both copies.
+        Assert.AreSame(parameter.ProteomicsParam.VariableModifications, parameter.VariableModifications);
+        Assert.AreSame(parameter.ProteomicsParam.FixedModifications, parameter.FixedModifications);
         // A property the serializer cannot read would drop out of both snapshots and so never be
         // compared. It is recorded and fails the test rather than being skipped in silence.
         var errors = new List<string>();
         var json = JsonConvert.SerializeObject(parameter, new JsonSerializerSettings {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = SnapshotContractResolver.Instance,
             Error = (_, args) => {
                 errors.Add($"{args.ErrorContext.Path}: {args.ErrorContext.Error.Message}");
                 args.ErrorContext.Handled = true;
@@ -259,6 +279,19 @@ public sealed class MethodFileTemplateTests
             stamp.Replace(JValue.CreateNull());
         }
         return token;
+    }
+
+    private sealed class SnapshotContractResolver : DefaultContractResolver {
+        public static readonly SnapshotContractResolver Instance = new();
+
+        protected override JsonProperty CreateProperty(System.Reflection.MemberInfo member, MemberSerialization memberSerialization) {
+            var property = base.CreateProperty(member, memberSerialization);
+            if (member.DeclaringType == typeof(ParameterBase)
+                && (member.Name == nameof(ParameterBase.VariableModifications) || member.Name == nameof(ParameterBase.FixedModifications))) {
+                property.ShouldSerialize = _ => false;
+            }
+            return property;
+        }
     }
 
     private static IEnumerable<string> Differences(JToken expected, JToken actual, string path)
