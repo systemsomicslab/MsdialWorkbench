@@ -151,7 +151,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ExportIndividually = true,
             };
 
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel?)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var notameExportModel = new AlignmentExportGroupModel(
                 "Peaks",

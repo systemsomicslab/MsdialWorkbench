@@ -117,7 +117,7 @@ namespace CompMs.App.Msdial.Model.Dims
             {
                 UseFilter = true,
             };
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel?)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
                 new[]
                 {
