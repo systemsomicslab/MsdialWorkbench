@@ -25,9 +25,13 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             var nodes = new List<string>();
             using (var sr = new StreamReader(inputEdgeFile)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                var lineNumber = 1;
+                while (sr.ReadLine() is string line) {
+                    lineNumber++;
                     var linearray = line.Split('\t');
+                    if (linearray.Length < 2) {
+                        throw new InvalidDataException($"Edge file '{inputEdgeFile}', line {lineNumber}: expected at least two tab-separated columns.");
+                    }
                     if (!nodes.Contains(linearray[0])) nodes.Add(linearray[0]);
                     if (!nodes.Contains(linearray[1])) nodes.Add(linearray[1]);
                 }

@@ -277,7 +277,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 if (!afInjectVolumeRes)
                     afInjectVolume = 1.0;
 
-                var fileDir = System.IO.Path.GetDirectoryName(afFilepath);
+                var fileDir = System.IO.Path.GetDirectoryName(afFilepath) ?? throw new InvalidDataException($"Analysis file has no parent directory: {afFilepath}");
                 analysisFiles.Add(new AnalysisFileBean()
                 {
                     AnalysisFileId = counter,
@@ -353,6 +353,9 @@ namespace CompMs.App.MsdialConsole.Parser
             {
                 var filename = System.IO.Path.GetFileNameWithoutExtension(filepath);
                 var fileDir = System.IO.Path.GetDirectoryName(filepath);
+                if (string.IsNullOrEmpty(fileDir)) {
+                    fileDir = Directory.GetCurrentDirectory();
+                }
                 analysisFiles.Add(new AnalysisFileBean()
                 {
                     AnalysisFileId = counter,
