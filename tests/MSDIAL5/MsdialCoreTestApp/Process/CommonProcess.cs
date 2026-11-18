@@ -77,7 +77,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var dt = DateTime.Now;
             var projectFileName = $"Project-{dt:yyMMddhhmm}.mddata";
-            var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(input);
+            var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(Path.GetFullPath(input))!;
             param.ProjectFolderPath = inputfolder;
             param.ProjectFileName = projectFileName;
 

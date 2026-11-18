@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Algorithm.Scoring;
+using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
@@ -11,44 +11,44 @@ using System.Linq;
 namespace CompMs.App.MsdialConsole.LabelDataHandler {
 
     public class PeakInfo {
-        public string Memo { get; set; }
+        public string Memo { get; set; } = string.Empty;
         public int AlignmentID { get; set; }
-        public string AverageRt { get; set; }
-        public string AverageMz { get; set; }
-        public string MetaboliteName { get; set; }
-        public string Adduct { get; set; }
-        public string PostCurationResult { get; set; }
-        public string Fill { get; set; }
-        public string MSMSAsigned { get; set; }
-        public string ReferenceRT { get; set; }
-        public string ReferenceMz { get; set; }
-        public string Formula { get; set; }
-        public string Ontology { get; set; }
-        public string InChIKey { get; set; }
-        public string SMILES { get; set; }
-        public string AnnotationTag { get; set; }
-        public string RTMatch { get; set; }
-        public string MZMatch { get; set; }
-        public string MSMSMatch { get; set; }
-        public string Comment { get; set; }
-        public string ManuallyModified4Quantification { get; set; }
-        public string ManuallyModified4Annotation { get; set; }
+        public string AverageRt { get; set; } = string.Empty;
+        public string AverageMz { get; set; } = string.Empty;
+        public string MetaboliteName { get; set; } = string.Empty;
+        public string Adduct { get; set; } = string.Empty;
+        public string PostCurationResult { get; set; } = string.Empty;
+        public string Fill { get; set; } = string.Empty;
+        public string MSMSAsigned { get; set; } = string.Empty;
+        public string ReferenceRT { get; set; } = string.Empty;
+        public string ReferenceMz { get; set; } = string.Empty;
+        public string Formula { get; set; } = string.Empty;
+        public string Ontology { get; set; } = string.Empty;
+        public string InChIKey { get; set; } = string.Empty;
+        public string SMILES { get; set; } = string.Empty;
+        public string AnnotationTag { get; set; } = string.Empty;
+        public string RTMatch { get; set; } = string.Empty;
+        public string MZMatch { get; set; } = string.Empty;
+        public string MSMSMatch { get; set; } = string.Empty;
+        public string Comment { get; set; } = string.Empty;
+        public string ManuallyModified4Quantification { get; set; } = string.Empty;
+        public string ManuallyModified4Annotation { get; set; } = string.Empty;
         public int IsotopeTrackingParentID { get; set; }
         public int IsotopeTrackingWeightNumber { get; set; }
-        public string TotalScore { get; set; }
-        public string RTSimilarity { get; set; }
-        public string DotProduct { get; set; }
-        public string RevDotProduct { get; set; }
-        public string FragmentPercentage { get; set; }
-        public string SN { get; set; }
-        public string SpectrumReferenceFile { get; set; }
-        public string MS1IsotopicSpectrum { get; set; }
-        public string MSMSSpectrum { get; set; }
-        public string Abundance12C { get; set; }
-        public string Abundance13C { get; set; }
+        public string TotalScore { get; set; } = string.Empty;
+        public string RTSimilarity { get; set; } = string.Empty;
+        public string DotProduct { get; set; } = string.Empty;
+        public string RevDotProduct { get; set; } = string.Empty;
+        public string FragmentPercentage { get; set; } = string.Empty;
+        public string SN { get; set; } = string.Empty;
+        public string SpectrumReferenceFile { get; set; } = string.Empty;
+        public string MS1IsotopicSpectrum { get; set; } = string.Empty;
+        public string MSMSSpectrum { get; set; } = string.Empty;
+        public string Abundance12C { get; set; } = string.Empty;
+        public string Abundance13C { get; set; } = string.Empty;
 
-        public string Abundance12CStd { get; set; }
-        public string Abundance13CStd { get; set; }
+        public string Abundance12CStd { get; set; } = string.Empty;
+        public string Abundance13CStd { get; set; } = string.Empty;
 
     }
 
@@ -567,7 +567,8 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                 sr.ReadLine();
                 sr.ReadLine();
                 sr.ReadLine();
-                header = sr.ReadLine().Split('\t').ToList();
+                var line = sr.ReadLine() ?? throw new InvalidDataException($"Missing header on line 5 of '{input}'.");
+                header = line.Split('\t').ToList();
             }
             return header;
         }
@@ -580,9 +581,13 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                 sr.ReadLine();
                 sr.ReadLine();
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                var lineNumber = 5;
+                while (sr.ReadLine() is string line) {
+                    lineNumber++;
                     var lineArray = line.Split('\t');
+                    if (lineArray.Length < 37) {
+                        throw new InvalidDataException($"Expected at least 37 columns in '{input}', line {lineNumber}.");
+                    }
                     var peak = new PeakInfo() {
                         Memo = lineArray[0], AlignmentID = int.Parse(lineArray[1]), AverageRt = lineArray[2], AverageMz = lineArray[3], MetaboliteName = lineArray[4],
                         Adduct = lineArray[5], PostCurationResult = lineArray[6], Fill = lineArray[7], MSMSAsigned = lineArray[8],
