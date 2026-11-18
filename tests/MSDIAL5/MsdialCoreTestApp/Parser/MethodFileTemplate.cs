@@ -166,6 +166,7 @@ public static class MethodFileTemplate
         // Read into the parameter but consulted by no process yet (2026-09); kept so the setting
         // has its place in the template when it is made to work.
         w.Value("Target CE", D(p.TargetCE));
+        MsmsEntropyCleanup(w, p.ChromDecBaseParam);
         LiquidAnnotation(w, p, retention: true, mobility: false, annotatorTables: true);
         w.Section("Alignment");
         LiquidAlignment(w, p, retention: true);
@@ -435,6 +436,17 @@ public static class MethodFileTemplate
         w.Value("MS1 tolerance for alignment", F(p.Ms1AlignmentTolerance));
         w.Value("MS1 factor for alignment", F(p.Ms1AlignmentFactor));
         w.Value("Force insert peaks in gap filling", B(p.IsForceInsertForGapFilling));
+    }
+
+    private static void MsmsEntropyCleanup(Writer w, ChromDecBaseParameter c) {
+        w.Comment("Optional MS/MS cleanup after deconvolution (DDA and DIA): drop each spectrum's weakest ions, equal intensities together,");
+        w.Comment("until its spectral entropy (natural logarithm) is at most the maximum. A spectrum that would keep fewer than 3 ions is kept");
+        w.Comment("as it is. Annotation, alignment and exports all use the cleaned spectra.");
+        w.Choice("MS/MS entropy cleanup", B(c.IsDoMsmsEntropyCleanup), "True", "False");
+        w.Comment("A finite positive number.");
+        w.Value("MS/MS maximum spectral entropy", D(c.MsmsMaxSpectralEntropy));
+        w.Comment("Ions at or above this percentage of the base peak are never dropped; 0 turns this protection off.");
+        w.Value("MS/MS entropy cleanup protected percent of base peak", D(c.MsmsEntropyCleanupProtectedPercentOfBasePeak));
     }
 
     private static void LipidRtCheck(Writer w, LipidRtCheckParameter c) {

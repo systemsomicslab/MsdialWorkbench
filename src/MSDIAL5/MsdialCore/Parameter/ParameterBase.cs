@@ -1476,6 +1476,32 @@ namespace CompMs.MsdialCore.Parameter
         public float RelativeAmplitudeCutoff { get; set; } = 0;
         [Key(10)]
         public bool ExecuteChromDeconvolution { get; set; } = true;
+
+        /// <summary>
+        /// Drop each MS/MS spectrum's weakest ions after deconvolution until its spectral entropy is at most
+        /// <see cref="MsmsMaxSpectralEntropy"/> (<see cref="MSDec.MsmsEntropyCleanup"/>). LC-MS only, DDA and DIA. Off
+        /// by default; a project written before this key has none and reads it as off.
+        /// </summary>
+        [Key(11)]
+        public bool IsDoMsmsEntropyCleanup { get; set; } = false;
+
+        /// <summary>
+        /// The ceiling of the MS/MS entropy cleanup, natural logarithm. A project written before this key reads 0,
+        /// which no valid ceiling is, so 0 stands for the default.
+        /// </summary>
+        [Key(12)]
+        public double MsmsMaxSpectralEntropy {
+            get => _msmsMaxSpectralEntropy == 0d ? MSDec.MsmsEntropyCleanup.DefaultMaxEntropy : _msmsMaxSpectralEntropy;
+            set => _msmsMaxSpectralEntropy = value;
+        }
+        private double _msmsMaxSpectralEntropy = MSDec.MsmsEntropyCleanup.DefaultMaxEntropy;
+
+        /// <summary>
+        /// The MS/MS entropy cleanup never drops an ion at or above this percentage of the base peak; 0 (the
+        /// default) turns this floor off.
+        /// </summary>
+        [Key(13)]
+        public double MsmsEntropyCleanupProtectedPercentOfBasePeak { get; set; } = 0d;
     }
 
     [MessagePackObject]

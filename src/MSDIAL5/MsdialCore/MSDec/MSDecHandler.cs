@@ -1036,6 +1036,8 @@ namespace CompMs.MsdialCore.MSDec {
         }
         #endregion
 
+        internal static string CalculateSplash(List<SpectrumPeak> peaks) => calculateSplash(peaks);
+
         private static string calculateSplash(List<SpectrumPeak> peaks) {
             var ions = new List<Ion>();
             peaks.ForEach(it => ions.Add(new Ion(it.Mass, it.Intensity)));

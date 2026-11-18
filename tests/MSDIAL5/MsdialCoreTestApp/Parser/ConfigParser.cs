@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -777,7 +778,32 @@ namespace CompMs.App.MsdialConsole.Parser
             (param, method, value) => AutomaticRtCorrectionPreviewOnlyLine(method, value, _ => { }),
             (param, method, value) => ReadAutomaticRtCorrectionParameter(param, method, value),
             (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
+            (param, method, value) => MsmsEntropyCleanupLine(param.ChromDecBaseParam, method, value),
         };
+
+        /// <summary>
+        /// The optional MS/MS entropy cleanup (MsmsEntropyCleanup), which only LC-MS deconvolution runs, so these are
+        /// LC-MS keys: in another mode's method file they are reported as unrecognised. A maximum entropy that is not
+        /// finite and positive, or a protected percentage outside 0 to 100, is unusable rather than applied.
+        /// </summary>
+        private static MethodKeyOutcome MsmsEntropyCleanupLine(ChromDecBaseParameter target, string method, string value) {
+            switch (method.Trim().ToLowerInvariant()) {
+                case "ms/ms entropy cleanup":
+                    return TrueOrFalse(value.Trim(), v => target.IsDoMsmsEntropyCleanup = v);
+                case "ms/ms maximum spectral entropy":
+                    return Number(value.Trim(), v => {
+                        if (!MsmsEntropyCleanup.IsValidMaxEntropy(v)) throw new FormatException($"The maximum spectral entropy must be a finite positive number, not {v}.");
+                        target.MsmsMaxSpectralEntropy = v;
+                    });
+                case "ms/ms entropy cleanup protected percent of base peak":
+                    return Number(value.Trim(), v => {
+                        if (!MsmsEntropyCleanup.IsValidProtectedPercentOfBasePeak(v)) throw new FormatException($"The protected percentage of the base peak must be from 0 to 100, not {v}.");
+                        target.MsmsEntropyCleanupProtectedPercentOfBasePeak = v;
+                    });
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
 
         /// <summary>
         /// The lipid retention-time order check's settings (SPEC section 11 with the addendum's

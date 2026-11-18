@@ -5,6 +5,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -52,6 +53,24 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ExecuteChromDeconvolution = model.ToReactivePropertySlimAsSynchronized(m => m.ExecuteChromDeconvolution).AddTo(Disposables);
 
+            SupportsMsmsEntropyCleanup = model.SupportsMsmsEntropyCleanup;
+
+            IsDoMsmsEntropyCleanup = model.ToReactivePropertySlimAsSynchronized(m => m.IsDoMsmsEntropyCleanup).AddTo(Disposables);
+
+            MsmsMaxSpectralEntropy = model.ToReactivePropertyAsSynchronized(
+                m => m.MsmsMaxSpectralEntropy,
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => double.Parse(vm, CultureInfo.InvariantCulture),
+                ignoreValidationErrorValue: true
+            ).SetValidateAttribute(() => MsmsMaxSpectralEntropy).AddTo(Disposables);
+
+            MsmsEntropyCleanupProtectedPercentOfBasePeak = model.ToReactivePropertyAsSynchronized(
+                m => m.MsmsEntropyCleanupProtectedPercentOfBasePeak,
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => double.Parse(vm, CultureInfo.InvariantCulture),
+                ignoreValidationErrorValue: true
+            ).SetValidateAttribute(() => MsmsEntropyCleanupProtectedPercentOfBasePeak).AddTo(Disposables);
+
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             ObserveHasErrors = new[]
@@ -60,6 +79,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 AmplitudeCutoff.ObserveHasErrors,
                 RelativeAmplitudeCutoff.ObserveHasErrors,
                 KeptIsotopeRange.ObserveHasErrors,
+                MsmsMaxSpectralEntropy.ObserveHasErrors,
+                MsmsEntropyCleanupProtectedPercentOfBasePeak.ObserveHasErrors,
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -73,6 +94,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 KeptIsotopeRange.ToUnit(),
                 KeepOriginalPrecurosrIsotopes.ToUnit(),
                 ExecuteChromDeconvolution.ToUnit(),
+                IsDoMsmsEntropyCleanup.ToUnit(),
+                MsmsMaxSpectralEntropy.ToUnit(),
+                MsmsEntropyCleanupProtectedPercentOfBasePeak.ToUnit(),
             }.Merge();
 
             decide = new Subject<Unit>().AddTo(Disposables);
@@ -113,6 +137,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> KeepOriginalPrecurosrIsotopes { get; }
 
         public ReactivePropertySlim<bool> ExecuteChromDeconvolution { get; }
+
+        /// <summary>Whether this mode runs the MS/MS entropy cleanup (LC-MS only); the view shows its settings only then.</summary>
+        public bool SupportsMsmsEntropyCleanup { get; }
+
+        public ReactivePropertySlim<bool> IsDoMsmsEntropyCleanup { get; }
+
+        [Required(ErrorMessage = "Maximum spectral entropy is required.")]
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
+        [Range(double.Epsilon, double.MaxValue, ErrorMessage = "Maximum spectral entropy should be a positive value.")]
+        public ReactiveProperty<string> MsmsMaxSpectralEntropy { get; }
+
+        [Required(ErrorMessage = "Protected percentage of the base peak is required.")]
+        [RegularExpression(@"100(\.0+)?|([1-9]?\d)?(\.\d+)?", ErrorMessage = "Invalid value entered.")]
+        public ReactiveProperty<string> MsmsEntropyCleanupProtectedPercentOfBasePeak { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 
