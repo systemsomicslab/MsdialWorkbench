@@ -585,8 +585,10 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                 while (sr.ReadLine() is string line) {
                     lineNumber++;
                     var lineArray = line.Split('\t');
-                    if (lineArray.Length < 37) {
-                        throw new InvalidDataException($"Expected at least 37 columns in '{input}', line {lineNumber}.");
+                    // The fixed-format export reads columns 0 through 36, ending with Abundance13CStd.
+                    const int requiredColumnCount = 37;
+                    if (lineArray.Length < requiredColumnCount) {
+                        throw new InvalidDataException($"Expected at least {requiredColumnCount} columns in '{input}', line {lineNumber}.");
                     }
                     var peak = new PeakInfo() {
                         Memo = lineArray[0], AlignmentID = int.Parse(lineArray[1]), AverageRt = lineArray[2], AverageMz = lineArray[3], MetaboliteName = lineArray[4],
