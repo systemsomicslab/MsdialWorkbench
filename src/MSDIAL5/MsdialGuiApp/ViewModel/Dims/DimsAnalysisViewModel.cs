@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -109,7 +108,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
-        public MsfinderParameterSetting MsfinderParameterSetting { get; }
         public EicViewModel EicViewModel { get; }
 
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
