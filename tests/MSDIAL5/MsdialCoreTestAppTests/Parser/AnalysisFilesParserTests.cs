@@ -32,6 +32,33 @@ public sealed class AnalysisFilesParserTests
     }
 
     [TestMethod]
+    public void ReadCsvContents_ReportsMissingFilePathColumn()
+    {
+        using var directory = new TemporaryDirectory();
+        var csv = directory.CreateFile("analysis_files.csv", "# analysis files\nfile_name,file_type");
+
+        var error = Assert.ThrowsException<InvalidDataException>(() => AnalysisFilesParser.ReadCsvContents(csv));
+
+        StringAssert.Contains(error.Message, csv);
+        StringAssert.Contains(error.Message, "line 2: missing required 'file_path' column");
+    }
+
+    [TestMethod]
+    [DataRow("sample,")]
+    [DataRow("sample,   ")]
+    [DataRow("sample")]
+    public void ReadCsvContents_ReportsMissingFilePathValue(string row)
+    {
+        using var directory = new TemporaryDirectory();
+        var csv = directory.CreateFile("analysis_files.csv", $"# analysis files\nfile_name,file_path\n# samples\n{row}");
+
+        var error = Assert.ThrowsException<InvalidDataException>(() => AnalysisFilesParser.ReadCsvContents(csv));
+
+        StringAssert.Contains(error.Message, csv);
+        StringAssert.Contains(error.Message, "line 4: 'file_path' is required");
+    }
+
+    [TestMethod]
     public void ReadFolderContents_IncludesFolderTypeVendorData()
     {
         using var directory = new TemporaryDirectory();
