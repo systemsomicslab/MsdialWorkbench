@@ -134,7 +134,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             }
         }
 
-        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string analysisFileName = null) {
+        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string? analysisFileName = null) {
             var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
             if (alignment && string.IsNullOrWhiteSpace(analysisFileName)) {
                 var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => MolecularNetworkingInputLoader.StoredFileExists(file.FilePath));
@@ -312,8 +312,8 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         private void ExportEdges(string path, List<EdgeData> edges, string inputA, string inputB) {
             using (var sw = new StreamWriter(path, false)) {
-                if (edges.IsEmptyOrNull()) return;
-                var fedge = edges.FirstOrDefault();
+                if (edges.Count == 0) return;
+                var fedge = edges[0];
                 if (fedge.scores.Count > 2) {
                     sw.WriteLine("SourceID: {0}\tTargetID: {1}\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore", inputA, inputB);
                 }
@@ -344,14 +344,11 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         private List<string> ReadInput(string inputDir) {
             FileAttributes attributes = System.IO.File.GetAttributes(inputDir);
-            if ((attributes & FileAttributes.Directory) == FileAttributes.Directory) {
-                Debug.WriteLine(String.Format("{0} is a folder", inputDir));
-                return Directory.GetFiles(inputDir, "*.*msp", SearchOption.AllDirectories)?.ToList();
+            if ((attributes & FileAttributes.Directory) == 0) {
+                throw new ArgumentException($"MSP input must be a directory: '{inputDir}'.", nameof(inputDir));
             }
-            else {
-                Debug.WriteLine(String.Format("{0} is not a folder", inputDir));
-                return null;
-            }
+            Debug.WriteLine(String.Format("{0} is a folder", inputDir));
+            return Directory.GetFiles(inputDir, "*.*msp", SearchOption.AllDirectories).ToList();
         }
     }
 }
