@@ -144,8 +144,16 @@ namespace CompMs.Common.Lipidomics {
                 if (lipid.Chains is SeparatedChains) {
                     if (adduct.AdductIonName == "[M+HCO3]-") {
                         var positionLevelChains = new PositionLevelChains(lipid.Chains.GetDeterminedChains());
-                        foreach (AcylChain chain in positionLevelChains.GetDeterminedChains()) {
-                            spectrum.Add(new SpectrumPeak(chain.Mass + C5H9PO5, 500d, $"sn-1 {chain}") { SpectrumComment = SpectrumComment.snposition });
+                        //foreach (AcylChain chain in positionLevelChains.GetDeterminedChains()) {
+                        //    spectrum.Add(new SpectrumPeak(chain.Mass + C5H9PO5 + Electron, 500d, $"sn-1 {chain}") { SpectrumComment = SpectrumComment.snposition });
+                        //}
+                        if (lipid.Chains.GetChainByPosition(1) is AcylChain sn1)
+                        {
+                            spectrum.Add(new SpectrumPeak(
+                                sn1.Mass + C5H9PO5 + Electron, 500d, $"sn-1 {sn1}")
+                            {
+                                SpectrumComment = SpectrumComment.snposition,
+                            });
                         }
                     } 
                     foreach (AcylChain chain in lipid.Chains.GetDeterminedChains()) {

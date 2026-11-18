@@ -2047,6 +2047,8 @@ namespace CompMs.Common.Lipidomics
             }
             return false;
         }
+        internal static bool IsValidAcylChain(int carbon, int db) =>
+            carbon > 0 && db >= 0 && db < carbon;
 
         public static double acylCainMass(int carbon, int dbBond)
         {
@@ -2618,8 +2620,11 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1Carbon, sn1Double) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2Carbon, sn2Double))
+                            {
+                                continue;
+                            }
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
@@ -2761,8 +2766,11 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1Carbon, sn1Double) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2Carbon, sn2Double))
+                            {
+                                continue;
+                            }
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
@@ -3009,8 +3017,11 @@ namespace CompMs.Common.Lipidomics
 
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
-                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1Carbon, sn1Double) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2Carbon, sn2Double))
+                            {
+                                continue;
+                            }
                             var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 

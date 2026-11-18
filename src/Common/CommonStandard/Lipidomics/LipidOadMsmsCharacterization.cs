@@ -255,6 +255,11 @@ namespace CompMs.Common.Lipidomics
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
 
@@ -286,7 +291,7 @@ namespace CompMs.Common.Lipidomics
             else
             {
                 if (adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
-                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "M+CH3COO]-")
+                    adduct.AdductIonName == "[M+HCOO]-" || adduct.AdductIonName == "[M+CH3COO]-")
                 {
                     // seek [M-CH3]-
                     var threshold = 10.0;
@@ -447,7 +452,11 @@ namespace CompMs.Common.Lipidomics
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) - MassDiffDictionary.HydrogenMass * 2;
                             var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.OxygenMass;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) - MassDiffDictionary.HydrogenMass * 2;
@@ -574,7 +583,7 @@ namespace CompMs.Common.Lipidomics
                     {
                         //check Sn2 position spectrum
                         var nl_SN1_H2O_CH2 = nl_SN1_H2O - CH2 + MassDiffDictionary.HydrogenMass;
-                        var nl_SN2_H2O_CH2 = nl_SN1_H2O - CH2 + MassDiffDictionary.HydrogenMass;
+                        var nl_SN2_H2O_CH2 = nl_SN2_H2O - CH2 + MassDiffDictionary.HydrogenMass;
                         var queryCh2 = new List<SpectrumPeak> {
                                 new() { Mass = nl_SN1_H2O_CH2, Intensity = 1.0 },
                                 new() { Mass = nl_SN2_H2O_CH2, Intensity = 1.0 },
@@ -622,25 +631,32 @@ namespace CompMs.Common.Lipidomics
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
 
                     // from here, acyl level annotation is executed.
-                    var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
-                    var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
+                    if (LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1Carbon, sn1Double) &&
+                        LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2Carbon, sn2Double))
+                    {
+                        var sn1 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn1Carbon, sn1Double);
+                        var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
 
-                    var query = new List<SpectrumPeak> {
+                        var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sn1, Intensity = 1.0 },
                                 new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
                     };
 
-                    var foundCount = 0;
-                    var averageIntensity = 0.0;
-                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+                        var foundCount = 0;
+                        var averageIntensity = 0.0;
+                        LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
-                    if (foundCount == 2)
-                    {
-                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PG", LbmClass.PG, sn1Carbon, sn1Double,
-                            sn2Carbon, sn2Double, averageIntensity);
-                        candidates.Add(molecule);
+                        if (foundCount == 2)
+                        {
+                            var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PG", LbmClass.PG, sn1Carbon, sn1Double,
+                                sn2Carbon, sn2Double, averageIntensity);
+                            candidates.Add(molecule);
+                        }
                     }
-
+                    if (!isClassIonFound && candidates.Count == 0)
+                    {
+                        return null;
+                    }
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PG", LbmClass.PG, "", theoreticalMz, adduct,
                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
@@ -746,7 +762,11 @@ namespace CompMs.Common.Lipidomics
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
-                            if (sn2CarbonNum <= 0 || sn2DoubleNum < 0) continue;
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
@@ -795,7 +815,11 @@ namespace CompMs.Common.Lipidomics
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
@@ -903,7 +927,11 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
@@ -951,7 +979,11 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
@@ -977,7 +1009,7 @@ namespace CompMs.Common.Lipidomics
                         }
                     }
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PI", LbmClass.PI, "", theoreticalMz, adduct,
-                       totalCarbon, totalDoubleBond, 0, candidates, 1);
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
             else
@@ -2574,10 +2606,32 @@ namespace CompMs.Common.Lipidomics
                         LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                         if (foundCountSN2 > 0)
                         {
+                            if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PC_d5", LbmClass.PC_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PC_d5", LbmClass.PC_d5, sn2Carbon, sn2Double,
+                                    sn1Carbon, sn1Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PC_d5", LbmClass.PC_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                        }
+                        else
+                        {
                             var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PC_d5", LbmClass.PC_d5, sn1Carbon, sn1Double,
                                 sn2Carbon, sn2Double, averageIntensity);
                             candidates.Add(molecule);
                         }
+
                     }
                     return LipidMsmsCharacterizationUtility.returnAnnotationResult("PC_d5", LbmClass.PC_d5, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
@@ -2607,7 +2661,11 @@ namespace CompMs.Common.Lipidomics
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
@@ -2637,6 +2695,27 @@ namespace CompMs.Common.Lipidomics
                                 var averageIntensitySN2 = 0.0;
                                 LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                                 if (foundCountSN2 > 0)
+                                {
+                                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PC_d5", LbmClass.PC_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PC_d5", LbmClass.PC_d5, sn2CarbonNum, sn2DoubleNum,
+                                            sn1CarbonNum, sn1DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PC_d5", LbmClass.PC_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                }
+                                else
                                 {
                                     var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PC_d5", LbmClass.PC_d5, sn1CarbonNum, sn1DoubleNum,
                                         sn2CarbonNum, sn2DoubleNum, averageIntensity);
@@ -2755,6 +2834,27 @@ namespace CompMs.Common.Lipidomics
                         LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                         if (foundCountSN2 > 0)
                         {
+                            if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PE_d5", LbmClass.PE_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PE_d5", LbmClass.PE_d5, sn2Carbon, sn2Double,
+                                    sn1Carbon, sn1Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE_d5", LbmClass.PE_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                        }
+                        else
+                        {
                             var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE_d5", LbmClass.PE_d5, sn1Carbon, sn1Double,
                                 sn2Carbon, sn2Double, averageIntensity);
                             candidates.Add(molecule);
@@ -2783,7 +2883,11 @@ namespace CompMs.Common.Lipidomics
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) - MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.OxygenMass;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) - MassDiffDictionary.HydrogenMass;
@@ -2814,6 +2918,27 @@ namespace CompMs.Common.Lipidomics
                                 LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
 
                                 if (foundCountSN2 > 0)
+                                {
+                                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PE_d5", LbmClass.PE_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PE_d5", LbmClass.PE_d5, sn2CarbonNum, sn2DoubleNum,
+                                            sn1CarbonNum, sn1DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE_d5", LbmClass.PE_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                }
+                                else
                                 {
                                     var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PE_d5", LbmClass.PE_d5, sn1CarbonNum, sn1DoubleNum,
                                         sn2CarbonNum, sn2DoubleNum, averageIntensity);
@@ -2923,7 +3048,7 @@ namespace CompMs.Common.Lipidomics
                         // average intensity < 30 is nessesarry to distinguish it from BMP
                         //check Sn2 position spectrum
                         var nl_SN1_H2O_CH2 = nl_SN1_H2O - CD2;
-                        var nl_SN2_H2O_CH2 = nl_SN1_H2O - CD2;
+                        var nl_SN2_H2O_CH2 = nl_SN2_H2O - CD2;
                         var queryCh2 = new List<SpectrumPeak> {
                             new() { Mass = nl_SN1_H2O_CH2, Intensity = 1.0 },
                             new() { Mass = nl_SN2_H2O_CH2, Intensity = 1.0 },
@@ -2933,6 +3058,27 @@ namespace CompMs.Common.Lipidomics
                         var averageIntensitySN2 = 0.0;
                         LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                         if (foundCountSN2 > 0)
+                        {
+                            if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PG_d5", LbmClass.PG_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PG_d5", LbmClass.PG_d5, sn2Carbon, sn2Double,
+                                    sn1Carbon, sn1Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PG_d5", LbmClass.PG_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                        }
+                        else
                         {
                             var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PG_d5", LbmClass.PG_d5, sn1Carbon, sn1Double,
                                 sn2Carbon, sn2Double, averageIntensity);
@@ -3064,6 +3210,27 @@ namespace CompMs.Common.Lipidomics
                         LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                         if (foundCountSN2 > 0)
                         {
+                            if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PS_d5", LbmClass.PS_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PS_d5", LbmClass.PS_d5, sn2Carbon, sn2Double,
+                                    sn1Carbon, sn1Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                            else
+                            {
+                                var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PS_d5", LbmClass.PS_d5, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                        }
+                        else
+                        {
                             var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PS_d5", LbmClass.PS_d5, sn1Carbon, sn1Double,
                                 sn2Carbon, sn2Double, averageIntensity);
                             candidates.Add(molecule);
@@ -3093,7 +3260,11 @@ namespace CompMs.Common.Lipidomics
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
                             if (sn2DoubleNum >= 7) continue;
-
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) + MassDiffDictionary.HydrogenMass;
@@ -3122,6 +3293,27 @@ namespace CompMs.Common.Lipidomics
                                 var averageIntensitySN2 = 0.0;
                                 LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                                 if (foundCountSN2 > 0)
+                                {
+                                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PS_d5", LbmClass.PS_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PS_d5", LbmClass.PS_d5, sn2CarbonNum, sn2DoubleNum,
+                                            sn1CarbonNum, sn1DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PS_d5", LbmClass.PS_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                }
+                                else
                                 {
                                     var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PS_d5", LbmClass.PS_d5, sn1CarbonNum, sn1DoubleNum,
                                         sn2CarbonNum, sn2DoubleNum, averageIntensity);
@@ -3247,6 +3439,27 @@ namespace CompMs.Common.Lipidomics
                                 LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                                 if (foundCountSN2 > 0)
                                 {
+                                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PI_d5", LbmClass.PI_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PI_d5", LbmClass.PI_d5, sn2CarbonNum, sn2DoubleNum,
+                                            sn1CarbonNum, sn1DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PI_d5", LbmClass.PI_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                }
+                                else
+                                {
                                     var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PI_d5", LbmClass.PI_d5, sn1CarbonNum, sn1DoubleNum,
                                         sn2CarbonNum, sn2DoubleNum, averageIntensity);
                                     candidates.Add(molecule);
@@ -3308,6 +3521,27 @@ namespace CompMs.Common.Lipidomics
                                 var averageIntensitySN2 = 0.0;
                                 LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                                 if (foundCountSN2 > 0)
+                                {
+                                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN1_H2O_CH2, nl_SN2_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PI_d5", LbmClass.PI_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_SN2_H2O_CH2, nl_SN1_H2O_CH2))
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel3("PI_d5", LbmClass.PI_d5, sn2CarbonNum, sn2DoubleNum,
+                                            sn1CarbonNum, sn1DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                    else
+                                    {
+                                        var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PI_d5", LbmClass.PI_d5, sn1CarbonNum, sn1DoubleNum,
+                                            sn2CarbonNum, sn2DoubleNum, averageIntensity);
+                                        candidates.Add(molecule);
+                                    }
+                                }
+                                else
                                 {
                                     var molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("PI_d5", LbmClass.PI_d5, sn1CarbonNum, sn1DoubleNum,
                                         sn2CarbonNum, sn2DoubleNum, averageIntensity);

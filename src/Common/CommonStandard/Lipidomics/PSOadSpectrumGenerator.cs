@@ -160,7 +160,7 @@ namespace CompMs.Common.Lipidomics {
                 spectrum.AddRange(
                     new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                        new SpectrumPeak(lipid.Mass-C3H5NO2, 100d, "Precursor -C3H5NO2") { SpectrumComment = SpectrumComment.metaboliteclass, },
+                        new SpectrumPeak(lipid.Mass-C3H5NO2+ Electron, 100d, "Precursor -C3H5NO2") { SpectrumComment = SpectrumComment.metaboliteclass, },
                     }
                 );
                 if (lipid.Chains is SeparatedChains) {
