@@ -6,8 +6,8 @@ executable against either version's assemblies. It does not measure the GUI,
 candidate retrieval, search caches, lipid structure validation or raw-data analysis.
 
 The recorded comparison is in
-[the performance report](https://github.com/QizhiSu/msdial/blob/f6ac376ac730f2d01bacba37437598a566c84b58/docs/design/compact-library-memory-performance-2026-11-13.md),
-kept in the contributor's fork rather than in this repository.
+[the performance report](https://github.com/QizhiSu/msdial/blob/f6ac376ac730f2d01bacba37437598a566c84b58/docs/design/compact-library-memory-performance-2026-11-13.md)
+(also linked from [#895](https://github.com/systemsomicslab/MsdialWorkbench/pull/895)).
 
 ## Build both versions
 
