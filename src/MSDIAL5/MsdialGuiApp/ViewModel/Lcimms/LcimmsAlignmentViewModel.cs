@@ -86,11 +86,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             SearchCompoundCommand = new[]{
                 model.Target.Select(t => t?.innerModel is null),
                 model.MsdecResult.Select(r => r is null),
-                model.CompoundSearchModel.Select(m => m is null),
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand()
             .WithSubscribe(() => {
-                using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                using var csm = model.CreateCompoundSearchModel();
+                if (csm is null) {
+                    return;
+                }
+                using var vm = new LcimmsCompoundSearchViewModel(csm);
                 broker.Publish<ICompoundSearchViewModel>(vm);
             })
             .AddTo(Disposables);

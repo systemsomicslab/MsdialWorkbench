@@ -61,6 +61,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
         private readonly ReactiveProperty<BarItemsLoaderData> _barItemsLoaderDataProperty;
         private readonly PeakSpotFiltering<AlignmentSpotPropertyModel>.PeakSpotFilter _filter;
+        private readonly CompoundSearcherCollection _compoundSearchers;
 
         public LcimmsAlignmentModel(
             AlignmentFileBeanModel alignmentFileBean,
@@ -227,6 +228,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper);
+            _compoundSearchers = searcherCollection;
             MatchResultCandidatesModel = new MatchResultCandidatesModel(Target.Select(t => ((IMSProperty?)((IPeakSpotModel?)t)?.MSIon, t?.MatchResultsModel)), mapper).AddTo(Disposables);
             var refLoader = (parameter.ProjectParam.TargetOmics == TargetOmics.Proteomics)
                 ? (IMsSpectrumLoader<MsScanMatchResult>)new ReferenceSpectrumLoader<PeptideMsReference?>(mapper)
@@ -334,12 +336,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
             }
 
-            CompoundSearchModel = target
-                .CombineLatest(MsdecResult, (t, r) => t is not null && r is not null ? CreateCompoundSearchModel(t, r, searcherCollection) : null)
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
             MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
@@ -385,10 +381,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IObservable<bool> CanSetUnknown => Target.Select(t => !(t is null));
         public void SetUnknown() => Target.Value?.SetUnknown(_undoManager);
 
-        public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>> CompoundSearchModel { get; }
-
-        private CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel(AlignmentSpotPropertyModel spot, MSDecResult msdec, CompoundSearcherCollection searcherCollection) {
-            if (spot is null || msdec is null) {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
+            if (Target.Value is not AlignmentSpotPropertyModel spot || spot.innerModel is null || MsdecResult.Value is not MSDecResult msdec) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
@@ -396,7 +390,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var compoundSearchModel = new CompoundSearchModel<PeakSpotModel>(
                 _files[spot.RepresentativeFileID],
                 new PeakSpotModel(spot, msdec),
-                new LcimmsCompoundSearchUsecase(searcherCollection.Items),
+                new LcimmsCompoundSearchUsecase(_compoundSearchers.Items),
                 plotService,
                 new SetAnnotationUsecase(spot, spot.MatchResultsModel, _undoManager));
             compoundSearchModel.Disposables.Add(plotService);

@@ -304,11 +304,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
             }
 
-            CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : CreateCompoundearchModel(t, r))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
             CanSearchCompound = new[]
             {
                 target.Select(t => t?.InnerModel != null),
@@ -343,12 +338,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public MatchResultCandidatesModel MatchResultCandidatesModel { get; }
         public MsfinderParameterSetting MsfinderParameterSetting { get; }
 
-        public ReadOnlyReactivePropertySlim<CompoundSearchModel<PeakSpotModel>?> CompoundSearchModel { get; }
         public LcimmsCompoundSearchUsecase CompoundSearcher { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
-        private CompoundSearchModel<PeakSpotModel>? CreateCompoundearchModel(ChromatogramPeakFeatureModel peak, MSDecResult msdec) {
-            if (peak is null || msdec is null) {
+        public CompoundSearchModel<PeakSpotModel>? CreateCompoundSearchModel() {
+            if (Target.Value is not ChromatogramPeakFeatureModel peak || peak.InnerModel is null || _msdecResult.Value is not MSDecResult msdec) {
                 _broker.Publish(new ShortMessageRequest(MessageHelper.NoPeakSelected));
                 return null;
             }
