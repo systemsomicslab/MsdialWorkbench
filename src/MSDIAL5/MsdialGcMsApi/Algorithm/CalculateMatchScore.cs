@@ -23,7 +23,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         // site should have to say which it is.
         private readonly RiCompoundType _riCompoundType;
 
-        public CalculateMatchScore(DataBaseItem<MoleculeDataBase> mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, RiCompoundType riCompoundType) {
+        public CalculateMatchScore(DataBaseItem<MoleculeDataBase>? mspDB, MsRefSearchParameterBase searchParameter, RetentionType retentionType, RiCompoundType riCompoundType) {
             _searchParameter = searchParameter;
             RetentionType = retentionType;
             _riCompoundType = riCompoundType;
@@ -38,7 +38,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                 default:
                     throw new Exception($"Unknown {nameof(RetentionType)}: {retentionType}");
             }
-            _mspDB = mspDB?.DataBase.Database.OrderBy(r => r.ChromXs.GetChromByType(type).Value).ToArray();
+            _mspDB = mspDB?.DataBase.Database.OrderBy(r => r.ChromXs.GetChromByType(type).Value).ToArray()
+                ?? Array.Empty<MoleculeMsReference>();
             _annotatorID = mspDB?.Pairs.FirstOrDefault()?.AnnotatorID;
             _dataBaseSource = mspDB?.DataBase.DataBaseSource ?? DataBaseSource.None;
         }
@@ -61,7 +62,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
         public RetentionType RetentionType { get; }
 
-        public bool LibraryIsEmpty => _mspDB is null || _mspDB.Length == 0;
+        public bool LibraryIsEmpty => _mspDB.Length == 0;
 
         private float Tolerance {
             get {
@@ -104,6 +105,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         }
 
         public IEnumerable<MsScanMatchResult> CalculateMatches(IMSScanProperty msScan) {
+            if (LibraryIsEmpty) {
+                yield break;
+            }
+
             var rValue = RetentionType == RetentionType.RT ? msScan.ChromXs.RT.Value : msScan.ChromXs.RI.Value;
             var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(msScan, _searchParameter);
 

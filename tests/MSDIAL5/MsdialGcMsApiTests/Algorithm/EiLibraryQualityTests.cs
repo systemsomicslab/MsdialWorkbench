@@ -82,6 +82,17 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Tests
             Assert.AreEqual(AnnotationEvidenceSource.BySpectrumPredictionTool, result.EvidenceSource);
         }
 
+        [TestMethod]
+        public void MissingLibraryProducesNoMatches() {
+            var calculator = new CalculateMatchScore(null, new MsRefSearchParameterBase(), RetentionType.RI, RiCompoundType.Alkanes);
+            var copy = calculator.With(calculator.CopySearchParameter());
+
+            Assert.IsTrue(calculator.LibraryIsEmpty);
+            Assert.AreEqual(0, calculator.CalculateMatches(Scan()).Count());
+            Assert.IsTrue(copy.LibraryIsEmpty);
+            Assert.AreEqual(0, copy.CalculateMatches(Scan()).Count());
+        }
+
         private static MsScanMatchResult MatchAgainst(DataBaseSource library) {
             return Calculator(library).CalculateMatches(Scan()).Single();
         }
