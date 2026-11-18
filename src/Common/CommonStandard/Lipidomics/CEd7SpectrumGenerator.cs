@@ -30,6 +30,7 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.OxygenMass,
         }.Sum();
+        private const double Electron = 0.00054858026;
 
         public CEd7SpectrumGenerator()
         {
@@ -109,7 +110,7 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(
                     new[]
                     {
-                        new SpectrumPeak(skelton+massBalanceD7-H2O , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
+                        new SpectrumPeak(skelton+massBalanceD7-H2O-Electron , 500d, "skelton") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
                     }
                 );
             }
