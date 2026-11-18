@@ -8,10 +8,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Gcms
 {
-    internal sealed class GcmsAlignmentCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<GcmsCompoundResult, PeakSpotModel>
+    internal sealed class GcmsAlignmentCompoundSearchUsecase : BindableBase, ICancellableCompoundSearchUsecase<GcmsCompoundResult, PeakSpotModel>
     {
         private readonly CalculateMatchScore? _calculateMatchScore;
 
@@ -38,14 +39,18 @@ namespace CompMs.App.Msdial.Model.Gcms
 
         public MsRefSearchParameterBase? SearchParameter { get; }
 
-        public IReadOnlyList<GcmsCompoundResult> Search(PeakSpotModel target) {
+        public IReadOnlyList<GcmsCompoundResult> Search(PeakSpotModel target) => Search(target, default);
+
+        public IReadOnlyList<GcmsCompoundResult> Search(PeakSpotModel target, CancellationToken token) {
+            token.ThrowIfCancellationRequested();
             if (_calculateMatchScore is null) {
                 return Array.Empty<GcmsCompoundResult>();
             }
-            var compounds = _calculateMatchScore.CalculateMatches(target.MsScan)
+            var compounds = _calculateMatchScore.CalculateMatches(target.MsScan, token)
                     .OrderByDescending(r => r.TotalScore)
                     .Select(result => new GcmsCompoundResult(_calculateMatchScore.Reference(result), result))
                     .ToArray();
+            token.ThrowIfCancellationRequested();
             foreach (var compound in compounds) {
                 ((ICompoundResult)compound).MatchResult.Source |= SourceType.Manual;
             }

@@ -6,10 +6,11 @@ using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class AnnotationQueryWithReference : IAnnotationQuery<MsScanMatchResult>
+    public class AnnotationQueryWithReference : IAnnotationQuery<MsScanMatchResult>, ICancellableAnnotationQuery
     {
         private readonly MoleculeMsReference? _reference;
         private readonly IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> _finder;
@@ -49,7 +50,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public MsRefSearchParameterBase Parameter { get; }
 
+        public CancellationToken CancellationToken { get => _baseQuery.CancellationToken; set => _baseQuery.CancellationToken = value; }
+
         public IEnumerable<MsScanMatchResult> FindCandidates(bool forceFind = false) {
+            CancellationToken.ThrowIfCancellationRequested();
             if (_finder is null || _reference is null || (!forceFind && _ignoreIsotopicPeak && !IonFeature.IsMonoIsotopicIon)) {
                 return [];
             }

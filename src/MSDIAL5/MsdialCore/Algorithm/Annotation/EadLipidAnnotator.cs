@@ -61,6 +61,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore((IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference) query, MoleculeMsReference reference) {
+            query.Item1.GetCancellationToken().ThrowIfCancellationRequested();
             var result = _scorer.Score(query.Item1, reference);
             var parameter = query.Item1.Parameter;
             var rtRequirementMet = RetentionMatchPolicy.RetentionTimeRequirementMet(parameter.IsUseTimeForAnnotationScoring, result);
@@ -106,7 +107,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 return new List<MoleculeMsReference>(0);
             }
             var lipids = GenerateLipid(lipid).Where(lipid_ => lipid_.Description.HasFlag(_description));
-            var references = _lipidDatabase.Generates(lipids, lipid, reference.AdductType, reference).Where(r => !(r is null)).ToList();
+            var references = _lipidDatabase.Generates(lipids.Select(candidate => {
+                query.Item1.GetCancellationToken().ThrowIfCancellationRequested();
+                return candidate;
+            }), lipid, reference.AdductType, reference).Where(r => !(r is null)).ToList();
             return references;
         }
 
