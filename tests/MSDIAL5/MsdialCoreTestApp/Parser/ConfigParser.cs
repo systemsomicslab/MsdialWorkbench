@@ -1030,21 +1030,24 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
+        private static List<string> ReadAnnotatorSettingsRows(string filepath) {
+            var rows = new List<string>();
+            using var reader = new StreamReader(filepath, Encoding.ASCII);
+            while (reader.ReadLine() is string line) {
+                if (line.Length > 0 && !line.TrimStart().StartsWith("#")) {
+                    rows.Add(line);
+                }
+            }
+            return rows;
+        }
+
         private static List<MspAnnotatorSetting> ReadMspAnnotatorSettingsTable(string filepath, ParameterBase param) {
             if (!File.Exists(filepath)) {
                 Console.WriteLine($"MSP annotator settings file was not found: {filepath}");
                 return new List<MspAnnotatorSetting>();
             }
 
-            var rows = new List<string>();
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine()?.TrimEnd('\r', '\n');
-                    if (!line.IsEmptyOrNull() && !line.TrimStart().StartsWith("#")) {
-                        rows.Add(line);
-                    }
-                }
-            }
+            var rows = ReadAnnotatorSettingsRows(filepath);
             if (rows.Count == 0) {
                 return new List<MspAnnotatorSetting>();
             }
@@ -1152,15 +1155,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 return new List<TextAnnotatorSetting>();
             }
 
-            var rows = new List<string>();
-            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine()?.TrimEnd('\r', '\n');
-                    if (!line.IsEmptyOrNull() && !line.TrimStart().StartsWith("#")) {
-                        rows.Add(line);
-                    }
-                }
-            }
+            var rows = ReadAnnotatorSettingsRows(filepath);
             if (rows.Count == 0) {
                 return new List<TextAnnotatorSetting>();
             }

@@ -21,6 +21,19 @@ public sealed class MainProcessCommandTests
     }
 
     [TestMethod]
+    public void EicProject_ProvidesJsonWhenFormatIsOmitted() {
+        var root = BuildRoot();
+        var project = root.Subcommands.Single(command => command.Name == "eic")
+            .Subcommands.Single(command => command.Name == "project");
+        var format = (Option<string>)project.Options.Single(option => option.Name.TrimStart('-') == "format");
+
+        var result = root.Parse(["eic", "project", "-i", "project.mdproject", "-o", "eic.json"]);
+
+        Assert.AreEqual(0, result.Errors.Count);
+        Assert.AreEqual("json", result.GetRequiredValue(format));
+    }
+
+    [TestMethod]
     public void Root_DoesNotExposePartialFeatureInventoryCommands() {
         var root = BuildRoot();
 
