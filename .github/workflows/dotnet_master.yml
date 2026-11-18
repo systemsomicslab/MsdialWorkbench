@@ -28,9 +28,13 @@ jobs:
       - name: Restore packages
         run: dotnet restore /property:Configuration="Release vendor unsupported"
       - name: Build
+        id: build
         run: dotnet build --no-restore --configuration "Release vendor unsupported" /property:BclBuildImported=Ignore /property:DownloadLibrary=false
       - name: Test
-        run: dotnet test --no-build --verbosity normal --configuration "Release vendor unsupported"
+        run: dotnet test --no-build --verbosity normal --configuration "Release vendor unsupported" --filter "TestCategory!=Integration|FullyQualifiedName!~MsdialCoreTestAppTests."
+      - name: Test LC-MS integration
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: dotnet test tests/MSDIAL5/MsdialCoreTestAppTests --no-build --verbosity normal --configuration "Release vendor unsupported" --filter "TestCategory=Integration"
 
   publish-msdial5:
     needs: test

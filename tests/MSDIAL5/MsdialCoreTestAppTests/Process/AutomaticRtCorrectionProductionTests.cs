@@ -19,6 +19,7 @@ namespace MsdialCoreTestAppTests.Process;
 /// and CONF-58, and decision 2 at the Console level).
 /// </summary>
 [TestClass]
+[TestCategory("Integration")]
 public sealed class AutomaticRtCorrectionProductionTests
 {
     private const string LibraryHeader = "Name\tRT(min)\tRT tol.(min)\tm/z\tm/z tol.\tMinimum height\tT/F\n";
