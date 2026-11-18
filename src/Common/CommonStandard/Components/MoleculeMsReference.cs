@@ -110,6 +110,14 @@ namespace CompMs.Common.Components {
             return copy;
         }
 
+        /// <summary>Copies metadata while allowing a serializer to supply the spectrum separately.</summary>
+        public MoleculeMsReference CreateSerializationMetadataCopy(List<SpectrumPeak> spectrum) {
+            var copy = (MoleculeMsReference)MemberwiseClone();
+            copy._spectrum = spectrum;
+            copy._compactSpectrum = null;
+            return copy;
+        }
+
         // set for IMoleculeProperty
         [Key(5)]
         public string Name { get; set; } = string.Empty;
