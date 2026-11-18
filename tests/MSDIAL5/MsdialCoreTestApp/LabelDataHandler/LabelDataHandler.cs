@@ -53,6 +53,11 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
     }
 
     public class LinkNode {
+        public LinkNode(double[] score, MoleculeMsReference node) {
+            Score = score;
+            Node = node;
+        }
+
         public double[] Score { get; set; }
         public MoleculeMsReference Node { get; set; }
     }
@@ -112,10 +117,10 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                     if (scoreitem[0] < matchThreshold) continue;
 
                     if (node2links.ContainsKey(i)) {
-                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = plantSpectra[j] });
+                        node2links[i].Add(new LinkNode(scoreitem, plantSpectra[j]));
                     }
                     else {
-                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = plantSpectra[j] } };
+                        node2links[i] = new List<LinkNode>() { new LinkNode(scoreitem, plantSpectra[j]) };
                     }
                 }
             }
@@ -143,10 +148,10 @@ namespace CompMs.App.MsdialConsole.LabelDataHandler {
                     if (scoreitem[0] < matchThreshold) continue;
 
                     if (node2links_with_reffile.ContainsKey(i)) {
-                        node2links_with_reffile[i].Add(new LinkNode() { Score = scoreitem, Node = mslibSpectra[j] });
+                        node2links_with_reffile[i].Add(new LinkNode(scoreitem, mslibSpectra[j]));
                     }
                     else {
-                        node2links_with_reffile[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = mslibSpectra[j] } };
+                        node2links_with_reffile[i] = new List<LinkNode>() { new LinkNode(scoreitem, mslibSpectra[j]) };
                     }
                    
                 }

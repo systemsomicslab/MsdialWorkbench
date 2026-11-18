@@ -61,7 +61,8 @@ namespace CompMs.App.MsdialConsole.Export
                 streamManager.Complete();
                 
                 projectDataStorage.FixProjectFolder(projectDir);
-                return projectDataStorage.Storages.FirstOrDefault();
+                return projectDataStorage.Storages.FirstOrDefault()
+                    ?? throw new InvalidDataException($"No analysis data was found in project '{projectfile}'.");
             }
 
 
