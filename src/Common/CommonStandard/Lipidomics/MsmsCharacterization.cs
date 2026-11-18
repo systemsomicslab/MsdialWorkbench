@@ -15187,6 +15187,12 @@ AdductIon adduct)
             return null;
         }
 
+        // Notice 20261118
+        // Use the oxygen count of the amidated bile acid moiety in the annotation. (ref:Lipidmaps)
+        // The count includes the amide carbonyl and the bile acid hydroxyl oxygens.
+        // This gives O3 for deoxycholic acid conjugates and O2 for lithocholic acid conjugates.
+        // The fatty acyl chain is reported separately.
+
         public static LipidMolecule JudgeIfGdcae(IMSScanProperty msScanProp, double ms2Tolerance, float theoreticalMz,
             int totalCarbon, int totalDoubleBond, AdductIon adduct, int totalOxidized)
         {
@@ -15522,6 +15528,10 @@ AdductIon adduct)
             return null;
         }
 
+        // Notice 20261118
+        // The SE shorthand omits the two oxygens of the ester linkage.
+        // A ketodeoxycholic acid ester with an unoxidized fatty acyl chain has six
+        // oxygens in total, giving O4 in the annotation. (ref:LIPIDMAPS)
         public static LipidMolecule JudgeIfKdcae(IMSScanProperty msScanProp, double ms2Tolerance, float theoreticalMz,
         int totalCarbon, int totalDoubleBond, AdductIon adduct, int totalOxidized)
         {
@@ -17230,7 +17240,7 @@ AdductIon adduct)
                 }
                 if (adduct.AdductIonName == "[M+Na]+")
                 {
-                    // calc [M+H-H2O]+
+                    // calc [M+Na-H2O]+
                     var diagnosticMz = theoreticalMz;
                     diagnosticMz = diagnosticMz - H2O;
                     var threshold = 0.1;
@@ -17892,12 +17902,12 @@ AdductIon adduct)
                 {
                     var candidates = new List<LipidMolecule>();
 
-                    //[MAG-H2O]+
+                    //[MAG+H-H2O]+
                     var diagnosticMz01 = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + Proton + (3 * MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 5 + MassDiffDictionary.OxygenMass * 2);
                     var threshold01 = 50;
                     var frag01 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz01, threshold01);
 
-                    //[M-Cho-H2O+H]+
+                    //[M-Cho+H]+
                     var diagnosticMz02 = diagnosticMz01 + Sugar162 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 3 + MassDiffDictionary.HydrogenMass;
                     var threshold02 = 0.1;
                     var frag02 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz02, threshold02);
@@ -17913,15 +17923,19 @@ AdductIon adduct)
             }
             else
             {
-                var candidates = new List<LipidMolecule>();
-                // case [M-H]-
-                var threshold = 0.5;
-                var faFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond);
-                var isFaFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, faFragment, threshold);
-                if (isFaFrag == true)
+                if (adduct.AdductIonName == "[M-H]-")
                 {
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult(LPHex[lipidclass.ToString()], lipidclass, "", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 1);
+
+                    var candidates = new List<LipidMolecule>();
+                    // case [M-H]-
+                    var threshold = 0.5;
+                    var faFragment = LipidMsmsCharacterizationUtility.fattyacidProductIon(totalCarbon, totalDoubleBond);
+                    var isFaFrag = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, faFragment, threshold);
+                    if (isFaFrag == true)
+                    {
+                        return LipidMsmsCharacterizationUtility.returnAnnotationResult(LPHex[lipidclass.ToString()], lipidclass, "", theoreticalMz, adduct,
+                            totalCarbon, totalDoubleBond, 0, candidates, 1);
+                    }
                 }
             }
             return null;
@@ -17944,12 +17958,12 @@ AdductIon adduct)
                 {
                     var candidates = new List<LipidMolecule>();
 
-                    //[DAG-H2O]+
+                    //[DAG+H-H2O]+
                     var diagnosticMz01 = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond) + Proton + (3 * MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.OxygenMass * 3);
                     var threshold01 = 50;
                     var frag01 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz01, threshold01);
 
-                    //[M-Cho-H2O+H]+
+                    //[M+H]+ -Cho-H2O
                     var diagnosticMz02 = diagnosticMz01 + Sugar162 + MassDiffDictionary.PhosphorusMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.HydrogenMass * 3;
                     var threshold02 = 0.1;
                     var frag02 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz02, threshold02);
@@ -18018,13 +18032,18 @@ AdductIon adduct)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // C2H9NO4P+
+                    // C2H9NO4P+ (142.026371)
                     var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass - Electron; ;
                     var diagnosticCutoff = 10.0;
 
-                    //// precursor - C2H8NO4P (142.02637)
-                    //var diagnosticMz2 = theoreticalMz - MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass;
-                    //var diagnosticCutoff2 = 0.1;
+                    //// precursor - C2H8NO4P(141.019094)
+                    // var diagnosticMz2 = theoreticalMz - (
+                    //     MassDiffDictionary.CarbonMass * 2
+                    //     + MassDiffDictionary.HydrogenMass * 8
+                    //     + MassDiffDictionary.NitrogenMass
+                    //     + MassDiffDictionary.OxygenMass * 4
+                    //     + MassDiffDictionary.PhosphorusMass); 
+                    // var diagnosticCutoff2 = 0.1;
 
                     var isDiagnosticFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, diagnosticCutoff);
                     //var isDiagnosticFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, diagnosticCutoff2);

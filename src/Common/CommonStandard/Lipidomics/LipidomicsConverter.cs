@@ -3653,6 +3653,13 @@ namespace CompMs.Common.Lipidomics
 
             headerString = string.Empty;
             chainString = string.Empty;
+            const string paSeparator = ";PA "; // case of SG 27:1;O;Hex;PA 16:0/18:1
+            var paIndex = moleculeString.LastIndexOf(paSeparator, StringComparison.Ordinal);
+            if (paIndex >= 0)
+            {
+                chainString = moleculeString.Substring(paIndex + paSeparator.Length).Trim();
+                return;
+            }
             if (moleculeString.Contains("/"))
             {
                 var splitterArray = moleculeString.Split('/');
