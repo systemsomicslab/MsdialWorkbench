@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Export
             return Formats.Count(f => f.IsSelected);
         }
 
-        public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string> notification) {
+        public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, Action<string>? notification) {
             var dt = DateTime.Now;
             var cts = new CancellationTokenSource();
             var lazySpots = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, cts.Token));
