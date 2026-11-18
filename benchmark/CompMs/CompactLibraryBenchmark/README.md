@@ -6,14 +6,15 @@ executable against either version's assemblies. It does not measure the GUI,
 candidate retrieval, search caches, lipid structure validation or raw-data analysis.
 
 The recorded comparison is in
-[the performance report](../../../docs/design/compact-library-memory-performance-2026-11-13.md).
+[the performance report](https://github.com/QizhiSu/msdial/blob/f6ac376ac730f2d01bacba37437598a566c84b58/docs/design/compact-library-memory-performance-2026-11-13.md),
+kept in the contributor's fork rather than in this repository.
 
 ## Build both versions
 
 Requires Windows, the .NET SDK, .NET Framework 4.8 and Python 3. Use separate clean
 baseline and candidate directories. The recorded baseline is
-`c7830d66e1dbbf9077858f4a4154413f48940400`; apply this PR to that baseline for the
-candidate. Keep both versions' build configuration and package versions identical.
+`c7830d66e1dbbf9077858f4a4154413f48940400`; apply the change from #895 to that
+baseline for the candidate. Keep both versions' build configuration and package versions identical.
 
 For each directory, run:
 
