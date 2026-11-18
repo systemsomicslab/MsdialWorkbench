@@ -2152,6 +2152,115 @@ namespace CompMs.Common.Lipidomics.Tests
             Console.WriteLine($"AnnotationLevel:{result2.AnnotationLevel}");
         }
         [TestMethod()]
+        public void EtherPECharacterizationTest_PlasmalogenPreservesVinylDoubleBond()
+        {
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 704.5589,
+                Spectrum = new List<SpectrumPeak>
+        {
+            new SpectrumPeak { Mass = 704.558867, Intensity = 100, },
+            new SpectrumPeak { Mass = 563.539773, Intensity = 200, },
+            new SpectrumPeak { Mass = 392.292422, Intensity = 500, },
+            new SpectrumPeak { Mass = 313.273721, Intensity = 999, },
+            new SpectrumPeak { Mass = 294.315527, Intensity = 200, },
+        }
+            };
+
+            string lipidName = "PE P-18:0_16:0";
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(lipidName, "EtherPE");
+            Assert.IsTrue(molecule.IsValidatedFormat);
+            Assert.AreEqual(LbmClass.EtherPE, molecule.LipidClass);
+            Assert.AreEqual(lipidName, molecule.LipidName);
+
+            var totalCarbon = molecule.TotalCarbonCount;
+            var totalDbBond = molecule.TotalDoubleBondCount;
+            var Sn1Carbon = molecule.Sn1CarbonCount;
+            var Sn1DbBond = molecule.Sn1DoubleBondCount;
+            var Sn2Carbon = molecule.Sn2CarbonCount;
+            var Sn2DbBond = molecule.Sn2DoubleBondCount;
+
+            // The input DB count includes the vinyl double bond.
+            var result = LipidMsmsCharacterization.JudgeIfEtherpe(target, 0.025,
+                target.PrecursorMz, totalCarbon, totalDbBond,
+                Sn1Carbon, Sn1Carbon, Sn1DbBond, Sn1DbBond,
+                AdductIon.GetAdductIon("[M+H]+"));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(LbmClass.EtherPE, result.LipidClass);
+            Assert.AreEqual(2, result.AnnotationLevel);
+            Assert.AreEqual("PE P-18:0_16:0", result.LipidName);
+            Assert.AreEqual("PE P-34:0", result.SublevelLipidName);
+            Assert.AreEqual(1, result.TotalDoubleBondCount);
+            Assert.AreEqual(1, result.Sn1DoubleBondCount);
+            Assert.AreEqual(0, result.Sn2DoubleBondCount);
+
+            var expected = new EtherPELipidParser().Parse("PE P-18:0_16:0");
+            Assert.IsNotNull(expected);
+            Assert.AreEqual(expected.Chains.Mass, result.GetChains().Mass, 1e-6);
+        }
+
+        [TestMethod()]
+        public void EtherPECharacterizationTest_AlkylEtherPreservesSumDoubleBondCount()
+        {
+            var target = new MSScanProperty
+            {
+                PrecursorMz = 704.5589,
+                Spectrum = new List<SpectrumPeak>
+        {
+            new SpectrumPeak { Mass = 704.558867, Intensity = 1, },
+            new SpectrumPeak { Mass = 563.539773, Intensity = 999, },
+            new SpectrumPeak { Mass = 239.236942, Intensity = 1, },
+        }
+            };
+
+            string lipidName = "PE O-18:1_16:0";
+            var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(lipidName, "EtherPE");
+            Assert.IsTrue(molecule.IsValidatedFormat);
+            Assert.AreEqual(LbmClass.EtherPE, molecule.LipidClass);
+            Assert.AreEqual(lipidName, molecule.LipidName);
+
+            var totalCarbon = molecule.TotalCarbonCount;
+            var totalDbBond = molecule.TotalDoubleBondCount;
+            var Sn1Carbon = molecule.Sn1CarbonCount;
+            var Sn1DbBond = molecule.Sn1DoubleBondCount;
+            var Sn2Carbon = molecule.Sn2CarbonCount;
+            var Sn2DbBond = molecule.Sn2DoubleBondCount;
+
+            // The input DB count includes the vinyl double bond.
+            var result = LipidMsmsCharacterization.JudgeIfEtherpe(target, 0.025,
+                target.PrecursorMz, totalCarbon, totalDbBond,
+                Sn1Carbon, Sn1Carbon, Sn1DbBond, Sn1DbBond,
+                AdductIon.GetAdductIon("[M+H]+"));
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(LbmClass.EtherPE, result.LipidClass);
+            Assert.AreEqual(1, result.AnnotationLevel);
+            Assert.AreEqual("PE O-34:1", result.LipidName);
+            Assert.AreEqual(1, result.TotalDoubleBondCount);
+
+            var expected = new EtherPELipidParser().Parse("PE O-34:1");
+            Assert.IsNotNull(expected);
+            Assert.AreEqual(expected.Chains.Mass, result.GetChains().Mass, 1e-6);
+        }
+
+        [TestMethod()]
+        public void EtherPECharacterizationTest_PlasmalogenSumNameExcludesVinylDoubleBond()
+        {
+            var result = LipidMsmsCharacterizationUtility
+                .getPlasmalogenPhospholipidMoleculeObjAsLevel1(
+                    "PE", LbmClass.EtherPE, 18, 1, 16, 0, 0.0, "p");
+
+            Assert.AreEqual(1, result.AnnotationLevel);
+            Assert.AreEqual("PE P-34:0", result.LipidName);
+            Assert.AreEqual(1, result.TotalDoubleBondCount);
+
+            var expected = new EtherPELipidParser().Parse("PE P-34:0");
+            Assert.IsNotNull(expected);
+            Assert.AreEqual(expected.Chains.Mass, result.GetChains().Mass, 1e-6);
+        }
+
+        [TestMethod()]
         public void SMadductHCO3Test()
         {
             //SM 18:1;O2/12:0

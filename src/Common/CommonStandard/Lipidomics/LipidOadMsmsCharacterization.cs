@@ -1841,14 +1841,12 @@ namespace CompMs.Common.Lipidomics
                     if (foundCount >= 2)
                     {
                         var etherSuffix = "e";
-                        var sn1Double2 = Sn1Double;
                         var EtherString = "O-" + Sn1Carbon + ":" + Sn1Double;
                         var EsterString = Sn2Carbon + ":" + Sn2Double;
                         if (LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, 5.0))
                         {
-                            sn1Double2 = Sn1Double - 1;
                             etherSuffix = "p";
-                            EtherString = "P-" + Sn1Carbon + ":" + sn1Double2;
+                            EtherString = "P-" + Sn1Carbon + ":" + Sn1Double;
                         }
                         ;
 
@@ -1864,7 +1862,7 @@ namespace CompMs.Common.Lipidomics
                         LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, queryCh2, ms2Tolerance, out foundCountSN2, out averageIntensitySN2);
                         if (foundCountSN2 > 0)
                         {
-                            var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("PE", LbmClass.EtherPE, Sn1Carbon, sn1Double2,
+                            var molecule = LipidMsmsCharacterizationUtility.getEtherPhospholipidMoleculeObjAsLevel2("PE", LbmClass.EtherPE, Sn1Carbon, Sn1Double,
                                 Sn2Carbon, Sn2Double, averageIntensity, etherSuffix);
                             candidates.Add(molecule);
                         }
