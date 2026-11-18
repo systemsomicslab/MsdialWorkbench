@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
-        private string _userDefinedProjectFolderName;
+        private string _userDefinedProjectFolderName = string.Empty;
 
         public string ExistProjectPath {
             get => _existProjectPath;
@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
-        private string _existProjectPath;
+        private string _existProjectPath = string.Empty;
 
         internal AnalysisParamOfMsfinder AnalysisParameter => _innerModel;
 
@@ -71,7 +71,6 @@ namespace CompMs.App.Msdial.Model.DataObj
 
             IsCreateNewProject = true;
             IsUseAutoDefinedFolderName = true;
-            UserDefinedProjectFolderName = "";
             ExistProjectPath = projectParameter.ProjectFolderPath;
         }
 
