@@ -111,7 +111,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         public EngineHypothesis Hypothesis { get; }
         public IReadOnlyList<TermTargets> Targets { get; }
         public bool Fired { get; }
-        /// <summary>The logic with every not node true, under the assignment chosen for the full logic (OQ15).</summary>
+        /// <summary>The logic with every not node true, under the chosen assignment, which satisfies it whenever some
+        /// assignment does (the search's second key; replaces OQ15).</summary>
         public bool FiredIgnoringVetoes { get; }
         /// <summary>fired_ignoring_vetoes and not fired.</summary>
         public bool VetoBlocked => FiredIgnoringVetoes && !Fired;
@@ -223,8 +224,11 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             if (!view.HasReference(Rule.Convention)) {
                 return NotEvaluated(hypothesis, targets, HypothesisFailure.NoBasePeak, vetoes);
             }
+            // The veto-free logic is the search's second key, so fired_ignoring_vetoes below is read on an assignment
+            // that satisfies it whenever any assignment does (design 4.7; see ExclusiveAssignment).
             var assignment = ExclusiveAssignment.Assign(
                 items, choice => LogicEvaluator.Evaluate(Plan, Inputs(items, choice, iRaw, rawPresent, kEff), false, restrictAny, restrictChild, null),
+                choice => LogicEvaluator.Evaluate(Plan, Inputs(items, choice, iRaw, rawPresent, kEff), true, restrictAny, restrictChild, null),
                 AssignmentCap);
             if (assignment.Overflow) {
                 return NotEvaluated(hypothesis, targets, HypothesisFailure.AssignmentOverflow, vetoes);

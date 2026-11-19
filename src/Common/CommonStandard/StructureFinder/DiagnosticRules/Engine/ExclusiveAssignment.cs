@@ -135,17 +135,28 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
     /// item takes its first candidate, which is exactly optimal (the items are independent and the first candidate has
     /// the highest rel). Otherwise the unconflicted items take their first candidate, and a depth-first search runs
     /// over the conflicted items in canonical order: each tries its candidates in order, then none, skipping a peak
-    /// already taken by an item it may not share with. Each leaf is scored by (logic true, score, number of assigned
-    /// items), compared lexicographically; only a strictly better leaf replaces the best, so the first leaf wins ties.
-    /// More than the cap of leaves stops the search with an overflow: a deterministic cap, not a time-out.
+    /// already taken by an item it may not share with. Each leaf is scored by (logic true, logic with every not node
+    /// true, score, number of assigned items), compared lexicographically; only a strictly better leaf replaces the
+    /// best, so the first leaf wins ties. More than the cap of leaves stops the search with an overflow: a
+    /// deterministic cap, not a time-out.
+    /// <para>
+    /// The second key refines design 4.6 (it replaces OQ15). <c>not</c> holds only vetoes, so the logic is monotone in
+    /// its not nodes: wherever the logic is true, the veto-free logic is true too, and the key is only evaluated, and
+    /// only separates leaves, when the logic is false. A hypothesis that fires therefore gets exactly the 4.6
+    /// assignment. One that does not fire gets an assignment that satisfies the veto-free logic whenever any does, so
+    /// <c>fired_ignoring_vetoes</c> (design 4.7) is, like <c>fired</c>, true iff some assignment makes it true, and a
+    /// vetoed hypothesis is reported as <c>veto</c>, never as <c>logic_false</c> by a tie between all-false leaves.
+    /// </para>
     /// </summary>
     internal static class ExclusiveAssignment
     {
         /// <summary>Chooses the assignment.</summary>
         /// <param name="items">The hypothesis' items.</param>
         /// <param name="logic">The rule's logic under a choice (the objective's first key).</param>
+        /// <param name="logicIgnoringVetoes">The same logic with every not node true (the second key, read only where
+        /// <paramref name="logic"/> is false).</param>
         /// <param name="cap">AssignmentCap: the most leaves the search may visit.</param>
-        public static Assignment Assign(EvidenceItems items, Func<int[], bool> logic, int cap) {
+        public static Assignment Assign(EvidenceItems items, Func<int[], bool> logic, Func<int[], bool> logicIgnoringVetoes, int cap) {
             var n = items.Items.Count;
             var choice = new int[n];
             var conflicted = new bool[n];
@@ -182,7 +193,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
                     choice[i] = -1;
                 }
             }
-            var search = new Search(items, logic, cap, choice, order);
+            var search = new Search(items, logic, logicIgnoringVetoes, cap, choice, order);
             search.Run(0);
             if (search.Overflow) {
                 return new Assignment(null, true, false, search.Leaves);
@@ -230,18 +241,21 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         {
             private readonly EvidenceItems _items;
             private readonly Func<int[], bool> _logic;
+            private readonly Func<int[], bool> _logicIgnoringVetoes;
             private readonly int _cap;
             private readonly int[] _choice;
             private readonly List<int> _order;
             /// <summary>Peak view index -> the conflicted items holding it on the current path.</summary>
             private readonly Dictionary<int, List<int>> _held = new Dictionary<int, List<int>>();
             private bool _bestLogic;
+            private bool _bestIgnoringVetoes;
             private double _bestScore;
             private int _bestAssigned;
 
-            public Search(EvidenceItems items, Func<int[], bool> logic, int cap, int[] choice, List<int> order) {
+            public Search(EvidenceItems items, Func<int[], bool> logic, Func<int[], bool> logicIgnoringVetoes, int cap, int[] choice, List<int> order) {
                 _items = items;
                 _logic = logic;
+                _logicIgnoringVetoes = logicIgnoringVetoes;
                 _cap = cap;
                 _choice = choice;
                 _order = order;
@@ -299,14 +313,19 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
                     return;
                 }
                 var logic = _logic(_choice);
+                // Monotone in the not nodes: true wherever the logic is, so it is only computed where it is not.
+                var ignoringVetoes = logic || _logicIgnoringVetoes(_choice);
                 var score = Score(_items, _choice);
                 var assigned = AssignedCount(_choice);
                 var better = Best is null
                     || (logic && !_bestLogic)
-                    || (logic == _bestLogic && (score > _bestScore || (score == _bestScore && assigned > _bestAssigned)));
+                    || (logic == _bestLogic && ignoringVetoes && !_bestIgnoringVetoes)
+                    || (logic == _bestLogic && ignoringVetoes == _bestIgnoringVetoes
+                        && (score > _bestScore || (score == _bestScore && assigned > _bestAssigned)));
                 if (better) {
                     Best = (int[])_choice.Clone();
                     _bestLogic = logic;
+                    _bestIgnoringVetoes = ignoringVetoes;
                     _bestScore = score;
                     _bestAssigned = assigned;
                 }

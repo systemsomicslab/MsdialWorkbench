@@ -147,6 +147,43 @@ public class OnePeakOneTermTests
     }
 
     [TestMethod]
+    public void AVetoedHypothesisIsAVetoEvenWhenTheFirstEqualLeafFailsTheVetoFreeLogic() {
+        // all(caffeate, any(loss_hex, decarb), not(extra)) under Runtime: the caffeate peak is a candidate of loss_hex
+        // and caffeate. With the veto peak every leaf is false, and the first two tie on score and assigned count:
+        // loss_hex taking the peak (the veto-free logic is false: caffeate has none), then caffeate taking it (the
+        // veto-free logic holds). fired_ignoring_vetoes must not depend on that tie (design 4.7).
+        var terms = Terms(
+            Term("loss_hex", "loss_from_precursor", "required", Formula("C6H10O5")),
+            Term("caffeate", "product_ion", "required", Formula(Caffeate)),
+            Term("decarb", "product_ion", "required", Formula(Decarboxylated)),
+            Term("extra", "product_ion", "veto_present", Formula(Extra)));
+        var logic = AllNode(TermRef("caffeate"), AnyNode(TermRef("loss_hex"), TermRef("decarb")), NotNode(TermRef("extra")));
+        var set = new InlineRuleSet().AddRule(RuleId, terms, logic, CaffeoylHexose, "[\"[M-H]-\"]", "caffeate").Load();
+        var engine = MakeEngine(set, RuleId, Runtime);
+        var clean = EvaluateOnly(engine, Spectrum(Neg(Caffeate, 600), Neg(Decarboxylated, 300)));
+        Assert.IsTrue(clean.Fired);
+        Assert.AreEqual("caffeate:C9H7O4@1 decarb:C8H7O2@2", Matched(clean));
+
+        var vetoed = Spectrum(Neg(Caffeate, 600), Neg(Decarboxylated, 300), Neg(Extra, 100));
+        var e = EvaluateOnly(engine, vetoed);
+        Assert.IsFalse(e.Fired);
+        Assert.IsTrue(e.FiredIgnoringVetoes);
+        Assert.IsTrue(e.VetoBlocked);
+        Assert.AreEqual(HypothesisFailure.Veto, e.Failure);
+        Assert.AreEqual("caffeate:C9H7O4@1 decarb:C8H7O2@2", Matched(e));
+        Assert.AreEqual(0.6 + 0.3, e.Score);
+        Assert.IsTrue(e.Vetoes.Single().Fired);
+
+        // The rule is veto-blocked, and its chosen hypothesis lists the blocking veto.
+        var options = new DiagnosticEvaluationOptions { Filter = RuleFilter.All, Overlap = OverlapMode.Runtime };
+        var outcome = new DiagnosticRuleEvaluator(set, options).Evaluate(vetoed).Outcomes.Single();
+        Assert.IsFalse(outcome.Fired);
+        Assert.IsTrue(outcome.VetoBlocked);
+        Assert.AreEqual(HypothesisOutcome.FailureVeto, outcome.Chosen!.Failure);
+        Assert.AreEqual("extra", outcome.Chosen.Vetoes.Single(v => v.Fired).TermId);
+    }
+
+    [TestMethod]
     public void MoreLeavesThanTheCapGiveAssignmentOverflow() {
         // Two conflicted items with one candidate each: (peak, none), (none, peak), (none, none) = 3 leaves.
         var set = KOfRule(false).Load();
