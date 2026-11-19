@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading.Tasks;
 using CompMs.App.MsdialConsole.Export;
 using System.Linq;
 using CompMs.Common.MessagePack;
@@ -17,7 +17,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
     public class MassQLTest {
 
         public MassQLTest() { }
-        public async void Run() {
+        public async Task Run() {
 
             //var testfile = @"E:\0_SourceCode\MsdialWorkbenchDemo\massql_demofiles\2022_05_02_05_47_01.mdproject";
             var testfile = @"Z:\Workspaces\Nishida\massqltest\2022_05_11_06_06_41.mdproject";
@@ -44,15 +44,11 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2NL=163";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=660.2:TOLERANCEMZ=0.1%20AND%20MS2PROD=468.2:TOLERANCEMZ=0.1";
 
-            var req = WebRequest.Create(query);
-            var res = req.GetResponse();
-            var resStream = res.GetResponseStream();
+            using var client = new HttpClient();
+            var json = await client.GetStringAsync(query);
             var isAlignmentResultTargeted = true;
 
-            MassQL? result;
-            using (var sr = new StreamReader(resStream)) {
-                result = JsonConvert.DeserializeObject<MassQL>(sr.ReadToEnd());
-            }
+            var result = JsonConvert.DeserializeObject<MassQL>(json);
             //Console.WriteLine(result.Conditions[0].qualifiers.type);
             //Console.WriteLine();
       
