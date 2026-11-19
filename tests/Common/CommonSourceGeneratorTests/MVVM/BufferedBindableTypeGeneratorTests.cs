@@ -40,10 +40,23 @@
             Assert.AreEqual(1000, item.Baz.Value);
             Assert.AreEqual(10000, item.Qux.Value);
         }
+
+        [TestMethod]
+        public void PrivateConstructorCanBeUsedByFactory() {
+            var item = new MyClass();
+            var model = PrivateConstructorModel.Create(item);
+            Assert.AreEqual(item.Foo, model.Foo);
+            Assert.IsNull(typeof(PrivateConstructorModel).GetConstructor(new[] { typeof(MyClass) }));
+        }
     }
 
     [BufferedBindableType(typeof(MyClass))]
     internal partial class MyClassModel2 {
 
+    }
+
+    [BufferedBindableType(typeof(MyClass), PrivateConstructor = true)]
+    internal partial class PrivateConstructorModel {
+        public static PrivateConstructorModel Create(MyClass item) => new(item);
     }
 }

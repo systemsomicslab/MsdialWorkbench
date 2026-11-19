@@ -30,6 +30,7 @@ namespace CompMs.CommonSourceGenerator.MVVM {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     internal sealed class BufferedBindableTypeAttribute : Attribute {
         public Type? type;
+        public bool PrivateConstructor { get; set; }
 
         public BufferedBindableTypeAttribute(Type type) {
             this.type = type;
@@ -56,6 +57,9 @@ namespace CompMs.CommonSourceGenerator.MVVM {
             TypedConstant argument = attr.ConstructorArguments[0];
             var namedTypeSymbol = (INamedTypeSymbol)argument.Value!;
             var valueType = namedTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            var constructorAccessibility = attr.NamedArguments.Any(pair => pair.Key == "PrivateConstructor" && pair.Value.Value is true)
+                ? "private"
+                : "public";
 
             StringBuilder sb = new();
 
@@ -93,7 +97,7 @@ using System.ComponentModel;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public {{typeSymbol.Name}}({{valueType}} innerModel) {
+        {{constructorAccessibility}} {{typeSymbol.Name}}({{valueType}} innerModel) {
             _innerModel = innerModel ?? throw new ArgumentNullException("innerModel");
 {{string.Join("\r\n", properties.Select(p => $$"""
             {{BackingFieldName(p.Name)}} = innerModel.{{p.Name}};

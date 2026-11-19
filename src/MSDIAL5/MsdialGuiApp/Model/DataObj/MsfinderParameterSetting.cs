@@ -7,10 +7,12 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    [BufferedBindableType(typeof(AnalysisParamOfMsfinder))]
+    [BufferedBindableType(typeof(AnalysisParamOfMsfinder), PrivateConstructor = true)]
     internal partial class MsfinderParameterSetting {
 
-        public FormulaFinderAdductIonSettingModel FormulaFinderAdductIonSetting { get; }
+        // The generated constructor is private and is only called by the constructor below,
+        // which initializes this property using the project's ion mode.
+        public FormulaFinderAdductIonSettingModel FormulaFinderAdductIonSetting { get; } = null!;
 
         public bool IsCreateNewProject {
             get => _isCreateNewProject;
