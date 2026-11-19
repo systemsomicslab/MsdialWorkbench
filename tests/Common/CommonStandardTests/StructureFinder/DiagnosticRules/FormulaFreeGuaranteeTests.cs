@@ -1,3 +1,4 @@
+#nullable enable
 using CompMs.Common.StructureFinder.DiagnosticRules.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
