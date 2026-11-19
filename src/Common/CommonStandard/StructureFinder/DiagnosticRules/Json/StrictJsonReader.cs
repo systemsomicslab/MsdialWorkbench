@@ -24,7 +24,13 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Json
         public const int MaxDepth = 128;
 
         /// <summary>Reads a rule file: the top level must be an object.</summary>
-        public static JsonObject Read(byte[] bytes) {
+        public static JsonObject Read(byte[] bytes) => (JsonObject)ReadValue(bytes, allowArray: false);
+
+        /// <summary>The same reader, also accepting a top-level array: draft staging files only, which are never
+        /// hashed (the reference's <c>load_strict_staging</c>).</summary>
+        internal static JsonValue ReadStaging(byte[] bytes) => ReadValue(bytes, allowArray: true);
+
+        private static JsonValue ReadValue(byte[] bytes, bool allowArray) {
             if (bytes is null) {
                 throw new System.ArgumentNullException(nameof(bytes));
             }
@@ -33,14 +39,14 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Json
             }
             var text = DecodeUtf8(bytes);
             var value = new Parser(text).ParseDocument();
-            if (!(value is JsonObject obj)) {
+            if (!(value is JsonObject || (allowArray && value is JsonArray))) {
                 throw new StrictJsonException(RuleErrorCodes.TopLevelNotObject);
             }
-            if (Depth(obj) > MaxDepth) {
+            if (Depth(value) > MaxDepth) {
                 throw new StrictJsonException(RuleErrorCodes.NestingDepth);
             }
-            CheckPrintableAscii(obj);
-            return obj;
+            CheckPrintableAscii(value);
+            return value;
         }
 
         /// <summary>Strict UTF-8 as Python's codec decodes it: no overlong forms, surrogates or code points above U+10FFFF.</summary>

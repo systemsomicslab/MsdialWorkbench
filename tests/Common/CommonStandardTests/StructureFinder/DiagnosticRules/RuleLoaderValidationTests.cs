@@ -96,4 +96,49 @@ public class RuleLoaderValidationTests
             Assert.IsFalse(set.Identity.Pinned);
         }
     }
+
+    /// <summary>
+    /// The reference's <c>--draft</c> load (expectations from <c>load_files(files, draft=True)</c> and
+    /// <c>draft=False</c> on the same files): staging folders are merged and never hashed, _audit is ignored, a
+    /// nested staging file is unexpected, and no pin is checked. Without the draft flag every staging file is
+    /// unexpected and the missing history row is ruleset_unpinned.
+    /// </summary>
+    [TestMethod]
+    public void ADraftMergesStagingFoldersAndSkipsThePin() {
+        var baseFiles = (JsonObject)LoaderVectors()["base_files"];
+        var files = Files(baseFiles);
+        var clean = DiagnosticRuleSetLoader.Validate(files, checkPin: true).RuleSetSha256;
+        files.Remove("ruleset-history.tsv");
+        files["_requests/r.json"] = System.Text.Encoding.ASCII.GetBytes("{\"units\": [], \"adducts\": \"x\"}");
+        files["_nesting/n.json"] = System.Text.Encoding.ASCII.GetBytes("{}");
+        files["_motifs/m.json"] = System.Text.Encoding.ASCII.GetBytes("[{\"motif_id\": 1}]");
+        files["_audit/x.json"] = System.Text.Encoding.ASCII.GetBytes("not json");
+        files["_motifs/deeper/y.json"] = System.Text.Encoding.ASCII.GetBytes("[]");
+
+        var draft = DiagnosticRuleSetLoader.Validate(files, checkPin: true, draft: true);
+        Assert.AreEqual(ErrorList(new[] {
+            new RuleLoadError("unexpected_file", "_motifs/deeper/y.json", ""),
+            new RuleLoadError("missing_key", "_motifs/m.json", "/0/chemont"),
+            new RuleLoadError("bad_type", "_motifs/m.json", "/0/motif_id"),
+            new RuleLoadError("missing_key", "_motifs/m.json", "/0/origin"),
+            new RuleLoadError("missing_key", "_motifs/m.json", "/0/smarts"),
+            new RuleLoadError("missing_key", "_motifs/m.json", "/0/source"),
+            new RuleLoadError("bad_type", "_nesting/n.json", ""),
+            new RuleLoadError("bad_type", "_requests/r.json", "/adducts"),
+        }), ErrorList(draft.Errors));
+        CollectionAssert.AreEqual(new[] { "_motifs/m.json", "_nesting/n.json", "_requests/r.json" }, draft.StagingFiles);
+        Assert.AreEqual(clean, draft.RuleSetSha256);
+        Assert.IsFalse(draft.PinChecked);
+
+        var pinned = DiagnosticRuleSetLoader.Validate(files, checkPin: true);
+        Assert.AreEqual(ErrorList(new[] {
+            new RuleLoadError("unexpected_file", "_audit/x.json", ""),
+            new RuleLoadError("unexpected_file", "_motifs/deeper/y.json", ""),
+            new RuleLoadError("unexpected_file", "_motifs/m.json", ""),
+            new RuleLoadError("unexpected_file", "_nesting/n.json", ""),
+            new RuleLoadError("unexpected_file", "_requests/r.json", ""),
+            new RuleLoadError("ruleset_unpinned", "ruleset.json", "/rule_set_version"),
+        }), ErrorList(pinned.Errors));
+        Assert.AreEqual(clean, pinned.RuleSetSha256);
+    }
 }

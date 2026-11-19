@@ -38,6 +38,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
         public string? RuleSetSha256 { get; set; }
         public string? RuleSetVersion { get; set; }
         public int RuleCount { get; set; }
+        /// <summary>Draft staging files that were read (merged, never hashed), in path order.</summary>
+        public List<string> StagingFiles { get; } = new List<string>();
         public bool PinChecked { get; set; }
         public LoadedTables? Tables { get; set; }
         /// <summary>Rules whose schema and references passed, by rule id.</summary>
@@ -72,6 +74,12 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
             new[] { MotifsFile, "msfinder-diagnostic-motifs", "motifs" },
             new[] { NestingFile, "msfinder-diagnostic-motif-nesting", "nesting" },
         };
+
+        /// <summary>Draft staging folders, merged after the table rows and never hashed (draft only).</summary>
+        private static readonly string[] StagingDirs = { "_motifs", "_nesting", "_requests" };
+
+        /// <summary>Folders a draft ignores.</summary>
+        private static readonly string[] DraftIgnoredDirs = { "_audit" };
 
         private static readonly Regex HistoryRow = new Regex(
             @"^([a-z0-9][a-z0-9._-]*)\t([0-9a-f]{64})\t([0-9]{4}-[0-9]{2}-[0-9]{2})\z", RegexOptions.CultureInvariant);
@@ -115,12 +123,18 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
             return false;
         }
 
-        /// <summary>"hashed", "unexpected" or "ignore" (the reference's classify with draft=False).</summary>
-        internal static string Classify(string rel) {
+        /// <summary>"hashed", "staging", "unexpected" or "ignore" (the reference's classify).</summary>
+        internal static string Classify(string rel, bool draft) {
             var parts = rel.Split('/');
             var top = parts[0];
             var isJson = rel.EndsWith(".json", StringComparison.Ordinal);
             if (top.StartsWith("_", StringComparison.Ordinal) && parts.Length > 1) {
+                if (draft && Array.IndexOf(DraftIgnoredDirs, top) >= 0) {
+                    return "ignore";
+                }
+                if (draft && Array.IndexOf(StagingDirs, top) >= 0 && parts.Length == 2 && isJson) {
+                    return "staging";
+                }
                 return isJson ? "unexpected" : "ignore";
             }
             if (!isJson) {
@@ -139,17 +153,21 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
 
         /// <summary>
         /// Validates a rule set given as {path relative to RuleSet/ with '/': bytes}. With <paramref name="checkPin"/>
-        /// (the embedded set) the version must have a matching ruleset-history.tsv row.
+        /// (the embedded set) the version must have a matching ruleset-history.tsv row. A <paramref name="draft"/>
+        /// (the reference's <c>--draft</c>, a catalog working copy) also merges the staging folders _motifs, _nesting
+        /// and _requests after the table rows, ignores _audit, does not require the motif and nesting tables and
+        /// never checks the pin.
         /// </summary>
-        public static RuleSetLoadReport Validate(IReadOnlyDictionary<string, byte[]> files, bool checkPin) {
+        public static RuleSetLoadReport Validate(IReadOnlyDictionary<string, byte[]> files, bool checkPin, bool draft = false) {
             var errors = new List<RuleLoadError>();
             var res = new RuleSetLoadReport();
             var docs = new SortedDictionary<string, JsonObject>(CanonicalJson.CodePointOrder);
             var hashed = new SortedDictionary<string, byte[]?>(CanonicalJson.CodePointOrder);
+            var staging = new SortedDictionary<string, JsonValue>(CanonicalJson.CodePointOrder);
             var paths = new List<string>(files.Keys);
             paths.Sort(CanonicalJson.CodePointOrder);
             foreach (var rel in paths) {
-                var kind = Classify(rel);
+                var kind = Classify(rel, draft);
                 if (kind == "ignore") {
                     continue;
                 }
@@ -158,19 +176,27 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                     continue;
                 }
                 var b = files[rel];
-                JsonObject doc;
+                JsonValue doc;
                 try {
-                    doc = StrictJsonReader.Read(b);
+                    doc = kind == "hashed" ? StrictJsonReader.Read(b) : StrictJsonReader.ReadStaging(b);
                 }
                 catch (StrictJsonException e) {
                     errors.Add(new RuleLoadError(e.Code, rel, ""));
-                    hashed[rel] = null;
+                    if (kind == "hashed") {
+                        hashed[rel] = null;
+                    }
                     continue;
                 }
                 SchemaReader.ScanRefused(new ErrorSink(errors, rel), doc);
-                hashed[rel] = b;
-                docs[rel] = doc;
+                if (kind == "hashed") {
+                    hashed[rel] = b;
+                    docs[rel] = (JsonObject)doc;
+                }
+                else {
+                    staging[rel] = doc;
+                }
             }
+            res.StagingFiles.AddRange(staging.Keys);
             var allRead = true;
             foreach (var kv in hashed) {
                 allRead &= kv.Value != null;
@@ -181,7 +207,10 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                 }
                 res.RuleSetSha256 = RuleSetSha256FromHashes(res.FileHashes);
             }
-            foreach (var rel in new[] { RulesetFile, ElementsFile, AdductsFile, UnitsFile, MotifsFile, NestingFile }) {
+            var required = draft
+                ? new[] { RulesetFile, ElementsFile, AdductsFile, UnitsFile }
+                : new[] { RulesetFile, ElementsFile, AdductsFile, UnitsFile, MotifsFile, NestingFile };
+            foreach (var rel in required) {
                 if (!files.ContainsKey(rel)) {
                     errors.Add(new RuleLoadError(RuleErrorCodes.MissingFile, rel, ""));
                 }
@@ -223,6 +252,41 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                     }
                     for (var i = 0; i < a.Count; i++) {
                         rows[w[2]].Add(Tuple.Create(w[0], Pointers.Child("/" + w[2], i), a[i]));
+                    }
+                }
+            }
+            // Draft staging rows follow the table rows, in path order.
+            foreach (var kv in staging) {
+                var c = new ErrorSink(errors, kv.Key);
+                var top = kv.Key.Split('/')[0];
+                if (top == "_motifs" || top == "_nesting") {
+                    if (!(kv.Value is JsonArray list)) {
+                        c.Err(RuleErrorCodes.BadType, "");
+                        continue;
+                    }
+                    var key = top == "_motifs" ? "motifs" : "nesting";
+                    for (var i = 0; i < list.Count; i++) {
+                        rows[key].Add(Tuple.Create(kv.Key, Pointers.Child("", i), list[i]));
+                    }
+                }
+                else {
+                    if (!(kv.Value is JsonObject request)) {
+                        c.Err(RuleErrorCodes.BadType, "");
+                        continue;
+                    }
+                    SchemaReader.CheckKeys(c, request, "", new[] { "units", "adducts" });
+                    foreach (var key in new[] { "units", "adducts" }) {
+                        var value = request.Get(key);
+                        if (value is null) {
+                            continue;
+                        }
+                        if (!(value is JsonArray list)) {
+                            c.Err(RuleErrorCodes.BadType, "/" + key);
+                            continue;
+                        }
+                        for (var i = 0; i < list.Count; i++) {
+                            rows[key].Add(Tuple.Create(kv.Key, Pointers.Child("/" + key, i), list[i]));
+                        }
                     }
                 }
             }
@@ -353,7 +417,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                 TwoIonCheck.CheckSeries(c, rule, tables);
                 ProvenanceDeriver.CheckProvenanceAndReview(c, rule, tables);
             }
-            if (checkPin && res.RuleSetVersion != null && res.RuleSetSha256 != null) {
+            if (checkPin && !draft && res.RuleSetVersion != null && res.RuleSetSha256 != null) {
                 res.PinChecked = true;
                 files.TryGetValue(HistoryFile, out var history);
                 CheckPin(errors, history, res.RuleSetVersion, res.RuleSetSha256);
