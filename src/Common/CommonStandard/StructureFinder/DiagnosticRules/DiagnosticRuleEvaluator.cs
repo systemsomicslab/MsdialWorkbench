@@ -294,8 +294,10 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
         private static MatchedTerm Matched(RuleEngine engine, MatchedItem m, int? unitId) {
             var target = m.Member.TargetMz;
             var error = m.Peak.ErrorDa;
+            // error_ppm is saturated: a loss target can be 0 (or far smaller than the error), and the quotient would
+            // overflow (design 4.11 allows no non-finite field but precursor_mz).
             return new MatchedTerm(m.Term.Term.Tid, m.Member.Key, m.Term.Term.Kind, m.Term.Term.Role, engine.Builder.IonFormula(m.Member), target,
-                                   m.Peak.InputIndex, m.Peak.Mz, error, error / target * 1000000.0, m.Peak.Rel, unitId);
+                                   m.Peak.InputIndex, m.Peak.Mz, error, Saturation.Clamp(error / target * 1000000.0), m.Peak.Rel, unitId);
         }
 
         /// <summary>

@@ -221,9 +221,10 @@ public class FailureModeTests
     }
 
     [TestMethod]
-    public void AnOverflowingRelativeIntensityIsWrittenAsNull() {
-        // A finite peak inside the precursor region can be far stronger than the p2 base: its rel may overflow to
-        // infinity. It is never a candidate, but a veto's I_raw sees it; the JSON writes null, nothing throws.
+    public void AnOverflowingRelativeIntensitySaturates() {
+        // A finite peak inside the precursor region can be far stronger than the p2 base: I / base overflows. It is
+        // never a candidate, but a veto's I_raw sees it; the quotient saturates at double.MaxValue, so i_a stays finite
+        // (design 4.11) and the veto still fires.
         var spectrum = Spectrum(TestMass.Da(TestMass.Of("C21H20O10") - TestMass.Of("H") + TestMass.Electron), DiagnosticIonMode.Negative,
                                 new DiagnosticPeak(100.0, double.Epsilon));
         var veto = Term("w", "window", "veto_present", Window("C21H19O10", "ion", "0.02"));
@@ -232,8 +233,42 @@ public class FailureModeTests
         var withPrecursor = new DiagnosticSpectrum(spectrum.Peaks.Concat(new[] { precursorPeak }).ToList(), spectrum.PrecursorMz, spectrum.IonMode, "QTOF");
         var r = Evaluator(set, AllRules(verbose: true)).Evaluate(withPrecursor);
         var h = Outcome(r).All.Single();
-        Assert.IsTrue(double.IsPositiveInfinity(h.Vetoes.Single().IA));
+        Assert.AreEqual(double.MaxValue, h.Vetoes.Single().IA);
         Assert.IsTrue(h.Vetoes.Single().Fired);
-        StringAssert.Contains(ResultText(r), "\"i_a\":null,");
+        Assert.IsFalse(ResultText(r).Contains("\"i_a\":null"));
+
+        // veto_stronger_than: both the veto and its than-term see the region peak; i_b_max saturates too.
+        var than = TermThan("v", "window", "veto_stronger_than", Window("C21H19O10", "ion", "0.02"), new[] { "t" }, "0.1");
+        var thanTerm = Term("t", "window", "veto_present", Window("C21H19O10", "ion", "0.03"));
+        var stronger = new InlineRuleSet().AddRule(RuleId, Terms(Y0, than, thanTerm), AllOf(new[] { "Y0" }, new[] { "v", "t" }), CoreHex, "[\"[M-H]-\"]", "Y0");
+        var s = Outcome(Evaluator(stronger, AllRules(verbose: true)).Evaluate(withPrecursor)).All.Single();
+        foreach (var v in s.Vetoes) {
+            Assert.AreEqual(double.MaxValue, v.IA, v.TermId);
+        }
+        Assert.AreEqual(double.MaxValue, s.Vetoes.Single(v => v.TermId == "v").IBMax);
+    }
+
+    [TestMethod]
+    public void AnErrorPpmAtAZeroTargetSaturates() {
+        // An observed-reference loss whose mass equals P_obs has the target 0.0; a peak at m/z 0.003 hits it (p2:
+        // 0.005 Da at t = 0) and error_da / target overflows. error_ppm saturates and stays finite (design 4.11).
+        var terms = Terms(
+            Term("loss_hex", "loss_from_precursor", "counted", Formula("C6H10O5")),
+            Term("caffeate", "product_ion", "counted", Formula("C9H7O4")),
+            Term("decarb", "product_ion", "counted", Formula("C8H7O2")));
+        var set = new InlineRuleSet().AddRule(RuleId, terms, KOf("2", TermRef("loss_hex"), TermRef("caffeate"), TermRef("decarb")),
+                                              InlineRuleSet.Composition("C9H8O4", null, "{\"Hex\":[1,1]}", "{}"), "[\"[M-H]-\"]", "caffeate")
+            .SetRule(RuleId, "complementary", "[[\"loss_hex\",\"caffeate\"]]");
+        var options = AllRules(verbose: true);
+        options.LossReferenceOverride = Model.LossReference.Observed;
+        options.PrecursorToleranceDa = 200.0;
+        options.Overlap = OverlapMode.Runtime; // the 200 Da observed-loss slack would refuse the rule
+        var precursor = TestMass.Da(TestMass.Of("C6H10O5"));
+        var r = Evaluator(set, options).Evaluate(Spectrum(precursor, DiagnosticIonMode.Negative, new DiagnosticPeak(0.003, 1000.0)));
+        var loss = Outcome(r).All.Single().Matched.Single(m => m.TermId == "loss_hex");
+        Assert.AreEqual(0.0, loss.TargetMz);
+        Assert.AreEqual(0.003, loss.ErrorDa);
+        Assert.AreEqual(double.MaxValue, loss.ErrorPpm);
+        Assert.IsFalse(ResultText(r).Contains("\"error_ppm\":null"));
     }
 }

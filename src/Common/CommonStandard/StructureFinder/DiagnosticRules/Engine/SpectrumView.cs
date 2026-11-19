@@ -187,12 +187,14 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         public bool HasReference(RuleConvention convention) =>
             Status == SpectrumStatus.Evaluated && (convention == RuleConvention.Msdial || HasBase);
 
-        /// <summary>p2: I / base (0 to 1); msdial: (I / maxI) * 100.0 (0 to 100).</summary>
+        /// <summary>p2: I / base (0 to 1 outside the precursor region; a region peak, which the base excludes, can
+        /// exceed 1, and the quotient is saturated at double.MaxValue so it stays finite, <see cref="Saturation"/>);
+        /// msdial: (I / maxI) * 100.0 (0 to 100).</summary>
         public double Rel(int k, RuleConvention convention) {
             if (!HasReference(convention)) {
                 return 0.0;
             }
-            return convention == RuleConvention.P2 ? _intensity[k] / BaseIntensity : (_intensity[k] / MaxIntensity) * 100.0;
+            return convention == RuleConvention.P2 ? Saturation.Clamp(_intensity[k] / BaseIntensity) : (_intensity[k] / MaxIntensity) * 100.0;
         }
 
         /// <summary>p2: rel &gt;= floor * scale and rel &gt; 0; msdial: rel &gt; floor * scale.</summary>

@@ -18,12 +18,13 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Tests;
 
 /// <summary>
 /// A mixed inline set and a seeded spectrum generator for the determinism, culture and never-throws tests: the basic
-/// rule with a veto, the three-scaffold series, an msdial rule with any and k_of nodes and an upgrade, a positive rule
-/// and the caffeoyl hexose pair with its declaration.
+/// rule with a veto, the three-scaffold series, an msdial rule with any and k_of nodes and an upgrade, a positive rule,
+/// the caffeoyl hexose pair with its declaration, and a rule vetoed by the precursor ion itself.
 /// </summary>
 internal static class MixedCases
 {
-    public const string Msdial = "flavonoid.msdial.neg", Pos = "flavonoid.o_glycoside.pos", Caffeoyl = "hydroxycinnamoyl.caffeoyl_hexose.neg";
+    public const string Msdial = "flavonoid.msdial.neg", Pos = "flavonoid.o_glycoside.pos", Caffeoyl = "hydroxycinnamoyl.caffeoyl_hexose.neg",
+                        PrecursorVeto = "flavonoid.precursor_veto.neg";
 
     public static InlineRuleSet Set() {
         var s = SeriesTests.SeriesSet().AddBasic(RuleId, withVeto: true).AddBasic(Pos);
@@ -37,6 +38,10 @@ internal static class MixedCases
                   KOf("2", TermRef("loss_hex"), TermRef("caffeate"), TermRef("decarb")),
                   InlineRuleSet.Composition("C9H8O4", null, "{\"Hex\":[1,1]}", "{}"), "[\"[M-H]-\"]", "caffeate")
          .SetRule(Caffeoyl, "complementary", "[[\"loss_hex\",\"caffeate\"]]");
+        // A veto window on the [M-H]- precursor ion itself: I_raw sees the precursor region, which the p2 base excludes.
+        var precursorVeto = Term("p", "window", "veto_present", Window("C21H19O10", "ion", "0.02"));
+        s.AddRule(PrecursorVeto, Terms(Y0, X, precursorVeto), AllOf(new[] { "Y0", "X" }, new[] { "p" }), CoreHex, "[\"[M-H]-\"]", "Y0")
+         .SetRule(PrecursorVeto, "claim/claim_term_ids", "[\"Y0\",\"X\"]");
         return s;
     }
 
@@ -83,8 +88,10 @@ internal static class MixedCases
 
     /// <summary>
     /// Any spectrum: NaN, infinite, zero, negative, huge and tiny precursors; no or the wrong ion mode; empty peak
-    /// lists; non-finite, zero and negative m/z and intensities; duplicate peaks. Usable intensities stay between
-    /// 10^-3 and 10^9, so every relative intensity is a ratio of finite numbers that cannot overflow.
+    /// lists; non-finite, zero and negative m/z and intensities; duplicate peaks. Usable intensities are between 10^-3
+    /// and 10^9, except in one spectrum in 20, which spans the whole double range: double.Epsilon away from the
+    /// precursor and 10^300 near it, plus a 10^300 peak on the precursor, so a precursor-region rel I / base would
+    /// overflow without saturation.
     /// </summary>
     public static DiagnosticSpectrum Any(Random random) {
         double precursor;
@@ -98,15 +105,20 @@ internal static class MixedCases
         var modeRoll = random.Next(6);
         DiagnosticIonMode? mode = modeRoll == 0 ? (DiagnosticIonMode?)null : modeRoll == 1 ? DiagnosticIonMode.Positive : DiagnosticIonMode.Negative;
         var n = random.Next(8) == 0 ? 0 : random.Next(1, 40);
+        var extreme = random.Next(20) == 0;
         var peaks = new List<DiagnosticPeak>();
         for (var i = 0; i < n; i++) {
-            var mz = random.Next(4) == 0 ? random.NextDouble() * 1500.0 : random.Next(10) == 0 && !double.IsNaN(precursor) ? precursor + (random.NextDouble() - 0.5) * 2.2
+            var kind = random.Next(4) == 0 ? 0 : random.Next(10) == 0 && !double.IsNaN(precursor) ? 1 : 2;
+            var mz = kind == 0 ? random.NextDouble() * 1500.0 : kind == 1 ? precursor + (random.NextDouble() - 0.5) * 2.2
                    : Ions[random.Next(Ions.Length)] + (random.NextDouble() - 0.5) * 0.02;
-            var intensity = random.Next(10) == 0 ? 0.0 : Math.Pow(10.0, -3.0 + random.NextDouble() * 12.0);
+            var intensity = random.Next(10) == 0 ? 0.0 : extreme ? (kind == 1 ? 1e300 : double.Epsilon) : Math.Pow(10.0, -3.0 + random.NextDouble() * 12.0);
             peaks.Add(new DiagnosticPeak(Special(random, mz), Special(random, intensity)));
             if (random.Next(15) == 0) {
                 peaks.Add(peaks[peaks.Count - 1]);
             }
+        }
+        if (extreme) {
+            peaks.Add(new DiagnosticPeak(precursor, 1e300));
         }
         var instrument = random.Next(10) == 0 ? "Q\nTOF \u00e9\U0001F600" : Instruments[random.Next(Instruments.Length)];
         return new DiagnosticSpectrum(peaks, precursor, mode, instrument!);
@@ -215,6 +227,7 @@ public class DeterminismTests
         var random = new Random(4242);
         var statuses = new SortedDictionary<string, int>(StringComparer.Ordinal);
         var doubles = 0;
+        var saturated = 0;
         for (var i = 0; i < 10000; i++) {
             var spectrum = MixedCases.Any(random);
             var evidence = random.Next(5) == 0 ? new AdductEvidence(random.Next(2) == 0 ? "[M-H]-" : "[M+H]+", AdductTier.Curated) : null;
@@ -224,6 +237,7 @@ public class DeterminismTests
             statuses[result.Status] = statuses.TryGetValue(result.Status, out var c) ? c + 1 : 1;
             foreach (var (path, value) in Doubles(result, "result")) {
                 doubles++;
+                saturated += value == double.MaxValue ? 1 : 0;
                 if (path != "result.PrecursorMz" && (double.IsNaN(value) || double.IsInfinity(value))) {
                     Assert.Fail(path + " is " + value.ToString("R", CultureInfo.InvariantCulture) + " in spectrum " + i.ToString(CultureInfo.InvariantCulture));
                 }
@@ -232,6 +246,8 @@ public class DeterminismTests
         Assert.AreEqual("evaluated no_peaks no_precursor unsupported_ion_mode", string.Join(" ", statuses.Keys));
         Assert.IsTrue(statuses["evaluated"] > 3000, statuses["evaluated"].ToString(CultureInfo.InvariantCulture));
         Assert.IsTrue(doubles > 50000, doubles.ToString(CultureInfo.InvariantCulture));
+        // The generator reaches the overflow: a precursor-region I_raw that saturates instead of becoming infinite.
+        Assert.IsTrue(saturated > 0, "no saturated double");
 
         // 10^5 peaks: the known ions among random ones.
         for (var k = 0; k < 2; k++) {
