@@ -2301,8 +2301,7 @@ namespace CompMs.Common.Lipidomics
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
-                    if (sn2Double >= 7) return null;
-
+                    if (sn1Double >= 7 || sn2Double >= 7) return null;
                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
 
@@ -2336,15 +2335,21 @@ namespace CompMs.Common.Lipidomics
                     // from here, acyl level annotation is executed.
                     var diagnosticMz = theoreticalMz;
                     var candidates = new List<LipidMolecule>();
-                    if (sn2Double >= 7) return null;
                     for (int sn1CarbonNum = 6; sn1CarbonNum <= totalCarbon; sn1CarbonNum++)
                     {
                         for (int sn1DoubleNum = 0; sn1DoubleNum <= totalDoubleBond; sn1DoubleNum++)
                         {
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
-                            if (sn2DoubleNum >= 7) continue;
+                            if (sn1DoubleNum >= 7 || sn2DoubleNum >= 7) continue;
 
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(
+                                    sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(
+                                    sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) - H2O + MassDiffDictionary.HydrogenMass * 2;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) - H2O + MassDiffDictionary.HydrogenMass * 2;
 
@@ -4001,7 +4006,9 @@ namespace CompMs.Common.Lipidomics
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
-                    if (sn2Double >= 7) return null;
+                    if (sn1Double >= 7 || sn2Double >= 7) return null;
+                    if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(sn1Carbon, sn1Double) ||
+                        !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2Carbon, sn2Double)) return null;
 
                     var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass;
                     var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
@@ -4042,8 +4049,15 @@ namespace CompMs.Common.Lipidomics
                         {
                             var sn2CarbonNum = totalCarbon - sn1CarbonNum;
                             var sn2DoubleNum = totalDoubleBond - sn1DoubleNum;
-                            if (sn2DoubleNum >= 7) continue;
+                            if (sn1DoubleNum >= 7 || sn2DoubleNum >= 7) continue;
 
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(
+                                    sn1CarbonNum, sn1DoubleNum) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(
+                                    sn2CarbonNum, sn2DoubleNum))
+                            {
+                                continue;
+                            }
                             var nl_SN1 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1CarbonNum, sn1DoubleNum) - H2O + MassDiffDictionary.HydrogenMass;
                             var nl_SN2 = diagnosticMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2CarbonNum, sn2DoubleNum) - H2O + MassDiffDictionary.HydrogenMass;
 

@@ -9004,10 +9004,13 @@ AdductIon adduct)
                                     var SN3 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn3Carbon, sn3Double);
 
                                     var SN1_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 6)
-                                            + (MassDiffDictionary.HydrogenMass * 6) + MassDiffDictionary.PhosphorusMass - Proton; //[SN1+C3H7O4P]-
-                                    var SN2_SN3_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon + sn3Carbon, sn2Double + sn3Double) + MassDiffDictionary.CarbonMass * 3 + (MassDiffDictionary.OxygenMass * 7)
-                                            + (MassDiffDictionary.HydrogenMass * 8) + MassDiffDictionary.PhosphorusMass - Proton; //[SN2+SN3+C3H8O7P]-
-
+                                            + (MassDiffDictionary.HydrogenMass * 8) + MassDiffDictionary.PhosphorusMass - Proton; //[SN1+C3H7O4P]-
+                                    var SN2_SN3_PA = LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon + sn3Carbon, sn2Double + sn3Double)
+                                        + MassDiffDictionary.CarbonMass * 3
+                                        + (MassDiffDictionary.OxygenMass * 7)
+                                        + (MassDiffDictionary.HydrogenMass * 6)
+                                        + MassDiffDictionary.PhosphorusMass
+                                        - Proton; //[PA-H]-;
 
                                     var query = new List<SpectrumPeak>
                                         {
@@ -9039,7 +9042,7 @@ AdductIon adduct)
                                     else if (foundCount < 3 && foundCount >= 0 && foundCount2 == 2)
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getCardiolipinMoleculeObjAsLevel2_0("MLCL", LbmClass.MLCL, sn1Carbon, sn1Double,
-                                            sn2Carbon + sn3Carbon, sn2Double + sn3Double, averageIntensity);
+                                            sn2Carbon + sn3Carbon, sn2Double + sn3Double, averageIntensity2);
                                         candidates.Add(molecule);
                                     }
                                     else if (foundCount == 3 && foundCount2 < 2)
