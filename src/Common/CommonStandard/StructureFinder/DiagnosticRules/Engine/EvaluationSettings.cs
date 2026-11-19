@@ -1,6 +1,9 @@
 using CompMs.Common.StructureFinder.DiagnosticRules.Chemistry;
+using CompMs.Common.StructureFinder.DiagnosticRules.Json;
 using CompMs.Common.StructureFinder.DiagnosticRules.Model;
 using System;
+using System.Globalization;
+using System.Numerics;
 
 namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
 {
@@ -70,7 +73,9 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
 
         /// <summary>
         /// Copies and checks the options. Throws <see cref="ArgumentException"/> for a non-finite or negative
-        /// tolerance, a FloorScale that is not finite and positive, an AssignmentCap below 1, |DecoyShiftDa| above
+        /// tolerance, a FloorScale that is not finite and positive, a variant double option (PrecursorToleranceDa,
+        /// ProductToleranceOverride, FloorScale) that its 6-decimal text does not identify (<see cref="SixDecimals"/>),
+        /// an AssignmentCap below 1, |DecoyShiftDa| above
         /// <see cref="MaxDecoyShiftDa"/> (so the shift itself, delta * 10^12, stays below 2^53 pDa; this bounds the
         /// shift only and does not keep every shifted term mass inside (0, 2^53) pDa), or an undefined enum value.
         /// </summary>
@@ -108,12 +113,39 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             if (double.IsNaN(FloorScale) || double.IsInfinity(FloorScale) || FloorScale <= 0.0) {
                 throw new ArgumentException("FloorScale must be finite and positive", "options");
             }
+            // IdentityString and the result options write these with 6 decimals, so two evaluators that differ
+            // only beyond the sixth decimal would share one identity while behaving differently.
+            if (PrecursorToleranceDa.HasValue && !SixDecimals(PrecursorToleranceDa.Value)) {
+                throw new ArgumentException("PrecursorToleranceDa must have at most 6 decimals", "options");
+            }
+            if (ProductToleranceOverride.HasValue
+                && !(SixDecimals(ProductToleranceOverride.Value.AbsDa) && SixDecimals(ProductToleranceOverride.Value.Ppm))) {
+                throw new ArgumentException("ProductToleranceOverride must have at most 6 decimals", "options");
+            }
+            if (!SixDecimals(FloorScale)) {
+                throw new ArgumentException("FloorScale must have at most 6 decimals", "options");
+            }
             if (Overlap != OverlapMode.Refuse && Overlap != OverlapMode.Runtime) {
                 throw new ArgumentException("Overlap is not a defined OverlapMode", "options");
             }
             if (AssignmentCap < 1) {
                 throw new ArgumentException("AssignmentCap must be at least 1", "options");
             }
+        }
+
+        /// <summary>
+        /// Whether the finite <paramref name="x"/> is identified by <c>ExactDecimal.Format(x, 6)</c>: the text's digit
+        /// integer d, read back as <c>(double)d / 1000000.0</c> (correctly rounded, as rule files read decimals), gives
+        /// x again. Above |d| = 2^53 every double is accepted: there ulp(x) exceeds 10^-6, so distinct doubles already
+        /// have distinct texts. MsfinderProductTolerance is not checked: it is the MS-FINDER user's own setting, not a
+        /// variant, and a value read from a float must not make the evaluator unbuildable.
+        /// </summary>
+        internal static bool SixDecimals(double x) {
+            var digits = BigInteger.Parse(ExactDecimal.Format(x, 6).Replace(".", ""), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+            if (BigInteger.Abs(digits) > MassPda.Limit) {
+                return true;
+            }
+            return (double)(long)digits / 1000000.0 == x;
         }
 
         private static bool IsTolerance(double x) => !double.IsNaN(x) && !double.IsInfinity(x) && x >= 0.0;

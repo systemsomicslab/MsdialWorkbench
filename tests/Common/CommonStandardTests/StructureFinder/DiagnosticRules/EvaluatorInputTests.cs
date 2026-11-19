@@ -168,6 +168,13 @@ public class EvaluatorInputTests
             o => o.FloorScale = double.NaN,
             o => o.FloorScale = double.PositiveInfinity,
             o => o.AssignmentCap = 0,
+            // Beyond the sixth decimal the identity text could not tell these from 0.010000, 0.000000, 1.000000.
+            o => o.PrecursorToleranceDa = 0.0100004,
+            o => o.PrecursorToleranceDa = 4e-7,
+            o => o.ProductToleranceOverride = ProductTolerance.Da(0.0050001),
+            o => o.ProductToleranceOverride = ProductTolerance.FromPpm(10.0000001),
+            o => o.FloorScale = 1.0000001,
+            o => o.FloorScale = double.Epsilon,
             o => o.DecoyShiftDa = 9008,
             o => o.DecoyShiftDa = int.MinValue,
             o => o.DecoyShiftDa = int.MaxValue,
@@ -192,5 +199,12 @@ public class EvaluatorInputTests
         Assert.AreEqual(-9007000000000000L, EvaluationSettings.From(new DiagnosticEvaluationOptions { DecoyShiftDa = -9007 }).DecoyShiftPda);
         Assert.AreEqual(9007000000000000L, EvaluationSettings.From(new DiagnosticEvaluationOptions { DecoyShiftDa = 9007 }).DecoyShiftPda);
         Assert.AreEqual(0.0, EvaluationSettings.From(new DiagnosticEvaluationOptions { PrecursorToleranceDa = 0.0 }).PrecursorToleranceDa);
+        // Up to 6 decimals is accepted, and so is any double above 2^53 * 10^-6, whose 6-decimal text is unique.
+        foreach (var x in new[] { 0.000001, 0.003, 0.0125, 0.75, 12.5, 123456.654321, 9007199254.740993, 1e10, 1e300 }) {
+            Assert.IsTrue(EvaluationSettings.SixDecimals(x), x.ToString("R", System.Globalization.CultureInfo.InvariantCulture));
+            Assert.AreEqual(x, EvaluationSettings.From(new DiagnosticEvaluationOptions { PrecursorToleranceDa = x, FloorScale = x }).FloorScale);
+        }
+        // The MS-FINDER user's own tolerance is not a variant and is not checked: a float-derived value is accepted.
+        Assert.IsNotNull(EvaluationSettings.From(new DiagnosticEvaluationOptions { MsfinderProductTolerance = ProductTolerance.Da((double)0.01f) }));
     }
 }

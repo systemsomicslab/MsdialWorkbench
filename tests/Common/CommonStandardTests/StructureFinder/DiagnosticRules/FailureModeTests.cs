@@ -206,7 +206,7 @@ public class FailureModeTests
         {
             new DiagnosticEvaluationOptions { PrecursorToleranceDa = 0.0, ProductToleranceOverride = ProductTolerance.Da(0.0), AssignmentCap = 1 },
             new DiagnosticEvaluationOptions { DecoyShiftDa = 9007 }, new DiagnosticEvaluationOptions { DecoyShiftDa = -9007 },
-            new DiagnosticEvaluationOptions { FloorScale = double.Epsilon },
+            new DiagnosticEvaluationOptions { FloorScale = 0.000001 },
         }) {
             options.Filter = RuleFilter.All;
             var r = new DiagnosticRuleEvaluator(set, options).Evaluate(Firing());
