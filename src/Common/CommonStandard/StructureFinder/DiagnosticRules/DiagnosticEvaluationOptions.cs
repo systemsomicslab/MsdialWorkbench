@@ -64,7 +64,12 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
         /// <summary>A product tolerance for every rule, whatever it declares; null uses the declared one.</summary>
         public ProductTolerance? ProductToleranceOverride { get; set; }
 
-        /// <summary>The tolerance of rules that declare <c>msfinder</c>: MS-FINDER's Ms2Tolerance setting.</summary>
+        /// <summary>
+        /// The tolerance of rules that declare <c>msfinder</c>: MS-FINDER's Ms2Tolerance setting. Like every double
+        /// option it may have at most 6 decimals, because IdentityString writes it with 6; a float setting is passed
+        /// through its decimal text (<c>double.Parse(f.ToString("R", CultureInfo.InvariantCulture),
+        /// CultureInfo.InvariantCulture)</c>), which is also what makes it equal to a review's tolerance (design 4.9).
+        /// </summary>
         public ProductTolerance MsfinderProductTolerance { get; set; } = ProductTolerance.Da(0.01);
 
         /// <summary>A loss reference for every rule; null uses each rule's <c>loss_reference</c>.</summary>

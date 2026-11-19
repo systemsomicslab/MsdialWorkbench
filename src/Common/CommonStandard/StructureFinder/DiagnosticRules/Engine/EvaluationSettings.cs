@@ -73,8 +73,9 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
 
         /// <summary>
         /// Copies and checks the options. Throws <see cref="ArgumentException"/> for a non-finite or negative
-        /// tolerance, a FloorScale that is not finite and positive, a variant double option (PrecursorToleranceDa,
-        /// ProductToleranceOverride, FloorScale) that its 6-decimal text does not identify (<see cref="SixDecimals"/>),
+        /// tolerance, a FloorScale that is not finite and positive, a double option (PrecursorToleranceDa,
+        /// ProductToleranceOverride, MsfinderProductTolerance, FloorScale) that its 6-decimal text does not identify
+        /// (<see cref="SixDecimals"/>),
         /// an AssignmentCap below 1, |DecoyShiftDa| above
         /// <see cref="MaxDecoyShiftDa"/> (so the shift itself, delta * 10^12, stays below 2^53 pDa; this bounds the
         /// shift only and does not keep every shifted term mass inside (0, 2^53) pDa), or an undefined enum value.
@@ -125,6 +126,13 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             if (!SixDecimals(FloorScale)) {
                 throw new ArgumentException("FloorScale must have at most 6 decimals", "options");
             }
+            // MsfinderProductTolerance is no variant, but it is written into IdentityString the same way and changes
+            // which peaks hit, so it is held to the same rule. Design 4.9 compares it with the review by exact double
+            // equality, both sides read from decimal text, so a value taken from MS-FINDER's float setting goes
+            // through its shortest decimal text first (0.01f gives "0.01", which gives 0.01).
+            if (!(SixDecimals(MsfinderProductTolerance.AbsDa) && SixDecimals(MsfinderProductTolerance.Ppm))) {
+                throw new ArgumentException("MsfinderProductTolerance must have at most 6 decimals (convert a float through its decimal text)", "options");
+            }
             if (Overlap != OverlapMode.Refuse && Overlap != OverlapMode.Runtime) {
                 throw new ArgumentException("Overlap is not a defined OverlapMode", "options");
             }
@@ -137,8 +145,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         /// Whether the finite <paramref name="x"/> is identified by <c>ExactDecimal.Format(x, 6)</c>: the text's digit
         /// integer d, read back as <c>(double)d / 1000000.0</c> (correctly rounded, as rule files read decimals), gives
         /// x again. Above |d| = 2^53 every double is accepted: there ulp(x) exceeds 10^-6, so distinct doubles already
-        /// have distinct texts. MsfinderProductTolerance is not checked: it is the MS-FINDER user's own setting, not a
-        /// variant, and a value read from a float must not make the evaluator unbuildable.
+        /// have distinct texts.
         /// </summary>
         internal static bool SixDecimals(double x) {
             var digits = BigInteger.Parse(ExactDecimal.Format(x, 6).Replace(".", ""), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);

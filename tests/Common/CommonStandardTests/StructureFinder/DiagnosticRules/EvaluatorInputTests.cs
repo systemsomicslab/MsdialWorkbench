@@ -204,7 +204,19 @@ public class EvaluatorInputTests
             Assert.IsTrue(EvaluationSettings.SixDecimals(x), x.ToString("R", System.Globalization.CultureInfo.InvariantCulture));
             Assert.AreEqual(x, EvaluationSettings.From(new DiagnosticEvaluationOptions { PrecursorToleranceDa = x, FloorScale = x }).FloorScale);
         }
-        // The MS-FINDER user's own tolerance is not a variant and is not checked: a float-derived value is accepted.
-        Assert.IsNotNull(EvaluationSettings.From(new DiagnosticEvaluationOptions { MsfinderProductTolerance = ProductTolerance.Da((double)0.01f) }));
+        // MsfinderProductTolerance is no variant, but IdentityString writes it with 6 decimals too: 0.0100004 and
+        // 0.0100001 Da would share one identity while hitting different peaks, so neither is accepted. A float
+        // setting widened to double (0.00999999977...) is refused; through its decimal text it is 0.01.
+        foreach (var t in new[] { ProductTolerance.Da(0.0100004), ProductTolerance.Da(0.0100001), ProductTolerance.FromPpm(10.0000001),
+                                  ProductTolerance.Da((double)0.01f), ProductTolerance.FromPpm((double)7.3f) }) {
+            Assert.ThrowsException<ArgumentException>(() => EvaluationSettings.From(new DiagnosticEvaluationOptions { MsfinderProductTolerance = t }));
+        }
+        var invariant = System.Globalization.CultureInfo.InvariantCulture;
+        foreach (var f in new[] { 0.01f, 0.05f, 0.0125f, 7.3f, 10f }) {
+            var x = double.Parse(f.ToString("R", invariant), invariant);
+            Assert.AreEqual(x, EvaluationSettings.From(new DiagnosticEvaluationOptions { MsfinderProductTolerance = ProductTolerance.Da(x) }).MsfinderProductTolerance.AbsDa);
+            Assert.AreEqual(x, EvaluationSettings.From(new DiagnosticEvaluationOptions { MsfinderProductTolerance = ProductTolerance.FromPpm(x) }).MsfinderProductTolerance.Ppm);
+        }
+        Assert.AreEqual(0.01, double.Parse(0.01f.ToString("R", invariant), invariant));
     }
 }
