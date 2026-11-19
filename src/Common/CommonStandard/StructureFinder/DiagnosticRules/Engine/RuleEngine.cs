@@ -126,7 +126,13 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         public IReadOnlyList<KOfState> KOf { get; }
         /// <summary>Every any node in pre-order.</summary>
         public IReadOnlyList<BranchState> Branches { get; }
-        /// <summary>Per upgrade member, its first candidate (design 4.6 order, sharing with items allowed; OQ13).</summary>
+        /// <summary>
+        /// Per upgrade member, its first candidate (design 4.6 order, sharing with items allowed; OQ13). "Evaluated raw"
+        /// (design 4.7) is read as: outside the logic and the assignment, but through the candidate filter (present and
+        /// outside the precursor region), because an upgrade is reported as a matched peak like a support member
+        /// (design 3.6 item 7 treats the two alike; 9.1 item 8: a peak within 1.0 Da of P_obs is never evidence) and
+        /// <c>MatchedTerm</c> carries one peak, not I_raw. Only vetoes and than-comparisons see the region (4.4).
+        /// </summary>
         public IReadOnlyList<MatchedItem> Upgrades { get; }
     }
 
