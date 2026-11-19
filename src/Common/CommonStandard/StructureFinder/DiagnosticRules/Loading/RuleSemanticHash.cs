@@ -12,9 +12,9 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
     /// </summary>
     public static class RuleSemanticHash
     {
-        /// <summary>The engine semantics identity; bumped on any semantic change, which stales every review.
-        /// The evaluator (a later change) exposes the same value.</summary>
-        public const string EngineSemantics = "msfinder-diagnostic-rules/1";
+        /// <summary>The engine semantics identity; bumped on any semantic change, which stales every review. It is
+        /// <see cref="DiagnosticRuleEvaluator.EngineSemantics"/>, the single definition.</summary>
+        public const string EngineSemantics = DiagnosticRuleEvaluator.EngineSemantics;
 
         public const string Format = "msfinder-diagnostic-rule-semantics";
 
