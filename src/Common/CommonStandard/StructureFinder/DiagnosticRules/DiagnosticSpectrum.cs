@@ -14,7 +14,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
         /// Null is read as no peaks.</param>
         /// <param name="precursorMz">The observed precursor m/z; a non-finite or non-positive value gives
         /// <c>no_precursor</c>.</param>
-        /// <param name="ionMode">Null gives <c>unsupported_ion_mode</c>.</param>
+        /// <param name="ionMode">Null, or a value cast from outside the enum, gives <c>unsupported_ion_mode</c>.</param>
         /// <param name="instrumentType">Free text, classified only by <c>InstrumentClassifier</c>; may be null.</param>
         public DiagnosticSpectrum(IReadOnlyList<DiagnosticPeak> peaks, double precursorMz, DiagnosticIonMode? ionMode, string instrumentType) {
             var copy = new DiagnosticPeak[peaks?.Count ?? 0];

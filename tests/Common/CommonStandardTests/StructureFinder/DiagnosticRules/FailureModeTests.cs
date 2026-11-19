@@ -35,6 +35,11 @@ public class FailureModeTests
         }
         Assert.AreEqual("unsupported_ion_mode", Status(Spectrum(PrecursorNeg, null, Usable)));
         Assert.AreEqual("unsupported_ion_mode", Status(Spectrum(PrecursorNeg, null))); // before no_peaks
+        // A value cast from outside the enum is unsupported too, never compared with a rule's polarity.
+        foreach (var undefined in new[] { (DiagnosticIonMode)2, (DiagnosticIonMode)(-1) }) {
+            Assert.AreEqual("unsupported_ion_mode", Status(Spectrum(PrecursorNeg, undefined, Usable)));
+            Assert.AreEqual("unsupported_ion_mode", Status(Spectrum(PrecursorNeg, undefined)));
+        }
         Assert.AreEqual("no_peaks", Status(Spectrum(PrecursorNeg, DiagnosticIonMode.Negative)));
         Assert.AreEqual("no_peaks", Status(new DiagnosticSpectrum(null!, PrecursorNeg, DiagnosticIonMode.Positive, "QTOF")));
         // Every peak unusable: non-finite, non-positive m/z or intensity.

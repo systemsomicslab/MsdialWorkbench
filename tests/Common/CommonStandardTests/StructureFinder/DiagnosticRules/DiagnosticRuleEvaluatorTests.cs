@@ -264,6 +264,12 @@ public class DiagnosticRuleEvaluatorTests
         Assert.AreEqual(ExpectedInputSha(new (double, double)[0], double.NaN, null, null), evaluator.Evaluate(bare).InputSha256);
         Assert.AreEqual(ExpectedInputSha(new[] { (1.0, 2.0) }, -0.0, "positive", "x\u00e9"),
                         evaluator.Evaluate(new DiagnosticSpectrum(new[] { new DiagnosticPeak(1.0, 2.0) }, -0.0, DiagnosticIonMode.Positive, "x\u00e9")).InputSha256);
+        // An ion mode outside the enum is hashed as null, never folded into "negative".
+        var undefined = new DiagnosticSpectrum(spectrum.Peaks, PrecursorNeg, (DiagnosticIonMode)2, "QTOF");
+        var undefinedResult = evaluator.Evaluate(undefined);
+        Assert.AreEqual("unsupported_ion_mode", undefinedResult.Status);
+        Assert.AreEqual(ExpectedInputSha(peaks, PrecursorNeg, null, "QTOF"), undefinedResult.InputSha256);
+        Assert.AreNotEqual(result.InputSha256, undefinedResult.InputSha256);
         // A known value, so a port can check its implementation without this code.
         Assert.AreEqual(ExpectedInputSha(new[] { (100.0, 1.0) }, 200.0, "negative", "QTOF"),
                         evaluator.Evaluate(new DiagnosticSpectrum(new[] { new DiagnosticPeak(100.0, 1.0) }, 200.0, DiagnosticIonMode.Negative, "QTOF")).InputSha256);

@@ -10,7 +10,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         Evaluated,
         /// <summary>The precursor m/z is not finite or not positive.</summary>
         NoPrecursor,
-        /// <summary>The ion mode is null.</summary>
+        /// <summary>The ion mode is null, or a value outside <see cref="DiagnosticIonMode"/>.</summary>
         UnsupportedIonMode,
         /// <summary>No peak is usable.</summary>
         NoPeaks,
@@ -110,7 +110,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             if (!IsFinite(PrecursorMz) || PrecursorMz <= 0.0) {
                 Status = SpectrumStatus.NoPrecursor;
             }
-            else if (!IonMode.HasValue) {
+            else if (!IsSupported(IonMode)) {
                 Status = SpectrumStatus.UnsupportedIonMode;
             }
             else if (_mz.Length == 0) {
@@ -323,6 +323,11 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             });
             return output;
         }
+
+        /// <summary>Positive or Negative: null (<c>Both</c>) and a value cast from outside the enum are unsupported, so
+        /// an undefined value is never compared with a rule's polarity as if it were one.</summary>
+        public static bool IsSupported(DiagnosticIonMode? mode) =>
+            mode.HasValue && (mode.Value == DiagnosticIonMode.Positive || mode.Value == DiagnosticIonMode.Negative);
 
         private static bool IsFinite(double x) => !double.IsNaN(x) && !double.IsInfinity(x);
     }

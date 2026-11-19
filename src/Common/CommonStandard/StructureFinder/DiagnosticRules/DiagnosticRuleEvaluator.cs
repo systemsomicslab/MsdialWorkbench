@@ -304,16 +304,17 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
         /// <c>input_sha256</c> (design 4.11): the sha256 of the canonical bytes of <c>{"instrument_type": str|null,
         /// "ion_mode": "positive"|"negative"|null, "peaks": [[mz_bits, intensity_bits], ...], "precursor_mz_bits": ...}</c>,
         /// with the peaks in input order (before the engine drops any) and every double as its big-endian IEEE-754
-        /// pattern in 16 lowercase hex digits, NaN canonicalised to 7ff8000000000000 and -0.0 kept.
+        /// pattern in 16 lowercase hex digits, NaN canonicalised to 7ff8000000000000 and -0.0 kept. An ion mode
+        /// outside the enum is written as null, like null itself: both are unsupported_ion_mode.
         /// </summary>
         internal static string InputSha256(DiagnosticSpectrum spectrum) {
             var peaks = new List<JsonValue>(spectrum.Peaks.Count);
             foreach (var p in spectrum.Peaks) {
                 peaks.Add(new JsonArray(new[] { JsonValue.Of(IeeeBits.Of(p.Mz)), JsonValue.Of(IeeeBits.Of(p.Intensity)) }));
             }
-            var mode = spectrum.IonMode.HasValue
-                ? JsonValue.Of(spectrum.IonMode.Value == DiagnosticIonMode.Positive ? "positive" : "negative")
-                : JsonValue.Null;
+            // Only the two defined modes are named; null and an undefined value, both unsupported_ion_mode, hash as null.
+            var mode = !SpectrumView.IsSupported(spectrum.IonMode) ? JsonValue.Null
+                : JsonValue.Of(spectrum.IonMode!.Value == DiagnosticIonMode.Positive ? "positive" : "negative");
             var doc = new JsonObject(new[]
             {
                 new KeyValuePair<string, JsonValue>("instrument_type", JsonValue.OfNullable(spectrum.InstrumentType)),
