@@ -283,7 +283,9 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         /// rule fires with that node replaced by that child, every hypothesis re-evaluated by the same code, its
         /// assignment included. <paramref name="full"/> holds the hypotheses' full-logic evaluations; those that
         /// cannot fire under any restriction (<see cref="MayFireUnderRestriction"/>) are skipped, which changes no
-        /// output and saves a capped search per any-node child for each overflowing hypothesis.
+        /// output and saves a capped search per any-node child for each overflowing hypothesis. Design 4.7 restricts
+        /// every any node, those inside a not too: there the restriction keeps one veto and drops its siblings, so
+        /// the child reads "the rule fires when only this veto is checked", which may be true for a veto-blocked rule.
         /// </summary>
         public bool[][] BranchFired(SpectrumView view, IReadOnlyList<HypothesisEvaluation> full) {
             var output = new bool[Plan.AnyNodes.Count][];

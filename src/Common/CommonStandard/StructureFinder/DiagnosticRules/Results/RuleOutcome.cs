@@ -117,7 +117,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Results
         /// empty when the rule did not fire (OQ26).</summary>
         public IReadOnlyList<string> TiedHypothesisIds { get; }
 
-        /// <summary>Per any node, whether the rule fires with the node restricted to each child (OQ14).</summary>
+        /// <summary>Per any node, whether the rule fires with the node restricted to each child (design 4.7, OQ14),
+        /// for every any node, those inside a not included (see <see cref="BranchOutcome"/>).</summary>
         public IReadOnlyList<BranchOutcome> BranchFired { get; }
 
         /// <summary>Every hypothesis in hypothesis_id order in verbose results; empty otherwise (OQ24).</summary>
