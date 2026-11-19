@@ -212,28 +212,43 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
         /// <summary>Every hypothesis: each composition under each tried adduct, in that order.</summary>
         public void ForEachHypothesis(Action<Hypothesis<T>> visit) {
             ForEachComposition((index, entryId, agly, counts) => {
-                var comp = agly;
-                for (var u = 0; u < counts.Length; u++) {
-                    if (counts[u] != 0) {
-                        comp = AddVec(comp, _residues[u], counts[u]);
-                    }
-                }
+                var comp = NeutralComposition(agly, counts);
                 var neutral = Mass(comp);
                 foreach (var a in _rule.Tried) {
-                    var add = Vec(a.Adduct.Add);
-                    var remove = Vec(a.Adduct.Remove);
-                    var mult = M.FromLong(a.Adduct.Multiplier);
-                    var scaled = new T[comp.Length];
-                    for (var i = 0; i < comp.Length; i++) {
-                        scaled[i] = M.Mul(comp[i], mult);
-                    }
-                    var preComp = AddVec(AddVec(scaled, add), remove, -1);
-                    var precursor = M.Sub(M.Sub(M.Add(M.Mul(mult, neutral), Mass(add)), Mass(remove)),
-                                          M.Mul(M.FromLong(a.Adduct.Charge), _electron));
-                    visit(new Hypothesis<T>(index, entryId, counts, a, agly, comp, neutral, precursor, preComp));
+                    visit(MakeHypothesis(index, entryId, counts, a, agly, comp, neutral));
                 }
             });
         }
+
+        /// <summary>The neutral composition of a composition: core + scaffold + sum of count * residue.</summary>
+        public T[] NeutralComposition(T[] agly, long[] counts) {
+            var comp = agly;
+            for (var u = 0; u < counts.Length; u++) {
+                if (counts[u] != 0) {
+                    comp = AddVec(comp, _residues[u], counts[u]);
+                }
+            }
+            return comp;
+        }
+
+        /// <summary>One composition under one adduct (design 4.1, 4.3): precursor pDa mult * M + add - remove - z * e.
+        /// The hypothesis keeps <paramref name="counts"/> by reference.</summary>
+        public Hypothesis<T> MakeHypothesis(int index, string entryId, long[] counts, AdductTry a, T[] agly, T[] comp, T neutral) {
+            var add = Vec(a.Adduct.Add);
+            var remove = Vec(a.Adduct.Remove);
+            var mult = M.FromLong(a.Adduct.Multiplier);
+            var scaled = new T[comp.Length];
+            for (var i = 0; i < comp.Length; i++) {
+                scaled[i] = M.Mul(comp[i], mult);
+            }
+            var preComp = AddVec(AddVec(scaled, add), remove, -1);
+            var precursor = M.Sub(M.Sub(M.Add(M.Mul(mult, neutral), Mass(add)), Mass(remove)),
+                                  M.Mul(M.FromLong(a.Adduct.Charge), _electron));
+            return new Hypothesis<T>(index, entryId, counts, a, agly, comp, neutral, precursor, preComp);
+        }
+
+        /// <summary>The electron mass in pDa.</summary>
+        public T Electron => _electron;
 
         /// <summary>The aglycone-based ion (design 4.5): even or radical, proton or adduct carrier, then plus and minus.</summary>
         private T[] Ionise(T[] agly, TermInfo t, Hypothesis<T> h) {
@@ -276,7 +291,16 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
         /// The members of a term in a hypothesis, sorted by target then key (ordinal), members of equal target
         /// collapsed with their keys joined by "+". A window yields its centre.
         /// </summary>
-        public List<Member<T>> TermMembers(TermInfo t, Hypothesis<T> h) {
+        public List<Member<T>> TermMembers(TermInfo t, Hypothesis<T> h) => TermMembers(t, h, M.Zero);
+
+        /// <summary>
+        /// <see cref="TermMembers(TermInfo, Hypothesis{T})"/> with the decoy shift of design 4.5: <paramref name="decoy"/>
+        /// pDa is added to every term mass before ionisation, so an ion target moves +decoy and a loss target
+        /// (precursor - loss) moves -decoy; a window moves as its <c>as</c> says. <see cref="Member{T}.Mass"/> is the
+        /// shifted mass (for a loss, the loss mass L that an observed reference subtracts from P_obs); the composition
+        /// is never shifted. The load calls this with 0, so its targets are unchanged.
+        /// </summary>
+        public List<Member<T>> TermMembers(TermInfo t, Hypothesis<T> h, T decoy) {
             var z = h.Adduct.Adduct.Charge;
             var raw = new List<RawMember>();
             if (t.Kind == "product_ion" || t.Kind == "loss_from_precursor" || t.Kind == "window") {
@@ -349,7 +373,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
             }
             var output = new List<Member<T>>(raw.Count);
             foreach (var m in raw) {
-                var mass = Mass(m.Comp);
+                var mass = M.Add(Mass(m.Comp), decoy);
                 var target = m.IsLoss ? M.Sub(h.PrecursorPda, mass) : M.Sub(mass, M.Mul(M.FromLong(z), _electron));
                 output.Add(new Member<T>(target, m.Key, m.Comp, mass, m.IsLoss));
             }
