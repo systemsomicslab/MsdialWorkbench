@@ -44,8 +44,8 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
 
             var mspfiles = new List<string>();
             using (var sr = new StreamReader(mspfilelist)) {
-                while (sr.Peek() > -1) {
-                    mspfiles.Add(sr.ReadLine());
+                while (sr.ReadLine() is string line) {
+                    mspfiles.Add(line);
                 }
             }
 
@@ -112,8 +112,8 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
 
             var mspfiles = new List<string>();
             using (var sr = new StreamReader(mspfilelist)) {
-                while (sr.Peek() > -1) {
-                    mspfiles.Add(sr.ReadLine());
+                while (sr.ReadLine() is string line) {
+                    mspfiles.Add(line);
                 }
             }
 
@@ -211,10 +211,15 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
                     var MatchParent = 0;
                     using (var sr = new StreamReader(f)) {
                         sr.ReadLine();
-                        while (sr.Peek() > -1) {
+                        var lineNumber = 1;
+                        while (sr.ReadLine() is string line) {
+                            lineNumber++;
                             TotalCount++;
-                            var line = sr.ReadLine();
                             var linearray = line.Split('\t');
+                            // The last field used for the class comparisons is column 15.
+                            if (linearray.Length < 16) {
+                                throw new InvalidDataException($"Expected at least 16 columns in '{f}', line {lineNumber}.");
+                            }
                             if (linearray[8].Length > 0 && linearray[12].Length > 0 &&
                                 linearray[4] == "TRUE") { MatchSuperClass++; }
                             if (linearray[9].Length > 0 && linearray[13].Length > 0 &&

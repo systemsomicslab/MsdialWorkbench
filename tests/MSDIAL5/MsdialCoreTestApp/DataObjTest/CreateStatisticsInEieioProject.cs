@@ -6,12 +6,12 @@ using System.Text;
 namespace CompMs.App.MsdialConsole.DataObjTest {
 
     public class ResultTemp {
-        public string FileName { get; set; }
-        public string PeakID { get; set; }
-        public string Name { get; set; }
-        public string Intensity { get; set; }
-        public string Ontology { get; set; }
-        public string Comment { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string PeakID { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Intensity { get; set; } = string.Empty;
+        public string Ontology { get; set; } = string.Empty;
+        public string Comment { get; set; } = string.Empty;
         public override string ToString() { 
             return FileName + "\t" + PeakID + "\t" + Name + "\t" + Ontology + "\t" + Comment + "\t" + Intensity;
         
@@ -39,9 +39,14 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             var results = new List<ResultTemp>();
             using (var sr = new StreamReader(input)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                var lineNumber = 1;
+                while (sr.ReadLine() is string line) {
+                    lineNumber++;
                     var linearray = line.Split('\t');
+                    // Ontology is read from column 16.
+                    if (linearray.Length < 17) {
+                        throw new InvalidDataException($"Expected at least 17 columns in '{input}', line {lineNumber}.");
+                    }
                     var metname = linearray[1];
                     if (metname == string.Empty || metname.StartsWith("w/o") || metname.StartsWith("RIKEN")) {
                         continue;
