@@ -11,7 +11,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
     /// <summary>
     /// Load-time checks 4-7 of design 3.6: series size, counts and masses, complementary members, precursor targets
     /// and the two-ion claim (both passes). Mirrors <c>check_series</c>, <c>two_ion_passes</c> and <c>eval_logic</c>
-    /// of the Python reference.
+    /// of the Python reference. The two-ion passes also run at a k offset for the evaluator (design 4.7): k_eff =
+    /// max(1, k + kOffset); the load uses offset 0.
     /// </summary>
     internal static class TwoIonCheck
     {
@@ -28,21 +29,41 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                 c.Err(RuleErrorCodes.SeriesEmpty, pc);
                 return;
             }
-            var found = new List<KeyValuePair<string, string>>();
-            try {
-                Run<long, LongPda>(rule, tables, found);
-            }
-            catch (OverflowException) {
-                // A count or mass beyond 64 bits: redo the rule exactly, as the reference's unbounded integers do.
-                found.Clear();
-                Run<BigInteger, BigPda>(rule, tables, found);
-            }
-            foreach (var e in found) {
+            foreach (var e in RunExact(rule, tables, 0)) {
                 c.Err(e.Key, e.Value);
             }
         }
 
-        private static void Run<T, TM>(RuleInfo rule, LoadedTables tables, List<KeyValuePair<string, string>> found) where TM : struct, IPdaMath<T> {
+        /// <summary>
+        /// The two-ion claim codes (<c>single_ion_claim</c>, <c>claim_single_ion</c>) a <c>measure:true</c> rule gets
+        /// with every k at <c>max(1, k + kOffset)</c> (design 4.7: the evaluator reruns both passes at its effective
+        /// KOffset). Empty when both passes hold, and always empty for a <c>measure:false</c> rule. At offset 0 this is
+        /// exactly what the load found. For a rule that loaded, the series checks cannot fail again.
+        /// </summary>
+        public static List<string> TwoIonFailures(RuleInfo rule, LoadedTables tables, int kOffset) {
+            var codes = new List<string>();
+            foreach (var e in RunExact(rule, tables, kOffset)) {
+                if (e.Key == RuleErrorCodes.SingleIonClaim || e.Key == RuleErrorCodes.ClaimSingleIon) {
+                    codes.Add(e.Key);
+                }
+            }
+            return codes;
+        }
+
+        private static List<KeyValuePair<string, string>> RunExact(RuleInfo rule, LoadedTables tables, int kOffset) {
+            var found = new List<KeyValuePair<string, string>>();
+            try {
+                Run<long, LongPda>(rule, tables, found, kOffset);
+            }
+            catch (OverflowException) {
+                // A count or mass beyond 64 bits: redo the rule exactly, as the reference's unbounded integers do.
+                found.Clear();
+                Run<BigInteger, BigPda>(rule, tables, found, kOffset);
+            }
+            return found;
+        }
+
+        private static void Run<T, TM>(RuleInfo rule, LoadedTables tables, List<KeyValuePair<string, string>> found, int kOffset) where TM : struct, IPdaMath<T> {
             var m = default(TM);
             var limit = m.FromLong(MassPda.Limit);
             var region = m.FromLong(MassPda.PrecursorRegion);
@@ -150,7 +171,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                 return;
             }
             foreach (var sig in signatures) {
-                foreach (var e in Passes(rule, support, sig.Key, sig.Value, groupOf, claimSet)) {
+                foreach (var e in Passes(rule, support, sig.Key, sig.Value, groupOf, claimSet, kOffset)) {
                     Flag(e.Key, e.Value);
                 }
             }
@@ -201,7 +222,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
 
         /// <summary>Both passes for one hypothesis signature (design 3.6 item 6).</summary>
         private static List<KeyValuePair<string, string>> Passes(RuleInfo rule, List<TermInfo> support, bool[][] zero,
-                                                                 long[] kvals, Dictionary<int, int> groupOf, HashSet<int> claimSet) {
+                                                                 long[] kvals, Dictionary<int, int> groupOf, HashSet<int> claimSet,
+                                                                 int kOffset) {
             var unitOf = new int[support.Count][];
             var claimUnits = new SortedSet<int>();
             var nUnits = 0;
@@ -238,7 +260,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                     }
                     map[support[s].Index] = set;
                 }
-                return Eval(rule.Logic, map, kvals);
+                return Eval(rule.Logic, map, kvals, kOffset);
             }
 
             var errors = new List<KeyValuePair<string, string>>();
@@ -269,22 +291,23 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
         }
 
         /// <summary>The two-ion setting: vetoes absent (every not is true), ordering comparisons satisfied, k at the
-        /// hypothesis' value with no offset; a k_of counts evidence units of its term children plus true subtrees.</summary>
-        private static bool Eval(CompiledNode node, Dictionary<int, HashSet<int>> present, long[] kvals) {
+        /// hypothesis' value plus <paramref name="kOffset"/> (0 at load), never below 1; a k_of counts evidence units of
+        /// its term children plus true subtrees.</summary>
+        private static bool Eval(CompiledNode node, Dictionary<int, HashSet<int>> present, long[] kvals, int kOffset) {
             switch (node.Kind) {
                 case "term":
                     return present.TryGetValue(node.TermIndex, out var termUnits) && termUnits.Count > 0;
                 case "all": {
                     var result = true;
                     foreach (var ch in node.Children) {
-                        result &= Eval(ch, present, kvals);
+                        result &= Eval(ch, present, kvals, kOffset);
                     }
                     return result;
                 }
                 case "any": {
                     var result = false;
                     foreach (var ch in node.Children) {
-                        result |= Eval(ch, present, kvals);
+                        result |= Eval(ch, present, kvals, kOffset);
                     }
                     return result;
                 }
@@ -299,11 +322,11 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
                                 units.UnionWith(s);
                             }
                         }
-                        else if (Eval(ch, present, kvals)) {
+                        else if (Eval(ch, present, kvals, kOffset)) {
                             extra++;
                         }
                     }
-                    return units.Count + extra >= Math.Max(1L, kvals[node.Slot]);
+                    return units.Count + extra >= Math.Max(1L, kvals[node.Slot] + kOffset);
                 }
             }
         }
