@@ -43,6 +43,9 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Json
                 case JsonFloat f:
                     sb.Append(f.Canonical);
                     break;
+                case JsonNumberText n:
+                    sb.Append(n.Text);
+                    break;
                 case JsonString s:
                     WriteString(sb, s.Value);
                     break;
