@@ -21,7 +21,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Tests;
 public class CultureIndependenceTests
 {
     /// <summary>A decimal comma, U+202F digit grouping and a U+2212 minus sign.</summary>
-    private static CultureInfo Hostile() {
+    internal static CultureInfo Hostile() {
         var c = (CultureInfo)CultureInfo.GetCultureInfo("fr-FR").Clone();
         c.NumberFormat.NumberDecimalSeparator = ",";
         c.NumberFormat.NumberGroupSeparator = " ";
@@ -75,7 +75,7 @@ public class CultureIndependenceTests
         return sb.ToString();
     }
 
-    private static IEnumerable<object[]> Cultures() {
+    internal static IEnumerable<object[]> Cultures() {
         foreach (var name in new[] { "en-US", "de-DE", "fr-FR", "sv-SE", "tr-TR", "cs-CZ", "ar-SA", "th-TH" }) {
             yield return new object[] { name };
         }

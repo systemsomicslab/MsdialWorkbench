@@ -1,0 +1,15 @@
+{
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "files": {
+  "engine/loader-errors.json": {
+   "cases": 68,
+   "sha256": "b48a33454b6436d56c2f76828a6ff55eb1d5e148eb2c547133ad2bf3ac869314"
+  },
+  "engine/semantics.json": {
+   "cases": 59,
+   "sha256": "3a810f7c3e4e3b2bce38fb73de0e0c224d2e363b2762df754e90762bb6d8e014"
+  }
+ },
+ "format": "msfinder-diagnostic-rule-fixture-manifest",
+ "format_version": 1
+}
