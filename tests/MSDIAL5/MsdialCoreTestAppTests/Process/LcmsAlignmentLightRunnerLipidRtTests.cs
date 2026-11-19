@@ -40,6 +40,7 @@ public sealed class LcmsAlignmentLightRunnerLipidRtTests
         Assert.IsTrue(run.Ran, run.Describe());
         var tg521 = Find(spots, 52, 1);
         Assert.IsFalse(tg521.TagCollection.IsSelected(PeakSpotTag.CONFIRMED));
+        Assert.IsNotNull(tg521.LipidRtVerdict);
         Assert.AreEqual(LipidRtOutcome.NotEvaluable, tg521.LipidRtVerdict.Outcome);
         Assert.AreEqual(LipidRtReason.Ineligible, tg521.LipidRtVerdict.Reason);
         StringAssert.Contains(tg521.LipidRtVerdict.Evidence, "in silico");
