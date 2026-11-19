@@ -128,8 +128,9 @@ internal static class MixedCases
 /// <summary>
 /// Determinism (design 6.3): three repeats give identical bytes; seeded peak permutations give identical results once
 /// peak_index is mapped (OQ19: tie-free spectra; input_sha256 hashes the input order and is left out); Parallel.ForEach
-/// with 8 workers equals the sequential run; EvaluatorNeverThrows over 10^4 seeded spectra, where every double but
-/// precursor_mz is finite.
+/// with 8 workers equals the sequential run; files enumerated in reverse order give the same sha256 and the same result
+/// bytes (on the mixed inline set: the embedded set has no rules yet, and EmbeddedRuleSetTests checks its sha256);
+/// EvaluatorNeverThrows over 10^4 seeded spectra, where every double but precursor_mz is finite.
 /// </summary>
 [TestClass]
 public class DeterminismTests
@@ -177,6 +178,49 @@ public class DeterminismTests
             }
         }
         Assert.IsTrue(fired > 30, fired.ToString(CultureInfo.InvariantCulture));
+    }
+
+    /// <summary>A file map that enumerates its keys in the order given, whatever a dictionary would do.</summary>
+    private sealed class OrderedFiles : IReadOnlyDictionary<string, byte[]>
+    {
+        private readonly Dictionary<string, byte[]> _files;
+        private readonly IReadOnlyList<string> _order;
+
+        public OrderedFiles(Dictionary<string, byte[]> files, IEnumerable<string> order) {
+            _files = files;
+            _order = order.ToList();
+            Assert.AreEqual(_files.Count, _order.Count);
+        }
+
+        public byte[] this[string key] => _files[key];
+        public IEnumerable<string> Keys => _order;
+        public IEnumerable<byte[]> Values => _order.Select(k => _files[k]);
+        public int Count => _order.Count;
+        public bool ContainsKey(string key) => _files.ContainsKey(key);
+        public bool TryGetValue(string key, out byte[] value) => _files.TryGetValue(key, out value);
+        public IEnumerator<KeyValuePair<string, byte[]>> GetEnumerator() =>
+            _order.Select(k => new KeyValuePair<string, byte[]>(k, _files[k])).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    [TestMethod]
+    public void FilesInReverseOrderGiveTheSameSha256AndBytes() {
+        var files = MixedCases.Set().Files();
+        var ordinal = files.Keys.OrderBy(k => k, StringComparer.Ordinal).ToList();
+        var forward = DiagnosticRuleSet.LoadFiles(new OrderedFiles(files, ordinal), RuleSetSource.Inline);
+        var reverse = DiagnosticRuleSet.LoadFiles(new OrderedFiles(files, Enumerable.Reverse(ordinal)), RuleSetSource.Inline);
+        Assert.AreEqual(forward.Identity.Sha256, reverse.Identity.Sha256);
+        CollectionAssert.AreEqual(forward.Rules.Select(r => r.RuleId).ToList(), reverse.Rules.Select(r => r.RuleId).ToList());
+        var options = new DiagnosticEvaluationOptions { Filter = RuleFilter.All, Verbose = true };
+        var a = new DiagnosticRuleEvaluator(forward, options);
+        var b = new DiagnosticRuleEvaluator(reverse, options);
+        Assert.AreEqual(a.IdentityString, b.IdentityString);
+        var random = new Random(20261121);
+        var spectra = Enumerable.Range(0, 300).Select(i => i % 3 == 2 ? MixedCases.Any(random) : MixedCases.TieFree(random)).ToList();
+        var bytesA = string.Join("\n", spectra.Select(s => ResultText(a.Evaluate(s))));
+        var bytesB = string.Join("\n", spectra.Select(s => ResultText(b.Evaluate(s))));
+        Assert.AreEqual(bytesA, bytesB);
+        Assert.IsTrue(bytesA.Contains("\"fired\":true"), "some rule fires");
     }
 
     [TestMethod]
