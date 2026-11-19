@@ -134,9 +134,10 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
     /// <summary>What the leaves of one hypothesis read under one assignment (design 4.7).</summary>
     internal sealed class LogicInputs
     {
-        public LogicInputs(bool[] termAssigned, int[][] assignedUnits, double[] iRaw, bool[] rawPresent, long[] kEff) {
+        public LogicInputs(bool[] termAssigned, int[][] assignedUnits, int unitCount, double[] iRaw, bool[] rawPresent, long[] kEff) {
             TermAssigned = termAssigned;
             AssignedUnits = assignedUnits;
+            UnitCount = unitCount;
             IRaw = iRaw;
             RawPresent = rawPresent;
             KEff = kEff;
@@ -147,6 +148,9 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
 
         /// <summary>Per term: the evidence units of its items that have a peak.</summary>
         public int[][] AssignedUnits { get; }
+
+        /// <summary>The number of evidence units of the hypothesis: every unit id is below it.</summary>
+        public int UnitCount { get; }
 
         /// <summary>Per term: I_raw, the maximum rel over the hits of all its members, floors ignored (0 when none).</summary>
         public double[] IRaw { get; }
@@ -271,13 +275,16 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
                     return ignoreVetoes || !inner;
                 }
                 default: {
-                    var units = new List<int>();
+                    // Distinct units by a mark per unit: a list search would make a leaf quadratic in the members.
+                    var seen = new bool[inputs.UnitCount];
+                    long distinct = 0;
                     long extra = 0;
                     foreach (var ch in node.Children) {
                         if (ch.Kind == LogicKind.Term) {
                             foreach (var u in inputs.AssignedUnits[ch.TermIndex]) {
-                                if (!units.Contains(u)) {
-                                    units.Add(u);
+                                if (!seen[u]) {
+                                    seen[u] = true;
+                                    distinct++;
                                 }
                             }
                         }
@@ -285,7 +292,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
                             extra++;
                         }
                     }
-                    var count = units.Count + extra;
+                    var count = distinct + extra;
                     var satisfied = count >= inputs.KEff[node.Slot];
                     if (record != null) {
                         record.KCount[node.Slot] = count;

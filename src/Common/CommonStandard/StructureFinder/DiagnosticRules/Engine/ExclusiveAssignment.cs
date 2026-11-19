@@ -170,17 +170,33 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
                     list.Add(i);
                 }
             }
+            // An item is conflicted when a peak it may take is a candidate of another item it may not share with.
+            // MayShare holds only between different terms of one group, so item x on a peak is unconflicted iff every
+            // other item on that peak is in x's group (x's group >= 0) and in another term: counted per peak, which is
+            // linear in the list where the pairwise test would be quadratic. Only whether an item is conflicted is
+            // recorded, so the dictionary's order does not matter.
             var any = false;
+            var termCount = new int[items.TermCount];
+            var groupCount = new Dictionary<int, int>();
             foreach (var list in byPeak.Values) {
-                // Only whether an item is conflicted is recorded, so the dictionary's order does not matter.
-                for (var a = 0; a < list.Count; a++) {
-                    for (var b = a + 1; b < list.Count; b++) {
-                        if (!EvidenceItems.MayShare(items.Items[list[a]], items.Items[list[b]])) {
-                            conflicted[list[a]] = true;
-                            conflicted[list[b]] = true;
-                            any = true;
-                        }
+                if (list.Count < 2) {
+                    continue;
+                }
+                groupCount.Clear();
+                foreach (var i in list) {
+                    var item = items.Items[i];
+                    termCount[item.TermIndex]++;
+                    groupCount[item.GroupId] = groupCount.TryGetValue(item.GroupId, out var g) ? g + 1 : 1;
+                }
+                foreach (var i in list) {
+                    var item = items.Items[i];
+                    if (item.GroupId < 0 || termCount[item.TermIndex] > 1 || groupCount[item.GroupId] < list.Count) {
+                        conflicted[i] = true;
+                        any = true;
                     }
+                }
+                foreach (var i in list) {
+                    termCount[items.Items[i].TermIndex] = 0;
                 }
             }
             if (!any) {
@@ -194,7 +210,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
                 }
             }
             var search = new Search(items, logic, logicIgnoringVetoes, cap, choice, order);
-            search.Run(0);
+            search.Run();
             if (search.Overflow) {
                 return new Assignment(null, true, false, search.Leaves);
             }
@@ -265,32 +281,51 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             public int Leaves { get; private set; }
             public bool Overflow { get; private set; }
 
-            public void Run(int depth) {
-                if (Overflow) {
-                    return;
-                }
-                if (depth == _order.Count) {
-                    Leaf();
-                    return;
-                }
-                var i = _order[depth];
-                var item = _items.Items[i];
-                for (var c = 0; c < item.Candidates.Count && !Overflow; c++) {
-                    var peak = item.Candidates[c].ViewIndex;
-                    if (!Allowed(item, peak)) {
+            /// <summary>
+            /// The depth-first search with an explicit stack: the path depth is the number of conflicted items, which
+            /// the cap does not bound, so recursion could overflow the thread's stack (an uncatchable
+            /// StackOverflowException). <c>_next[d]</c> is the next option of the item at depth d: a candidate index,
+            /// then <c>Candidates.Count</c> for "none", then exhausted. The leaves are visited in exactly the order of
+            /// the recursive formulation (candidates in order, then none).
+            /// </summary>
+            public void Run() {
+                var n = _order.Count;
+                var next = new int[n + 1];
+                var depth = 0;
+                while (depth >= 0 && !Overflow) {
+                    if (depth == n) {
+                        Leaf();
+                        depth--;
                         continue;
                     }
-                    if (!_held.TryGetValue(peak, out var holders)) {
-                        _held[peak] = holders = new List<int>();
+                    var i = _order[depth];
+                    var item = _items.Items[i];
+                    // Coming back up to this depth: release the peak this item held on the subtree just finished.
+                    if (_choice[i] >= 0) {
+                        var holders = _held[item.Candidates[_choice[i]].ViewIndex];
+                        holders.RemoveAt(holders.Count - 1);
+                        _choice[i] = -1;
                     }
-                    holders.Add(i);
-                    _choice[i] = c;
-                    Run(depth + 1);
-                    holders.RemoveAt(holders.Count - 1);
-                    _choice[i] = -1;
-                }
-                if (!Overflow) {
-                    Run(depth + 1);
+                    var c = next[depth];
+                    while (c < item.Candidates.Count && !Allowed(item, item.Candidates[c].ViewIndex)) {
+                        c++;
+                    }
+                    if (c < item.Candidates.Count) {
+                        var peak = item.Candidates[c].ViewIndex;
+                        if (!_held.TryGetValue(peak, out var holders)) {
+                            _held[peak] = holders = new List<int>();
+                        }
+                        holders.Add(i);
+                        _choice[i] = c;
+                    }
+                    else if (c > item.Candidates.Count) {
+                        depth--;
+                        continue;
+                    }
+                    // A candidate, or "none" (c == Count, _choice[i] stays -1): descend.
+                    next[depth] = c + 1;
+                    depth++;
+                    next[depth] = 0;
                 }
             }
 

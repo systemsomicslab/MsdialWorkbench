@@ -2,7 +2,9 @@
 using CompMs.Common.StructureFinder.DiagnosticRules.Engine;
 using CompMs.Common.StructureFinder.DiagnosticRules.Results;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using static CompMs.Common.StructureFinder.DiagnosticRules.Tests.EngineHarness;
 using static CompMs.Common.StructureFinder.DiagnosticRules.Tests.InlineRuleSet;
 
@@ -282,5 +284,81 @@ public class OnePeakOneTermTests
         var set = KOfRule(false).Load();
         Assert.IsNotNull(Check(set, new DiagnosticEvaluationOptions()));
         Assert.IsNull(Check(set, new DiagnosticEvaluationOptions { DecoyShiftDa = 1 }));
+    }
+
+    // ------------------------------------------------------------- the search's own bounds (finding: depth and cost)
+
+    /// <summary>A hit on view peak <paramref name="peak"/>, present, rel 1.</summary>
+    private static PeakHit Hit(int peak) => new PeakHit(peak, peak, 100.0 + peak, 1.0, 0.0, true, false);
+
+    /// <summary>Items built straight from per-member hits on the caffeoyl rule's terms (loss_hex, caffeate, decarb;
+    /// loss_hex and caffeate declared complementary): the targets play no part in the assignment.</summary>
+    private static EvidenceItems Items(params int[][][] hitsByTermAndMember) {
+        var set = KOfRule(true).Load();
+        var info = set.CompiledRules[set.Rules.Select((r, i) => (r, i)).Single(x => x.r.RuleId == RuleId).i];
+        var memberHits = new IReadOnlyList<PeakHit>[info.Terms.Count][];
+        for (var t = 0; t < memberHits.Length; t++) {
+            var members = t < hitsByTermAndMember.Length ? hitsByTermAndMember[t] : new int[0][];
+            memberHits[t] = members.Select(peaks => (IReadOnlyList<PeakHit>)peaks.Select(Hit).ToList()).ToArray();
+        }
+        return EvidenceItems.Build(info, EvidenceItems.GroupOfTerm(info), memberHits);
+    }
+
+    [TestMethod]
+    public void TheSearchDepthIsNotBoundedByTheThreadStack() {
+        // 100 000 members of one term, member m on peaks m and m + 1: every item is conflicted and the first leaf
+        // lies 100 000 items deep, whatever the cap. A recursive search overflows a 256 KB stack (a
+        // StackOverflowException ends the process); the explicit stack does not. Leaf 1 gives every item its first
+        // peak, leaf 2 moves the last item to its second, leaf 3 (the last item unassigned) is over the cap of 2.
+        const int N = 100000;
+        var items = Items(Enumerable.Range(0, N).Select(m => new[] { m, m + 1 }).ToArray());
+        Assert.AreEqual(N, items.Items.Count);
+        Assignment? result = null;
+        var leafAssigned = new List<int>();
+        var thread = new Thread(() => result = ExclusiveAssignment.Assign(items, c => {
+            leafAssigned.Add(ExclusiveAssignment.AssignedCount(c));
+            return false;
+        }, _ => false, 2), 256 * 1024);
+        thread.Start();
+        thread.Join();
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result!.Overflow);
+        Assert.IsFalse(result.FastPath);
+        Assert.AreEqual(3, result.Leaves);
+        Assert.AreEqual("100000 100000", string.Join(" ", leafAssigned));
+    }
+
+    [TestMethod]
+    public void TheSearchVisitsCandidatesInOrderThenNone() {
+        // Three members of loss_hex on peaks {0, 1}, {0} and {1}: the leaves of the recursive formulation, in order.
+        var items = Items(new[] { new[] { 0, 1 }, new[] { 0 }, new[] { 1 } });
+        var leaves = new List<string>();
+        var result = ExclusiveAssignment.Assign(items, c => {
+            leaves.Add(string.Join(",", c));
+            return false;
+        }, _ => false, 100);
+        Assert.IsFalse(result.Overflow);
+        Assert.AreEqual("0,-1,0 0,-1,-1 1,0,-1 1,-1,-1 -1,0,0 -1,0,-1 -1,-1,0 -1,-1,-1", string.Join(" ", leaves));
+        Assert.AreEqual(leaves.Count, result.Leaves);
+        // Every leaf has the same (false) logic, so the most assigned items win, the first such leaf on ties.
+        Assert.AreEqual("0,-1,0", string.Join(",", result.Choice!));
+    }
+
+    [TestMethod]
+    public void ConflictsAreFoundPerPeakWithoutPairwiseTests() {
+        // A peak shared by the two declared terms only (one member each) is no conflict: the fast path.
+        var shared = Items(new[] { new[] { 0 } }, new[] { new[] { 0 } });
+        Assert.IsTrue(ExclusiveAssignment.Assign(shared, _ => true, _ => true, 10).FastPath);
+        // Add a second member of loss_hex on that peak: the two loss_hex members conflict, caffeate's member may share
+        // with both and keeps its peak outside the search.
+        var twoOfOneTerm = Items(new[] { new[] { 0 }, new[] { 0 } }, new[] { new[] { 0 } });
+        var r = ExclusiveAssignment.Assign(twoOfOneTerm, _ => true, _ => true, 100);
+        Assert.IsFalse(r.FastPath);
+        Assert.AreEqual("0,-1,0", string.Join(",", r.Choice!));
+        // decarb is in no group: on a peak with anything else it conflicts, and so does its neighbour.
+        var ungrouped = Items(new[] { new[] { 0 } }, new int[0][], new[] { new[] { 0 } });
+        var u = ExclusiveAssignment.Assign(ungrouped, _ => true, _ => true, 100);
+        Assert.IsFalse(u.FastPath);
+        Assert.AreEqual("0,-1", string.Join(",", u.Choice!));
     }
 }

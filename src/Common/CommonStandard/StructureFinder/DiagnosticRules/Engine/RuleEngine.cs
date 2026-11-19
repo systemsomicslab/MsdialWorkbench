@@ -332,17 +332,27 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             return new ReadOnlyCollection<VetoState>(vetoes);
         }
 
+        /// <summary>
+        /// The leaves' inputs under <paramref name="choice"/> (null: nothing assigned). A term's items are consecutive
+        /// in canonical item order, so <c>lastTerm[u]</c>, the last term that listed unit u, deduplicates a term's units
+        /// in constant time: the search calls this at every leaf, and a term can have thousands of members.
+        /// </summary>
         private static LogicInputs Inputs(EvidenceItems items, int[]? choice, double[] iRaw, bool[] rawPresent, long[] kEff) {
             var assigned = new bool[items.TermCount];
             var units = new List<int>[items.TermCount];
             if (choice != null) {
+                var lastTerm = new int[items.UnitCount];
+                for (var u = 0; u < lastTerm.Length; u++) {
+                    lastTerm[u] = -1;
+                }
                 foreach (var item in items.Items) {
                     if (choice[item.Index] < 0) {
                         continue;
                     }
                     assigned[item.TermIndex] = true;
                     var list = units[item.TermIndex] ?? (units[item.TermIndex] = new List<int>());
-                    if (!list.Contains(item.UnitId)) {
+                    if (lastTerm[item.UnitId] != item.TermIndex) {
+                        lastTerm[item.UnitId] = item.TermIndex;
                         list.Add(item.UnitId);
                     }
                 }
@@ -351,7 +361,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             for (var t = 0; t < assignedUnits.Length; t++) {
                 assignedUnits[t] = units[t]?.ToArray() ?? new int[0];
             }
-            return new LogicInputs(assigned, assignedUnits, iRaw, rawPresent, kEff);
+            return new LogicInputs(assigned, assignedUnits, items.UnitCount, iRaw, rawPresent, kEff);
         }
     }
 }
