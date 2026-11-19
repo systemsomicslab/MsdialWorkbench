@@ -1662,7 +1662,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PS: //EIEIO
                     return LipidEieioMsmsCharacterization.JudgeIfPhosphatidylserine(msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PG: //EIEIO
                     return LipidEieioMsmsCharacterization.JudgeIfPhosphatidylglycerol(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
@@ -1671,7 +1671,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PI: //EIEIO
                     return LipidEieioMsmsCharacterization.JudgeIfPhosphatidylinositol(msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.SM: //EIEIO
                     if (molecule.TotalChainString.Contains("O3")) {
                         return LipidMsmsCharacterization.JudgeIfSphingomyelinPhyto(msScanProp, ms2tol, refMz,
@@ -2548,7 +2548,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PS: //OAD
                     return LipidOadMsmsCharacterization.JudgeIfPhosphatidylserine(msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PG: //OAD
                     return LipidOadMsmsCharacterization.JudgeIfPhosphatidylglycerol(msScanProp, ms2tol, refMz,
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
@@ -2557,7 +2557,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.PI: //OAD
                     return LipidOadMsmsCharacterization.JudgeIfPhosphatidylinositol(msScanProp, ms2tol, refMz,
-                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                        totalCarbon, totalDbBond, sn1Carbon, totalCarbon - sn1Carbon, sn1DbBond, totalDbBond - sn1DbBond, adduct);
                 case LbmClass.SM: //OAD
                     if (molecule.TotalChainString.Contains("O3")) {
                         return LipidOadMsmsCharacterization.JudgeIfSphingomyelinPhyto(msScanProp, ms2tol, refMz,

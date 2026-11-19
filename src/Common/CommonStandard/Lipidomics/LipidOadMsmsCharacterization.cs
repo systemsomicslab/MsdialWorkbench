@@ -1808,6 +1808,9 @@ namespace CompMs.Common.Lipidomics
             if (totalCarbon <= 28) return null; // currently carbon <= 28 is recognized as Lyso PE
             var spectrum = msScanProp.Spectrum;
             if (spectrum == null || spectrum.Count == 0) return null;
+            if (Sn1Carbon <= 0 || Sn1Double < 0 || Sn1Double > Sn1Carbon ||
+                !LipidMsmsCharacterizationUtility.IsValidAcylChain(Sn2Carbon, Sn2Double) ||
+                Sn1Carbon + Sn2Carbon != totalCarbon || Sn1Double + Sn2Double != totalDoubleBond) return null;
             if (adduct.IonMode == IonMode.Positive)
             {
                 if (adduct.AdductIonName == "[M+H]+")
@@ -1843,7 +1846,8 @@ namespace CompMs.Common.Lipidomics
                         var etherSuffix = "e";
                         var EtherString = "O-" + Sn1Carbon + ":" + Sn1Double;
                         var EsterString = Sn2Carbon + ":" + Sn2Double;
-                        if (LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, 5.0))
+                        if (Sn1Double > 0 &&
+                            LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, 5.0))
                         {
                             etherSuffix = "p";
                             EtherString = "P-" + Sn1Carbon + ":" + Sn1Double;

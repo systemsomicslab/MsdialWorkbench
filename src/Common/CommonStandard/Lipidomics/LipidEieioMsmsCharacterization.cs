@@ -285,12 +285,12 @@ namespace CompMs.Common.Lipidomics
                 Sn3AcylChainString = sn3ChainString
             };
         }
-    public static LipidMolecule getEtherPhospholipidMoleculeObjAsPositionChain(
-    string lipidClass, LbmClass lbmClass,
-    int etherCarbon, int etherDouble,
-    int acylCarbon, int acylDouble,
-    double score, string chainSuffix,
-    bool etherChainFirst = true)
+        public static LipidMolecule getEtherPhospholipidMoleculeObjAsPositionChain(
+        string lipidClass, LbmClass lbmClass,
+        int etherCarbon, int etherDouble,
+        int acylCarbon, int acylDouble,
+        double score, string chainSuffix,
+        bool etherChainFirst = true)
         {
             var chainPrefix = chainSuffix;
             switch (chainSuffix)
@@ -1912,6 +1912,9 @@ namespace CompMs.Common.Lipidomics
             if (totalCarbon <= 28) return null; // currently carbon <= 28 is recognized as Lyso PE
             var spectrum = msScanProp.Spectrum;
             if (spectrum == null || spectrum.Count == 0) return null;
+            if (Sn1Carbon <= 0 || Sn1Double < 0 || Sn1Double > Sn1Carbon ||
+                !LipidMsmsCharacterizationUtility.IsValidAcylChain(Sn2Carbon, Sn2Double) ||
+                Sn1Carbon + Sn2Carbon != totalCarbon || Sn1Double + Sn2Double != totalDoubleBond) return null;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
@@ -1945,7 +1948,7 @@ namespace CompMs.Common.Lipidomics
                     if (foundCount >= 2)
                     {
                         var etherSuffix = "e";
-                        if (LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, 5.0))
+                        if (Sn1Double > 0 && LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, sn1_rearrange, 5.0))
                         {
                             etherSuffix = "p";
                         }
@@ -2426,7 +2429,7 @@ namespace CompMs.Common.Lipidomics
                             if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_Ether_H2O_CH2, nl_Acyl_H2O_CH2))
                             {
                                 var molecule = getEtherPhospholipidMoleculeObjAsPositionChain("PC", LbmClass.EtherPC, sn1Carbon, sn1Double,
-                                    sn2Carbon, sn2Double,  averageIntensity, "e", etherChainFirst: true); // use averageIntensity (not averageIntensitySN2)
+                                    sn2Carbon, sn2Double, averageIntensity, "e", etherChainFirst: true); // use averageIntensity (not averageIntensitySN2)
                                 candidates.Add(molecule);
                             }
                             else if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, nl_Acyl_H2O_CH2, nl_Ether_H2O_CH2))

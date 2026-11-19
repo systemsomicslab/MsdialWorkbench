@@ -4741,6 +4741,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
                             if (sn2Carbon <= 0 || sn2Double < 0) continue;
+                            if (sn1Carbon <= 0 || sn1Double < 0 || sn1Double > sn1Carbon ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2Carbon, sn2Double)) continue;
                             var sn1alkyl = (MassDiffDictionary.CarbonMass * sn1Carbon)
                                         + (MassDiffDictionary.HydrogenMass * ((sn1Carbon * 2) - (sn1Double * 2) + 1));//sn1(carbon chain)
 
@@ -4824,7 +4826,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
                             if (sn2Carbon <= 0 || sn2Double < 0) continue;
-
+                            if (sn1Carbon <= 0 || sn1Double < 0 || sn1Double > sn1Carbon ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(sn2Carbon, sn2Double)) continue;
                             if (sn1Carbon >= 24 && sn1Double >= 5) continue;
 
                             var sn2 = LipidMsmsCharacterizationUtility.fattyacidProductIon(sn2Carbon, sn2Double);
