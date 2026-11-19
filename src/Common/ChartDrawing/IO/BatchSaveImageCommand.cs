@@ -13,15 +13,6 @@ public sealed class BatchSaveImageCommand : ICommand
 
     public bool CanExecute(object parameter) {
         return true;
-        if (parameter is IReadOnlyList<object> parameters) {
-            for (int i = 0; i < parameters.Count; i+=2) {
-                if (i + 1 < parameters.Count && (parameters[i] is not FrameworkElement || parameters[i + 1] is not string)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
 #pragma warning disable 67
