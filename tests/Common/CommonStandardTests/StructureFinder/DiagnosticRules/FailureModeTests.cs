@@ -175,6 +175,10 @@ public class FailureModeTests
         cases["decoy 9008"] = () => new DiagnosticEvaluationOptions { DecoyShiftDa = 9008 };
         cases["decoy -9008"] = () => new DiagnosticEvaluationOptions { DecoyShiftDa = -9008 };
         cases["decoy min"] = () => new DiagnosticEvaluationOptions { DecoyShiftDa = int.MinValue };
+        // delta * 10^12 wraps in long arithmetic to -2407403520 and +9842106368 pDa, both below 2^53.
+        cases["decoy wrapping to -0.0024 Da"] = () => new DiagnosticEvaluationOptions { DecoyShiftDa = 1752440687 };
+        cases["decoy wrapping to +0.0098 Da"] = () => new DiagnosticEvaluationOptions { DecoyShiftDa = 498062090 };
+        cases["decoy max"] = () => new DiagnosticEvaluationOptions { DecoyShiftDa = int.MaxValue };
         cases["filter"] = () => new DiagnosticEvaluationOptions { Filter = (RuleFilter)9 };
         cases["overlap"] = () => new DiagnosticEvaluationOptions { Overlap = (OverlapMode)9 };
         cases["loss reference"] = () => new DiagnosticEvaluationOptions { LossReferenceOverride = (Model.LossReference)9 };

@@ -38,8 +38,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="set"/> or <paramref name="options"/> is null.</exception>
         /// <exception cref="ArgumentException">An option is invalid: a non-finite or negative tolerance, a FloorScale
-        /// that is not finite and positive, an AssignmentCap below 1, a decoy shift that leaves (0, 2^53) pDa, or an
-        /// undefined enum value (OQ20).</exception>
+        /// that is not finite and positive, an AssignmentCap below 1, |DecoyShiftDa| above 9007 (the shift, not every
+        /// shifted mass, is bounded below 2^53 pDa), or an undefined enum value (OQ20).</exception>
         /// <exception cref="DiagnosticRuleRefusedException"><see cref="DiagnosticEvaluationOptions.Strict"/> is set
         /// and a rule is refused (OQ21).</exception>
         public DiagnosticRuleEvaluator(DiagnosticRuleSet set, DiagnosticEvaluationOptions options) {

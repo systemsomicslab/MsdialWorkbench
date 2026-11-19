@@ -6,10 +6,14 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
 {
     /// <summary>
     /// An immutable, checked copy of <see cref="DiagnosticEvaluationOptions"/>, taken once when an evaluator is built
-    /// (design 4.10): the options object stays mutable, the evaluator does not.
+    /// (design 4.10): the options object stays mutable, the evaluator does not. Every property is read once into the
+    /// copy, and the copy, not the caller's object, is checked.
     /// </summary>
     internal sealed class EvaluationSettings
     {
+        /// <summary>The largest |DecoyShiftDa|: 9007, the largest integer delta with delta * 10^12 &lt; 2^53 pDa.</summary>
+        public const long MaxDecoyShiftDa = MassPda.Limit / ElementTable.PdaPerDa;
+
         private EvaluationSettings(DiagnosticEvaluationOptions o) {
             Filter = o.Filter;
             PrecursorToleranceDa = o.PrecursorToleranceDa;
@@ -17,13 +21,15 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             MsfinderProductTolerance = o.MsfinderProductTolerance;
             LossReferenceOverride = o.LossReferenceOverride;
             DecoyShiftDa = o.DecoyShiftDa;
-            DecoyShiftPda = o.DecoyShiftDa * ElementTable.PdaPerDa;
             FloorScale = o.FloorScale;
             KOffset = o.KOffset;
             Overlap = o.Overlap;
             AssignmentCap = o.AssignmentCap;
             Strict = o.Strict;
             Verbose = o.Verbose;
+            Check();
+            // Only after the range check: |delta| <= 9007, so the product cannot overflow.
+            DecoyShiftPda = checked(DecoyShiftDa * ElementTable.PdaPerDa);
         }
 
         public RuleFilter Filter { get; }
@@ -64,43 +70,50 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
 
         /// <summary>
         /// Copies and checks the options. Throws <see cref="ArgumentException"/> for a non-finite or negative
-        /// tolerance, a FloorScale that is not finite and positive, an AssignmentCap below 1, a decoy shift that
-        /// cannot keep masses inside (0, 2^53) pDa (|delta| * 10^12 &gt;= 2^53), or an undefined enum value.
+        /// tolerance, a FloorScale that is not finite and positive, an AssignmentCap below 1, |DecoyShiftDa| above
+        /// <see cref="MaxDecoyShiftDa"/> (so the shift itself, delta * 10^12, stays below 2^53 pDa; this bounds the
+        /// shift only and does not keep every shifted term mass inside (0, 2^53) pDa), or an undefined enum value.
         /// </summary>
         public static EvaluationSettings From(DiagnosticEvaluationOptions options) {
             if (options is null) {
                 throw new ArgumentNullException(nameof(options));
             }
-            if (options.Filter != RuleFilter.MeasuredAndSourceChecked && options.Filter != RuleFilter.AuthorReviewed && options.Filter != RuleFilter.All) {
-                throw new ArgumentException("Filter is not a defined RuleFilter", nameof(options));
-            }
-            if (options.PrecursorToleranceDa.HasValue && !IsTolerance(options.PrecursorToleranceDa.Value)) {
-                throw new ArgumentException("PrecursorToleranceDa must be finite and not negative", nameof(options));
-            }
-            if (options.ProductToleranceOverride.HasValue && !IsTolerance(options.ProductToleranceOverride.Value)) {
-                throw new ArgumentException("ProductToleranceOverride must be finite and not negative", nameof(options));
-            }
-            if (!IsTolerance(options.MsfinderProductTolerance)) {
-                throw new ArgumentException("MsfinderProductTolerance must be finite and not negative", nameof(options));
-            }
-            if (options.LossReferenceOverride.HasValue
-                && options.LossReferenceOverride.Value != Model.LossReference.Hypothesis
-                && options.LossReferenceOverride.Value != Model.LossReference.Observed) {
-                throw new ArgumentException("LossReferenceOverride is not a defined LossReference", nameof(options));
-            }
-            if (Math.Abs((long)options.DecoyShiftDa) * ElementTable.PdaPerDa >= MassPda.Limit) {
-                throw new ArgumentException("DecoyShiftDa moves masses outside (0, 2^53) pDa", nameof(options));
-            }
-            if (double.IsNaN(options.FloorScale) || double.IsInfinity(options.FloorScale) || options.FloorScale <= 0.0) {
-                throw new ArgumentException("FloorScale must be finite and positive", nameof(options));
-            }
-            if (options.Overlap != OverlapMode.Refuse && options.Overlap != OverlapMode.Runtime) {
-                throw new ArgumentException("Overlap is not a defined OverlapMode", nameof(options));
-            }
-            if (options.AssignmentCap < 1) {
-                throw new ArgumentException("AssignmentCap must be at least 1", nameof(options));
-            }
             return new EvaluationSettings(options);
+        }
+
+        /// <summary>Checks the copied values (never the caller's object, which another thread may change).</summary>
+        private void Check() {
+            if (Filter != RuleFilter.MeasuredAndSourceChecked && Filter != RuleFilter.AuthorReviewed && Filter != RuleFilter.All) {
+                throw new ArgumentException("Filter is not a defined RuleFilter", "options");
+            }
+            if (PrecursorToleranceDa.HasValue && !IsTolerance(PrecursorToleranceDa.Value)) {
+                throw new ArgumentException("PrecursorToleranceDa must be finite and not negative", "options");
+            }
+            if (ProductToleranceOverride.HasValue && !IsTolerance(ProductToleranceOverride.Value)) {
+                throw new ArgumentException("ProductToleranceOverride must be finite and not negative", "options");
+            }
+            if (!IsTolerance(MsfinderProductTolerance)) {
+                throw new ArgumentException("MsfinderProductTolerance must be finite and not negative", "options");
+            }
+            if (LossReferenceOverride.HasValue
+                && LossReferenceOverride.Value != Model.LossReference.Hypothesis
+                && LossReferenceOverride.Value != Model.LossReference.Observed) {
+                throw new ArgumentException("LossReferenceOverride is not a defined LossReference", "options");
+            }
+            // Compared before any multiplication: |delta| * 10^12 wraps silently in long arithmetic for |delta| of
+            // about 9.2e6 and more, and a wrapped product can fall back below 2^53.
+            if (Math.Abs((long)DecoyShiftDa) > MaxDecoyShiftDa) {
+                throw new ArgumentException("|DecoyShiftDa| must be at most 9007, so that DecoyShiftDa * 10^12 stays below 2^53 pDa", "options");
+            }
+            if (double.IsNaN(FloorScale) || double.IsInfinity(FloorScale) || FloorScale <= 0.0) {
+                throw new ArgumentException("FloorScale must be finite and positive", "options");
+            }
+            if (Overlap != OverlapMode.Refuse && Overlap != OverlapMode.Runtime) {
+                throw new ArgumentException("Overlap is not a defined OverlapMode", "options");
+            }
+            if (AssignmentCap < 1) {
+                throw new ArgumentException("AssignmentCap must be at least 1", "options");
+            }
         }
 
         private static bool IsTolerance(double x) => !double.IsNaN(x) && !double.IsInfinity(x) && x >= 0.0;

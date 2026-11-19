@@ -164,6 +164,12 @@ public class EvaluatorInputTests
             o => o.AssignmentCap = 0,
             o => o.DecoyShiftDa = 9008,
             o => o.DecoyShiftDa = int.MinValue,
+            o => o.DecoyShiftDa = int.MaxValue,
+            o => o.DecoyShiftDa = -9008,
+            // These wrap in unchecked long arithmetic to a few milli-Da, below 2^53 pDa.
+            o => o.DecoyShiftDa = 1752440687,
+            o => o.DecoyShiftDa = 498062090,
+            o => o.DecoyShiftDa = -1752440687,
             o => o.Filter = (RuleFilter)9,
             o => o.Overlap = (OverlapMode)9,
             o => o.LossReferenceOverride = (LossReference)9,
@@ -174,8 +180,11 @@ public class EvaluatorInputTests
             Assert.ThrowsException<ArgumentException>(() => EvaluationSettings.From(o));
         }
         Assert.ThrowsException<ArgumentNullException>(() => EvaluationSettings.From(null!));
-        // The largest decoy that keeps every mass inside (0, 2^53) pDa, and a zero tolerance, are accepted.
+        // The largest decoys, whose shift delta * 10^12 stays below 2^53 pDa, and a zero tolerance, are accepted.
+        Assert.AreEqual(9007L, EvaluationSettings.MaxDecoyShiftDa);
         Assert.AreEqual(-9007, EvaluationSettings.From(new DiagnosticEvaluationOptions { DecoyShiftDa = -9007 }).DecoyShiftDa);
+        Assert.AreEqual(-9007000000000000L, EvaluationSettings.From(new DiagnosticEvaluationOptions { DecoyShiftDa = -9007 }).DecoyShiftPda);
+        Assert.AreEqual(9007000000000000L, EvaluationSettings.From(new DiagnosticEvaluationOptions { DecoyShiftDa = 9007 }).DecoyShiftPda);
         Assert.AreEqual(0.0, EvaluationSettings.From(new DiagnosticEvaluationOptions { PrecursorToleranceDa = 0.0 }).PrecursorToleranceDa);
     }
 }
