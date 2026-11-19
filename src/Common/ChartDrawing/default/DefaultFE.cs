@@ -169,6 +169,7 @@ namespace CompMs.Graphics.Core.Base
         public virtual void Draw() {
             this.visualCollection.Clear();
             if (this.drawing == null) this.drawing = new TDrawVisual();
+            if (this.drawing is DrawVisual visual) visual.PixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
             this.drawing.ChangeChartArea(this.ActualWidth, this.ActualHeight);
             this.drawingVisual = this.drawing.GetChart();
             this.visualCollection.Add(this.drawingVisual);
@@ -177,6 +178,7 @@ namespace CompMs.Graphics.Core.Base
         public void Draw(float width, float height) {
             this.visualCollection.Clear();
             if (this.drawing == null) this.drawing = new TDrawVisual();
+            if (this.drawing is DrawVisual visual) visual.PixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
             this.drawing.ChangeChartArea(width, height);
             this.drawingVisual = this.drawing.GetChart();
             this.visualCollection.Add(this.drawingVisual);
