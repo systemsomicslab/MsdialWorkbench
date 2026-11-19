@@ -9,10 +9,11 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class PepAnnotationQuery : IPepAnnotationQuery, IAnnotationQuery<MsScanMatchResult> {
+    public class PepAnnotationQuery : IPepAnnotationQuery, IAnnotationQuery<MsScanMatchResult>, ICancellableAnnotationQuery {
         private readonly IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> _finder;
         private readonly bool _ignoreIsotopicPeak;
 
@@ -63,7 +64,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public MsRefSearchParameterBase MsRefSearchParameter { get; }
         public ProteomicsParameter ProteomicsParameter { get; }
 
+        public CancellationToken CancellationToken { get; set; }
+
         public IEnumerable<MsScanMatchResult> FindCandidates(bool forceFind = false) {
+            CancellationToken.ThrowIfCancellationRequested();
             if (_finder is null || (!forceFind && _ignoreIsotopicPeak && !IonFeature.IsMonoIsotopicIon)) {
                 return Enumerable.Empty<MsScanMatchResult>();
             }

@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -777,7 +778,32 @@ namespace CompMs.App.MsdialConsole.Parser
             (param, method, value) => AutomaticRtCorrectionPreviewOnlyLine(method, value, _ => { }),
             (param, method, value) => ReadAutomaticRtCorrectionParameter(param, method, value),
             (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
+            (param, method, value) => MsmsEntropyCleanupLine(param.ChromDecBaseParam, method, value),
         };
+
+        /// <summary>
+        /// The optional MS/MS entropy cleanup (MsmsEntropyCleanup), which only LC-MS deconvolution runs, so these are
+        /// LC-MS keys: in another mode's method file they are reported as unrecognised. A maximum entropy that is not
+        /// finite and positive, or a protected percentage outside 0 to 100, is unusable rather than applied.
+        /// </summary>
+        private static MethodKeyOutcome MsmsEntropyCleanupLine(ChromDecBaseParameter target, string method, string value) {
+            switch (method.Trim().ToLowerInvariant()) {
+                case "ms/ms entropy cleanup":
+                    return TrueOrFalse(value.Trim(), v => target.IsDoMsmsEntropyCleanup = v);
+                case "ms/ms maximum spectral entropy":
+                    return Number(value.Trim(), v => {
+                        if (!MsmsEntropyCleanup.IsValidMaxEntropy(v)) throw new FormatException($"The maximum spectral entropy must be a finite positive number, not {v}.");
+                        target.MsmsMaxSpectralEntropy = v;
+                    });
+                case "ms/ms entropy cleanup protected percent of base peak":
+                    return Number(value.Trim(), v => {
+                        if (!MsmsEntropyCleanup.IsValidProtectedPercentOfBasePeak(v)) throw new FormatException($"The protected percentage of the base peak must be from 0 to 100, not {v}.");
+                        target.MsmsEntropyCleanupProtectedPercentOfBasePeak = v;
+                    });
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
 
         /// <summary>
         /// The lipid retention-time order check's settings (SPEC section 11 with the addendum's
@@ -1345,18 +1371,37 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
+        /// <summary>
+        /// Read the molecular-networking keys of a method file.
+        /// </summary>
+        /// <exception cref="MethodFileException">
+        /// A networking key has a value this Console cannot use (an unknown MsmsSimilarityCalc, a
+        /// number that does not parse). Every such line is named; none is silently replaced by its
+        /// default.
+        /// </exception>
         public static MolecularSpectrumNetworkingBaseParameter ReadForMoleculerNetworkingParameter(string filepath) {
             var param = new MolecularSpectrumNetworkingBaseParameter();
-            // Not reported: this reader is given the SAME method file as the mode reader above and
-            // claims only the networking subset, so every other key in the file would be listed as
-            // unrecognised. The mode reader is where a key gets its verdict.
+            var unusable = new List<string>();
+            // Unrecognised keys are not reported: this reader may be given the SAME method file as a
+            // mode reader and claims only the networking subset, so every other key in the file would
+            // be listed as unrecognised. Only the networking keys' own values get a verdict here.
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
                     if (isReadable) {
-                        ReadMoleculerNetworkingParameter(param, method, value);
+                        var outcome = ReadMoleculerNetworkingParameter(param, method, value);
+                        if (outcome.IsUnusableValue) {
+                            unusable.Add($"{method}: {value}");
+                        }
                     }
                 }
+            }
+            if (unusable.Count > 0) {
+                throw new MethodFileException(
+                    $"The method file {Path.GetFileName(filepath)} has molecular-networking values this Console cannot use: "
+                    + string.Join("; ", unusable.Select(line => $"'{line}'"))
+                    + $". MsmsSimilarityCalc must be one of {string.Join(", ", Enum.GetNames(typeof(MsmsSimilarityCalc)))}; numbers use a '.' decimal separator.",
+                    unusable);
             }
             return param;
         }
@@ -1652,33 +1697,58 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
+        /// <summary>
+        /// Read a molecular-networking similarity: ModDotLegacy, Bonanza, Cosine, All or
+        /// ModifiedCosine in any letter case, or the old name ModDot, which is read as ModDotLegacy
+        /// with a notice.
+        /// </summary>
+        internal static MethodKeyOutcome SimilarityCalc(string text, Action<MsmsSimilarityCalc> assign) {
+            if (string.Equals(text.Trim(), "ModDot", StringComparison.OrdinalIgnoreCase)) {
+                Console.Error.WriteLine("MsmsSimilarityCalc: ModDot is read as ModDotLegacy (msdial.moddot.legacy, the modified dot product over matched peaks only).");
+                return Assign(MsmsSimilarityCalc.ModDotLegacy, assign);
+            }
+            return Named(text, assign);
+        }
+
+        /// <remarks>
+        /// The numbers are kept as the doubles they are written as. They used to be cast to float, so
+        /// an MnMassTolerance of 0.025 ran as 0.0250000004; that differs only for a peak pair exactly
+        /// at the tolerance.
+        /// </remarks>
         private static MethodKeyOutcome ReadMoleculerNetworkingParameter(MolecularSpectrumNetworkingBaseParameter param, string method, string value) {
-            if (value.IsEmptyOrNull()) return false;
             if (method.IsEmptyOrNull()) return false;
             method = method.ToLowerInvariant();
+            if (method == "msmssimilaritycalc") {
+                // A kernel name that cannot be read must not leave the default kernel running unseen.
+                return value.IsEmptyOrNull()
+                    ? MethodKeyOutcome.UnusableValue
+                    : SimilarityCalc(value, v => param.MsmsSimilarityCalc = v);
+            }
+            if (value.IsEmptyOrNull()) return false;
             var valueLower = value.ToLowerInvariant();
             switch (method) {
+                case "mnprecursorwindow":
+                    return Number(valueLower, v => param.MnPrecursorWindow = v >= 0d ? v : throw new ArgumentOutOfRangeException(nameof(v)));
+                case "mnintensitypower":
+                    return Number(valueLower, v => param.MnIntensityPower = v > 0d ? v : throw new ArgumentOutOfRangeException(nameof(v)));
                 case "mnrttolerance":
-                    return Number(valueLower, v => param.MnRtTolerance = (float)v);
+                    return Number(valueLower, v => param.MnRtTolerance = v);
                 case "mnioncorrelationsimilaritycutoff":
-                    return Number(valueLower, v => param.MnIonCorrelationSimilarityCutOff = (float)v);
+                    return Number(valueLower, v => param.MnIonCorrelationSimilarityCutOff = v);
                 case "mnspectrumsimilaritycutoff":
-                    return Number(valueLower, v => param.MnSpectrumSimilarityCutOff = (float)v);
+                    return Number(valueLower, v => param.MnSpectrumSimilarityCutOff = v);
                 case "mnrelativeabundancecutoff":
-                    return Number(valueLower, v => param.MnRelativeAbundanceCutOff = (float)v);
+                    return Number(valueLower, v => param.MnRelativeAbundanceCutOff = v);
                 case "mnmasstolerance":
-                    return Number(valueLower, v => param.MnMassTolerance = (float)v);
+                    return Number(valueLower, v => param.MnMassTolerance = v);
                 case "minimumpeakmatch":
-                    return Number(valueLower, v => param.MinimumPeakMatch = (float)v);
+                    return Number(valueLower, v => param.MinimumPeakMatch = v);
                 case "maxedgenumberpernode":
-                    return Number(valueLower, v => param.MaxEdgeNumberPerNode = (float)v);
+                    return Number(valueLower, v => param.MaxEdgeNumberPerNode = v);
                 case "maxprecursordifference":
-                    return Number(valueLower, v => param.MaxPrecursorDifference = (float)v);
+                    return Number(valueLower, v => param.MaxPrecursorDifference = v);
                 case "mnabsoluteabundancecutoff":
-                    return Number(valueLower, v => param.MnAbsoluteAbundanceCutOff = (float)v);
-                case "msmssimilaritycalc":
-                    if (value == "Bonanza" || value == "ModDot" || value == "Cosine" || value == "All")
-                        param.MsmsSimilarityCalc = (MsmsSimilarityCalc)Enum.Parse(typeof(MsmsSimilarityCalc), value, true); return true;
+                    return Number(valueLower, v => param.MnAbsoluteAbundanceCutOff = v);
                 case "mnisexportioncorrelation":
                     return TrueOrFalse(valueLower, v => param.MnIsExportIonCorrelation = v);
                 default: return false;

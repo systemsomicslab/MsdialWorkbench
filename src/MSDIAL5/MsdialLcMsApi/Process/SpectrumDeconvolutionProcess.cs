@@ -49,7 +49,25 @@ namespace CompMs.MsdialLcMsApi.Process
                 var results = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, token);
                 mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
             }
+            CleanByEntropy(mSDecREsultCollections, analysisFile);
             return mSDecREsultCollections;
+        }
+
+        /// <summary>
+        /// The optional MS/MS entropy cleanup, on the deconvoluted spectra before they are annotated and saved, so the
+        /// library search, the alignment, the exports and the viewers all see the same spectra. DDA and DIA alike. Off,
+        /// it does nothing at all.
+        /// </summary>
+        private void CleanByEntropy(IReadOnlyList<MSDecResultCollection> collections, AnalysisFileBean analysisFile) {
+            var parameter = _storage.Parameter.ChromDecBaseParam;
+            if (!parameter.IsDoMsmsEntropyCleanup) {
+                return;
+            }
+            foreach (var collection in collections) {
+                var summary = MsmsEntropyCleanup.Apply(collection.MSDecResults, parameter.MsmsMaxSpectralEntropy, parameter.MsmsEntropyCleanupProtectedPercentOfBasePeak);
+                var energy = collections.Count > 1 ? $", CE {collection.CollisionEnergy}" : string.Empty;
+                Console.WriteLine($"MS/MS entropy cleanup ({analysisFile.AnalysisFileName}{energy}, maximum entropy {parameter.MsmsMaxSpectralEntropy}): {summary}");
+            }
         }
     }
 }

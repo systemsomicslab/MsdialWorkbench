@@ -20,7 +20,8 @@ namespace CompMs.Common.StructureFinder
         private static double protonMass = 1.00727646677;
         private static double electronMass = 0.0005485799;
 
-        private static double maxBondDissociationEnergy;
+        // The largest bond dissociation energy among the fragments of the structure being assigned is passed down as an
+        // argument. It used to be a static field, which the structures scored in parallel overwrote for one another.
 
         /// <summary>
         /// This is main program
@@ -37,7 +38,7 @@ namespace CompMs.Common.StructureFinder
             var solventAdduct = ionMode == IonMode.Positive ? adduct.AdductIonAccurateMass - electronMass : adduct.AdductIonAccurateMass + electronMass;
             if (solventAdduct < 1.1) solventAdduct = 0; //currently, consider the plus effect only like Na+, NH4+, HCOO- etc.
 
-            maxBondDissociationEnergy = getMaxBDE(fragments);
+            var maxBondDissociationEnergy = getMaxBDE(fragments);
 
             //consider ring bond cleavage + dehydration
             var fragmentMinusShift = ionMode == IonMode.Positive ? Math.Max((double)treeDepth * hydrogenMass * 4.0 + protonMass, solventAdduct + (double)treeDepth * hydrogenMass * 4.0 + protonMass)
@@ -73,7 +74,7 @@ namespace CompMs.Common.StructureFinder
 
                     //Debug.WriteLine("Search mass pair\t" + peak.Mass + "\t" + fragments[i].SaturatedExactMass);
 
-                    var matchedFragmentInfo = getMatchedFragmentInfo(j, fragment, peak, solventAdduct, adduct.AdductIonName, massTol, ionMode, fragments, peakFragmentPairs);
+                    var matchedFragmentInfo = getMatchedFragmentInfo(j, fragment, peak, solventAdduct, adduct.AdductIonName, massTol, ionMode, fragments, peakFragmentPairs, maxBondDissociationEnergy);
                     if (matchedFragmentInfo == null) continue;
 
                     if (maxMatchedValue < matchedFragmentInfo.TotalLikelihood)
@@ -307,7 +308,7 @@ namespace CompMs.Common.StructureFinder
         /// </summary>
         private static MatchedFragmentInfo getMatchedFragmentInfo(int fragmentID, Fragment fragment, SpectrumPeak peak,
             double solventAdduct, string adductString, double massTol, IonMode ionMode,
-            List<Fragment> fragments, List<PeakFragmentPair> peakFragmentPairs)
+            List<Fragment> fragments, List<PeakFragmentPair> peakFragmentPairs, double maxBondDissociationEnergy)
         {
             var matchedFragmentInfo = new MatchedFragmentInfo() { FragmentID = fragmentID };
             var electron = ionMode == IonMode.Positive ? electronMass : -electronMass;
@@ -331,14 +332,14 @@ namespace CompMs.Common.StructureFinder
                 if (matchedMass - massTol < peak.Mass && peak.Mass < matchedMass + massTol)
                 {
 
-                    setMatchedFragmentInfo(matchedFragmentInfo, fragment, peak, i, matchedMass, false, massTol, ionMode, 0.0, string.Empty, fragments, peakFragmentPairs);
+                    setMatchedFragmentInfo(matchedFragmentInfo, fragment, peak, i, matchedMass, false, massTol, ionMode, 0.0, string.Empty, fragments, peakFragmentPairs, maxBondDissociationEnergy);
                     return matchedFragmentInfo;
                 }
                 else if (matchedMassWithAdduct - massTol < peak.Mass && peak.Mass < matchedMassWithAdduct + massTol)
                 {
 
                     setMatchedFragmentInfo(matchedFragmentInfo, fragment, peak, i, matchedMassWithAdduct, true, massTol, ionMode, solventAdduct,
-                        AdductIonParser.GetAdductContent(adductString), fragments, peakFragmentPairs);
+                        AdductIonParser.GetAdductContent(adductString), fragments, peakFragmentPairs, maxBondDissociationEnergy);
                     return matchedFragmentInfo;
                 }
             }
@@ -351,7 +352,7 @@ namespace CompMs.Common.StructureFinder
         /// </summary>
         private static void setMatchedFragmentInfo(MatchedFragmentInfo matchedFragmentInfo, Fragment fragment, SpectrumPeak peak, int rearrangedHydrogen,
             double matchedMass, bool isSolventAdduct, double massTol, IonMode ionMode, double adductMass, string adductString,
-            List<Fragment> fragments, List<PeakFragmentPair> peakFragmentPairs)
+            List<Fragment> fragments, List<PeakFragmentPair> peakFragmentPairs, double maxBondDissociationEnergy)
         {
             var isEeRule = false;
             var isHrRule = false;

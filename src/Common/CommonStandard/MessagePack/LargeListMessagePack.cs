@@ -30,12 +30,16 @@ namespace CompMs.Common.MessagePack {
                 .WithCompressionMinLength(1);
 
         public static void Serialize<T>(Stream stream, IReadOnlyList<T> value) {
+            Serialize(stream, value, StandardResolver.Instance);
+        }
+
+        public static void Serialize<T>(Stream stream, IReadOnlyList<T> value, IFormatterResolver resolver) {
             if (value is null) {
                 stream.WriteByte(MessagePackCode.Nil);
                 return;
             }
 
-            var options = MessagePackSerializerOptions.Standard.WithResolver(StandardResolver.Instance);
+            var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             var formatter = options.Resolver.GetFormatterWithVerify<T>();
             var buffer = new GrowableBuffer();
             var count = 0;
@@ -88,16 +92,24 @@ namespace CompMs.Common.MessagePack {
         }
 
         public static List<T> Deserialize<T>(Stream stream) {
+            return Deserialize<T>(stream, StandardResolver.Instance);
+        }
+
+        public static List<T> Deserialize<T>(Stream stream, IFormatterResolver resolver) {
             var res = new List<T>();
-            foreach (var chunk in DeserializeIncremental<T>(stream)) {
+            foreach (var chunk in DeserializeIncremental<T>(stream, resolver)) {
                 res.AddRange(chunk);
             }
             return res;
         }
 
         public static IEnumerable<List<T>> DeserializeIncremental<T>(Stream stream) {
+            return DeserializeIncremental<T>(stream, StandardResolver.Instance);
+        }
+
+        public static IEnumerable<List<T>> DeserializeIncremental<T>(Stream stream, IFormatterResolver resolver) {
             var options = MessagePackSerializerOptions.Standard
-                .WithResolver(CompositeResolver.Create(new IMessagePackFormatter[] { new ChunkFormatter<T>(index: null) }, new IFormatterResolver[] { StandardResolver.Instance }))
+                .WithResolver(CompositeResolver.Create(new IMessagePackFormatter[] { new ChunkFormatter<T>(index: null) }, new IFormatterResolver[] { resolver }))
                 .WithCompression(MessagePackCompression.Lz4Block);
             while (TryReadChunk(stream, out var chunk)) {
                 yield return chunk is null ? new List<T>() : MessagePackSerializer.Deserialize<Chunk<T>>(chunk, options).Items;

@@ -85,7 +85,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         protected virtual void SaveMspDB(Stream stream) {
-            MoleculeMsRefMethods.SaveMspToStream(MspDB, stream);
+            LargeListMessagePack.Serialize(stream, MspDB, CompactLibraryResolver.Instance);
         }
 
         protected virtual void SaveDataBases(Stream stream) {
@@ -192,7 +192,7 @@ namespace CompMs.MsdialCore.DataObj
 
             protected static async Task<List<MoleculeMsReference>> LoadMspDBAsync(IStreamManager streamManager, string path) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    return MoleculeMsRefMethods.LoadMspFromStream(stream);
+                    return LargeListMessagePack.Deserialize<MoleculeMsReference>(stream, CompactLibraryResolver.Instance);
                 }
             }
 

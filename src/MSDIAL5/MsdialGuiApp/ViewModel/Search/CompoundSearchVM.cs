@@ -21,6 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public CompoundSearchVM(CompoundSearchModel<T> model) : base(model)
         {
             _model = model;
+            model.AddTo(Disposables);
         }
 
         public T PeakSpot => _model.PeakSpot;
@@ -54,6 +55,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
+            IsBusy = model.IsBusy.ObserveOnUIDispatcher().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
             SelectedCompound = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedCompoundResult).AddTo(Disposables);
 
             _structureModel = new MoleculeStructureModel().AddTo(Disposables);
@@ -82,6 +85,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public IFileBean File => _model.File;
 
         public ReadOnlyReactivePropertySlim<IReadOnlyList<ICompoundResult>?> Compounds { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsBusy { get; }
 
         public ReactivePropertySlim<ICompoundResult?> SelectedCompound { get; }
 

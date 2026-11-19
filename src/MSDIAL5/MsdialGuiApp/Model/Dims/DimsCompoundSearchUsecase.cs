@@ -7,10 +7,11 @@ using CompMs.MsdialCore.DataObj;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    internal sealed class DimsCompoundSearchUsecase : BindableBase, ICompoundSearchUsecase<DimsCompoundResult, PeakSpotModel>
+    internal sealed class DimsCompoundSearchUsecase : BindableBase, ICancellableCompoundSearchUsecase<DimsCompoundResult, PeakSpotModel>
     {
         public DimsCompoundSearchUsecase(IReadOnlyList<CompoundSearcher> compoundSearchers) {
             CompoundSearchers = compoundSearchers;
@@ -48,12 +49,16 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        public IReadOnlyList<DimsCompoundResult> Search(PeakSpotModel peakSpot) {
+        public IReadOnlyList<DimsCompoundResult> Search(PeakSpotModel peakSpot) => Search(peakSpot, default);
+
+        public IReadOnlyList<DimsCompoundResult> Search(PeakSpotModel peakSpot, CancellationToken token) {
+            token.ThrowIfCancellationRequested();
             var results = SelectedCompoundSearcher?.Search(
                 peakSpot.PeakSpot.MSIon,
                 peakSpot.MsScan,
                 new List<RawPeakElement>(),
-                new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
+                new IonFeatureCharacter { IsotopeWeightNumber = 0, }, // Assume this is not isotope.
+                token
             );
             if (results is null) {
                 return System.Array.Empty<DimsCompoundResult>();

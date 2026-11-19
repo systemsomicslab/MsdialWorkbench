@@ -126,6 +126,7 @@ namespace CompMs.MsdialCore.Export
             builder.SetMoleculeProperties(chromPeakFeature.Refer(refer));
             builder.SetIonPropertyProperties(chromPeakFeature);
             builder.SetProjectParameterProperties(parameter.ProjectParam);
+            builder.SetMsmsEntropyCleanup(parameter);
             builder.SetScan(new MSScanProperty { Spectrum = massSpectra.Select(p => new SpectrumPeak { Mass = p.Mass, Intensity = p.Intensity }).ToList() });
             builder.Export(stream);
         }
@@ -158,6 +159,7 @@ namespace CompMs.MsdialCore.Export
             builder.SetMoleculeProperties(chromPeakFeature.Refer(refer));
             builder.SetIonPropertyProperties(chromPeakFeature);
             builder.SetProjectParameterProperties(parameter.ProjectParam);
+            builder.SetMsmsEntropyCleanup(parameter);
             builder.SetScan(new MSScanProperty { Spectrum = massSpectra.Select(p => new SpectrumPeak { Mass = p.Mass, Intensity = p.Intensity }).ToList() });
             builder.Export(stream);
         }
@@ -190,6 +192,7 @@ namespace CompMs.MsdialCore.Export
             builder.SetMoleculeProperties(spotProperty.Refer(mapper));
             builder.SetIonPropertyProperties(spotProperty);
             builder.SetProjectParameterProperties(parameter.ProjectParam);
+            builder.SetMsmsEntropyCleanup(parameter);
             builder.SetScan(new MSScanProperty { Spectrum = massSpectra.Select(p => new SpectrumPeak { Mass = p.Mass, Intensity = p.Intensity }).ToList() });
             builder.Export(stream);
         }

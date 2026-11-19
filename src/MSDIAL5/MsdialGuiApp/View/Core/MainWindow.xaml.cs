@@ -125,7 +125,10 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<ProjectPropertySettingViewModel>()
                 .Subscribe(ShowChildSettingDialog<ProjectPropertySettingView>("Project property setting", height: 600, width: 560, cancelUnlessFinished: true));
             broker.ToObservable<ICompoundSearchViewModel>()
-                .Subscribe(ShowChildDialog<CompoundSearchWindow>);
+                .Subscribe(viewmodel => {
+                    try { ShowChildDialog<CompoundSearchWindow>(viewmodel); }
+                    finally { (viewmodel as IDisposable)?.Dispose(); }
+                });
             broker.ToObservable<ExportMrmprobsViewModel>()
                 .Subscribe(ShowChildSettingDialog<ExportMrmprobsView>("MRMPROBS reference library export", height: 560, width: 560, finishCommandContent: "Export"));
             broker.ToObservable<AccumulatedMs1SpectrumViewModel>()

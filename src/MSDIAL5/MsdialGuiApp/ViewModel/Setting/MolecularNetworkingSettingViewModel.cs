@@ -90,6 +90,13 @@ internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
 
         MsmsSimilarityCalc = model.ToReactivePropertySlimAsSynchronized(m => m.MsmsSimilarityCalc).AddTo(Disposables);
 
+        PrecursorWindow = model.ToReactivePropertyAsSynchronized(
+           m => m.PrecursorWindow,
+           m => m.ToString(),
+           vm => double.Parse(vm),
+           ignoreValidationErrorValue: true
+        ).SetValidateAttribute(() => PrecursorWindow).AddTo(Disposables);
+
         UseCurrentFiltering = model.ToReactivePropertySlimAsSynchronized(m => m.UseCurrentFiltering).AddTo(Disposables);
 
         ObserveHasErrors = new[]
@@ -104,6 +111,7 @@ internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
             MaxEdgeNumberPerNode.ObserveHasErrors,
             MaxPrecursorDifference.ObserveHasErrors,
             MaxPrecursorDifferenceAsPercent.ObserveHasErrors,
+            PrecursorWindow.ObserveHasErrors,
         }.CombineLatestValuesAreAllFalse()
         .Inverse()
         .ToReadOnlyReactivePropertySlim()
@@ -165,6 +173,11 @@ internal sealed class MolecularNetworkingSettingViewModel : ViewModelBase
     public ReactivePropertySlim<bool> IsExportIonCorrelation { get; }
 
     public ReactivePropertySlim<MsmsSimilarityCalc> MsmsSimilarityCalc { get; }
+
+    [Required(ErrorMessage = "Required field")]
+    [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
+    [Range(0d, double.MaxValue, ErrorMessage = "The window should be 0 or a positive value.")]
+    public ReactiveProperty<string> PrecursorWindow { get; }
 
     public ReactivePropertySlim<bool> UseCurrentFiltering { get; }
 

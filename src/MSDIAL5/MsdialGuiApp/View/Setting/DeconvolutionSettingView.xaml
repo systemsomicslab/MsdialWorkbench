@@ -92,6 +92,40 @@
                         </TextBlock>
                     </ui:LabeledContent.ToolTip>
                 </ui:LabeledContent>
+
+                <StackPanel Visibility="{Binding SupportsMsmsEntropyCleanup, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
+                    <ui:LabeledContent PrependLabel="MS/MS entropy cleanup:"
+                                       Style="{StaticResource AlignedContent}">
+                        <CheckBox IsChecked="{Binding Path=IsDoMsmsEntropyCleanup.Value}"
+                                  IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}" />
+                        <ui:LabeledContent.ToolTip>
+                            <TextBlock>
+                                If checked, the weakest ions of each MS/MS spectrum are dropped after deconvolution until its spectral entropy
+                                <LineBreak/>
+                                (natural logarithm, Li et al. 2021) is at most the maximum below. Ions of equal intensity go together, and a spectrum
+                                <LineBreak/>
+                                that would keep fewer than 3 ions is kept as it is. Annotation, alignment and exports all use the cleaned spectra.
+                            </TextBlock>
+                        </ui:LabeledContent.ToolTip>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="Maximum spectral entropy:"
+                                       Style="{StaticResource AlignedContent}"
+                                       ToolTip="Default: 4.5">
+                        <TextBox Text="{Binding MsmsMaxSpectralEntropy.Value}"
+                                 IsEnabled="{Binding Path=IsDoMsmsEntropyCleanup.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="Never drop ions above:"
+                                       AppendLabel="% of base peak"
+                                       Style="{StaticResource AlignedContent}"
+                                       ToolTip="0 turns this protection off (default).">
+                        <TextBox Text="{Binding MsmsEntropyCleanupProtectedPercentOfBasePeak.Value}"
+                                 IsEnabled="{Binding Path=IsDoMsmsEntropyCleanup.Value}"
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
+                    </ui:LabeledContent>
+                </StackPanel>
             </StackPanel>
         </Expander>
     </Grid>

@@ -78,10 +78,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    if (model.CompoundSearchModel.Value is null) {
+                    using var csm = model.CreateCompoundSearchModel();
+                    if (csm is null) {
                         return;
                     }
-                    using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                    using var vm = new LcimmsCompoundSearchViewModel(csm);
                     broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);
 

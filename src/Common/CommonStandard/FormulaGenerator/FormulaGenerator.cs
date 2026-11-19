@@ -142,11 +142,12 @@ namespace CompMs.Common.FormulaGenerator {
             var refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(ms2Peaklist, relativeAbundanceCutOff, 0.0, (mass * (double)adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / (double)adductIon.ChargeNumber, ms2Tol, massTolType, 1000, false, !param.CanExcuteMS2AdductSearch);
             var neutralLosslist = FragmentAssigner.GetNeutralLossList(refinedPeaklist, rawData.PrecursorMz, ms1Tol);
 
-            var syncObj = new object();
+            var fragmentData = new SpectrumFragmentData(refinedPeaklist, neutralLosslist, productIonDB, neutralLossDB, param, adductIon);
+
             //var endID = getFormulaDbLastIndex(formulaDB, mass + ms1Tol);
 
             formulaResults = GetFormulaResults(rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adductIon, isotopeCheck, maxReportNumber,
-                existFormulaDB, refinedPeaklist, neutralLosslist, productIonDB, neutralLossDB);
+                existFormulaDB, fragmentData);
 
             #region old
             //Parallel.For(0, endID, i => {
@@ -201,6 +202,13 @@ namespace CompMs.Common.FormulaGenerator {
                 for (int i = 0; i < isCheckedNum; i++) { if (i > formulaResults.Count - 1) break; formulaResults[i].IsSelected = true; }
 
                 while (formulaResults.Count > maxReportNumber) { formulaResults.RemoveAt(formulaResults.Count - 1); }
+
+                // Candidates were ranked on their scores alone; only the ones reported get their product-ion and
+                // neutral-loss assignments, which are the same lists the full scoring would have built.
+                if (fragmentData.IsPrepared) {
+                    var reported = formulaResults;
+                    Parallel.For(0, reported.Count, i => SetFragmentProperties(reported[i], fragmentData));
+                }
             }
 
             return formulaResults;
@@ -209,42 +217,42 @@ namespace CompMs.Common.FormulaGenerator {
         private List<FormulaResult> GetFormulaResults(RawData rawData, AnalysisParamOfMsfinder param,
             double mass, double ms1Tol, double m1Intensity, double m2Intensity, 
             AdductIon adduct, bool isotopeCheck, int maxReportNumber,
-            List<ExistFormulaQuery> existFormulaDB, List<SpectrumPeak> refinedPeaklist, 
-            List<NeutralLoss> neutralLosses, List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB) {
+            List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData) {
 
             var maxCnum = (int)(mass / 12.0);
             var formulaResultsMaster = new List<FormulaResult>();
 
-            var syncObj = new object();
-            var sw = new Stopwatch();
-            sw.Start();
+            // Results are kept per carbon count and joined in carbon order after the loop. They used to be appended
+            // in the order the parallel iterations finished, which made the order of candidates with equal scores,
+            // and so the selection and truncation among them, differ from run to run.
+            var resultsByCarbon = new List<FormulaResult>[Math.Max(maxCnum, 1)];
+
+            // One deadline for the whole search of this spectrum (see SearchDeadline). Carbon counts not started
+            // when it passes are skipped, and the ones in progress stop enumerating and scoring at their next check.
+            var deadline = new SearchDeadline(param.FormulaPredictionTimeOut);
 
             Parallel.For(1, maxCnum, (c, state) => {
-                var formulaResults = GetFormulaResults(c, rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adduct, isotopeCheck, 
-                    maxReportNumber, existFormulaDB, refinedPeaklist, neutralLosses, productIonDB, neutralLossDB);
-
-                if (formulaResults != null && formulaResults.Count != 0) {
-                    lock (syncObj) {
-                        var lap = sw.ElapsedMilliseconds * 0.001 / 60.0; // min
-                        if (param.FormulaPredictionTimeOut > 0 && param.FormulaPredictionTimeOut < lap) {
-                            Debug.WriteLine("Calculation stopped.");
-                            state.Stop();
-                        }
-
-                        foreach (var result in formulaResults) {
-                            formulaResultsMaster = GetFormulaResultCandidates(formulaResultsMaster, result, 100000000);
-                        }
-                    }
+                if (deadline.HasPassed) {
+                    state.Stop();
+                    return;
                 }
+                resultsByCarbon[c] = GetFormulaResults(c, rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adduct, isotopeCheck,
+                    maxReportNumber, existFormulaDB, fragmentData, deadline);
             });
-            sw.Stop();
+            if (deadline.HasPassed) Debug.WriteLine("Formula prediction stopped at the time-out.");
+
+            foreach (var formulaResults in resultsByCarbon) {
+                if (formulaResults == null) continue;
+                foreach (var result in formulaResults) {
+                    formulaResultsMaster = GetFormulaResultCandidates(formulaResultsMaster, result, 100000000);
+                }
+            }
             return formulaResultsMaster;
         }
 
-        private List<FormulaResult> GetFormulaResults(int c, RawData rawData, AnalysisParamOfMsfinder param, double mass, double ms1Tol, double m1Intensity, double m2Intensity, 
-            AdductIon adduct, bool isotopeCheck, int maxReportNumber, 
-            List<ExistFormulaQuery> existFormulaDB, List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosses, 
-            List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB) {
+        private List<FormulaResult> GetFormulaResults(int c, RawData rawData, AnalysisParamOfMsfinder param, double mass, double ms1Tol, double m1Intensity, double m2Intensity,
+            AdductIon adduct, bool isotopeCheck, int maxReportNumber,
+            List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData, SearchDeadline deadline) {
 
             var formulaResults = new List<FormulaResult>();
             var xMer = adduct.AdductIonXmer;
@@ -275,68 +283,73 @@ namespace CompMs.Common.FormulaGenerator {
             var maxClSPSiFONHmass = maxSPSiFONHmass + maxClnum * clMass;
             var maxBrClSPSiFONHmass = maxClSPSiFONHmass + maxBrnum * brMass;
 
-            var sw = new Stopwatch();
-            sw.Start();
-            for (int i = 0; i <= maxInum; i++) {
-                var ciMass = (double)c * cMass + (double)i * iMass;
-                if (ciMass + maxBrClSPSiFONHmass < mass - ms1Tol) continue;
-                if (ciMass > mass + ms1Tol) break;
+            // Each loop starts at the first count that can still reach the mass window, which is where the former
+            // "continue" tests stopped skipping (see EnumerationBound.FirstNotBelow); the visited formulas, their
+            // order and the "break" tests are unchanged.
+            var lowerMass = mass - ms1Tol;
+            var upperMass = mass + ms1Tol;
+            var cBaseMass = (double)c * cMass;
+            var isHydrogenShiftAdduct = SevenGoldenRulesCheck.IsHydrogenShiftAdduct(adduct);
 
-                for (int br = 0; br <= maxBrnum; br++) {
+            // Candidates are collected in enumeration order and scored in batches (ScorePendingCandidates), in
+            // parallel, so that a carbon count with many candidates does not keep one thread busy while the others
+            // have finished; the results keep the enumeration order. Scoring a batch as soon as it is full keeps
+            // the memory bounded and, at the time-out, keeps the results of the candidates enumerated so far.
+            var pending = new List<PendingCandidate>();
+
+            for (int i = EnumerationBound.FirstNotBelow(cBaseMass, iMass, maxBrClSPSiFONHmass, lowerMass, maxInum); i <= maxInum; i++) {
+                var ciMass = cBaseMass + (double)i * iMass;
+                if (ciMass > upperMass) break;
+
+                for (int br = EnumerationBound.FirstNotBelow(ciMass, brMass, maxClSPSiFONHmass, lowerMass, maxBrnum); br <= maxBrnum; br++) {
                     var cibrMass = ciMass + (double)br * brMass;
-                    if (cibrMass + maxClSPSiFONHmass < mass - ms1Tol) continue;
-                    if (cibrMass > mass + ms1Tol) break;
+                    if (cibrMass > upperMass) break;
 
-                    for (int cl = 0; cl <= maxClnum; cl++) {
+                    for (int cl = EnumerationBound.FirstNotBelow(cibrMass, clMass, maxSPSiFONHmass, lowerMass, maxClnum); cl <= maxClnum; cl++) {
                         var cibrclMass = cibrMass + (double)cl * clMass;
-                        if (cibrclMass + maxSPSiFONHmass < mass - ms1Tol) continue;
-                        if (cibrclMass > mass + ms1Tol) break;
+                        if (cibrclMass > upperMass) break;
 
-                        for (int s = 0; s <= maxSnum; s++) {
+                        for (int s = EnumerationBound.FirstNotBelow(cibrclMass, sMass, maxPSiFONHmass, lowerMass, maxSnum); s <= maxSnum; s++) {
 
                             if (rawData.SulfurNumberFromLabeledExperiment >= 0 && s != rawData.SulfurNumberFromLabeledExperiment / xMer) continue;
 
                             var cibrclsMass = cibrclMass + (double)s * sMass;
-                            if (cibrclsMass + maxPSiFONHmass < mass - ms1Tol) continue;
-                            if (cibrclsMass > mass + ms1Tol) break;
+                            if (cibrclsMass > upperMass) break;
 
-                            for (int p = 0; p <= maxPnum; p++) {
+                            for (int p = EnumerationBound.FirstNotBelow(cibrclsMass, pMass, maxSiFONHmass, lowerMass, maxPnum); p <= maxPnum; p++) {
                                 var cibrclspMass = cibrclsMass + (double)p * pMass;
-                                if (cibrclspMass + maxSiFONHmass < mass - ms1Tol) continue;
-                                if (cibrclspMass > mass + ms1Tol) break;
+                                if (cibrclspMass > upperMass) break;
 
-                                for (int si = 0; si <= maxSinum; si++) {
+                                for (int si = EnumerationBound.FirstNotBelow(cibrclspMass, siMass, maxFONHmass, lowerMass, maxSinum); si <= maxSinum; si++) {
                                     if (param.IsTmsMeoxDerivative && si < param.MinimumTmsCount) continue;
 
                                     var cibrclspsiMass = cibrclspMass + (double)si * siMass;
-                                    if (cibrclspsiMass + maxFONHmass < mass - ms1Tol) continue;
-                                    if (cibrclspsiMass > mass + ms1Tol) break;
+                                    if (cibrclspsiMass > upperMass) break;
 
-                                    for (int f = 0; f <= maxFnum; f++) {
+                                    for (int f = EnumerationBound.FirstNotBelow(cibrclspsiMass, fMass, maxONHmass, lowerMass, maxFnum); f <= maxFnum; f++) {
                                         var cibrclspsifMass = cibrclspsiMass + (double)f * fMass;
-                                        if (cibrclspsifMass + maxONHmass < mass - ms1Tol) continue;
-                                        if (cibrclspsifMass > mass + ms1Tol) break;
+                                        if (cibrclspsifMass > upperMass) break;
 
-                                        for (int o = 0; o <= maxOnum; o++) {
+                                        for (int o = EnumerationBound.FirstNotBelow(cibrclspsifMass, oMass, maxNHmass, lowerMass, maxOnum); o <= maxOnum; o++) {
+
+                                            // Checked once per oxygen count; the nitrogen and hydrogen loops inside are short.
+                                            if (deadline.HasPassed) return formulaResults;
 
                                             if (rawData.OxygenNumberFromLabeledExperiment >= 0 && o != rawData.OxygenNumberFromLabeledExperiment / xMer) continue;
 
                                             var cibrclspsifoMass = cibrclspsifMass + (double)o * oMass;
-                                            if (cibrclspsifoMass + maxNHmass < mass - ms1Tol) continue;
-                                            if (cibrclspsifoMass > mass + ms1Tol) break;
+                                            if (cibrclspsifoMass > upperMass) break;
 
-                                            for (int n = 0; n <= maxNnum; n++) {
+                                            for (int n = EnumerationBound.FirstNotBelow(cibrclspsifoMass, nMass, maxHmass, lowerMass, maxNnum); n <= maxNnum; n++) {
 
                                                 if (rawData.NitrogenNumberFromLabeledExperiment >= 0 && n != rawData.NitrogenNumberFromLabeledExperiment / xMer) continue;
 
                                                 var cibrclspsifonMass = cibrclspsifoMass + (double)n * nMass;
-                                                if (cibrclspsifonMass + maxHmass < mass - ms1Tol) continue;
-                                                if (cibrclspsifonMass > mass + ms1Tol) break;
+                                                if (cibrclspsifonMass > upperMass) break;
 
-                                                for (int h = 0; h <= maxHnum; h++) {
+                                                for (int h = EnumerationBound.FirstNotBelow(cibrclspsifonMass, hMass, 0.0, lowerMass, maxHnum); h <= maxHnum; h++) {
                                                     var cibrclspsifonhMass = cibrclspsifonMass + (double)h * hMass;
-                                                    if (cibrclspsifonhMass < mass - ms1Tol) continue;
-                                                    if (cibrclspsifonhMass > mass + ms1Tol) break;
+                                                    if (cibrclspsifonhMass > upperMass) break;
 
                                                     if (param.IsTmsMeoxDerivative) {
                                                         for (int meox = param.MinimumMeoxCount; meox <= n; meox++) {
@@ -345,24 +358,20 @@ namespace CompMs.Common.FormulaGenerator {
 
                                                             var convertedFormula = MolecularFormulaUtility.ConvertTmsMeoxSubtractedFormula(formula);
                                                             if (!SevenGoldenRulesCheck.Check(convertedFormula, this.valenceCheck, this.coverRange, this.probabilityCheck, adduct)) continue;
-                                                            var formulaResult = TryGetFormulaResultCandidate(formula, param,
-                                                                                mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
-                                                                                refinedPeaklist, neutralLosses, existFormulaDB, productIonDB, neutralLossDB);
-                                                            if (formulaResult != null) formulaResults.Add(formulaResult);
+                                                            // Scoring checks the rules once more, on the formula with the derivative groups.
+                                                            pending.Add(new PendingCandidate(formula, true));
                                                         }
                                                     }
-                                                    else {
-                                                        var formula = new Formula(c, h, n, o, p, s, f, cl, br, i, si);
-                                                        var formulaResult = TryGetFormulaResultCandidate(formula, param,
-                                                                               mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
-                                                                               refinedPeaklist, neutralLosses, existFormulaDB, productIonDB, neutralLossDB);
-                                                        if (formulaResult != null) formulaResults.Add(formulaResult);
+                                                    else if (SevenGoldenRulesCheck.Check(c, h, n, o, p, s, f, cl, br, i, si,
+                                                        this.valenceCheck, this.coverRange, this.probabilityCheck, isHydrogenShiftAdduct)) {
+                                                        // The rules are checked on the counts first, so a Formula (mass and formula string)
+                                                        // is built only for the candidates that are scored.
+                                                        pending.Add(new PendingCandidate(new Formula(c, h, n, o, p, s, f, cl, br, i, si), false));
                                                     }
 
-                                                    var lap = sw.ElapsedMilliseconds * 0.001 / 60.0; // min
-                                                    if (param.FormulaPredictionTimeOut > 0 && param.FormulaPredictionTimeOut < lap) {
-                                                        Debug.WriteLine("Calculation stopped.");
-                                                        sw.Stop();
+                                                    if (pending.Count >= PendingBatchSize
+                                                        && !ScorePendingCandidates(pending, formulaResults, deadline, param, mass, ms1Tol, m1Intensity, m2Intensity,
+                                                            isotopeCheck, adduct, existFormulaDB, fragmentData)) {
                                                         return formulaResults;
                                                     }
                                                 }
@@ -376,8 +385,91 @@ namespace CompMs.Common.FormulaGenerator {
                 }
             }
 
-            sw.Stop();
+            ScorePendingCandidates(pending, formulaResults, deadline, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
+                existFormulaDB, fragmentData);
             return formulaResults;
+        }
+
+        private struct PendingCandidate {
+            public PendingCandidate(Formula formula, bool needsRuleCheck) {
+                Formula = formula;
+                NeedsRuleCheck = needsRuleCheck;
+            }
+            public Formula Formula { get; }
+            public bool NeedsRuleCheck { get; }
+        }
+
+        /// <summary>The number of enumerated candidates of one carbon count that are scored together.</summary>
+        private const int PendingBatchSize = 16384;
+
+        /// <summary>
+        /// Scores a batch of candidates of one carbon count in parallel, appends their results to
+        /// <paramref name="formulaResults"/> in enumeration order and empties the batch. When the time-out passes,
+        /// scoring stops, only the results of the leading candidates that were all scored are appended, and the
+        /// method returns false.
+        /// </summary>
+        private bool ScorePendingCandidates(List<PendingCandidate> pending, List<FormulaResult> formulaResults, SearchDeadline deadline,
+            AnalysisParamOfMsfinder param, double mass, double ms1Tol, double m1Intensity, double m2Intensity, bool isotopeCheck, AdductIon adduct,
+            List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData) {
+
+            if (pending.Count == 0) return !deadline.HasPassed;
+
+            var scored = new FormulaResult[pending.Count];
+            var loopResult = Parallel.For(0, pending.Count, (k, state) => {
+                if (deadline.HasPassed) {
+                    state.Break();
+                    return;
+                }
+                var candidate = pending[k];
+                scored[k] = candidate.NeedsRuleCheck
+                    ? TryGetFormulaResultCandidate(candidate.Formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct, existFormulaDB, fragmentData)
+                    : GetScoredFormulaResult(candidate.Formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct, existFormulaDB, fragmentData);
+            });
+            var end = loopResult.LowestBreakIteration.HasValue ? (int)loopResult.LowestBreakIteration.Value : pending.Count;
+
+            for (int k = 0; k < end; k++) {
+                if (scored[k] != null) formulaResults.Add(scored[k]);
+            }
+            pending.Clear();
+            return loopResult.IsCompleted;
+        }
+
+        /// <summary>
+        /// The formula prediction time-out, <see cref="AnalysisParamOfMsfinder.FormulaPredictionTimeOut"/> in minutes
+        /// (zero or less: none), as a bound on the candidate search of one spectrum. It is measured from the start of
+        /// the search over all carbon counts, not per carbon count, and checked while candidates are enumerated and
+        /// while they are scored, so the search stops within milliseconds of it. Ranking the candidates found and
+        /// completing the reported ones (product-ion and neutral-loss assignments) follow, which takes a few seconds
+        /// when millions of candidates were scored.
+        /// <para>
+        /// A search that reaches the time-out returns the candidates scored by then: every candidate of the carbon
+        /// counts that finished, and for a carbon count in progress the leading candidates in enumeration order;
+        /// carbon counts not yet started contribute none. Which carbon counts finish depends on thread scheduling,
+        /// so a timed-out spectrum can return different candidates from run to run. Spectra that finish before the
+        /// time-out are not affected by it.
+        /// </para>
+        /// </summary>
+        private sealed class SearchDeadline {
+            private readonly Stopwatch stopwatch;
+            private readonly double limitMilliseconds;
+            private volatile bool hasPassed;
+
+            public SearchDeadline(double timeOutMinutes) {
+                if (timeOutMinutes > 0) {
+                    limitMilliseconds = timeOutMinutes * 60000.0;
+                    stopwatch = Stopwatch.StartNew();
+                }
+            }
+
+            public bool HasPassed {
+                get {
+                    if (stopwatch == null) return false;
+                    if (hasPassed) return true;
+                    if (stopwatch.ElapsedMilliseconds <= limitMilliseconds) return false;
+                    hasPassed = true;
+                    return true;
+                }
+            }
         }
 
         private List<FormulaResult> GetFormulaSearchResults(Formula formula, RawData rawData, AnalysisParamOfMsfinder param, 
@@ -465,7 +557,7 @@ namespace CompMs.Common.FormulaGenerator {
             if (massTolType == MassToleranceType.Ppm) ms1Tol = MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ms1Tol);
 
             formulaResults = GetFormulaResults(rawData, param, mass, ms1Tol, m1Intensity, m2Intensity, adductIon, isotopeCheck, maxReportNumber,
-                existFormulaDB, null, null, null, null);
+                existFormulaDB, new SpectrumFragmentData(null, null, null, null, param, adductIon));
 
 
             //for (int i = 0; i < formulaDB.Count; i++) {
@@ -609,6 +701,26 @@ namespace CompMs.Common.FormulaGenerator {
             formulaResult.NeutralLossNum = GetUniqueNeutralLossCountByMass(neutralLosslist, ms2Tol, massTolType);
 
             formulaResult.ProductIonScore = Math.Round(Scoring.FragmentHitsScore(refinedPeaklist, formulaResult.ProductIonResult, ms2Tol, massTolType), 3);
+            formulaResult.NeutralLossScore = Math.Round(Scoring.NeutralLossScore(formulaResult.NeutralLossHits, formulaResult.NeutralLossNum), 3);
+        }
+
+        /// <summary>
+        /// The same as the overload above, using what <paramref name="fragmentData"/> prepared for the spectrum.
+        /// </summary>
+        private static void SetFragmentProperties(FormulaResult formulaResult, SpectrumFragmentData fragmentData)
+        {
+            if (!fragmentData.IsPrepared) return;
+
+            formulaResult.ProductIonResult = FragmentAssigner.FastFragmentAssigner(fragmentData.ProductIonQuery, formulaResult.Formula);
+            formulaResult.NeutralLossResult = FragmentAssigner.FastNeutralLossAssigner(fragmentData.NeutralLossQuery, formulaResult.Formula);
+
+            formulaResult.ProductIonNum = formulaResult.ProductIonResult.Count;
+            formulaResult.ProductIonHits = formulaResult.ProductIonResult.Count(n => n.CandidateOntologies.Count > 0);
+
+            formulaResult.NeutralLossHits = GetUniqueNeutralLossCount(formulaResult.NeutralLossResult);
+            formulaResult.NeutralLossNum = fragmentData.NeutralLossNum;
+
+            formulaResult.ProductIonScore = Math.Round(Scoring.FragmentHitsScore(fragmentData.RefinedPeaklist.Count, fragmentData.MonoisotopicPeakCount, formulaResult.ProductIonResult.Count), 3);
             formulaResult.NeutralLossScore = Math.Round(Scoring.NeutralLossScore(formulaResult.NeutralLossHits, formulaResult.NeutralLossNum), 3);
         }
 
@@ -849,28 +961,104 @@ namespace CompMs.Common.FormulaGenerator {
             double mass, double ms1Tol, double m1Intensity, double m2Intensity, bool isotopeCheck, AdductIon adduct,
             List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosses, List<ExistFormulaQuery> existFormulaDB, List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB) {
 
+            var fragmentData = new SpectrumFragmentData(refinedPeaklist, neutralLosses, productIonDB, neutralLossDB, param, adduct);
+            var formulaResult = TryGetFormulaResultCandidate(formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct,
+                existFormulaDB, fragmentData);
+            if (formulaResult != null) SetFragmentProperties(formulaResult, fragmentData);
+            return formulaResult;
+        }
+
+        private FormulaResult TryGetFormulaResultCandidate(Formula formula, AnalysisParamOfMsfinder param,
+            double mass, double ms1Tol, double m1Intensity, double m2Intensity, bool isotopeCheck, AdductIon adduct,
+            List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData) {
+
+            if (!SevenGoldenRulesCheck.Check(formula, this.valenceCheck, this.coverRange, this.probabilityCheck, adduct)) return null;
+            return GetScoredFormulaResult(formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, adduct, existFormulaDB, fragmentData);
+        }
+
+        /// <summary>
+        /// Scores a candidate formula that has passed the seven golden rules.
+        /// </summary>
+        private FormulaResult GetScoredFormulaResult(Formula formula, AnalysisParamOfMsfinder param,
+            double mass, double ms1Tol, double m1Intensity, double m2Intensity, bool isotopeCheck, AdductIon adduct,
+            List<ExistFormulaQuery> existFormulaDB, SpectrumFragmentData fragmentData) {
+
             var ms2Tol = param.Mass2Tolerance;
             var massTolType = param.MassTolType;
 
-            if (SevenGoldenRulesCheck.Check(formula, this.valenceCheck, this.coverRange, this.probabilityCheck, adduct)) {
-
-                var formulaResult = GetFormulaResult(formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, existFormulaDB);
-                if (param.CanExcuteMS2AdductSearch) {
-                    var precursorMz = (mass * (double)adduct.AdductIonXmer + adduct.AdductIonAccurateMass) / (double)adduct.ChargeNumber;
-                    if (adduct.IonMode == IonMode.Positive) {
-                        formulaResult.AnnotatedIonResult = FragmentAssigner.GetAnnotatedIon(refinedPeaklist, adduct, param.MS2PositiveAdductIonList, precursorMz, param.Mass2Tolerance, param.MassTolType);
-                    }
-                    else {
-                        formulaResult.AnnotatedIonResult = FragmentAssigner.GetAnnotatedIon(refinedPeaklist, adduct, param.MS2NegativeAdductIonList, precursorMz, param.Mass2Tolerance, param.MassTolType);
-                    }
-                    refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(refinedPeaklist, precursorMz);
+            var formulaResult = GetFormulaResult(formula, param, mass, ms1Tol, m1Intensity, m2Intensity, isotopeCheck, existFormulaDB);
+            if (param.CanExcuteMS2AdductSearch) {
+                var refinedPeaklist = fragmentData.RefinedPeaklist;
+                var precursorMz = (mass * (double)adduct.AdductIonXmer + adduct.AdductIonAccurateMass) / (double)adduct.ChargeNumber;
+                if (adduct.IonMode == IonMode.Positive) {
+                    formulaResult.AnnotatedIonResult = FragmentAssigner.GetAnnotatedIon(refinedPeaklist, adduct, param.MS2PositiveAdductIonList, precursorMz, param.Mass2Tolerance, param.MassTolType);
                 }
-                SetFragmentProperties(formulaResult, refinedPeaklist, neutralLosses, productIonDB, neutralLossDB, ms2Tol, massTolType, adduct);
-                formulaResult.TotalScore = Math.Round(Scoring.TotalScore(formulaResult), 3);
-                return formulaResult;
+                else {
+                    formulaResult.AnnotatedIonResult = FragmentAssigner.GetAnnotatedIon(refinedPeaklist, adduct, param.MS2NegativeAdductIonList, precursorMz, param.Mass2Tolerance, param.MassTolType);
+                }
+                refinedPeaklist = FragmentAssigner.GetRefinedPeaklist(refinedPeaklist, precursorMz);
+                SetFragmentProperties(formulaResult, refinedPeaklist, fragmentData.NeutralLosses, fragmentData.ProductIonDB, fragmentData.NeutralLossDB, ms2Tol, massTolType, adduct);
             }
-            else
-                return null;
+            else {
+                SetFragmentScores(formulaResult, fragmentData);
+            }
+            formulaResult.TotalScore = Math.Round(Scoring.TotalScore(formulaResult), 3);
+            return formulaResult;
+        }
+
+        /// <summary>
+        /// Sets the fragment scores that enter <see cref="Scoring.TotalScore(FormulaResult)"/>, with the values
+        /// <see cref="SetFragmentProperties(FormulaResult, SpectrumFragmentData)"/> would set, without building the
+        /// product-ion and neutral-loss lists. Most candidates are scored and then dropped, so the lists are built
+        /// only for the reported ones (see GetFormulaCandidateList).
+        /// </summary>
+        private static void SetFragmentScores(FormulaResult formulaResult, SpectrumFragmentData fragmentData)
+        {
+            if (!fragmentData.IsPrepared) return;
+
+            var productIonNum = FragmentAssigner.CountProductIons(fragmentData.ProductIonQuery, formulaResult.Formula);
+            formulaResult.ProductIonNum = productIonNum;
+            formulaResult.NeutralLossHits = FragmentAssigner.CountUniqueNeutralLossFormulas(fragmentData.NeutralLossQuery, formulaResult.Formula);
+            formulaResult.NeutralLossNum = fragmentData.NeutralLossNum;
+
+            formulaResult.ProductIonScore = Math.Round(Scoring.FragmentHitsScore(fragmentData.RefinedPeaklist.Count, fragmentData.MonoisotopicPeakCount, productIonNum), 3);
+            formulaResult.NeutralLossScore = Math.Round(Scoring.NeutralLossScore(formulaResult.NeutralLossHits, formulaResult.NeutralLossNum), 3);
+        }
+
+        /// <summary>
+        /// The spectrum-level inputs of fragment scoring, with the parts that do not depend on the candidate formula
+        /// prepared once instead of once per candidate.
+        /// </summary>
+        private sealed class SpectrumFragmentData {
+            public SpectrumFragmentData(List<SpectrumPeak> refinedPeaklist, List<NeutralLoss> neutralLosses,
+                List<ProductIon> productIonDB, List<NeutralLoss> neutralLossDB, AnalysisParamOfMsfinder param, AdductIon adduct) {
+                RefinedPeaklist = refinedPeaklist;
+                NeutralLosses = neutralLosses;
+                ProductIonDB = productIonDB;
+                NeutralLossDB = neutralLossDB;
+
+                if (refinedPeaklist == null || neutralLosses == null) return;
+                // With the MS2 adduct search the peak list is narrowed for each candidate, so that path prepares nothing.
+                if (param.CanExcuteMS2AdductSearch) return;
+
+                ProductIonQuery = FragmentAssigner.PrepareProductIonQuery(refinedPeaklist, productIonDB, param.Mass2Tolerance, param.MassTolType, adduct);
+                NeutralLossQuery = FragmentAssigner.PrepareNeutralLossQuery(neutralLosses, neutralLossDB, param.Mass2Tolerance, param.MassTolType, adduct);
+                NeutralLossNum = GetUniqueNeutralLossCountByMass(neutralLosses, param.Mass2Tolerance, param.MassTolType);
+                MonoisotopicPeakCount = refinedPeaklist.Count(n => n.Comment == "M");
+            }
+
+            public List<SpectrumPeak> RefinedPeaklist { get; }
+            public List<NeutralLoss> NeutralLosses { get; }
+            public List<ProductIon> ProductIonDB { get; }
+            public List<NeutralLoss> NeutralLossDB { get; }
+
+            /// <summary>True when the queries below are prepared, so candidates are scored on counts and the reported ones completed later.</summary>
+            public bool IsPrepared => ProductIonQuery != null;
+            public ProductIonQuery ProductIonQuery { get; }
+            public NeutralLossQuery NeutralLossQuery { get; }
+            /// <summary>The number of observed neutral losses with distinct masses; it does not depend on the candidate.</summary>
+            public int NeutralLossNum { get; }
+            public int MonoisotopicPeakCount { get; }
         }
 
 

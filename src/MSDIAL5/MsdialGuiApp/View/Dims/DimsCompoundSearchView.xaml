@@ -276,6 +276,22 @@
                         <DataGridTextColumn Header="Comment" Width="2*" Binding="{Binding Path=Comment}" IsReadOnly="True" />
                     </DataGrid.Columns>
                 </DataGrid>
+                <Border Grid.Row="1" Background="#BFFFFFFF" IsHitTestVisible="False">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsBusy.Value}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ProgressBar Width="120" Height="8" IsIndeterminate="True"/>
+                        <TextBlock Text="Searching..." HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
             </Grid>
 
             <!-- Column E: Spectrum mirror plot -->

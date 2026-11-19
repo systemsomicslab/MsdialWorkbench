@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 {
@@ -87,6 +88,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             };
 
             CollectionAssert.AreEquivalent(expected, results.Select(result => result.Name).ToArray());
+        }
+
+        [TestMethod()]
+        public void CancellationIsScopedToQuery() {
+            var db = new List<MoleculeMsReference> {
+                new MoleculeMsReference { ScanID = 0, Name = "A", PrecursorMz = 100 },
+            };
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = 0.01f, TotalScoreCutoff = 0 };
+            var annotator = new MassAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB, "MspPath"), parameter, TargetOmics.Metabolomics, SourceType.MspDB, "MspDB", -1);
+            var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
+            using (var source = new CancellationTokenSource()) {
+                var cancelled = BuildQuery(target, annotator, parameter);
+                cancelled.CancellationToken = source.Token;
+                source.Cancel();
+                Assert.ThrowsException<OperationCanceledException>(() => cancelled.FindCandidates().ToArray());
+                Assert.AreEqual(1, BuildQuery(target, annotator, parameter).FindCandidates().Count());
+            }
         }
 
         [TestMethod()]
