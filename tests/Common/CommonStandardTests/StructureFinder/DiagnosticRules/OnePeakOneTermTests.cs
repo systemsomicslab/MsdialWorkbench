@@ -118,6 +118,21 @@ public class OnePeakOneTermTests
     }
 
     [TestMethod]
+    public void ARepeatedInputLineIsASecondPeak() {
+        // Design 4.4: no merging, so two input lines at one m/z are two peaks, and the sharing rule of 4.6 is about
+        // peaks. Under Runtime the undeclared loss_hex and caffeate (one mass) each take one copy, so k = 2 is
+        // reached on one observed mass; with a single line the count stays 1. (Under Refuse the rule is refused.)
+        var engine = MakeEngine(KOfRule(false).Load(), RuleId, Runtime);
+        var twice = EvaluateOnly(engine, Spectrum(Neg(Caffeate, 600), Neg(Caffeate, 600)));
+        Assert.IsTrue(twice.Fired);
+        Assert.AreEqual("loss_hex:C6H10O5@1 caffeate:C9H7O4@2", Matched(twice));
+        Assert.AreEqual(2L, twice.KOf[0].Count);
+        var once = EvaluateOnly(engine, Spectrum(Neg(Caffeate, 600)));
+        Assert.IsFalse(once.Fired);
+        Assert.AreEqual(1L, once.KOf[0].Count);
+    }
+
+    [TestMethod]
     public void TheSearchPrefersLogicThenScoreThenTheFirstLeaf() {
         // all(caffeate, decarb, any(loss_hex, extra)): only giving the peak to caffeate can make the logic true.
         var logic = AllNode(TermRef("caffeate"), TermRef("decarb"), AnyNode(TermRef("loss_hex"), TermRef("extra")));

@@ -53,7 +53,10 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         public int TermCount { get; }
 
         /// <summary>Two items may share a peak only if they belong to different terms of one complementary group;
-        /// members of one term never share, so k counts distinct observed masses.</summary>
+        /// members of one term never share, so k counts distinct peaks. A peak is one kept input line: the engine does
+        /// not merge (design 4.4), so a line repeated in the input is a second peak at the same m/z, which a second
+        /// item may take. Only OverlapMode.Runtime can show it: under Refuse, two items that one m/z can hit are
+        /// refused.</summary>
         public static bool MayShare(EvidenceItem a, EvidenceItem b) =>
             a.TermIndex != b.TermIndex && a.GroupId >= 0 && a.GroupId == b.GroupId;
 
