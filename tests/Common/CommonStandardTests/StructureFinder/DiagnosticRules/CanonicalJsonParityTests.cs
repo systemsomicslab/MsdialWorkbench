@@ -189,6 +189,27 @@ public class CanonicalJsonParityTests
             var inline = DiagnosticRuleSet.LoadFiles(files, RuleSetSource.Inline);
             Assert.IsFalse(inline.Identity.Pinned);
             Assert.AreEqual(set.Identity.Sha256, inline.Identity.Sha256);
+            // The loader's compiled rules stay with the set, index for index.
+            Assert.AreEqual(set.Rules.Count, set.CompiledRules.Count);
+            for (var i = 0; i < set.Rules.Count; i++) {
+                Assert.AreEqual(set.Rules[i].RuleId, set.CompiledRules[i].RuleId);
+            }
+            Assert.AreEqual(set.Units.Count, set.Tables.Units.Count);
         }
+    }
+
+    [TestMethod]
+    public void InstrumentClassesAgree() {
+        // Deferred from the format PR: the ASCII-only instrument class of design 4.9 (null text is a null input).
+        var section = Section("instrument_class");
+        Assert.AreEqual(37, section.Count);
+        var classes = new HashSet<string>(StringComparer.Ordinal);
+        foreach (JsonObject c in section.Cast<JsonObject>()) {
+            var text = c["text_utf16_hex"] is JsonString hex ? FromUtf16Hex(hex.Value) : null;
+            var expected = Str(c, "class");
+            classes.Add(expected);
+            Assert.AreEqual(expected, Engine.InstrumentClassifier.Classify(text), c["text_utf16_hex"] is JsonString h ? h.Value : "null");
+        }
+        CollectionAssert.AreEquivalent(new[] { "unknown", "QTOF-type", "Orbitrap/FT", "other" }, classes.ToList());
     }
 }
