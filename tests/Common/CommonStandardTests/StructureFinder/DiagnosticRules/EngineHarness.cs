@@ -73,7 +73,7 @@ internal static class EngineHarness
     /// <summary>branch_fired of the rule for the spectrum.</summary>
     public static bool[][] BranchFired(RuleEngine engine, DiagnosticSpectrum spectrum) {
         var view = SpectrumView.Create(spectrum);
-        return engine.BranchFired(view, Hypotheses(engine, view));
+        return engine.BranchFired(view, Hypotheses(engine, view).Select(h => engine.Evaluate(view, h)).ToList());
     }
 
     /// <summary>"term_id:member_key@input_index" for every matched item, in canonical order.</summary>

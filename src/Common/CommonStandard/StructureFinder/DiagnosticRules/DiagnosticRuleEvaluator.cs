@@ -191,7 +191,7 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
                 formulas.Add(h.NeutralFormula);
             }
             var branchFired = new List<BranchOutcome>();
-            var fires = engine.BranchFired(view, set.Hypotheses);
+            var fires = engine.BranchFired(view, evaluations);
             for (var a = 0; a < fires.Length; a++) {
                 branchFired.Add(new BranchOutcome(engine.Plan.AnyNodes[a].Pointer, new ReadOnlyCollection<bool>(fires[a])));
             }

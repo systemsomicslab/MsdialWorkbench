@@ -275,15 +275,17 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
         /// <summary>
         /// <c>branch_fired</c> (design 4.7, OQ14): for each any node (pre-order) and each of its children, whether the
         /// rule fires with that node replaced by that child, every hypothesis re-evaluated by the same code, its
-        /// assignment included.
+        /// assignment included. <paramref name="full"/> holds the hypotheses' full-logic evaluations; those that
+        /// cannot fire under any restriction (<see cref="MayFireUnderRestriction"/>) are skipped, which changes no
+        /// output and saves a capped search per any-node child for each overflowing hypothesis.
         /// </summary>
-        public bool[][] BranchFired(SpectrumView view, IReadOnlyList<EngineHypothesis> hypotheses) {
+        public bool[][] BranchFired(SpectrumView view, IReadOnlyList<HypothesisEvaluation> full) {
             var output = new bool[Plan.AnyNodes.Count][];
             for (var a = 0; a < output.Length; a++) {
                 output[a] = new bool[Plan.AnyNodes[a].Children.Length];
                 for (var c = 0; c < output[a].Length; c++) {
-                    foreach (var h in hypotheses) {
-                        if (Evaluate(view, h, a, c).Fired) {
+                    foreach (var e in full) {
+                        if (MayFireUnderRestriction(e) && Evaluate(view, e.Hypothesis, a, c).Fired) {
                             output[a][c] = true;
                             break;
                         }
@@ -292,6 +294,14 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Engine
             }
             return output;
         }
+
+        /// <summary>
+        /// False when the full evaluation failed in a way no logic restriction can change: <c>no_base_peak</c> depends
+        /// on the view and the convention only, and <c>assignment_overflow</c> on the items only, since the search
+        /// visits the same leaves under every logic (it never prunes on the logic, which only ranks the leaves).
+        /// </summary>
+        public static bool MayFireUnderRestriction(HypothesisEvaluation full) =>
+            full.Failure != HypothesisFailure.NoBasePeak && full.Failure != HypothesisFailure.AssignmentOverflow;
 
         private static HypothesisEvaluation NotEvaluated(EngineHypothesis hypothesis, IReadOnlyList<TermTargets> targets, HypothesisFailure failure,
                                                          IReadOnlyList<VetoState> vetoes) {

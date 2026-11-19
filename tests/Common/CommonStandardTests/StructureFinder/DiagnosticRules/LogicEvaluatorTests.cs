@@ -173,7 +173,7 @@ public class LogicEvaluatorTests
         var view = SpectrumView.Create(MakeSpectrum(PrecursorNeg + 3.0, DiagnosticIonMode.Negative, Neg(Ions[0], 500), Neg(Ions[1], 400)));
         var hypotheses = Hypotheses(engine, view);
         Assert.AreEqual(0, hypotheses.Count);
-        Assert.AreEqual("False,False", Fired(engine.BranchFired(view, hypotheses)));
+        Assert.AreEqual("False,False", Fired(engine.BranchFired(view, new HypothesisEvaluation[0])));
     }
 
     [TestMethod]

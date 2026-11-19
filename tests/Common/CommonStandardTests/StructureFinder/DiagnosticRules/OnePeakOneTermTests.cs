@@ -203,6 +203,33 @@ public class OnePeakOneTermTests
         Assert.IsTrue(declared.Fired);
     }
 
+    [TestMethod]
+    public void BranchFiredSkipsOnlyHypothesesNoRestrictionCanFire() {
+        // all(caffeate, decarb, any(loss_hex, extra)): the search over loss_hex and caffeate visits 3 leaves under every
+        // logic, so a cap of 2 overflows the full logic and each restriction alike; branch_fired skips the hypothesis.
+        var logic = AllNode(TermRef("caffeate"), TermRef("decarb"), AnyNode(TermRef("loss_hex"), TermRef("extra")));
+        var terms = Terms(
+            Term("loss_hex", "loss_from_precursor", "required", Formula("C6H10O5")),
+            Term("caffeate", "product_ion", "required", Formula(Caffeate)),
+            Term("decarb", "product_ion", "required", Formula(Decarboxylated)),
+            Term("extra", "product_ion", "required", Formula(Extra)));
+        var set = new InlineRuleSet().AddRule(RuleId, terms, logic, CaffeoylHexose, "[\"[M-H]-\"]", "caffeate").Load();
+        var spectrum = Spectrum(Neg(Caffeate, 600), Neg(Decarboxylated, 300), Neg(Extra, 200));
+        var view = SpectrumView.Create(spectrum);
+        var capped = MakeEngine(set, RuleId, new DiagnosticEvaluationOptions { Overlap = OverlapMode.Runtime, AssignmentCap = 2 });
+        var full = EvaluateOnly(capped, spectrum);
+        Assert.AreEqual(HypothesisFailure.AssignmentOverflow, full.Failure);
+        Assert.IsFalse(RuleEngine.MayFireUnderRestriction(full));
+        for (var c = 0; c < 2; c++) {
+            Assert.AreEqual(HypothesisFailure.AssignmentOverflow, capped.Evaluate(view, full.Hypothesis, 0, c).Failure);
+        }
+        Assert.AreEqual("False,False", string.Join(",", BranchFired(capped, spectrum)[0]));
+        // At a cap of 3 the hypothesis is searched: only the extra branch can fire (loss_hex and caffeate need one peak).
+        var searched = MakeEngine(set, RuleId, new DiagnosticEvaluationOptions { Overlap = OverlapMode.Runtime, AssignmentCap = 3 });
+        Assert.IsTrue(RuleEngine.MayFireUnderRestriction(EvaluateOnly(searched, spectrum)));
+        Assert.AreEqual("False,True", string.Join(",", BranchFired(searched, spectrum)[0]));
+    }
+
     /// <summary>A loss of C6H10O5 (target caffeate, 179.034983) and the ion C8H3O5- (178.998597), 0.036386 Da
     /// apart.</summary>
     private static DiagnosticRuleSet NearPair() =>
