@@ -37,9 +37,17 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
         /// listed in <see cref="Refusals"/> and not evaluated.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="set"/> or <paramref name="options"/> is null.</exception>
-        /// <exception cref="ArgumentException">An option is invalid: a non-finite or negative tolerance, a FloorScale
-        /// that is not finite and positive, an AssignmentCap below 1, |DecoyShiftDa| above 9007 (the shift, not every
-        /// shifted mass, is bounded below 2^53 pDa), or an undefined enum value (OQ20).</exception>
+        /// <exception cref="ArgumentException">An option is invalid (OQ20): a non-finite or negative tolerance, a
+        /// FloorScale that is not finite and positive, a double option that is not identified by its 6-decimal text
+        /// (<see cref="DiagnosticEvaluationOptions.PrecursorToleranceDa"/>,
+        /// <see cref="DiagnosticEvaluationOptions.ProductToleranceOverride"/>,
+        /// <see cref="DiagnosticEvaluationOptions.MsfinderProductTolerance"/> or
+        /// <see cref="DiagnosticEvaluationOptions.FloorScale"/>, because the identity string and the result options
+        /// write them with 6 decimals; a value taken from a float, such as MS-FINDER's Ms2Tolerance, is refused unless
+        /// it is first converted through its shortest decimal text: <c>double.Parse(f.ToString("R",
+        /// CultureInfo.InvariantCulture), CultureInfo.InvariantCulture)</c>), an AssignmentCap below 1, |DecoyShiftDa|
+        /// above 9007 (the shift, not every shifted mass, is bounded below 2^53 pDa), or an undefined enum
+        /// value.</exception>
         /// <exception cref="DiagnosticRuleRefusedException"><see cref="DiagnosticEvaluationOptions.Strict"/> is set
         /// and a rule is refused (OQ21).</exception>
         public DiagnosticRuleEvaluator(DiagnosticRuleSet set, DiagnosticEvaluationOptions options) {
