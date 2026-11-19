@@ -49,7 +49,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             var resStream = res.GetResponseStream();
             var isAlignmentResultTargeted = true;
 
-            MassQL result = null;
+            MassQL? result;
             using (var sr = new StreamReader(resStream)) {
                 result = JsonConvert.DeserializeObject<MassQL>(sr.ReadToEnd());
             }
@@ -58,18 +58,19 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
       
 
             var massQLParams = new List<PeakFeatureSearchValue>();
-            if (result.querytype.function == "functionscaninfo") {
+            if (result?.querytype?.function == "functionscaninfo") {
                 var searchLevel = PeakFeatureQueryLevel.MS2;
                 if (result.querytype.datatype == "datams1data") {
                     searchLevel = PeakFeatureQueryLevel.MS1;
                 }
-                foreach (var condition in result.conditions) {                    
-                    foreach (var mass in condition.value) {
+                foreach (var condition in result.conditions ?? new List<Condition>()) {
+                    var values = condition.value ?? new List<double>();
+                    foreach (var mass in values) {
                         var searchValue = new PeakFeatureSearchValue() { PeakFeatureQueryLevel = searchLevel };
                         searchValue.Mass = mass;
                         if (condition.qualifiers != null) {
                             if (condition.qualifiers.qualifierppmtolerance != null) {
-                                searchValue.MassTolerance = MolecularFormulaUtility.ConvertPpmToMassAccuracy(condition.value[0], condition.qualifiers.qualifierppmtolerance.value);
+                                searchValue.MassTolerance = MolecularFormulaUtility.ConvertPpmToMassAccuracy(values[0], condition.qualifiers.qualifierppmtolerance.value);
                             }
                             if (condition.qualifiers.qualifiermztolerance != null) {
                                 searchValue.MassTolerance = condition.qualifiers.qualifiermztolerance.value;
@@ -100,49 +101,49 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
         [DataContract]
         public class MassQL {
             [DataMember(Name = "querytype")]
-            public QueryType querytype { get; set; }
+            public QueryType? querytype { get; set; }
             [DataMember(Name = "conditions")]
-            public List<Condition> conditions { get; set; }
+            public List<Condition>? conditions { get; set; }
             [DataMember(Name = "query")]
-            public string query { get; set; }
+            public string? query { get; set; }
         }
 
         [DataContract]
         public class QueryType {
             [DataMember(Name = "function")]
-            public string function { get; set; }
+            public string? function { get; set; }
             [DataMember(Name = "datatype")]
-            public string datatype { get; set; }
+            public string? datatype { get; set; }
         }
 
         [DataContract]
         public class Condition {
             [DataMember(Name = "type")]
-            public string type { get; set; }
+            public string? type { get; set; }
             [DataMember(Name = "value")]
-            public List<double> value { get; set; }
+            public List<double>? value { get; set; }
             [DataMember(Name = "conditiontype")]
-            public string conditiontype { get; set; }
+            public string? conditiontype { get; set; }
             [DataMember(Name = "qualifiers")]
-            public Qualifiers qualifiers { get; set; }
+            public Qualifiers? qualifiers { get; set; }
         }
 
         [DataContract]
         public class Qualifiers {
             [DataMember(Name = "type")]
-            public string type { get; set; }
+            public string? type { get; set; }
             [DataMember(Name = "qualifierppmtolerance")]
-            public QualifierPpmTolerance qualifierppmtolerance { get; set; }
+            public QualifierPpmTolerance? qualifierppmtolerance { get; set; }
             [DataMember(Name = "qualifiermztolerance")]
-            public QualifierMzTolerance qualifiermztolerance { get; set; }
+            public QualifierMzTolerance? qualifiermztolerance { get; set; }
         }
 
         [DataContract]
         public class QualifierPpmTolerance {
             [DataMember(Name = "name")]
-            public string name { get; set; }
+            public string? name { get; set; }
             [DataMember(Name = "unit")]
-            public string unit { get; set; }
+            public string? unit { get; set; }
             [DataMember(Name = "value")]
             public double value { get; set; }
         }
@@ -150,9 +151,9 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
         [DataContract]
         public class QualifierMzTolerance {
             [DataMember(Name = "name")]
-            public string name { get; set; }
+            public string? name { get; set; }
             [DataMember(Name = "unit")]
-            public string unit { get; set; }
+            public string? unit { get; set; }
             [DataMember(Name = "value")]
             public double value { get; set; }
         }

@@ -10,6 +10,11 @@ using System.Text;
 
 namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
     public class LinkNode {
+        public LinkNode(double[] score, MoleculeMsReference node) {
+            Score = score;
+            Node = node;
+        }
+
         public double[] Score { get; set; }
         public MoleculeMsReference Node { get; set; }
     }
@@ -304,10 +309,10 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
                             if (scoreitem[0] < matchThreshold) continue;
 
                             if (node2links.ContainsKey(i)) {
-                                node2links[i].Add(new LinkNode() { Score = scoreitem, Node = records[j] });
+                                node2links[i].Add(new LinkNode(scoreitem, records[j]));
                             }
                             else {
-                                node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = records[j] } };
+                                node2links[i] = new List<LinkNode>() { new LinkNode(scoreitem, records[j]) };
                             }
                         }
                     }

@@ -130,10 +130,10 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
                     if (scoreitem[0] < matchThreshold) continue;
 
                     if (node2links.ContainsKey(i)) {
-                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = spectra[j] });
+                        node2links[i].Add(new LinkNode(scoreitem, spectra[j]));
                     }
                     else {
-                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = spectra[j] } };
+                        node2links[i] = new List<LinkNode>() { new LinkNode(scoreitem, spectra[j]) };
                     }
                 }
             }
