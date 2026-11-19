@@ -488,7 +488,9 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
             var prefix = full[full.Length - 1] == Path.DirectorySeparatorChar ? full : full + new string(Path.DirectorySeparatorChar, 1);
             var files = new Dictionary<string, byte[]>(StringComparer.Ordinal);
             foreach (var path in Directory.EnumerateFiles(full, "*", SearchOption.AllDirectories)) {
-                var rel = path.Substring(prefix.Length).Replace('\\', '/');
+                // Only the platform separator is mapped: on Linux and macOS '\\' is a file-name character, as in
+                // as_posix().
+                var rel = path.Substring(prefix.Length).Replace(Path.DirectorySeparatorChar, '/');
                 var keep = rel.EndsWith(".json", StringComparison.Ordinal) || rel == HistoryFile;
                 files[rel] = keep && !rel.StartsWith("_audit/", StringComparison.Ordinal) ? File.ReadAllBytes(path) : new byte[0];
             }

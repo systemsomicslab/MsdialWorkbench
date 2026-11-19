@@ -34,6 +34,12 @@ public class StrictJsonReaderTests
         Assert.AreEqual("error number_range", Outcome("{\"a\":0." + Zeros(323) + "2471}"));
         Assert.AreEqual("error number_range", Outcome("{\"a\":0." + Zeros(323) + "3}"));
         Assert.AreEqual("error number_range", Outcome("{\"a\":0.00001}"));
+        // Very long lexemes, decided without an exact comparison over the whole lexeme (outcomes from the reference).
+        Assert.AreEqual("ok {\"a\":0.0}", Outcome("{\"a\":0." + Zeros(1000000) + "1}"));
+        Assert.AreEqual("error number_range", Outcome("{\"a\":0." + Zeros(322) + "1}"));
+        Assert.AreEqual("ok {\"a\":0.0}", Outcome("{\"a\":0." + Zeros(323) + "247" + Zeros(5000) + "}"));
+        Assert.AreEqual("error number_range", Outcome("{\"a\":0." + Zeros(323) + "2471" + Zeros(5000) + "}"));
+        Assert.AreEqual("error number_range", Outcome("{\"a\":0.00001" + Zeros(100000) + "}"));
     }
 
     [TestMethod]

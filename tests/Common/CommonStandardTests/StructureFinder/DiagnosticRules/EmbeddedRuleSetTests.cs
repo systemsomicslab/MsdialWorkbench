@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -109,9 +110,17 @@ public class EmbeddedRuleSetTests
         }
     }
 
-    /// <summary>The source folder, when the tests run from a build of this checkout; null otherwise.</summary>
-    private static string? SourceRuleSetDirectory() {
-        var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+    /// <summary>The source folder, found from this source file's path (independent of where MSTest deploys the
+    /// assembly) or, failing that, above the test output; null when neither lies in a checkout.</summary>
+    private static string? SourceRuleSetDirectory([CallerFilePath] string sourceFile = "") {
+        return FindRuleSetAbove(Path.GetDirectoryName(sourceFile)) ?? FindRuleSetAbove(AppDomain.CurrentDomain.BaseDirectory);
+    }
+
+    private static string? FindRuleSetAbove(string? start) {
+        if (string.IsNullOrEmpty(start) || !Directory.Exists(start)) {
+            return null;
+        }
+        var dir = new DirectoryInfo(start);
         while (dir != null) {
             var candidate = Path.Combine(dir.FullName, "src", "Common", "CommonStandard", "StructureFinder", "DiagnosticRules", "RuleSet");
             if (Directory.Exists(candidate)) {

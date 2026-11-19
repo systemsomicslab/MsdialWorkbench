@@ -124,6 +124,22 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Json
 
         /// <summary>0.frac &lt; 2^-1075 (half the smallest subnormal; an exact tie cannot occur here).</summary>
         private static bool UnderflowsToZero(string frac) {
+            // 2^-1075 lies in [1e-324, 1e-323), so only a first non-zero digit at place 324 needs the exact
+            // comparison, and 2^-1075 has 1075 decimal places, so the first 1076 places decide it. This keeps a
+            // lexeme with very many zeros linear instead of building a BigInteger the size of the lexeme.
+            var leadingZeros = 0;
+            while (leadingZeros < frac.Length && frac[leadingZeros] == '0') {
+                leadingZeros++;
+            }
+            if (leadingZeros >= 324) {
+                return true;
+            }
+            if (leadingZeros < 323) {
+                return false;
+            }
+            if (frac.Length > 1076) {
+                frac = frac.Substring(0, 1076);
+            }
             var d = BigInteger.Zero;
             foreach (var ch in frac) {
                 d = d * 10 + (ch - '0');
