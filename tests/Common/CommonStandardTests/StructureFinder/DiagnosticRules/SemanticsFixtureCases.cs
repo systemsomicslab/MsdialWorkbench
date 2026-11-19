@@ -574,6 +574,37 @@ internal static class SemanticsFixtureCases
         c58.Expect = "{'outcomes':{'" + Branch + "':{'fired':true,'matched':['Y0:A@1','b:C8H5O4@2'],"
             + "'chosen_branches':[{'pointer':'/logic/all/1','children':[false,true]}],'branch_fired':{'/logic/all/1':[false,true]}}}}";
 
+        // ---- complementary groups: transitive closure and the group score
+        var c59 = Add("complementary_chain", "Pairs loss_hex~caffeate and caffeate~agly close into one group: all three share the caffeate "
+                      + "peak (no overlap refusal) and count once in k_of and the score.",
+                      new InlineRuleSet().AddRule(Caffeoyl, Terms(
+                              Term("loss_hex", "loss_from_precursor", "counted", Formula("C6H10O5")),
+                              Term("caffeate", "product_ion", "counted", Formula(CIon)),
+                              Term("agly", "aglycone_ion", "counted", Aglycone("even", "proton")),
+                              Term("decarb", "product_ion", "counted", Formula(Decarb))),
+                          KOf("2", TermRef("loss_hex"), TermRef("caffeate"), TermRef("agly"), TermRef("decarb")),
+                          InlineRuleSet.Composition("C9H8O4", null, "{\"Hex\":[1,1]}", "{}"), "[\"[M-H]-\"]", "caffeate")
+                      .SetRule(Caffeoyl, "complementary", "[[\"loss_hex\",\"caffeate\"],[\"caffeate\",\"agly\"]]"));
+        c59.Precursor = Text(CaffeoylNeg);
+        c59.Peaks = CaffeoylPeaks;
+        c59.Expect = "{'refusals':[],'outcomes':{'" + Caffeoyl + "':{'fired':true,'k_of':['/logic 2 2 true'],"
+            + "'matched':['loss_hex:C6H10O5@1','caffeate:C9H7O4@1','agly:A@1','decarb:C8H7O2@2'],'chosen_score':'0.900000'}}}";
+
+        var c60 = Add("complementary_group_max", "A declared pair 0.036 Da apart at a 0.02 Da product tolerance takes two peaks (0.6 and 0.4): "
+                      + "the group adds max(0.6, 0.4) once to the score and counts once in k_of.",
+                      new InlineRuleSet().AddRule(Caffeoyl, Terms(
+                              Term("loss_hex", "loss_from_precursor", "counted", Formula("C6H10O5")),
+                              Term("near", "product_ion", "counted", Formula("C8H3O5")),
+                              Term("decarb", "product_ion", "counted", Formula(Decarb))),
+                          KOf("2", TermRef("loss_hex"), TermRef("near"), TermRef("decarb")),
+                          InlineRuleSet.Composition("C9H8O4", null, "{\"Hex\":[1,1]}", "{}"), "[\"[M-H]-\"]", "near")
+                      .SetRule(Caffeoyl, "complementary", "[[\"loss_hex\",\"near\"]]"));
+        c60.Options = "{'filter':'all','product_tolerance_override':{'abs_da':'0.02','ppm':'0.0'}}";
+        c60.Precursor = Text(CaffeoylNeg);
+        c60.Peaks = Peaks(Base, NegIon(CIon, 600), NegIon("C8H3O5", 400), NegIon(Decarb, 300));
+        c60.Expect = "{'refusals':[],'outcomes':{'" + Caffeoyl + "':{'fired':true,'k_of':['/logic 2 2 true'],"
+            + "'matched':['loss_hex:C6H10O5@1','near:C8H3O5@2','decarb:C8H7O2@3'],'chosen_score':'0.900000'}}}";
+
         return cases;
     }
 }

@@ -29139,6 +29139,1026 @@
    },
    "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":1000.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.0.1-inline&ruleset_sha256=3e1c9156c5d40047da3c040045f64601d555a405ac2e9ee9096a811b17c292a1\",\"input_sha256\":\"7e4cfe6ebb50ac4fe082e911c82d5b8bcdc23bb0091e9ab61ff7bbf29d9013f6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1|[M-H]-\",\"hypothesis_mz\":431.098371,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C15H9O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":269.045547,\"rel_intensity\":0.800000,\"role\":\"required\",\"target_mz\":269.045547,\"term_id\":\"Y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C8H5O4\",\"kind\":\"product_ion\",\"member_key\":\"C8H5O4\",\"peak_index\":2,\"peak_mz\":165.019333,\"rel_intensity\":0.400000,\"role\":\"required\",\"target_mz\":165.019333,\"term_id\":\"b\",\"unit_id\":2}],\"neutral_formula\":\"C21H20O10\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":1.200000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid.branch.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"core|Hex1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":431.098371,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"3e1c9156c5d40047da3c040045f64601d555a405ac2e9ee9096a811b17c292a1\",\"source\":\"inline\",\"version\":\"0.0.1-inline\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
    "result_sha256": "2c1888a522d2062ea8978f1726b54dae6615f6d68c6831055ce0a7b4faf6639c"
+  },
+  {
+   "description": "Pairs loss_hex~caffeate and caffeate~agly close into one group: all three share the caffeate peak (no overlap refusal) and count once in k_of and the score.",
+   "expect": {
+    "outcomes": {
+     "hydroxycinnamoyl.caffeoyl_hexose.neg": {
+      "chosen_score": "0.900000",
+      "fired": true,
+      "k_of": [
+       "/logic 2 2 true"
+      ],
+      "matched": [
+       "loss_hex:C6H10O5@1",
+       "caffeate:C9H7O4@1",
+       "agly:A@1",
+       "decarb:C8H7O2@2"
+      ]
+     }
+    },
+    "refusals": []
+   },
+   "files": {
+    "rules/hydroxycinnamoyl.caffeoyl_hexose.neg.json": {
+     "author_reviewed": false,
+     "calibrated_on": [
+      "QTOF-type"
+     ],
+     "claim": {
+      "claim_level": "class",
+      "claim_term_ids": [
+       "caffeate"
+      ],
+      "motif_id": "flavonoid_o_glycoside",
+      "negative_examples": [
+       {
+        "pubchem_cid": 3,
+        "smiles": "CCC"
+       }
+      ],
+      "non_claims": [
+       "synthetic"
+      ],
+      "positive_examples": [
+       {
+        "pubchem_cid": 1,
+        "smiles": "C"
+       },
+       {
+        "pubchem_cid": 2,
+        "smiles": "CC"
+       }
+      ]
+     },
+     "complementary": [
+      [
+       "loss_hex",
+       "caffeate"
+      ],
+      [
+       "caffeate",
+       "agly"
+      ]
+     ],
+     "convention": "p2",
+     "format": "msfinder-diagnostic-rule",
+     "format_version": 1,
+     "logic": {
+      "k_of": {
+       "k": 2,
+       "k_source": "src:0",
+       "of": [
+        {
+         "term": "loss_hex"
+        },
+        {
+         "term": "caffeate"
+        },
+        {
+         "term": "agly"
+        },
+        {
+         "term": "decarb"
+        }
+       ]
+      }
+     },
+     "loss_reference": "hypothesis",
+     "measure": false,
+     "notes": "synthetic",
+     "parameters_origin": "as_published",
+     "preconditions": {
+      "adducts": [
+       "[M-H]-"
+      ],
+      "competitors": [],
+      "composition": {
+       "core": "C9H8O4",
+       "scaffold_list": null,
+       "unit_totals": {},
+       "units": {
+        "Hex": [
+         1,
+         1
+        ]
+       }
+      },
+      "ion_mode": "neg",
+      "precursor_tolerance_da": 0.01,
+      "priors": []
+     },
+     "primary_precondition_mode": "adduct_ambiguous",
+     "product_tolerance": "p2",
+     "review": null,
+     "rule_id": "hydroxycinnamoyl.caffeoyl_hexose.neg",
+     "source": [
+      {
+       "doi": "10.1000/synthetic.1",
+       "locator": "Table 1"
+      }
+     ],
+     "source_checked": false,
+     "terms": [
+      {
+       "floor_source": "src:0",
+       "formula": "C6H10O5",
+       "kind": "loss_from_precursor",
+       "min_rel_intensity": 0.05,
+       "note": null,
+       "ratio": null,
+       "ratio_source": null,
+       "role": "counted",
+       "term_id": "loss_hex",
+       "term_source": "src:0",
+       "than": null
+      },
+      {
+       "floor_source": "src:0",
+       "formula": "C9H7O4",
+       "kind": "product_ion",
+       "min_rel_intensity": 0.05,
+       "note": null,
+       "ratio": null,
+       "ratio_source": null,
+       "role": "counted",
+       "term_id": "caffeate",
+       "term_source": "src:0",
+       "than": null
+      },
+      {
+       "charge_carrier": "proton",
+       "floor_source": "src:0",
+       "form": "even",
+       "kind": "aglycone_ion",
+       "min_rel_intensity": 0.05,
+       "minus": null,
+       "note": null,
+       "plus": null,
+       "ratio": null,
+       "ratio_source": null,
+       "role": "counted",
+       "term_id": "agly",
+       "term_source": "src:0",
+       "than": null
+      },
+      {
+       "floor_source": "src:0",
+       "formula": "C8H7O2",
+       "kind": "product_ion",
+       "min_rel_intensity": 0.05,
+       "note": null,
+       "ratio": null,
+       "ratio_source": null,
+       "role": "counted",
+       "term_id": "decarb",
+       "term_source": "src:0",
+       "than": null
+      }
+     ],
+     "transcribed_by": "synthetic",
+     "version": 1,
+     "veto_excludes_motif": false
+    },
+    "ruleset.json": {
+     "format": "msfinder-diagnostic-ruleset",
+     "format_version": 1,
+     "rule_set_version": "0.0.1-inline"
+    },
+    "tables/adducts.json": {
+     "adducts": [
+      {
+       "add": "H",
+       "adduct": "[M+H]+",
+       "aliases": [
+        "M+H"
+       ],
+       "charge": 1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": "Na",
+       "adduct": "[M+Na]+",
+       "aliases": [],
+       "charge": 1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": null,
+       "adduct": "[M]+",
+       "aliases": [
+        "[M+]+"
+       ],
+       "charge": 1,
+       "common": false,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": null,
+       "adduct": "[M-H]-",
+       "aliases": [],
+       "charge": -1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": "H",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": "CHO2",
+       "adduct": "[M+HCOO]-",
+       "aliases": [
+        "[M+FA-H]-"
+       ],
+       "charge": -1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": "Cl",
+       "adduct": "[M+Cl]-",
+       "aliases": [],
+       "charge": -1,
+       "common": false,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ],
+     "format": "msfinder-diagnostic-adducts",
+     "format_version": 1
+    },
+    "tables/elements.json": {
+     "electron": 0.000549,
+     "elements": {
+      "C": 12.0,
+      "Cl": 34.96885268,
+      "H": 1.007825032,
+      "K": 38.96370668,
+      "N": 14.003074,
+      "Na": 22.98976928,
+      "O": 15.99491462,
+      "P": 30.97376163,
+      "S": 31.972071
+     },
+     "format": "msfinder-diagnostic-elements",
+     "format_version": 1
+    },
+    "tables/motif_nesting.json": {
+     "format": "msfinder-diagnostic-motif-nesting",
+     "format_version": 1,
+     "nesting": [
+      {
+       "child": "flavonoid_o_glycoside",
+       "parent": "flavonoid",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ]
+    },
+    "tables/motifs.json": {
+     "format": "msfinder-diagnostic-motifs",
+     "format_version": 1,
+     "motifs": [
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "flavonoid_o_glycoside",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "flavonoid",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "anthocyanin",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "hydroxycinnamoyl_hexose",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ]
+    },
+    "tables/units.json": {
+     "format": "msfinder-diagnostic-units",
+     "format_version": 1,
+     "units": [
+      {
+       "class": "sugar",
+       "name": "Hex",
+       "origin": "as_published",
+       "residue": "C6H10O5",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "dHex",
+       "origin": "as_published",
+       "residue": "C6H10O4",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "Pen",
+       "origin": "as_published",
+       "residue": "C5H8O4",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "HexA",
+       "origin": "as_published",
+       "residue": "C6H8O6",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "Gal",
+       "origin": "as_published",
+       "residue": "C6H10O5",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "acyl",
+       "name": "caffeoyl",
+       "origin": "as_published",
+       "residue": "C9H6O3",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "300.0",
+      "1000.0"
+     ],
+     [
+      "179.034983",
+      "600.0"
+     ],
+     [
+      "135.045153",
+      "300.0"
+     ]
+    ],
+    "precursor_mz": "341.087806"
+   },
+   "name": "complementary_chain",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":1000.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.0.1-inline&ruleset_sha256=301e3d6878748b1a612b349e1a2388920a4abc407e5759b4ea5e7282dfa190b2\",\"input_sha256\":\"d06f9d8031afdc55f198ab6c05b52e783bc51b8fd3a00aa40ebbb589bc707bf8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1|[M-H]-\",\"hypothesis_mz\":341.087806,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H10O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H10O5\",\"peak_index\":1,\"peak_mz\":179.034983,\"rel_intensity\":0.600000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"loss_hex\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O4\",\"peak_index\":1,\"peak_mz\":179.034983,\"rel_intensity\":0.600000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":179.034983,\"rel_intensity\":0.600000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"agly\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C8H7O2\",\"peak_index\":2,\"peak_mz\":135.045153,\"rel_intensity\":0.300000,\"role\":\"counted\",\"target_mz\":135.045153,\"term_id\":\"decarb\",\"unit_id\":1}],\"neutral_formula\":\"C15H18O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":0.900000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl.caffeoyl_hexose.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"core|Hex1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":341.087806,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"301e3d6878748b1a612b349e1a2388920a4abc407e5759b4ea5e7282dfa190b2\",\"source\":\"inline\",\"version\":\"0.0.1-inline\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7ae2d5cfd56cbf62e4aa1de1a4c573636c446330d5cff882493fad57fd64f781"
+  },
+  {
+   "description": "A declared pair 0.036 Da apart at a 0.02 Da product tolerance takes two peaks (0.6 and 0.4): the group adds max(0.6, 0.4) once to the score and counts once in k_of.",
+   "expect": {
+    "outcomes": {
+     "hydroxycinnamoyl.caffeoyl_hexose.neg": {
+      "chosen_score": "0.900000",
+      "fired": true,
+      "k_of": [
+       "/logic 2 2 true"
+      ],
+      "matched": [
+       "loss_hex:C6H10O5@1",
+       "near:C8H3O5@2",
+       "decarb:C8H7O2@3"
+      ]
+     }
+    },
+    "refusals": []
+   },
+   "files": {
+    "rules/hydroxycinnamoyl.caffeoyl_hexose.neg.json": {
+     "author_reviewed": false,
+     "calibrated_on": [
+      "QTOF-type"
+     ],
+     "claim": {
+      "claim_level": "class",
+      "claim_term_ids": [
+       "near"
+      ],
+      "motif_id": "flavonoid_o_glycoside",
+      "negative_examples": [
+       {
+        "pubchem_cid": 3,
+        "smiles": "CCC"
+       }
+      ],
+      "non_claims": [
+       "synthetic"
+      ],
+      "positive_examples": [
+       {
+        "pubchem_cid": 1,
+        "smiles": "C"
+       },
+       {
+        "pubchem_cid": 2,
+        "smiles": "CC"
+       }
+      ]
+     },
+     "complementary": [
+      [
+       "loss_hex",
+       "near"
+      ]
+     ],
+     "convention": "p2",
+     "format": "msfinder-diagnostic-rule",
+     "format_version": 1,
+     "logic": {
+      "k_of": {
+       "k": 2,
+       "k_source": "src:0",
+       "of": [
+        {
+         "term": "loss_hex"
+        },
+        {
+         "term": "near"
+        },
+        {
+         "term": "decarb"
+        }
+       ]
+      }
+     },
+     "loss_reference": "hypothesis",
+     "measure": false,
+     "notes": "synthetic",
+     "parameters_origin": "as_published",
+     "preconditions": {
+      "adducts": [
+       "[M-H]-"
+      ],
+      "competitors": [],
+      "composition": {
+       "core": "C9H8O4",
+       "scaffold_list": null,
+       "unit_totals": {},
+       "units": {
+        "Hex": [
+         1,
+         1
+        ]
+       }
+      },
+      "ion_mode": "neg",
+      "precursor_tolerance_da": 0.01,
+      "priors": []
+     },
+     "primary_precondition_mode": "adduct_ambiguous",
+     "product_tolerance": "p2",
+     "review": null,
+     "rule_id": "hydroxycinnamoyl.caffeoyl_hexose.neg",
+     "source": [
+      {
+       "doi": "10.1000/synthetic.1",
+       "locator": "Table 1"
+      }
+     ],
+     "source_checked": false,
+     "terms": [
+      {
+       "floor_source": "src:0",
+       "formula": "C6H10O5",
+       "kind": "loss_from_precursor",
+       "min_rel_intensity": 0.05,
+       "note": null,
+       "ratio": null,
+       "ratio_source": null,
+       "role": "counted",
+       "term_id": "loss_hex",
+       "term_source": "src:0",
+       "than": null
+      },
+      {
+       "floor_source": "src:0",
+       "formula": "C8H3O5",
+       "kind": "product_ion",
+       "min_rel_intensity": 0.05,
+       "note": null,
+       "ratio": null,
+       "ratio_source": null,
+       "role": "counted",
+       "term_id": "near",
+       "term_source": "src:0",
+       "than": null
+      },
+      {
+       "floor_source": "src:0",
+       "formula": "C8H7O2",
+       "kind": "product_ion",
+       "min_rel_intensity": 0.05,
+       "note": null,
+       "ratio": null,
+       "ratio_source": null,
+       "role": "counted",
+       "term_id": "decarb",
+       "term_source": "src:0",
+       "than": null
+      }
+     ],
+     "transcribed_by": "synthetic",
+     "version": 1,
+     "veto_excludes_motif": false
+    },
+    "ruleset.json": {
+     "format": "msfinder-diagnostic-ruleset",
+     "format_version": 1,
+     "rule_set_version": "0.0.1-inline"
+    },
+    "tables/adducts.json": {
+     "adducts": [
+      {
+       "add": "H",
+       "adduct": "[M+H]+",
+       "aliases": [
+        "M+H"
+       ],
+       "charge": 1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": "Na",
+       "adduct": "[M+Na]+",
+       "aliases": [],
+       "charge": 1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": null,
+       "adduct": "[M]+",
+       "aliases": [
+        "[M+]+"
+       ],
+       "charge": 1,
+       "common": false,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": null,
+       "adduct": "[M-H]-",
+       "aliases": [],
+       "charge": -1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": "H",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": "CHO2",
+       "adduct": "[M+HCOO]-",
+       "aliases": [
+        "[M+FA-H]-"
+       ],
+       "charge": -1,
+       "common": true,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "add": "Cl",
+       "adduct": "[M+Cl]-",
+       "aliases": [],
+       "charge": -1,
+       "common": false,
+       "multiplier": 1,
+       "origin": "as_published",
+       "remove": null,
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ],
+     "format": "msfinder-diagnostic-adducts",
+     "format_version": 1
+    },
+    "tables/elements.json": {
+     "electron": 0.000549,
+     "elements": {
+      "C": 12.0,
+      "Cl": 34.96885268,
+      "H": 1.007825032,
+      "K": 38.96370668,
+      "N": 14.003074,
+      "Na": 22.98976928,
+      "O": 15.99491462,
+      "P": 30.97376163,
+      "S": 31.972071
+     },
+     "format": "msfinder-diagnostic-elements",
+     "format_version": 1
+    },
+    "tables/motif_nesting.json": {
+     "format": "msfinder-diagnostic-motif-nesting",
+     "format_version": 1,
+     "nesting": [
+      {
+       "child": "flavonoid_o_glycoside",
+       "parent": "flavonoid",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ]
+    },
+    "tables/motifs.json": {
+     "format": "msfinder-diagnostic-motifs",
+     "format_version": 1,
+     "motifs": [
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "flavonoid_o_glycoside",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "flavonoid",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "anthocyanin",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "chemont": {
+        "broader": [],
+        "compatible": [
+         {
+          "id": "CHEMONTID:0000334",
+          "name": "Flavonoids"
+         }
+        ]
+       },
+       "motif_id": "hydroxycinnamoyl_hexose",
+       "origin": "source_defined",
+       "smarts": "c1ccccc1",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ]
+    },
+    "tables/units.json": {
+     "format": "msfinder-diagnostic-units",
+     "format_version": 1,
+     "units": [
+      {
+       "class": "sugar",
+       "name": "Hex",
+       "origin": "as_published",
+       "residue": "C6H10O5",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "dHex",
+       "origin": "as_published",
+       "residue": "C6H10O4",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "Pen",
+       "origin": "as_published",
+       "residue": "C5H8O4",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "HexA",
+       "origin": "as_published",
+       "residue": "C6H8O6",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "sugar",
+       "name": "Gal",
+       "origin": "as_published",
+       "residue": "C6H10O5",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      },
+      {
+       "class": "acyl",
+       "name": "caffeoyl",
+       "origin": "as_published",
+       "residue": "C9H6O3",
+       "source": [
+        {
+         "doi": "10.1000/synthetic.1",
+         "locator": "Table 1"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "300.0",
+      "1000.0"
+     ],
+     [
+      "179.034983",
+      "600.0"
+     ],
+     [
+      "178.998597",
+      "400.0"
+     ],
+     [
+      "135.045153",
+      "300.0"
+     ]
+    ],
+    "precursor_mz": "341.087806"
+   },
+   "name": "complementary_group_max",
+   "options": {
+    "filter": "all",
+    "product_tolerance_override": {
+     "abs_da": "0.02",
+     "ppm": "0.0"
+    }
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":1000.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&product_tolerance_override.abs_da=0.020000&product_tolerance_override.ppm=0.000000&ruleset=0.0.1-inline&ruleset_sha256=d9602a5a4a97527d5112eed0210f98eecd865839e714b22f431c6b736c425e3e\",\"input_sha256\":\"72313f3b81b29bdc2ac33d3fa22dd8f5e720ff3dbadd6f48de8215d9eb566777\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"product_tolerance_override.abs_da\":0.020000,\"product_tolerance_override.ppm\":0.000000},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1|[M-H]-\",\"hypothesis_mz\":341.087806,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H10O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H10O5\",\"peak_index\":1,\"peak_mz\":179.034983,\"rel_intensity\":0.600000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"loss_hex\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H3O5\",\"kind\":\"product_ion\",\"member_key\":\"C8H3O5\",\"peak_index\":2,\"peak_mz\":178.998597,\"rel_intensity\":0.400000,\"role\":\"counted\",\"target_mz\":178.998597,\"term_id\":\"near\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C8H7O2\",\"peak_index\":3,\"peak_mz\":135.045153,\"rel_intensity\":0.300000,\"role\":\"counted\",\"target_mz\":135.045153,\"term_id\":\"decarb\",\"unit_id\":1}],\"neutral_formula\":\"C15H18O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":0.900000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.020000,\"ppm\":0.000,\"source\":\"override\"},\"rule_id\":\"hydroxycinnamoyl.caffeoyl_hexose.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"core|Hex1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":341.087806,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d9602a5a4a97527d5112eed0210f98eecd865839e714b22f431c6b736c425e3e\",\"source\":\"inline\",\"version\":\"0.0.1-inline\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ee48a5aaf69bcf8b6bfa2157eff1c3b2abb8813900cd5f56ad9b923245df39af"
   }
  ],
  "engine_semantics": "msfinder-diagnostic-rules/1",

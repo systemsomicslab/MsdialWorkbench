@@ -81,6 +81,81 @@ public class OnePeakOneTermTests
     }
 
     [TestMethod]
+    public void AChainOfPairsIsOneEvidenceUnit() {
+        // Design 3.6 item 5 and 4.6: loss_hex ~ caffeate and caffeate ~ agly (the aglycone ion [A-H]-, also C9H7O4-)
+        // close transitively into one group, so loss_hex and agly may share the peak although no pair names them both.
+        // A per-pair grouping would put them in different units: the overlap would be refused and k would reach 2 on
+        // one observed mass.
+        var terms = Terms(
+            Term("loss_hex", "loss_from_precursor", "counted", Formula("C6H10O5")),
+            Term("caffeate", "product_ion", "counted", Formula(Caffeate)),
+            Term("agly", "aglycone_ion", "counted", Aglycone("even", "proton")),
+            Term("decarb", "product_ion", "counted", Formula(Decarboxylated)));
+        var logic = KOf("2", TermRef("loss_hex"), TermRef("caffeate"), TermRef("agly"), TermRef("decarb"));
+        var set = new InlineRuleSet().AddRule(RuleId, terms, logic, CaffeoylHexose, "[\"[M-H]-\"]", "caffeate")
+            .SetRule(RuleId, "complementary", "[[\"loss_hex\",\"caffeate\"],[\"caffeate\",\"agly\"]]").Load();
+        var engine = MakeEngine(set, RuleId);
+        Assert.IsNull(OverlapValidator.Check(engine));
+        Assert.AreEqual("0 0 0 -1", string.Join(" ", EvidenceItems.GroupOfTerm(engine.Info)));
+
+        var alone = EvaluateOnly(engine, Spectrum(Neg(Caffeate, 600)));
+        Assert.AreEqual("loss_hex:C6H10O5@1 caffeate:C9H7O4@1 agly:A@1", Matched(alone));
+        Assert.AreEqual("0 0 0", string.Join(" ", alone.Matched.Select(m => m.UnitId)));
+        Assert.AreEqual(1L, alone.KOf[0].Count);
+        Assert.IsFalse(alone.Fired);
+        Assert.AreEqual(0.6, alone.Score);
+
+        var e = EvaluateOnly(engine, Spectrum(Neg(Caffeate, 600), Neg(Decarboxylated, 300)));
+        Assert.IsTrue(e.Fired);
+        Assert.AreEqual("loss_hex:C6H10O5@1 caffeate:C9H7O4@1 agly:A@1 decarb:C8H7O2@2", Matched(e));
+        Assert.AreEqual("0 0 0 1", string.Join(" ", e.Matched.Select(m => m.UnitId)));
+        Assert.AreEqual(2L, e.KOf[0].Count);
+        Assert.AreEqual(0.6 + 0.3, e.Score);
+    }
+
+    [TestMethod]
+    public void AGroupOnTwoPeaksScoresItsMaximumAndCountsOnce() {
+        // Design 4.6: a group contributes the maximum rel among its assigned peaks, and k_of counts the group once. The
+        // loss of C6H10O5 (target 179.034983) and the ion C8H3O5- (178.998597) are 0.036386 Da apart: at a 0.02 Da
+        // product tolerance they overlap (0.02 + 0.02) yet each peak is a candidate of one term only, so the declared
+        // pair is assigned two different peaks, rel 0.6 and 0.4.
+        const string Near = "C8H3O5";
+        var terms = Terms(
+            Term("loss_hex", "loss_from_precursor", "counted", Formula("C6H10O5")),
+            Term("near", "product_ion", "counted", Formula(Near)),
+            Term("decarb", "product_ion", "counted", Formula(Decarboxylated)));
+        var logic = KOf("2", TermRef("loss_hex"), TermRef("near"), TermRef("decarb"));
+        InlineRuleSet Rule() => new InlineRuleSet().AddRule(RuleId, terms, logic, CaffeoylHexose, "[\"[M-H]-\"]", "near");
+        var wide = ProductTolerance.Da(0.02);
+        var declared = MakeEngine(Rule().SetRule(RuleId, "complementary", "[[\"loss_hex\",\"near\"]]").Load(), RuleId,
+                                  new DiagnosticEvaluationOptions { ProductToleranceOverride = wide });
+        Assert.IsNull(OverlapValidator.Check(declared));
+
+        var pair = EvaluateOnly(declared, Spectrum(Neg(Caffeate, 600), Neg(Near, 400)));
+        Assert.AreEqual("loss_hex:C6H10O5@1 near:C8H3O5@2", Matched(pair));
+        Assert.AreEqual("0 0", string.Join(" ", pair.Matched.Select(m => m.UnitId)));
+        Assert.AreEqual(1L, pair.KOf[0].Count);
+        Assert.IsFalse(pair.Fired);
+        Assert.AreEqual(0.6, pair.Score); // max(0.6, 0.4), not the sum
+
+        var e = EvaluateOnly(declared, Spectrum(Neg(Caffeate, 600), Neg(Near, 400), Neg(Decarboxylated, 300)));
+        Assert.IsTrue(e.Fired);
+        Assert.AreEqual("loss_hex:C6H10O5@1 near:C8H3O5@2 decarb:C8H7O2@3", Matched(e));
+        Assert.AreEqual(2L, e.KOf[0].Count);
+        Assert.AreEqual(0.6 + 0.3, e.Score);
+        // The group's maximum does not depend on which term holds it.
+        Assert.AreEqual(0.6, EvaluateOnly(declared, Spectrum(Neg(Caffeate, 400), Neg(Near, 600))).Score);
+
+        // Undeclared under Runtime the two terms are two units on two peaks: both rels count, and k = 2.
+        var runtime = MakeEngine(Rule().Load(), RuleId, new DiagnosticEvaluationOptions { ProductToleranceOverride = wide, Overlap = OverlapMode.Runtime });
+        var separate = EvaluateOnly(runtime, Spectrum(Neg(Caffeate, 600), Neg(Near, 400)));
+        Assert.IsTrue(separate.Fired);
+        Assert.AreEqual("0 1", string.Join(" ", separate.Matched.Select(m => m.UnitId)));
+        Assert.AreEqual(2L, separate.KOf[0].Count);
+        Assert.AreEqual(0.6 + 0.4, separate.Score);
+    }
+
+    [TestMethod]
     public void UndeclaredIsRefused() {
         var set = KOfRule(false).Load();
         var engine = MakeEngine(set, RuleId);
