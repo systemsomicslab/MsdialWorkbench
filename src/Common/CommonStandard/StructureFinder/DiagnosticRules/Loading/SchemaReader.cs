@@ -912,7 +912,11 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Loading
             if (pt != null && VObj(c, pt, pp)) {
                 var po = (JsonObject)pt;
                 CheckKeys(c, po, pp, new[] { "abs_da", "ppm", "source" });
-                VFloat(c, po.Get("abs_da"), Pointers.Child(pp, "abs_da"), positive: true);
+                // A ppm-only MS-FINDER tolerance is {0, X, msfinder} as the evaluator applies it (design 4.4), so a
+                // review measured at it records abs_da 0; every other review tolerance has a positive abs_da.
+                var ppmOnly = po.Get("source") is JsonString src && src.Value == "msfinder"
+                              && po.Get("ppm") is JsonFloat ppm && ppm.Value > 0.0;
+                VFloat(c, po.Get("abs_da"), Pointers.Child(pp, "abs_da"), positive: !ppmOnly);
                 VFloat(c, po.Get("ppm"), Pointers.Child(pp, "ppm"));
                 VEnum(c, po.Get("source"), Pointers.Child(pp, "source"), new[] { "p2", "msfinder" });
             }

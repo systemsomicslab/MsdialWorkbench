@@ -153,6 +153,22 @@ public class AdductHypothesisTests
                         Reasons(Eligibility(p2, new DiagnosticEvaluationOptions { ProductToleranceOverride = new ProductTolerance(0.005, 10.0) })));
     }
 
+    [TestMethod]
+    public void AReviewCanRecordAPpmOnlyMsfinderTolerance() {
+        // MS-FINDER in ppm mode: the applied tolerance is {0, 10, msfinder}, which a review records as abs_da 0.
+        const string PpmReview = "{\"abs_da\":0.0,\"ppm\":10.0,\"source\":\"msfinder\"}";
+        var ppm = Basic().SetRule(RuleId, "product_tolerance", "\"msfinder\"").Reviewed(RuleId, productTolerance: PpmReview);
+        var options = new DiagnosticEvaluationOptions { MsfinderProductTolerance = ProductTolerance.FromPpm(10.0) };
+        var o = Eligibility(ppm, options);
+        Assert.AreEqual("eligible []", Reasons(o));
+        Assert.AreEqual("0 10 msfinder", o.ProductToleranceAbsDa.ToString(System.Globalization.CultureInfo.InvariantCulture) + " "
+                        + o.ProductTolerancePpm.ToString(System.Globalization.CultureInfo.InvariantCulture) + " " + o.ProductToleranceSource);
+        // At the default 0.01 Da, or another ppm, it is not the reviewed tolerance.
+        Assert.AreEqual("ineligible [tolerance_differs]", Reasons(Eligibility(ppm)));
+        Assert.AreEqual("ineligible [tolerance_differs]",
+                        Reasons(Eligibility(ppm, new DiagnosticEvaluationOptions { MsfinderProductTolerance = ProductTolerance.FromPpm(5.0) })));
+    }
+
     /// <summary>Every variant option at a non-default value. The data rows carry only the name: MSTest serialises
     /// dynamic data, which would lose the get-only fields of <see cref="ProductTolerance"/>.</summary>
     private static readonly Dictionary<string, System.Func<DiagnosticEvaluationOptions>> VariantOptions =
