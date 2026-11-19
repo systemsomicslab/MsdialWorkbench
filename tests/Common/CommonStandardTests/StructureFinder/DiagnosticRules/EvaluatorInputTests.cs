@@ -29,8 +29,14 @@ public class EvaluatorInputTests
 
     [TestMethod]
     public void InputSurfaceIsExactlyFourMembers() {
-        // Any widening of either input type (a field, a property, a method, a second constructor) fails here.
+        // Any widening of either input type (a field, a property, a method, a second constructor) fails here, inherited
+        // ones included: the spectrum derives from object directly and implements no interface (an explicit interface
+        // implementation is not public, so the declared-member listing below would miss it).
         Assert.IsTrue(typeof(DiagnosticSpectrum).IsSealed);
+        Assert.AreEqual(typeof(object), typeof(DiagnosticSpectrum).BaseType);
+        Assert.AreEqual(0, typeof(DiagnosticSpectrum).GetInterfaces().Length);
+        Assert.AreEqual(9, typeof(DiagnosticSpectrum).GetMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                                                     .Count(m => m.DeclaringType != typeof(object)));
         Assert.AreEqual(string.Join("\n", new[]
         {
             "Constructor .ctor(IReadOnlyList`1,Double,Nullable`1,String)",
