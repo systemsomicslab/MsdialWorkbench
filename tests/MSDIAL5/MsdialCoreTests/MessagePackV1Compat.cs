@@ -88,13 +88,13 @@ namespace CompMs.MsdialCore
             public byte[] Bytes { get; set; } = Array.Empty<byte>();
         }
 
-        internal sealed class RawFormatter : IMessagePackFormatter<Raw>
+        internal sealed class RawFormatter : IMessagePackFormatter<Raw?>
         {
             public Raw Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options) {
                 return new Raw { Bytes = System.Buffers.BuffersExtensions.ToArray(reader.ReadRaw()), };
             }
 
-            public void Serialize(ref MessagePackWriter writer, Raw value, MessagePackSerializerOptions options) {
+            public void Serialize(ref MessagePackWriter writer, Raw? value, MessagePackSerializerOptions options) {
                 throw new NotSupportedException();
             }
         }

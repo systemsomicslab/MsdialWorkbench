@@ -367,7 +367,7 @@ namespace CompMs.MsdialCore.DataObj
         /// as null. The Confirmed tag itself is in <see cref="TagCollection"/>, with the check as its source.
         /// </remarks>
         [Key(56)]
-        public LipidRtVerdict LipidRtVerdict { get; set; }
+        public LipidRtVerdict? LipidRtVerdict { get; set; }
 
         public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram chromatogram, double mz) {
             if (peakDetectionResult == null) {

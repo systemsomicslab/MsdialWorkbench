@@ -111,6 +111,7 @@ namespace CompMs.Graphics.AxisManager
                 converter[item] = 0.5 + cnt++;
 
             CoreRange = new AxisRange(minimum: 0d, maximum: cnt);
+            OnAxisValueMappingChanged();
         }
 
         #region Event handler

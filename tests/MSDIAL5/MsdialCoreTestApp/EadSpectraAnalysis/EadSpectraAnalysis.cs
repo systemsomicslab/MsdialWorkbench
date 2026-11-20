@@ -10,6 +10,11 @@ using System.Text;
 
 namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
     public class LinkNode {
+        public LinkNode(double[] score, MoleculeMsReference node) {
+            Score = score;
+            Node = node;
+        }
+
         public double[] Score { get; set; }
         public MoleculeMsReference Node { get; set; }
     }
@@ -44,8 +49,8 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
 
             var mspfiles = new List<string>();
             using (var sr = new StreamReader(mspfilelist)) {
-                while (sr.Peek() > -1) {
-                    mspfiles.Add(sr.ReadLine());
+                while (sr.ReadLine() is string line) {
+                    mspfiles.Add(line);
                 }
             }
 
@@ -112,8 +117,8 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
 
             var mspfiles = new List<string>();
             using (var sr = new StreamReader(mspfilelist)) {
-                while (sr.Peek() > -1) {
-                    mspfiles.Add(sr.ReadLine());
+                while (sr.ReadLine() is string line) {
+                    mspfiles.Add(line);
                 }
             }
 
@@ -156,7 +161,6 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
         public static void TestMolecularNetworkingFunctions(string inputfile, string outputdir) {
             var minimumPeakMatch = 4;
             var matchThreshold = 0.9;
-            var maxEdgeNumPerNode = 10;
             var maxPrecursorDiff = 400.0;
             var maxPrecursorDiff_Percent = 100;
             var records = MspFileParser.MspFileReader(inputfile);
@@ -212,10 +216,15 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
                     var MatchParent = 0;
                     using (var sr = new StreamReader(f)) {
                         sr.ReadLine();
-                        while (sr.Peek() > -1) {
+                        var lineNumber = 1;
+                        while (sr.ReadLine() is string line) {
+                            lineNumber++;
                             TotalCount++;
-                            var line = sr.ReadLine();
                             var linearray = line.Split('\t');
+                            // The last field used for the class comparisons is column 15.
+                            if (linearray.Length < 16) {
+                                throw new InvalidDataException($"Expected at least 16 columns in '{f}', line {lineNumber}.");
+                            }
                             if (linearray[8].Length > 0 && linearray[12].Length > 0 &&
                                 linearray[4] == "TRUE") { MatchSuperClass++; }
                             if (linearray[9].Length > 0 && linearray[13].Length > 0 &&
@@ -300,10 +309,10 @@ namespace CompMs.App.MsdialConsole.EadSpectraAnalysis {
                             if (scoreitem[0] < matchThreshold) continue;
 
                             if (node2links.ContainsKey(i)) {
-                                node2links[i].Add(new LinkNode() { Score = scoreitem, Node = records[j] });
+                                node2links[i].Add(new LinkNode(scoreitem, records[j]));
                             }
                             else {
-                                node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = records[j] } };
+                                node2links[i] = new List<LinkNode>() { new LinkNode(scoreitem, records[j]) };
                             }
                         }
                     }

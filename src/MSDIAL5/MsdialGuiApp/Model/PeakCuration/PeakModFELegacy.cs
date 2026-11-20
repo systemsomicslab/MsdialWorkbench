@@ -31,6 +31,7 @@ namespace CompMs.App.Msdial.Model.PeakCuration
         public void Draw() {
             this.visualCollection.Clear();
             if (this.drawing == null) return;
+            this.drawing.PixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
             this.drawing.ChangeChartArea(this.ActualWidth, this.ActualHeight);
             this.drawingVisual = this.drawing.GetChart();
             this.visualCollection.Add(this.drawingVisual);
@@ -49,6 +50,7 @@ namespace CompMs.App.Msdial.Model.PeakCuration
 
         public void Draw(float width, float height) {
             this.visualCollection.Clear();
+            this.drawing.PixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
             this.drawing.ChangeChartArea(width, height);
             this.drawingVisual = this.drawing.GetChart();
             this.visualCollection.Add(this.drawingVisual);

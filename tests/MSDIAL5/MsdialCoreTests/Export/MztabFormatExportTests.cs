@@ -695,7 +695,6 @@ namespace CompMs.MsdialCore.Export.Tests
 
         private static readonly List<string> cvItem1 = new() { "MS", "PSI-MS controlled vocabulary", "4.1.192", "https://www.ebi.ac.uk/ols/ontologies/ms" };
         private static readonly List<string> cvItem2 = new() { "UO", "Units of Measurement Ontology", "2023-05-25", "http://purl.obolibrary.org/obo/uo.owl" };
-        private readonly DataBaseStorage _dataBaseStorage;
         private const string idConfidenceDefault = "[,, MS-DIAL algorithm matching score, ]";
         private const string idConfidenceManual = "[MS, MS:1001058, quality estimation by manual validation, ]";
         private const string quantificationMethod = "[MS, MS:1002019, Label-free raw feature quantitation, ]";
@@ -703,8 +702,6 @@ namespace CompMs.MsdialCore.Export.Tests
         private const string smallMoleculeIdentificationReliability = "[MS, MS:1003032, compound identification confidence code in MS-DIAL, ]"; // new define on psi-ms.obo
 
         public string Separator { get; }
-
-        private readonly Dictionary<string, string> _annotatorID2DataBaseID;
 
         /// <summary>
         /// The name column holds a compound name, and the processing status is a column of its own.

@@ -70,7 +70,7 @@ public class AutomaticAlignmentRetentionTimeCorrectionTests {
         Assert.IsTrue(info.Chromatogram.Any(peak => System.Math.Abs(peak.ChromXs.RT.Value - 5d) < 1e-5));
         Assert.IsTrue(info.Chromatogram.All(peak => peak.ChromXs.RT.Value >= 4.8d && peak.ChromXs.RT.Value <= 5.2d));
 
-        var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1")!;
+        var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
         using var stream = new MemoryStream();
         serializer.SerializeN(stream, new[] { new ChromatogramSpotInfo(new[] { info }, spot.TimesCenter) }, 1);
         stream.Position = 0;

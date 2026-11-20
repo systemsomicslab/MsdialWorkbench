@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.Model.Dims
     internal sealed class DimsMethodModel : MethodModelBase
     {
         static DimsMethodModel() {
-            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz)!;
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
@@ -117,7 +117,7 @@ namespace CompMs.App.Msdial.Model.Dims
             {
                 UseFilter = true,
             };
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel?)m.AlignmentModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var exportMatForMsfinder = new AlignmentSpectraExportGroupModel(
                 new[]
                 {

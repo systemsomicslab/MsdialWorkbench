@@ -261,6 +261,27 @@ Num Peaks: 3
         Assert.AreEqual(expects.Trim(), actual.Trim(), "The generated NIST format data does not match the expected output.");
     }
 
+    [TestMethod]
+    public void SaveSpectraTableForGcmsAsMatFormatWithNoMolecule()
+    {
+        var scan = new MSDecResult { ChromXs = new ChromXs(3) };
+        scan.AddPeak(73, 100);
+        var peak = new BaseChromatogramPeakFeature { Mass = 73, PeakHeightTop = 100 };
+        using var stream = new MemoryStream();
+
+        SpectraExport.SaveSpectraTableForGcmsAsMatFormat(stream, scan, null, peak, new ProjectBaseParameter());
+
+        stream.Position = 0;
+        using var reader = new StreamReader(stream);
+        var lines = reader.ReadToEnd().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        CollectionAssert.Contains(lines, "INCHIKEY: ");
+        CollectionAssert.Contains(lines, "SMILES: ");
+        CollectionAssert.Contains(lines, "FORMULA: ");
+        CollectionAssert.AreEqual(
+            new[] { "MSTYPE: MS1", "Num Peaks: 1", "73\t100", "MSTYPE: MS2", "Num Peaks: 1", "73\t100", "" },
+            lines[^7..]);
+    }
+
     class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
     {
         public MockRefer(MoleculeMsReference reference) {

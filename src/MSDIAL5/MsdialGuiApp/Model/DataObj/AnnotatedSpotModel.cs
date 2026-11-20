@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Interfaces;
-using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.DataObj;
 
@@ -17,7 +16,4 @@ internal sealed class AnnotatedSpotModel(IMSIonProperty MSIon, IMoleculeProperty
     public IMSIonProperty MSIon { get; } = MSIon;
 
     public IMoleculeProperty Molecule { get; } = Molecule;
-
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 }

@@ -17,19 +17,19 @@ using System.Text;
 namespace MsdialPrivateConsoleApp {
 
     public class Compound {
-        public string ProductName { get; set; }
-        public string POS { get; set; }
-        public string NEG { get; set; }
+        public string? ProductName { get; set; }
+        public string? POS { get; set; }
+        public string? NEG { get; set; }
 
-        public Formula Formula { get; set; }
-        public string SMILES { get; set; }  
-        public string InChIKey { get; set; }
-        public AdductIon AdductPos { get; set; }
-        public AdductIon AdductNeg { get; set; }    
-        public string Superclass { get; set; }
-        public string CClass { get; set; }
-        public string Subclass { get; set; }
-        public string ParentLevel1 { get; set; }
+        public Formula? Formula { get; set; }
+        public string? SMILES { get; set; }
+        public string? InChIKey { get; set; }
+        public AdductIon? AdductPos { get; set; }
+        public AdductIon? AdductNeg { get; set; }
+        public string? Superclass { get; set; }
+        public string? CClass { get; set; }
+        public string? Subclass { get; set; }
+        public string? ParentLevel1 { get; set; }
     }
     public sealed class CreateMspFileFromEadProject {
         private CreateMspFileFromEadProject() { }
@@ -78,24 +78,36 @@ namespace MsdialPrivateConsoleApp {
                 var decResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out _, out _);
 
                 var filename = file.AnalysisFileName;
-                Compound compound = null;
+                Compound? compound;
                 if (param.IonMode == CompMs.Common.Enum.IonMode.Positive) {
                     compound = compounds.Where(n => n.POS == filename).FirstOrDefault();
                 }
                 else {
                     compound = compounds.Where(n => n.NEG == filename).FirstOrDefault();
                 }
+                if (compound?.Formula is not Formula formula) {
+                    var error = "reference compound or formula is missing for " + file.AnalysisFileName;
+                    Console.WriteLine(error);
+                    logs.Add(error);
+                    continue;
+                }
                 var adduct = polarity == CompMs.Common.Enum.IonMode.Positive ? compound.AdductPos : compound.AdductNeg;
-                var exactmass = compound.Formula.Mass;
+                if (adduct is null || !adduct.FormatCheck) {
+                    var error = "valid adduct is missing for " + file.AnalysisFileName;
+                    Console.WriteLine(error);
+                    logs.Add(error);
+                    continue;
+                }
+                var exactmass = formula.Mass;
                 var theoreticalMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, exactmass);
 
                 var bestID = -1;
                 var maxIntensity = double.MinValue;
                 for (int i = 0; i < peaks.Count; i++) {
                     var peak = peaks[i];
-                    if (Math.Abs(peak.Mass - theoreticalMz) < 0.01) {
-                        if (maxIntensity < peak.PeakHeightTop) {
-                            maxIntensity = peak.PeakHeightTop;
+                    if (Math.Abs(peak.PeakFeature.Mass - theoreticalMz) < 0.01) {
+                        if (maxIntensity < peak.PeakFeature.PeakHeightTop) {
+                            maxIntensity = peak.PeakFeature.PeakHeightTop;
                             bestID = i;
                         }
                     }
@@ -109,7 +121,7 @@ namespace MsdialPrivateConsoleApp {
                 }
 
                 var bestPeak = peaks[bestID];
-                var rt = bestPeak.ChromXsTop.RT.Value;
+                var rt = bestPeak.PeakFeature.ChromXsTop.RT.Value;
                 if (Math.Abs(rt - 0.5) > 0.5) {
                     var error = "retention time of peak is strange for " + file.AnalysisFileName;
                     Console.WriteLine(error);
@@ -180,7 +192,7 @@ namespace MsdialPrivateConsoleApp {
             sw.WriteLine("PRECURSORMZ: {0}", theoreticalMz);
             sw.WriteLine("PRECURSORTYPE: {0}", adduct.AdductIonName);
             sw.WriteLine("IONMODE: {0}", polarity.ToString());
-            sw.WriteLine("FORMULA: {0}", compound.Formula.FormulaString);
+            sw.WriteLine("FORMULA: {0}", compound.Formula?.FormulaString);
             sw.WriteLine("Superclass: {0}", compound.Superclass);
             sw.WriteLine("Class: {0}", compound.CClass);
             sw.WriteLine("Subclass: {0}", compound.Subclass);
@@ -201,8 +213,7 @@ namespace MsdialPrivateConsoleApp {
 
             using (var sr = new StreamReader(referencefile)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                while (sr.ReadLine() is string line) {
                     var lineArray = line.Split('\t');
                     var compound = new Compound() {
                         ProductName = lineArray[0],

@@ -102,11 +102,6 @@ namespace CompMs.App.Msdial.Model.Chart
                 labels).AddTo(Disposables);
             HorizontalAxis = Observable.Return(horizontalAxis);
 
-            UpperVerticalAxisItem = upperVerticalAxisSelectors.AxisItemSelector.ToReactivePropertySlimAsSynchronized(m => m.SelectedAxisItem).AddTo(Disposables);
-            UpperVerticalAxisItemCollection = upperVerticalAxisSelectors.AxisItemSelector.AxisItems;
-            LowerVerticalAxisItem = lowerVerticalAxisSelectors.AxisItemSelector.ToReactivePropertySlimAsSynchronized(m => m.SelectedAxisItem).AddTo(Disposables);
-            LowerVerticalAxisItemCollection = lowerVerticalAxisSelectors.AxisItemSelector.AxisItems;
-
             GraphLabels = labels;
             ReferenceHasSpectrumInformation = spectraManager.ReferenceSpectrum.Select(spectrum => spectrum?.Spectrum.Any() ?? false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             CanSaveMatchedSpectra = canSaveMatchedSpectrum;
@@ -117,10 +112,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public SingleSpectrumModel LowerSpectrumModel { get; }
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel<double>?> LowerVerticalAxisItem { get; }
-        public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
-        public ReactivePropertySlim<AxisItemModel<double>?> UpperVerticalAxisItem { get; }
-        public ObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
+        public AxisItemSelector<double> LowerVerticalAxisSelector => LowerSpectrumModel.VerticalAxisItemSelector;
+        public AxisItemSelector<double> UpperVerticalAxisSelector => UpperSpectrumModel.VerticalAxisItemSelector;
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _spectraManager.Files;
         public ReactiveProperty<AnalysisFileBeanModel?> SelectedFile => _spectraManager.SelectedFile;
 

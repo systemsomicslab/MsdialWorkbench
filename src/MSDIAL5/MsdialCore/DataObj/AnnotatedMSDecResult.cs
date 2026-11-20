@@ -47,7 +47,9 @@ namespace CompMs.MsdialCore.DataObj
         /// If no annotation is provided, this property will be <c>null</c>.
         /// </summary>
         [IgnoreMember]
-        public IMoleculeProperty? Molecule { get; }
+        public IMoleculeProperty? Molecule { get; private set; }
+
+        public IMoleculeProperty GetOrCreateMolecule() => Molecule ??= new MoleculeProperty();
 
         [IgnoreMember]
         public double QuantMass { get; }

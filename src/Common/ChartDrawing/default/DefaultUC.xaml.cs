@@ -202,7 +202,6 @@ namespace CompMs.Graphics.Core.Base
                         if (peakInformation == null) return;
 
                         float mousePointIntensity = 0;
-                        float newMinIntensity = float.MaxValue;
                         float newMaxIntensity = float.MinValue;
 
                         mousePointIntensity = peakInformation[3];

@@ -167,6 +167,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 MoleculeStructureModel = moleculeStructureModel;
                 Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
             }
+
+            MsfinderParameterSetting = MsfinderParameterSetting.CreateSetting(parameter.ProjectParam);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }

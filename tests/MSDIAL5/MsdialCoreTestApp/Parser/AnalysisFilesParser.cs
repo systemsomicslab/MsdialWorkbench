@@ -159,19 +159,18 @@ namespace CompMs.App.MsdialConsole.Parser
         /// </remarks>
         public static List<AnalysisFileBean> ReadCsvContents(string filepath, List<string>? orderProblems)
         {
-            var csvData = new List<string[]>();
+            var csvData = new List<(int LineNumber, string?[] Fields)>();
             // read csv file
             using (var sr = new StreamReader(filepath, System.Text.Encoding.ASCII))
             {
                 string[] searchHeaderNames = { "file_path", "file_name", "file_type", "class_id", "acquisition_type", "batch_order", "analytical_order", "factor" };
                 var headerOrder = new List<int>();
-                while (!sr.EndOfStream)
+                var lineNumber = 0;
+                while (sr.ReadLine() is string header)
                 {
-                    var header = sr.ReadLine();
-                    //if (header == null)
-                    //    break;
+                    lineNumber++;
                     // find first line that doesn't start with '#'
-                    if (header.StartsWith('#'.ToString()))
+                    if (header.StartsWith("#"))
                         continue;
 
                     Debug.WriteLine("Header: {0}", header, "");
@@ -194,30 +193,28 @@ namespace CompMs.App.MsdialConsole.Parser
                         headerOrder.Add(index);
                     }
 
+                    if (headerOrder[0] < 0) {
+                        throw new InvalidDataException($"Analysis CSV '{filepath}', line {lineNumber}: missing required 'file_path' column.");
+                    }
                     break;
                 }
-                while (!sr.EndOfStream)
+                while (sr.ReadLine() is string line)
                 {
-                    var line = sr.ReadLine();
-                    //if (line == null)
-                    //    break;
+                    lineNumber++;
                     // skip lines that start with '#'
-                    if (line.StartsWith('#'.ToString()))
+                    if (line.StartsWith("#"))
                         continue;
 
                     var fields = line.Split(',');
-                    var data = new List<string>();
+                    var data = new string?[searchHeaderNames.Length];
                     for (var i = 0; i < searchHeaderNames.Length; i++)
                     {
                         var index = headerOrder[i];
-                        if (index < 0)
-                            data.Add(null);
-                        else if (index >= fields.Length)
-                            data.Add(null);
-                        else
-                            data.Add(fields[index]);
+                        if (index >= 0 && index < fields.Length) {
+                            data[i] = fields[index];
+                        }
                     }
-                    csvData.Add(data.ToArray());
+                    csvData.Add((lineNumber, data));
                     Debug.WriteLine("File line: ->{0}<- converted to: ->{1}<-", line, string.Join("<=>", data));
                 }
             }
@@ -228,12 +225,15 @@ namespace CompMs.App.MsdialConsole.Parser
             var dt = DateTime.Now;
             var dtString = RunStamp(dt);
 
-            foreach (var line in csvData)
+            foreach (var (lineNumber, line) in csvData)
             {
                 // 0          , 1          , 2          , 3         , 4                   5      , 6                 , 7
                 // "file_path", "file_name", "file_type", "class_id", "acquisition_type", "batch", "analytical_order", "factor"
-                //var afFilepath = Path.GetFullPath(Path.Combine(line[0], Path.GetDirectoryName(Path.GetFullPath(filepath))));
-                var afFilepath = Path.GetFullPath(line[0]);
+                var inputPath = line[0];
+                if (inputPath is null || string.IsNullOrWhiteSpace(inputPath)) {
+                    throw new InvalidDataException($"Analysis CSV '{filepath}', line {lineNumber}: 'file_path' is required.");
+                }
+                var afFilepath = Path.GetFullPath(inputPath);
                 Debug.WriteLine("afFilepath: {0}", afFilepath, "");
                 if (!System.IO.File.Exists(afFilepath) && !System.IO.Directory.Exists(afFilepath))
                 {
@@ -255,19 +255,19 @@ namespace CompMs.App.MsdialConsole.Parser
                     afAcqType = AcquisitionType.DDA;
 
                 int afBatch;
-                if (line[5] is null) {
+                if (line[5] is not string batchOrder) {
                     afBatch = 1;
                 }
-                else if (!TryReadWholeNumber(line[5], out afBatch)) {
+                else if (!TryReadWholeNumber(batchOrder, out afBatch)) {
                     afBatch = 1;
                     Replaced($"batch_order '{line[5]}' of {afFilename} is not a whole number; batch 1 is used instead");
                 }
 
                 int afAnalyticalOrder;
-                if (line[6] is null) {
+                if (line[6] is not string analyticalOrder) {
                     afAnalyticalOrder = counter + 1;
                 }
-                else if (!TryReadWholeNumber(line[6], out afAnalyticalOrder) || afAnalyticalOrder < 1) {
+                else if (!TryReadWholeNumber(analyticalOrder, out afAnalyticalOrder) || afAnalyticalOrder < 1) {
                     afAnalyticalOrder = counter + 1;
                     Replaced($"analytical_order '{line[6]}' of {afFilename} is not a whole number from 1 to {int.MaxValue}; its row position {counter + 1} is used instead");
                 }
@@ -277,7 +277,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 if (!afInjectVolumeRes)
                     afInjectVolume = 1.0;
 
-                var fileDir = System.IO.Path.GetDirectoryName(afFilepath);
+                var fileDir = System.IO.Path.GetDirectoryName(afFilepath) ?? throw new InvalidDataException($"Analysis file has no parent directory: {afFilepath}");
                 analysisFiles.Add(new AnalysisFileBean()
                 {
                     AnalysisFileId = counter,
@@ -353,6 +353,9 @@ namespace CompMs.App.MsdialConsole.Parser
             {
                 var filename = System.IO.Path.GetFileNameWithoutExtension(filepath);
                 var fileDir = System.IO.Path.GetDirectoryName(filepath);
+                if (string.IsNullOrEmpty(fileDir)) {
+                    fileDir = Directory.GetCurrentDirectory();
+                }
                 analysisFiles.Add(new AnalysisFileBean()
                 {
                     AnalysisFileId = counter,

@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Query;
 using CompMs.CommonSourceGenerator.MVVM;
 using CompMs.MsdialCore.Parameter;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -10,23 +11,13 @@ namespace CompMs.App.Msdial.Model.DataObj;
 [BufferedBindableType(typeof(PeakPickBaseParameter))]
 public partial class PeakPickBaseParameterModel
 {
-    private ObservableCollection<MzSearchQuery> _excludedMzQueries;
+    private readonly ObservableCollection<MzSearchQuery> _excludedMzQueries = new();
 
     public ReadOnlyObservableCollection<MzSearchQuery> ExcludedMzQueries { get; private set; } = default!;
 
     partial void Initialized() {
-        _excludedMzQueries = new ObservableCollection<MzSearchQuery>(
-            _innerModel.ExcludedMassList
-            .Select(
-                query => new MzSearchQuery {
-                    Mass = query.Mass,
-                    RelativeIntensity = query.RelativeIntensity,
-                    SearchType = query.SearchType,
-                    MassTolerance = query.MassTolerance,
-                })
-        );
         ExcludedMzQueries = new ReadOnlyObservableCollection<MzSearchQuery>(_excludedMzQueries);
-        ExcludedMassList = ExcludedMzQueries.ToList();
+        LoadExcludedMassList(_innerModel.ExcludedMassList);
     }
 
     partial void Committed() {
@@ -50,20 +41,21 @@ public partial class PeakPickBaseParameterModel
         MaxChargeNumber = parameter.MaxChargeNumber;
         IsBrClConsideredForIsotopes = parameter.IsBrClConsideredForIsotopes;
 
+        LoadExcludedMassList(parameter.ExcludedMassList);
+        MaxIsotopesDetectedInMs1Spectrum = parameter.MaxIsotopesDetectedInMs1Spectrum;
+    }
+
+    private void LoadExcludedMassList(IEnumerable<MzSearchQuery> queries) {
         _excludedMzQueries.Clear();
-        foreach (var query in parameter.ExcludedMassList) {
-            MzSearchQuery item = new MzSearchQuery
-            {
+        foreach (var query in queries) {
+            _excludedMzQueries.Add(new MzSearchQuery {
                 Mass = query.Mass,
                 RelativeIntensity = query.RelativeIntensity,
                 SearchType = query.SearchType,
                 MassTolerance = query.MassTolerance,
-            };
-            _excludedMzQueries.Add(item);
+            });
         }
         ExcludedMassList = _excludedMzQueries.ToList();
-
-        MaxIsotopesDetectedInMs1Spectrum = parameter.MaxIsotopesDetectedInMs1Spectrum;
     }
 
     public void AddQuery(double mass, double tolerance) {

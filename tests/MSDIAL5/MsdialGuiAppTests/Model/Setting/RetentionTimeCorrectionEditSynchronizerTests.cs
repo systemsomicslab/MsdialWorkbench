@@ -33,8 +33,8 @@ public class RetentionTimeCorrectionEditSynchronizerTests {
             new List<SampleListVM> { vm1, vm2 },
             rtCorrectionCommon);
 
-        Assert.AreEqual(5.5, file1.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.ChromXsTop.RT.Value, 1e-6);
-        Assert.AreEqual(7.0, file2.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.ChromXsTop.RT.Value, 1e-6);
+        Assert.AreEqual(5.5, file1.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.PeakFeature.ChromXsTop.RT.Value, 1e-6);
+        Assert.AreEqual(7.0, file2.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.PeakFeature.ChromXsTop.RT.Value, 1e-6);
         Assert.AreEqual(2, rtCorrectionCommon.SampleCellInfoListList.Count);
         CollectionAssert.AreEqual(
             new[] { SampleListCellInfo.ManualModified },
@@ -65,7 +65,7 @@ public class RetentionTimeCorrectionEditSynchronizerTests {
             new List<SampleListVM> { vm },
             rtCorrectionCommon);
 
-        Assert.AreEqual(6.0, file.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.ChromXsTop.RT.Value, 1e-6);
+        Assert.AreEqual(6.0, file.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.PeakFeature.ChromXsTop.RT.Value, 1e-6);
         Assert.AreEqual(6.0f, commonStdList[0].AverageRetentionTime, 1e-6);
     }
 
@@ -88,7 +88,7 @@ public class RetentionTimeCorrectionEditSynchronizerTests {
             new List<SampleListVM> { vm },
             rtCorrectionCommon);
 
-        Assert.AreEqual(6.0, file.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.ChromXsTop.RT.Value, 1e-6);
+        Assert.AreEqual(6.0, file.RetentionTimeCorrectionBean.StandardList[0].SamplePeakAreaBean.PeakFeature.ChromXsTop.RT.Value, 1e-6);
         Assert.AreEqual(6.0f, commonStdList[0].AverageRetentionTime, 1e-6);
     }
 
@@ -96,7 +96,7 @@ public class RetentionTimeCorrectionEditSynchronizerTests {
         var samplePeak = new ChromatogramPeakFeature {
             PrecursorMz = reference.PrecursorMz,
             ChromXs = new ChromXs(rt, ChromXType.RT, ChromXUnit.Min),
-            PeakHeightTop = 2000d,
+            PeakFeature = { PeakHeightTop = 2000d, },
         };
         return new AnalysisFileBean {
             AnalysisFileName = name,

@@ -11,12 +11,6 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
-        public RawDecSpectrumsModel(MsSpectrumModel rawRefSpectrumModels, MsSpectrumModel decRefSpectrumModels, MultiMsmsRawSpectrumLoader loader) {
-            RawRefSpectrumModels = rawRefSpectrumModels ?? throw new ArgumentNullException(nameof(rawRefSpectrumModels));
-            DecRefSpectrumModels = decRefSpectrumModels ?? throw new ArgumentNullException(nameof(decRefSpectrumModels));
-            RawLoader = loader;
-        }
-
         public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching, MultiMsmsRawSpectrumLoader? loader = null) {
             if (rawSpectrumModel is null) {
                 throw new ArgumentNullException(nameof(rawSpectrumModel));
@@ -38,7 +32,6 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 GraphTitle = "Measure vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
 
             IsRawSpectrumOverlayVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
@@ -55,7 +48,6 @@ namespace CompMs.App.Msdial.Model.Chart
             {
                 GraphTitle =  "Deconvolution vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Relative abundance",
             }.AddTo(Disposables);
             DecRefSpectrumModels.UpperSpectraModel.Insert(0, decRawOverlaySpectrumModel);
 

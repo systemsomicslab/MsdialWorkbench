@@ -505,7 +505,6 @@ namespace CompMs.Graphics.Chart
 
             internal string label;
             internal double order;
-            internal Brush brush;
 
             public LabelData(object data, IAxisManager xAxisManager, IAxisManager yAxisManager, IPropertiesAccessor xPropertiesAccessor, IPropertiesAccessor yPropertiesAccessor)
                 : base(data, xAxisManager, yAxisManager, xPropertiesAccessor, yPropertiesAccessor) {

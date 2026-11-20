@@ -19,21 +19,21 @@
     <RibbonGroup Header="Intensity axis type">
         <RibbonComboBox Label="Deconvoluted"
                         VerticalAlignment="Center">
-            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.UpperVerticalAxisItem.Value}">
-                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.UpperVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.UpperVerticalAxisSelector.SelectedAxisItem}">
+                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.UpperVerticalAxisSelector.AxisItems}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
         <RibbonComboBox Label="Raw                "
                         VerticalAlignment="Center">
-            <RibbonGallery SelectedItem="{Binding RawRefSpectrumViewModels.UpperVerticalAxisItem.Value}">
-                <RibbonGalleryCategory ItemsSource="{Binding RawRefSpectrumViewModels.UpperVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            <RibbonGallery SelectedItem="{Binding RawRefSpectrumViewModels.UpperVerticalAxisSelector.SelectedAxisItem}">
+                <RibbonGalleryCategory ItemsSource="{Binding RawRefSpectrumViewModels.UpperVerticalAxisSelector.AxisItems}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
         <RibbonComboBox Label="Reference       "
                         AlternationCount="10"
                         VerticalAlignment="Center">
-            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.LowerVerticalAxisItem.Value}">
-                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.LowerVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            <RibbonGallery SelectedItem="{Binding DecRefSpectrumViewModels.LowerVerticalAxisSelector.SelectedAxisItem}">
+                <RibbonGalleryCategory ItemsSource="{Binding DecRefSpectrumViewModels.LowerVerticalAxisSelector.AxisItems}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>

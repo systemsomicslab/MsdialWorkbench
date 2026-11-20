@@ -140,6 +140,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                     broker.Publish(new InternalMsFinderSingleSpotViewModel(msfinder, broker));
                 }
             }).AddTo(Disposables);
+
+            ShowMsfinderSettingCommand = new[] {
+                model.Target.Select(t => t?.innerModel is null),
+                model.MsdecResult.Select(r => r is null),
+            }.CombineLatestValuesAreAllFalse()
+                .ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(new InternalMsfinderSettingViewModel(model.MsfinderParameterSetting, broker)))
+                .AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<AnalysisFileBeanModel?> CurrentRepresentativeFile => _model.CurrentRepresentativeFile;
@@ -168,7 +176,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand InternalStandardSetCommand { get; }

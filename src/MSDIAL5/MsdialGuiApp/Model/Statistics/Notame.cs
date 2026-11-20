@@ -70,8 +70,6 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
 
         private readonly IonMode IonMode;
-        private REngine? engine;
-        private string originalDir;
 
         public string GetIonMode() {
             if (IonMode == IonMode.Positive) {
@@ -90,6 +88,8 @@ namespace CompMs.App.Msdial.Model.Statistics {
 
         [STAThread]
         public void Run() {
+            REngine? engine = null;
+            string? originalDir = null;
             try {
                 NotameIonMode = GetIonMode();
                 NotameExport = GetExportFolder(ExportDirectory);
@@ -127,7 +127,9 @@ namespace CompMs.App.Msdial.Model.Statistics {
                     Settings.Default.RHome = RDirectory;
                     Settings.Default.Save();
                 }
-                engine?.Evaluate($"setwd('{originalDir.Replace(@"\", @"\\")}')");
+                if (originalDir is not null) {
+                    engine?.Evaluate($"setwd('{originalDir.Replace(@"\", @"\\")}')");
+                }
             }
         }
 
@@ -243,7 +245,6 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
     }
     public class CustomPackageDialog : Form {
-        private TextBox txtMessage;
         private string message;
 
         public CustomPackageDialog(string message) {
@@ -255,7 +256,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             this.Text = "Package Installation";
             this.Size = new System.Drawing.Size(600, 400);
 
-            txtMessage = new TextBox();
+            var txtMessage = new TextBox();
             txtMessage.Multiline = true;
             txtMessage.ReadOnly = true;
             txtMessage.Text = message;

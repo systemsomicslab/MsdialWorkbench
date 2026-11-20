@@ -249,7 +249,7 @@ namespace CompMs.Common.Algorithm.Function
            double maxPrecursorDiff,
            double maxPrecursorDiff_Percent,
            MsmsSimilarityCalc msmsSimilarityCalc,
-           Action<double> report) {
+           Action<double>? report) {
 
             var edges = new List<EdgeData>();
             var counter = 0;
@@ -318,7 +318,7 @@ namespace CompMs.Common.Algorithm.Function
           double maxPrecursorDiff,
           double maxPrecursorDiff_Percent,
           MsmsSimilarityCalc msmsSimilarityCalc,
-          Action<double> report) {
+          Action<double>? report) {
             var counter = 0;
             var max = peaks1.Count;
             using (var sw = new StreamWriter(outputfile, false)) {

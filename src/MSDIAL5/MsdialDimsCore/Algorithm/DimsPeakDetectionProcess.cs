@@ -47,11 +47,11 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             foreach (var result in peakPickResults) {
                 var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz, ionMode);
-                var chromScanID = peakFeature.ChromScanIdTop;
+                var chromScanID = peakFeature.PeakFeature.ChromScanIdTop;
 
                 IChromatogramPeakFeature peak = peakFeature;
                 peak.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
-                peak.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
+                peak.ChromXsTop = new ChromXs(peakFeature.PeakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
 
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.Index;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;

@@ -132,6 +132,53 @@ public sealed class MolecularNetworkingBinaryInputTests
     }
 
     [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void FolderNetworkingReportsAnMspFileAsAnInvalidDirectory(bool exportAllEdges) {
+        var msp = Path.Combine(_scratch, "library.msp");
+        File.WriteAllText(msp, string.Empty);
+        var output = Path.Combine(_scratch, "output");
+        var process = new MoleculerNetworkProcess();
+
+        var method = WriteMethod("Bonanza");
+        var error = Assert.ThrowsException<ArgumentException>(() => {
+            _ = exportAllEdges
+                ? process.Run4AllEdgeGeneration(msp, output, method, "Positive", false)
+                : process.Run(msp, output, method, "Positive", false);
+        });
+
+        Assert.AreEqual("inputDir", error.ParamName);
+        StringAssert.Contains(error.Message, "MSP input must be a directory");
+        StringAssert.Contains(error.Message, msp);
+        Assert.IsFalse(Directory.Exists(output));
+    }
+
+    [TestMethod]
+    public void FolderNetworkingCreatesAnEmptyPairsFileWhenThereAreNoEdges() {
+        var msp = Path.Combine(_scratch, "library.msp");
+        File.WriteAllText(msp, """
+            NAME: First
+            PRECURSORMZ: 300
+            IONMODE: Positive
+            Num Peaks: 2
+            100 1000
+            150 500
+
+            NAME: Second
+            PRECURSORMZ: 300
+            IONMODE: Positive
+            Num Peaks: 2
+            110 1000
+            160 500
+            """);
+        var output = Path.Combine(_scratch, "output");
+
+        new MoleculerNetworkProcess().Run(_scratch, output, WriteMethod("Bonanza"), "Positive", false);
+
+        Assert.AreEqual(string.Empty, File.ReadAllText(Path.Combine(output, "library_mn_library.pairs")));
+    }
+
+    [TestMethod]
     public void TheOnlyIncludedAnalysisFileIsSelectedWithoutAName() {
         var files = new[] { AnalysisFile("a", included: true), AnalysisFile("b", included: false) };
 

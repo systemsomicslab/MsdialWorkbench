@@ -25,9 +25,13 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             var nodes = new List<string>();
             using (var sr = new StreamReader(inputEdgeFile)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                var lineNumber = 1;
+                while (sr.ReadLine() is string line) {
+                    lineNumber++;
                     var linearray = line.Split('\t');
+                    if (linearray.Length < 2) {
+                        throw new InvalidDataException($"Edge file '{inputEdgeFile}', line {lineNumber}: expected at least two tab-separated columns.");
+                    }
                     if (!nodes.Contains(linearray[0])) nodes.Add(linearray[0]);
                     if (!nodes.Contains(linearray[1])) nodes.Add(linearray[1]);
                 }
@@ -170,7 +174,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
             return MsnExitCode.Success;
         }
 
-        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string analysisFileName = null, MsnV2Options? v2 = null) {
+        public int Run4Project(string projectFile, string outputFile, string methodFile, string ionMode, bool alignment, string? analysisFileName = null, MsnV2Options? v2 = null) {
             var storage = MolecularNetworkingInputLoader.LoadProject(projectFile);
             if (alignment && string.IsNullOrWhiteSpace(analysisFileName)) {
                 var alignmentFile = storage.AlignmentFiles.FirstOrDefault(file => MolecularNetworkingInputLoader.StoredFileExists(file.FilePath));
@@ -347,8 +351,8 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         private void ExportEdges(string path, List<EdgeData> edges, string inputA, string inputB) {
             AtomicOutputFile.Write(path, sw => {
-                if (edges.IsEmptyOrNull()) return;
-                var fedge = edges.FirstOrDefault();
+                if (edges.Count == 0) return;
+                var fedge = edges[0];
                 if (fedge.scores.Count > 2) {
                     sw.WriteLine("SourceID: {0}\tTargetID: {1}\tBonanzaScore\tMatchPeakCount\tModDotScore\tCosineScore", inputA, inputB);
                 }
@@ -379,14 +383,11 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
 
         private List<string> ReadInput(string inputDir) {
             FileAttributes attributes = System.IO.File.GetAttributes(inputDir);
-            if ((attributes & FileAttributes.Directory) == FileAttributes.Directory) {
-                Debug.WriteLine(String.Format("{0} is a folder", inputDir));
-                return Directory.GetFiles(inputDir, "*.*msp", SearchOption.AllDirectories)?.ToList();
+            if ((attributes & FileAttributes.Directory) == 0) {
+                throw new ArgumentException($"MSP input must be a directory: '{inputDir}'.", nameof(inputDir));
             }
-            else {
-                Debug.WriteLine(String.Format("{0} is not a folder", inputDir));
-                return null;
-            }
+            Debug.WriteLine(String.Format("{0} is a folder", inputDir));
+            return Directory.GetFiles(inputDir, "*.*msp", SearchOption.AllDirectories).ToList();
         }
     }
 }

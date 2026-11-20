@@ -67,7 +67,7 @@ namespace CompMs.App.MsdialConsole.Process.MoleculerNetworking {
         /// The one analysis file to network: the included file named <paramref name="analysisFileName"/>
         /// (by AnalysisFileName or peak-list file name), or the only included file when no name is given.
         /// </summary>
-        public static AnalysisFileBean SelectAnalysisFile(IEnumerable<AnalysisFileBean> files, string analysisFileName, string projectPath) {
+        public static AnalysisFileBean SelectAnalysisFile(IEnumerable<AnalysisFileBean> files, string? analysisFileName, string projectPath) {
             var candidates = files
                 .Where(file => file.AnalysisFileIncluded && StoredFileExists(file.PeakAreaBeanInformationFilePath))
                 .ToList();

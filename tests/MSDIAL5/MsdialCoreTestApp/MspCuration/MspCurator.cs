@@ -16,8 +16,8 @@ namespace CompMs.App.MsdialConsole.MspCuration {
         public static void MergeMSPs(string inputDir, string inputFileList, string output) {
             var files = new List<string>();
             using (var sr = new StreamReader(inputFileList)) {
-                while (sr.Peek() != -1) { 
-                    files.Add(sr.ReadLine());
+                while (sr.ReadLine() is string line) {
+                    files.Add(line);
                 }
             }
             using (var sw = new StreamWriter(output)) {
@@ -100,7 +100,7 @@ namespace CompMs.App.MsdialConsole.MspCuration {
         public static void WriteRtMzInChIKey(string mspfile) {
             var mspRecords = MspFileParser.MspFileReader(mspfile);
             var filename = System.IO.Path.GetFileNameWithoutExtension(mspfile);
-            var directory = Path.GetDirectoryName(mspfile);
+            var directory = Path.GetDirectoryName(Path.GetFullPath(mspfile))!;
             var output = Path.Combine(directory, filename + "_kiuchi_temp.txt");
             using (var sw = new StreamWriter(output)) {
                 sw.WriteLine("RT\tMZ\tInChIKey");
@@ -125,8 +125,7 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             var dict = new Dictionary<string, string>();    
             using (var sr = new StreamReader(inputRef)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                while (sr.ReadLine() is string line) {
                     var linearray = line.Split('\t');
 
                     var adduct = linearray[3];
@@ -142,8 +141,7 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             var ccsvalues = new List<string>();
             using (var sr = new StreamReader(inputExp)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                while (sr.ReadLine() is string line) {
                     var linearray = line.Split('\t');
 
                     var adduct = linearray[3];
@@ -169,8 +167,7 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             var dict = new Dictionary<string, string>();
             using (var sr = new StreamReader(inputRef)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                while (sr.ReadLine() is string line) {
                     var linearray = line.Split('\t');
 
                     var adduct = linearray[3];
@@ -186,8 +183,7 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             var ccsvalues = new List<string>();
             using (var sr = new StreamReader(inputExp)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var line = sr.ReadLine();
+                while (sr.ReadLine() is string line) {
                     var linearray = line.Split('\t');
 
                     var adduct = linearray[3];
@@ -246,7 +242,7 @@ namespace CompMs.App.MsdialConsole.MspCuration {
             }
 
             var filename = System.IO.Path.GetFileNameWithoutExtension(mspfile);
-            var directory = Path.GetDirectoryName(mspfile);
+            var directory = Path.GetDirectoryName(Path.GetFullPath(mspfile))!;
 
             var outputfileWithRT = Path.Combine(directory, filename + "_PfppRT.msp");
             var outputfileWithoutRT = Path.Combine(directory, filename + "_WithoutRT.msp");

@@ -66,7 +66,7 @@ public class RetentionTimeCorrectionChartTests {
             SamplePeakAreaBean = new ChromatogramPeakFeature {
                 PrecursorMz = reference.PrecursorMz,
                 ChromXs = new ChromXs(rt, ChromXType.RT, ChromXUnit.Min),
-                PeakHeightTop = 2000d,
+                PeakFeature = { PeakHeightTop = 2000d, },
             },
             Chromatogram = new List<ChromatogramPeak>(),
         };

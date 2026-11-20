@@ -107,15 +107,17 @@ internal sealed class MsfinderSearcherFactory : DisposableModelBase
             Directory.CreateDirectory(dir);
         }
 
+        var molecule = spectrumFeature.AnnotatedMSDecResult.Molecule;
         using (var file = File.Open(filePath, FileMode.Create)) {
             SpectraExport.SaveSpectraTableForGcmsAsMatFormat(
                 file,
                 spectrumFeature.AnnotatedMSDecResult.MSDecResult,
-                spectrumFeature.AnnotatedMSDecResult.Molecule,
+                molecule,
                 spectrumFeature.QuantifiedChromatogramPeak.PeakFeature,
                 _parameter.ProjectParam);
         }
-        return new InternalMsFinderSingleSpot(dir, filePath, _molecules, parameter, new SetAnnotationUsecase(spectrumFeature.AnnotatedMSDecResult.Molecule, ms1BasedSpectrumFeature.MatchResults, undoManager));
+        var setAnnotationUsecase = new SetAnnotationUsecase(ms1BasedSpectrumFeature.Molecule, ms1BasedSpectrumFeature.MatchResults, undoManager);
+        return new InternalMsFinderSingleSpot(dir, filePath, _molecules, parameter, setAnnotationUsecase);
     }
 
     protected override void Dispose(bool disposing) {

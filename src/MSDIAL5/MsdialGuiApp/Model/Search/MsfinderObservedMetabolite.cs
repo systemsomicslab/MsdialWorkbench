@@ -288,13 +288,11 @@ namespace CompMs.App.Msdial.Model.Search {
 
         public MsfinderObservedMetabolite(MsfinderQueryFile queryFile, AnalysisParamOfMsfinder parameter, List<ExistStructureQuery> existStructureQueries, MoleculeStructureModel moleculeStructureModel) {
             _queryFile = queryFile;
-            _parameter = parameter;
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             userDefinedDB = existStructureQueries;
             _moleculeStructureModel = moleculeStructureModel;
 
-            _spotData = RawDataParcer.RawDataFileReader(_queryFile.RawDataFilePath, _parameter);
-
-            if (_spotData is null || _parameter is null) return;
+            _spotData = MsfinderQueryReader.Read(_queryFile, _parameter);
             if (fragmentOntologyDB is not null && productIonDB is not null)
                 ChemOntologyDbParser.ConvertInChIKeyToChemicalOntology(productIonDB, fragmentOntologyDB);
             if (fragmentOntologyDB is not null && neutralLossDB is not null)

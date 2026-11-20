@@ -718,7 +718,7 @@ public static class MainProcess
             return new EicProcess().RunRaw(
                 parseResult.GetRequiredValue(rawInput),
                 parseResult.GetRequiredValue(rawOutput),
-                parseResult.GetValue(targets),
+                parseResult.GetRequiredValue(targets),
                 parseResult.GetValue(acquisitionType));
         });
 
@@ -732,7 +732,7 @@ public static class MainProcess
         project.SetAction(parseResult => new EicProcess().RunProject(
             parseResult.GetRequiredValue(projectInput),
             parseResult.GetRequiredValue(projectOutput),
-            parseResult.GetValue(format)));
+            parseResult.GetRequiredValue(format)));
 
         eic.Subcommands.Add(raw);
         eic.Subcommands.Add(project);

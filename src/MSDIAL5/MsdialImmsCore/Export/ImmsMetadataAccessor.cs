@@ -149,9 +149,9 @@ namespace CompMs.MsdialImmsCore.Export
             ExportStyle exportStyle) {
 
             var content = base.GetContentCore(feature, msdec, reference, matchResult, spectrumList, analysisFile, exportStyle);
-            content["Mobility left"] = string.Format("{0:F3}", feature.ChromXsLeft.Drift.Value);
+            content["Mobility left"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsLeft.Drift.Value);
             content["Mobility"] = string.Format("{0:F3}", feature.ChromXs.Drift.Value);
-            content["Mobility right"] = string.Format("{0:F3}", feature.ChromXsRight.Drift.Value);
+            content["Mobility right"] = string.Format("{0:F3}", feature.PeakFeature.ChromXsRight.Drift.Value);
             content["CCS"] = NullIfNegative(feature.CollisionCrossSection, "F3");
             content["Precursor m/z"] = string.Format("{0:F5}", feature.PrecursorMz);
             content["Reference CCS"] = ValueOrNull(reference?.CollisionCrossSection, "F3");

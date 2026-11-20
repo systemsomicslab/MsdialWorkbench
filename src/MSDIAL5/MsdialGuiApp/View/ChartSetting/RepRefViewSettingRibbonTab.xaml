@@ -11,15 +11,15 @@
     <RibbonGroup Header="Intensity axis type">
         <RibbonComboBox Label="Representative"
                         VerticalAlignment="Center">
-            <RibbonGallery SelectedItem="{Binding UpperVerticalAxisItem.Value}">
-                <RibbonGalleryCategory ItemsSource="{Binding UpperVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            <RibbonGallery SelectedItem="{Binding UpperVerticalAxisSelector.SelectedAxisItem}">
+                <RibbonGalleryCategory ItemsSource="{Binding UpperVerticalAxisSelector.AxisItems}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
         <RibbonComboBox Label="Reference        "
                         AlternationCount="10"
                         VerticalAlignment="Center">
-            <RibbonGallery SelectedItem="{Binding LowerVerticalAxisItem.Value}">
-                <RibbonGalleryCategory ItemsSource="{Binding LowerVerticalAxisItemCollection}" DisplayMemberPath="Label"/>
+            <RibbonGallery SelectedItem="{Binding LowerVerticalAxisSelector.SelectedAxisItem}">
+                <RibbonGalleryCategory ItemsSource="{Binding LowerVerticalAxisSelector.AxisItems}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>
