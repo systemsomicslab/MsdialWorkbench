@@ -4604,14 +4604,32 @@ namespace CompMs.Common.Lipidomics
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
+                    const double subtypeThreshold = 1.0;
+
+                    if (!LipidMsmsCharacterizationUtility.TryGetBetaineSubtype(
+                            spectrum, ms2Tolerance, subtypeThreshold,
+                            out var isDgts))
+                    {
+                        return null;
+                    }
+
+                    var lipidHeader = isDgts ? "DGTS" : "DGTA";
+                    var lipidClass = isDgts ? LbmClass.DGTS : LbmClass.DGTA;
                     for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
                     {
                         for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
                         {
-
                             var sn2Carbon = totalCarbon - sn1Carbon;
                             var sn2Double = totalDoubleBond - sn1Double;
 
+                            if (!LipidMsmsCharacterizationUtility.IsValidAcylChain(
+                                    sn1Carbon, sn1Double) ||
+                                !LipidMsmsCharacterizationUtility.IsValidAcylChain(
+                                    sn2Carbon, sn2Double))
+                            {
+                                continue;
+                            }
+                            if (sn2Carbon <= 0 || sn2Double < 0) continue;
                             var nl_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
                             var nl_SN1_H2O = nl_SN1 - H2O;
 
@@ -4631,20 +4649,13 @@ namespace CompMs.Common.Lipidomics
 
                             if (foundCount >= 2)
                             { // now I set 2 as the correct level
-                                var DgtsFrag = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Electron; //130.0862 (C6H12NO2+)DGTS
-                                var DgtaFrag = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.HydrogenMass * 14 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Electron; //144.10191 (C7H14NO2+) DGTA
-
-                                var molecule = new LipidMolecule();
-                                if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, DgtsFrag, DgtaFrag))
-                                {
-                                    molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("DGTS", LbmClass.DGTS, sn1Carbon, sn1Double,
-                                                                        sn2Carbon, sn2Double, averageIntensity);
-                                }
-                                else
-                                {
-                                    molecule = LipidMsmsCharacterizationUtility.getPhospholipidMoleculeObjAsLevel2("DGTA", LbmClass.DGTA, sn1Carbon, sn1Double,
-                                    sn2Carbon, sn2Double, averageIntensity);
-                                }
+                                var molecule =
+                                LipidMsmsCharacterizationUtility
+                                    .getPhospholipidMoleculeObjAsLevel2(
+                                        lipidHeader, lipidClass,
+                                        sn1Carbon, sn1Double,
+                                        sn2Carbon, sn2Double,
+                                        averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
@@ -4653,7 +4664,7 @@ namespace CompMs.Common.Lipidomics
                     //var molecule0 = getLipidAnnotaionAsLevel1("DGTS", LbmClass.DGTS, totalCarbon, totalDoubleBond, score, "");
                     //candidates.Add(molecule0);
 
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("DGTS", LbmClass.DGTS, "", theoreticalMz, adduct,
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult(lipidHeader, lipidClass, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
@@ -4694,21 +4705,23 @@ namespace CompMs.Common.Lipidomics
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, Gly_O, threshold);
                     if (!isClassIonFound1 && !isClassIonFound2) return null;
 
+                    const double subtypeThreshold = 1.0;
+
+                    if (!LipidMsmsCharacterizationUtility.TryGetBetaineSubtype(
+                            spectrum, ms2Tolerance, subtypeThreshold,
+                            out var isDgts))
+                    {
+                        return null;
+                    }
+
+                    var lipidHeader = isDgts ? "LDGTS" : "LDGTA";
+                    var lipidClass = isDgts ? LbmClass.LDGTS : LbmClass.LDGTA;
+
                     var candidates = new List<LipidMolecule>();
-                    var DgtsFrag = MassDiffDictionary.CarbonMass * 6 + MassDiffDictionary.HydrogenMass * 12 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Electron; //130.0862 (C6H12NO2+)DGTS
-                    var DgtaFrag = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.HydrogenMass * 14 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Electron; //144.10191 (C7H14NO2+) DGTA
 
-                    if (LipidMsmsCharacterizationUtility.isFragment1GreaterThanFragment2(spectrum, ms2Tolerance, DgtsFrag, DgtaFrag))
-                    {
-                        return LipidMsmsCharacterizationUtility.returnAnnotationResult("LDGTS", LbmClass.LDGTS, "", theoreticalMz, adduct,
-                             totalCarbon, totalDoubleBond, 0, candidates, 1);
-                    }
-                    else
-                    {
-                        return LipidMsmsCharacterizationUtility.returnAnnotationResult("LDGTA", LbmClass.LDGTA, "", theoreticalMz, adduct,
-                             totalCarbon, totalDoubleBond, 0, candidates, 1);
-                    }
-
+                    return LipidMsmsCharacterizationUtility.returnAnnotationResult(
+                        lipidHeader, lipidClass, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, 0, candidates, 1);
                 }
             }
             return null;
