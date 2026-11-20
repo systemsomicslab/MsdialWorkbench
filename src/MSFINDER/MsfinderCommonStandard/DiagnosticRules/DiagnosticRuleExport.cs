@@ -162,6 +162,17 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
 
         public static string StructureHeader => LegacyStructureHeader + "\t" + string.Join("\t", StructureAppendedColumns);
 
+        /// <summary>The legacy GUI batch-export structure header (ExportUtility.writeStructureResultHeader), unchanged.</summary>
+        public const string GuiLegacyStructureHeader = "File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
+            "Precursor mz\tPrecursor type\tStructure\tTotal score\tDatabases\tFormula\tOntology\tInChIKey\tSMILES";
+
+        public static string GuiStructureHeader => GuiLegacyStructureHeader + "\t" + string.Join("\t", StructureAppendedColumns);
+
+        /// <summary>The legacy GUI per-file structure header (ExportUtility.writeStructureResult), unchanged.</summary>
+        public const string EachFileLegacyStructureHeader = "Rank\tTitle\tScore\tRetention time\tRetention index\tResources\tFormula\tOntology\tInChIKey\tSMILES";
+
+        public static string EachFileStructureHeader => EachFileLegacyStructureHeader + "\t" + string.Join("\t", StructureAppendedColumns);
+
         /// <summary><c>yyyyMMddHHmmss</c> in the invariant culture.</summary>
         public static string Stamp(DateTime time) => time.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
@@ -483,20 +494,53 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                 var result = row.Candidate;
                 if (result.TotalScore <= 0) continue;
                 LegacyStructureColumns.Write(sw, rawData, result);
-                var cells = new[]
-                {
-                    string.Empty,
-                    Num(row.RankingScore, MzDecimals),
-                    Int(row.BaseRank),
-                    Int(row.Term),
-                    string.Join(";", row.MatchedMotifs.Where(fired.Contains)),
-                    string.Join(";", row.MatchedMotifs.Where(vetoes.Contains)),
-                    ranking.Status,
-                    Cell(identity.Version),
-                    Cell(identity.Sha256),
-                };
-                sw.WriteLine(string.Join("\t", cells));
+                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity));
             }
+        }
+
+        /// <summary>
+        /// The GUI batch-export structure rows in rule-adjusted order (w &gt; 0): the first <paramref name="count"/>
+        /// candidates, unfiltered like the legacy GUI writer, with the legacy columns and then the appended ones.
+        /// </summary>
+        public static void WriteGuiStructureRows(TextWriter sw, RawData rawData, DiagnosticRanking ranking, RuleSetIdentity identity, int count) {
+            var fired = new HashSet<string>(ranking.FiredMotifs, StringComparer.Ordinal);
+            var vetoes = new HashSet<string>(ranking.VetoMotifs, StringComparer.Ordinal);
+            var n = Math.Min(Math.Max(count, 0), ranking.Ranked.Count);
+            for (var i = 0; i < n; i++) {
+                var row = ranking.Ranked[i];
+                LegacyStructureColumns.Write(sw, rawData, row.Candidate);
+                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity));
+            }
+        }
+
+        /// <summary>
+        /// The GUI per-file structure rows in rule-adjusted order (w &gt; 0): the legacy columns (Rank is the new
+        /// rank) and then the appended ones; every candidate, like the legacy writer.
+        /// </summary>
+        public static void WriteEachFileStructureRows(TextWriter sw, DiagnosticRanking ranking, RuleSetIdentity identity) {
+            var fired = new HashSet<string>(ranking.FiredMotifs, StringComparer.Ordinal);
+            var vetoes = new HashSet<string>(ranking.VetoMotifs, StringComparer.Ordinal);
+            for (var i = 0; i < ranking.Ranked.Count; i++) {
+                var row = ranking.Ranked[i];
+                LegacyStructureColumns.WriteEachFile(sw, i + 1, row.Candidate);
+                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity));
+            }
+        }
+
+        private static string AppendedCells(RankedCandidate row, string status, HashSet<string> fired, HashSet<string> vetoes, RuleSetIdentity identity) {
+            var cells = new[]
+            {
+                string.Empty,
+                Num(row.RankingScore, MzDecimals),
+                Int(row.BaseRank),
+                Int(row.Term),
+                string.Join(";", row.MatchedMotifs.Where(fired.Contains)),
+                string.Join(";", row.MatchedMotifs.Where(vetoes.Contains)),
+                status,
+                Cell(identity.Version),
+                Cell(identity.Sha256),
+            };
+            return string.Join("\t", cells);
         }
 
         /// <summary><c>Diagnostic rules: &lt;version&gt; (&lt;sha12&gt;, embedded|directory) evaluated N, fired F,
@@ -598,7 +642,7 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                     M("evidence", JsonValue.Of(names.Evidence)),
                     M("result", JsonValue.Of(names.Result)),
                     M("run", JsonValue.Of(names.Run)),
-                    M("timing", JsonValue.Of(names.Timing)))),
+                    M("timing", run.WritesTiming ? JsonValue.Of(names.Timing) : JsonValue.Null))),
                 M("refusals", new JsonArray(refusals)),
                 M("rule_set", Obj(
                     M("files", new JsonArray(files)),
@@ -669,6 +713,13 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                 result.Ontology + "\t" +
                 result.Inchikey + "\t" +
                 result.Smiles);
+        }
+
+        /// <summary>Writes the 10 legacy columns of one GUI per-file row (ExportUtility.writeStructureResult), without
+        /// the line break.</summary>
+        public static void WriteEachFile(TextWriter sw, int rank, FragmenterResult result) {
+            sw.Write(rank.ToString() + "\t" + result.Title + "\t" + result.TotalScore + "\t" + result.RetentionTime + "\t" +
+                result.RetentionIndex + "\t" + result.Resources + "\t" + result.Formula + "\t" + result.Ontology + "\t" + result.Inchikey + "\t" + result.Smiles);
         }
     }
 
@@ -786,6 +837,9 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         public string BuildIdentity => _environment.BuildIdentity;
         /// <summary>The ranking weight is above zero: the structure result gets the appended columns.</summary>
         public bool RankingOn => Runtime.RankingOn;
+        /// <summary>Whether <see cref="Finish"/> writes the timing file; the GUI exports do not (OQ09), and their
+        /// run manifest then has timing: null among the outputs.</summary>
+        public bool WritesTiming { get; set; } = true;
 
         /// <summary>
         /// Creates the runtime from the parameter's settings and checks that none of the new files exists. Returns
@@ -973,8 +1027,10 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         /// console summary line.</summary>
         public string Finish() {
             Dispose();
-            using (var timing = Create(Path.Combine(_folder, Names.Timing))) {
-                DiagnosticTimingLog.Write(timing, _timingRows);
+            if (WritesTiming) {
+                using (var timing = Create(Path.Combine(_folder, Names.Timing))) {
+                    DiagnosticTimingLog.Write(timing, _timingRows);
+                }
             }
             using (var run = Create(Path.Combine(_folder, Names.Run))) {
                 run.Write(DiagnosticRuleExport.RunManifest(this));
