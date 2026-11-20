@@ -103,6 +103,22 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Json
         public static JsonFloat Parse(string lexeme) => DecimalLexeme.ParseFloat(lexeme);
     }
 
+    /// <summary>
+    /// A number of a result document, written as given: the fixed-point text of <see cref="ExactDecimal.Format"/>
+    /// (design 4.11), for example <c>0.000000</c>. Unlike a <see cref="JsonFloat"/> lexeme it is not canonicalised, so
+    /// result numbers keep their decimals. Only result writers build it; the strict reader never returns it.
+    /// </summary>
+    internal sealed class JsonNumberText : JsonValue
+    {
+        public JsonNumberText(string text) {
+            Text = text ?? throw new ArgumentNullException(nameof(text));
+        }
+
+        public string Text { get; }
+
+        public override JsonKind Kind => JsonKind.Float;
+    }
+
     public sealed class JsonString : JsonValue
     {
         public JsonString(string value) {

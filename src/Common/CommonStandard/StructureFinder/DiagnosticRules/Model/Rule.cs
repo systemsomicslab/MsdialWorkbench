@@ -45,7 +45,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Model
         }
     }
 
-    /// <summary>The product tolerance a review measured at: {abs_da, ppm, source}.</summary>
+    /// <summary>The product tolerance a review measured at: {abs_da, ppm, source}. AbsDa is positive, except for a
+    /// ppm-only MS-FINDER tolerance ({0, X, msfinder} with X &gt; 0), as the evaluator applies it.</summary>
     public sealed class ReviewedProductTolerance
     {
         internal ReviewedProductTolerance(JsonObject o) {

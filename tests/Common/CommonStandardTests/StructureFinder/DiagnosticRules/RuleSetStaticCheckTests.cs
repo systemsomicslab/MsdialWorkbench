@@ -229,6 +229,26 @@ public class RuleSetStaticCheckTests
         Assert.AreEqual("", Check("review_unrelated_" + name, s));
     }
 
+    private static IEnumerable<object[]> ReviewTolerances() {
+        const string AbsDa = "/review/product_tolerance/abs_da";
+        yield return new object[] { "msfinder_ppm_only", "{\"abs_da\":0.0,\"ppm\":10.0,\"source\":\"msfinder\"}", "" };
+        yield return new object[] { "msfinder_da", "{\"abs_da\":0.01,\"ppm\":0.0,\"source\":\"msfinder\"}", "" };
+        yield return new object[] { "msfinder_zero", "{\"abs_da\":0.0,\"ppm\":0.0,\"source\":\"msfinder\"}", At("bad_value", Rule, AbsDa) };
+        yield return new object[] { "p2_abs_da_zero", "{\"abs_da\":0.0,\"ppm\":10.0,\"source\":\"p2\"}", At("bad_value", Rule, AbsDa) };
+        yield return new object[] { "negative_abs_da", "{\"abs_da\":-0.01,\"ppm\":10.0,\"source\":\"msfinder\"}", At("bad_value", Rule, AbsDa) };
+        yield return new object[] { "integer_ppm", "{\"abs_da\":0.0,\"ppm\":10,\"source\":\"msfinder\"}",
+            At("bad_value", Rule, AbsDa) + "\n" + At("bad_type", Rule, "/review/product_tolerance/ppm") };
+    }
+
+    /// <summary>A review's product tolerance has a positive abs_da, except a ppm-only MS-FINDER tolerance, which the
+    /// evaluator applies as {0, X, msfinder} (design 4.4) and a review must be able to record (design 4.9).</summary>
+    [DataTestMethod]
+    [DynamicData(nameof(ReviewTolerances), DynamicDataSourceType.Method)]
+    public void AReviewToleranceHasAPositiveAbsDaUnlessItIsPpmOnlyMsfinder(string name, string tolerance, string expected) {
+        var s = new SynSet().Reviewed().Set(Rule, "review/product_tolerance", tolerance);
+        Assert.AreEqual(expected, Check("review_tolerance_" + name, s));
+    }
+
     [TestMethod]
     public void TheEngineSemanticsIsPartOfTheHash() {
         var report = DiagnosticRuleSetLoader.Validate(new SynSet().Files(), false);

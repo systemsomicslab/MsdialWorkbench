@@ -89,10 +89,14 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
             }
             ScaffoldLists = new ReadOnlyCollection<ScaffoldList>(scaffolds);
             var rules = new List<Rule>();
+            var compiled = new List<RuleInfo>();
             foreach (var kv in report.Rules) {
                 rules.Add(new Rule(kv.Value.Doc, Elements, new ReadOnlyCollection<AdductTry>(kv.Value.Tried), report.SemanticSha256(kv.Key)));
+                compiled.Add(kv.Value);
             }
             Rules = new ReadOnlyCollection<Rule>(rules);
+            CompiledRules = new ReadOnlyCollection<RuleInfo>(compiled);
+            Tables = tables;
         }
 
         public RuleSetIdentity Identity { get; }
@@ -114,6 +118,17 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules
 
         /// <summary>Scaffold lists in ordinal list_id order.</summary>
         public IReadOnlyList<ScaffoldList> ScaffoldLists { get; }
+
+        /// <summary>
+        /// What the load compiled for each rule (logic with its k slots, complementary groups, claim terms, unit
+        /// ranges and totals, tried adducts, scaffold list), index for index with <see cref="Rules"/>, so the
+        /// evaluator never re-parses a rule or re-runs a check. Never mutated after the load.
+        /// </summary>
+        internal IReadOnlyList<RuleInfo> CompiledRules { get; }
+
+        /// <summary>The element, adduct, unit, motif and scaffold tables as the load validated them. Never mutated
+        /// after the load.</summary>
+        internal LoadedTables Tables { get; }
 
         /// <summary>The rule set shipped in this assembly; its version must match a ruleset-history.tsv row.</summary>
         public static DiagnosticRuleSet LoadEmbedded() => LoadFiles(DiagnosticRuleSetLoader.ReadEmbedded(), RuleSetSource.Embedded);
