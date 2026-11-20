@@ -41,12 +41,13 @@ Rule files carry facts and citations only: DOI or reference with a page, table o
 most one paraphrased sentence. They hold formulas, never typed masses, and no key that reads a precursor, product
 or library formula.
 
-The current version, 0.1.0, is the first shipped set: 106 rules, 58 scaffold lists, 106 motifs and 28 nesting rows,
-over the element, adduct and unit tables of the 0.0.1-skeleton format release. It is the WS8 P3 draft with its motif,
-nesting, unit and adduct staging rows merged into the four tables (table rows first, then the staging files in path
-order, as a draft directory set loads them), so every rule's `rule_semantic_sha256` is the one the draft gave. No
-rule has had the author's review yet: every rule is `author_reviewed: false` with no `review`, so no outcome is
-claim-eligible (each lists `not_reviewed`). The motifs carry ChemOnt nodes, which are report-only (below).
+The current version, 0.1.0, is the first shipped set: 106 rules, 58 scaffold lists, 106 motifs and 28 nesting rows.
+Its element, adduct and unit tables are those of the 0.0.1-skeleton format release, which already held the WS8 P3
+draft's unit and adduct requests (the table rows first, then the request files in path order). Its rules and
+scaffold lists are the draft's, and its motif and nesting tables are the draft's motif and nesting staging rows in
+path order, so every rule's `rule_semantic_sha256` is the one the draft gave. No rule has had the author's review
+yet: every rule is `author_reviewed: false` with `review: null`, so no outcome is claim-eligible (each lists
+`not_reviewed`). The motifs carry ChemOnt nodes, which are report-only (below).
 
 ## ChemOnt nodes
 
@@ -56,11 +57,22 @@ A report compares a ClassyFire class or FSEA term with them by name (`agree`, `b
 the ontology's own, spelling included. The field is report-only: it is left out of every `rule_semantic_sha256`, so
 editing it changes the rule-set sha256 but no rule's semantics or review.
 
+The class compared is a candidate's ClassyFire direct parent, often a deep class, and the comparison is by name, so
+`compatible` lists the deep classes as well:
+
+- Descendants. Each descendant of a `compatible` node that is the direct parent of compounds in the MS-FINDER
+  structure database (MsfinderStructureDB-VS15 joined with InchikeyClassyfireDB-VS5 by InChIKey; up to 400
+  compounds per class) was checked with the motif's SMARTS in NCDK. It is `compatible` when at least two of its
+  compounds, and at least a quarter of those checked, carry the motif; a descendant whose compounds do not (vitamin D
+  under `steroid`, say) is left out, so a candidate there reads `differs`.
+- Nesting. A compound carrying a child motif carries its parent, so every class `compatible` with the child is
+  `compatible` or `broader` for the parent (`MotifTests` checks it).
+
 - Source: ChemOnt 2.1, the ClassyFire ontology file `ChemOnt_2_1.obo` (OBO header `data-version: 2.1`,
   `date: 26:08:2016 16:28`; ClassyFire download path `/system/downloads/1_0/chemont/ChemOnt_2_1.obo.zip`), sha256
   `8616a6ecb96c8aeb204739a4de045cd290eab9a0e164d0ceaa5d888d0751fe22` (2,032,131 bytes). Every id and name was
   checked against that file. The ontology itself is not committed.
 - Citation: Djoumbou Feunang Y. et al., ClassyFire: automated chemical classification with a comprehensive,
   computable taxonomy. J. Cheminform. 8, 61 (2016), doi:10.1186/s13321-016-0174-y.
-- In 0.1.0 all 106 motifs carry nodes (1,087 in all); 12 have an empty `compatible` list because no ChemOnt class
-  matches the motif itself, and one (`c_prenyl_aryl`) has an empty `broader` list.
+- In 0.1.0 all 106 motifs carry nodes (1,293 in all, 593 distinct); 12 have an empty `compatible` list because no
+  ChemOnt class matches the motif itself, and one (`c_prenyl_aryl`) has an empty `broader` list.

@@ -135,7 +135,8 @@ public class FixtureProvenanceLintTests
                 failures.Add(where + ": an InChI string");
             }
         }
-        // The InChIKey pattern itself is RuleSetLintTests.NoFixtureHoldsPrivateContent.
+        // The InChIKey pattern itself, on the raw text, the decoded strings and every base64 payload (JSON or not), is
+        // RuleSetLintTests.NoFixtureHoldsPrivateContent.
         Assert.AreEqual(0, failures.Count, string.Join("\n", failures.Distinct()));
     }
 

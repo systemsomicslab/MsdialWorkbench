@@ -14,7 +14,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Tests;
 /// <summary>
 /// Lints of the shipped set and its fixtures (design 7.1, 4.8). The storage form and privacy of the embedded rule-set
 /// files are <see cref="EmbeddedRuleSetTests"/>; this class applies the same privacy check (no InChIKey, drive or UNC
-/// path, e-mail address or local-vs21 name) to every committed fixture, the storage form to the fixtures this
+/// path, e-mail address or local-vs21 name) to every committed fixture and to every base64 payload inside one (the
+/// rule-set file maps of the loader-error cases and vectors), the storage form to the fixtures this
 /// repository owns, and lists the support-veto overlaps of the shipped rules, which are reported and not refused.
 /// </summary>
 [TestClass]
@@ -44,21 +45,84 @@ public class RuleSetLintTests
         }
     }
 
+    /// <summary>Every base64 string of a JSON fixture that decodes to text (no control byte but tab, CR and LF): the
+    /// rule-set file maps of the loader-error cases and vectors, JSON or not (history rows, malformed rule files),
+    /// recursively. A file that is not strict JSON has none.</summary>
+    internal static IEnumerable<(string Where, byte[] Bytes)> Base64Payloads(string where, byte[] bytes) {
+        JsonValue root;
+        try {
+            root = StrictJsonReader.Read(bytes);
+        }
+        catch (StrictJsonException) {
+            yield break;
+        }
+        foreach (var s in EmbeddedRuleSetTests.DecodedStrings(root).Where(s => s.Length >= 4 && s.Length % 4 == 0).Distinct(StringComparer.Ordinal)) {
+            byte[] decoded;
+            try {
+                decoded = Convert.FromBase64String(s);
+            }
+            catch (FormatException) {
+                continue;
+            }
+            if (decoded.Length == 0 || decoded.Any(b => b < 0x20 && b != 0x09 && b != 0x0a && b != 0x0d)) {
+                continue;
+            }
+            var inner = where + " (base64 " + s.Substring(0, Math.Min(12, s.Length)) + "...)";
+            yield return (inner, decoded);
+            foreach (var x in Base64Payloads(inner, decoded)) {
+                yield return x;
+            }
+        }
+    }
+
+    /// <summary>The private content check of a base64 payload: as a JSON file when it is strict JSON, else as text.</summary>
+    private static string? PayloadPrivateContent(byte[] bytes) {
+        try {
+            StrictJsonReader.Read(bytes);
+            return EmbeddedRuleSetTests.PrivateContent("payload.json", bytes);
+        }
+        catch (StrictJsonException) {
+            return EmbeddedRuleSetTests.PrivateContent("payload.txt", bytes);
+        }
+    }
+
     [TestMethod]
     public void NoFixtureHoldsPrivateContent() {
         var failures = new List<string>();
+        var payloads = 0;
         foreach (var f in FixtureFiles()) {
             if (f.EndsWith(".gitattributes", StringComparison.Ordinal)) {
                 continue;
             }
-            var found = EmbeddedRuleSetTests.PrivateContent(f, File.ReadAllBytes(FixturePath(f)));
+            var bytes = File.ReadAllBytes(FixturePath(f));
+            var found = EmbeddedRuleSetTests.PrivateContent(f, bytes);
             // The CPython vectors' string_escape and strict_json sections spell JSON escapes such as \b and \u0000,
             // which the UNC pattern (checked last, so every other kind passed) cannot tell from a host name.
             if (found != null && !(f == VectorFile && found == "a UNC path")) {
                 failures.Add(f + ": " + found);
             }
+            if (!f.EndsWith(".json", StringComparison.Ordinal)) {
+                continue;
+            }
+            foreach (var (where, payload) in Base64Payloads(f, bytes)) {
+                payloads++;
+                var inner = PayloadPrivateContent(payload);
+                if (inner != null && !(f == VectorFile && inner == "a UNC path")) {
+                    failures.Add(where + ": " + inner);
+                }
+            }
         }
-        Assert.AreEqual(0, failures.Count, string.Join("\n", failures));
+        Assert.IsTrue(payloads > 0, "no base64 payload was decoded");
+        Assert.AreEqual(0, failures.Count, string.Join("\n", failures.Take(40)));
+    }
+
+    [TestMethod]
+    public void ThePayloadCheckFindsPrivateContentInsideBase64() {
+        string B64(string text) => Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(text));
+        var fixture = System.Text.Encoding.ASCII.GetBytes("{\"files\":{\"rules/x.json\":\"" + B64("{\"notes\":\"see D:\\\\data\"}")
+                                                          + "\",\"ruleset-history.tsv\":\"" + B64("0.1.0\t\\\\host\\share\t2026-01-01\n") + "\"}}");
+        var found = Base64Payloads("f.json", fixture).Select(p => PayloadPrivateContent(p.Bytes)).ToList();
+        CollectionAssert.AreEquivalent(new[] { "a drive path", "a UNC path" }, found);
     }
 
     /// <summary>
@@ -113,9 +177,6 @@ public class RuleSetLintTests
         // support items only, so an overlap with a veto is listed here and never refused.
         var evaluator = new DiagnosticRuleEvaluator(DiagnosticRuleSet.LoadEmbedded(), new DiagnosticEvaluationOptions { Filter = RuleFilter.All });
         Assert.AreEqual(0, evaluator.Refusals.Count, string.Join("\n", evaluator.Refusals.Select(r => r.RuleId + " " + r.Code + " " + r.HypothesisId)));
-        foreach (var line in overlaps) {
-            Assert.IsTrue(evaluator.Refusals.All(r => !line.StartsWith(r.RuleId + " ", StringComparison.Ordinal)), line);
-        }
     }
 
     [TestMethod]

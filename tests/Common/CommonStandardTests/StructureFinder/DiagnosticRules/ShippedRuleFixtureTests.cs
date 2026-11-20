@@ -248,9 +248,12 @@ public class ShippedRuleFixtureTests
 
     [TestMethod]
     public void TheOracleAgreesWithTheElementTableWithin1e7PerFormula() {
+        // The embedded tables/elements.json, through the engine's own exact pDa arithmetic.
+        var el = DiagnosticRuleSet.LoadEmbedded().Elements;
         var worst = 0.0;
         foreach (var f in ShippedRuleFixtures.SetFormulas().Keys) {
-            worst = Math.Max(worst, Math.Abs(NcdkOracle.Mass(f) - TestMass.Of(f) / 1e12));
+            var pda = el.MassPdaExact(Chemistry.Composition.Parse(f, el));
+            worst = Math.Max(worst, Math.Abs(NcdkOracle.Mass(f) - (double)pda / 1e12));
         }
         Assert.IsTrue(worst < 1e-7, worst.ToString("R", CultureInfo.InvariantCulture));
     }

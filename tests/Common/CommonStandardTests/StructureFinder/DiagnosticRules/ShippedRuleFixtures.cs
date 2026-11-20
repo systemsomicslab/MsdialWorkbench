@@ -278,11 +278,17 @@ internal static class ShippedRuleFixtures
           .Append("the rule's hypotheses with NCDK's BODR major-isotope masses (electron 0.000549), picks a hypothesis h* of the").Append(NL)
           .Append("rule's own adducts whose positive spectrum makes it the chosen hypothesis, places one peak at the oracle m/z of").Append(NL)
           .Append("every member of every support term of h* (outside the precursor region) plus the precursor peak, and derives:").Append(NL)
-          .Append("`positive`; `drop_<term>` for each required term; `k_of<n>_at_k` and `k_of<n>_at_k_minus_1` for each `k_of`").Append(NL)
-          .Append("node (pre-order); `veto_<term>` for each veto; `ordering_reversed_<term>`; `tolerance_{in,out}_{high,low}`").Append(NL)
-          .Append("(one support peak at the product tolerance -/+ 1e-5 Da); `precursor_{in,out}_{high,low}` (the precursor at its").Append(NL)
-          .Append("tolerance -/+ 1e-5 Da); `wrong_mode`; `tie` (two hypotheses that share a precursor, with the union of their").Append(NL)
-          .Append("peaks); `decoy_plus_5`. Rules with `measure: false` are built alike. `expect` is the builder's naive").Append(NL)
+          .Append("`positive`; `drop_<term>` for each required term (on h*, or, when h* has no peak of the term, on the first").Append(NL)
+          .Append("other hypothesis of the rule's adducts that places one and fires, named in the description; a peak that a").Append(NL)
+          .Append("complementary partner shares goes for both terms, and the description names the other); `drop_any<n>` for").Append(NL)
+          .Append("each `any` node (pre-order) with the peaks of every support term under it removed; `k_of<n>_at_k` and").Append(NL)
+          .Append("`k_of<n>_at_k_minus_1` for each `k_of` node (pre-order); `veto_<term>` for each veto (with a member that").Append(NL)
+          .Append("leaves h* chosen and not fired when one exists); `ordering_reversed_<term>`; `tolerance_{in,out}_{high,low}`").Append(NL)
+          .Append("(the first required support peak at the product tolerance -/+ 1e-5 Da) and, when that target is below m/z").Append(NL)
+          .Append("500, `tolerance_ppm_{in,out}_{high,low}` on the highest support target at or above m/z 500 (the 10 ppm").Append(NL)
+          .Append("branch); `precursor_{in,out}_{high,low}` (the precursor at its tolerance -/+ 1e-5 Da); `wrong_mode`; `tie`").Append(NL)
+          .Append("(two hypotheses that share a precursor, with the union of their peaks); `decoy_plus_5`. Rules with").Append(NL)
+          .Append("`measure: false` are built alike. `expect` is the builder's naive").Append(NL)
           .Append("evaluation (fired, chosen hypothesis, matched `term_id:member_key@peak_index`, ties, `n_hypotheses`,").Append(NL)
           .Append("`precondition_failure`), checked against `result` by the test; `result` is the parity target.").Append(NL).Append(NL)
           .Append("Peaks are integer micro-Da and integer intensities written as decimal text, and sit at least 5e-6 Da from every").Append(NL)
@@ -303,6 +309,10 @@ internal static class ShippedRuleFixtures
         if (skipped.Count == 0) {
             sb.Append("- none").Append(NL);
         }
+        sb.Append(NL).Append("## Not here yet").Append(NL).Append(NL)
+          .Append("The cross-toolkit motif fixture of design 7.1 (SMILES, motif and the RDKit boolean, from the shipped rules'").Append(NL)
+          .Append("PubChem examples plus marked synthetic SMILES) is generated with RDKit by the Python port and is not committed").Append(NL)
+          .Append("with this set, so NCDK/RDKit motif disagreements are not checked yet; `MotifTests` checks NCDK only.").Append(NL);
         sb.Append(NL).Append("## Regenerate").Append(NL).Append(NL)
           .Append("Set `").Append(EngineFixtures.WriteVariable).Append("=<dir>` and run the CommonStandardTests filter `DiagnosticRules`; every").Append(NL)
           .Append("fixture of this folder's parent is written under `<dir>` and the regeneration tests end Inconclusive. Copy the").Append(NL)

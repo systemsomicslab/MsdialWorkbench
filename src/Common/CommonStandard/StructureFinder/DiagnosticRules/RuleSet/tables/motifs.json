@@ -24,6 +24,10 @@
       "name": "Coumaric acid esters"
      },
      {
+      "id": "CHEMONTID:0002512",
+      "name": "Quinic acids and derivatives"
+     },
+     {
       "id": "CHEMONTID:0002682",
       "name": "Coumaroyl glycosides"
      },
@@ -440,6 +444,14 @@
       "name": "Phosphocholines"
      },
      {
+      "id": "CHEMONTID:0001282",
+      "name": "Hexamethonium compounds"
+     },
+     {
+      "id": "CHEMONTID:0001289",
+      "name": "Dialkylglycerol-3-phosphocholines"
+     },
+     {
       "id": "CHEMONTID:0001408",
       "name": "Phosphatidylcholines"
      },
@@ -448,16 +460,52 @@
       "name": "Lysophosphatidylcholines"
      },
      {
+      "id": "CHEMONTID:0001414",
+      "name": "Monoalkylglycerophosphocholines"
+     },
+     {
       "id": "CHEMONTID:0001609",
       "name": "Carnitines"
+     },
+     {
+      "id": "CHEMONTID:0001638",
+      "name": "1-acyl-sn-glycero-3-phosphocholines"
+     },
+     {
+      "id": "CHEMONTID:0001643",
+      "name": "2-acyl-sn-glycero-3-phosphocholines"
+     },
+     {
+      "id": "CHEMONTID:0001847",
+      "name": "1-(1Z-alkenyl)-glycero-3-phosphocholines"
      },
      {
       "id": "CHEMONTID:0002213",
       "name": "Glycerophosphocholines"
      },
      {
+      "id": "CHEMONTID:0003826",
+      "name": "1-acyl,2-(1Z-alkenyl)-glycerophosphocholines"
+     },
+     {
+      "id": "CHEMONTID:0003827",
+      "name": "1-(1Z-alkenyl),2-acyl-glycerophosphocholines"
+     },
+     {
+      "id": "CHEMONTID:0003828",
+      "name": "1-acyl,2-alkylglycero-3-phosphocholines"
+     },
+     {
+      "id": "CHEMONTID:0003829",
+      "name": "1-alkyl,2-acylglycero-3-phosphocholines"
+     },
+     {
       "id": "CHEMONTID:0004225",
       "name": "Tetraalkylammonium salts"
+     },
+     {
+      "id": "CHEMONTID:0004262",
+      "name": "1-alkyl,2-acetylglycero-3-phosphocholines"
      }
     ]
    },
@@ -708,6 +756,14 @@
     ],
     "compatible": [
      {
+      "id": "CHEMONTID:0000183",
+      "name": "Tryptamines and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000210",
+      "name": "Carbazoles"
+     },
+     {
       "id": "CHEMONTID:0000211",
       "name": "Indoles and derivatives"
      },
@@ -716,8 +772,120 @@
       "name": "Indolines"
      },
      {
+      "id": "CHEMONTID:0001252",
+      "name": "Indole-3-acetic acid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001290",
+      "name": "Indolyl carboxylic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001374",
+      "name": "Pyridoindolones"
+     },
+     {
+      "id": "CHEMONTID:0001637",
+      "name": "Serotonins"
+     },
+     {
+      "id": "CHEMONTID:0001733",
+      "name": "Pyrroloindoles"
+     },
+     {
+      "id": "CHEMONTID:0001753",
+      "name": "Benzoylindoles"
+     },
+     {
+      "id": "CHEMONTID:0001865",
+      "name": "Pyrrolocarbazoles"
+     },
+     {
+      "id": "CHEMONTID:0001866",
+      "name": "Indolocarbazoles"
+     },
+     {
+      "id": "CHEMONTID:0001913",
+      "name": "Alpha carbolines"
+     },
+     {
+      "id": "CHEMONTID:0001914",
+      "name": "Beta carbolines"
+     },
+     {
+      "id": "CHEMONTID:0001916",
+      "name": "Gamma carbolines"
+     },
+     {
+      "id": "CHEMONTID:0002013",
+      "name": "Indolecarboxylic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002014",
+      "name": "Indolecarboxamides and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002243",
+      "name": "Phenylacetylindoles"
+     },
+     {
+      "id": "CHEMONTID:0002247",
+      "name": "Naphthoylindoles"
+     },
+     {
+      "id": "CHEMONTID:0002406",
+      "name": "Indolecarboxylic acids"
+     },
+     {
       "id": "CHEMONTID:0002497",
       "name": "Indoles"
+     },
+     {
+      "id": "CHEMONTID:0002672",
+      "name": "Plumeran-type alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0002755",
+      "name": "Aspidospermatan-type alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0002756",
+      "name": "Vinca alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0003214",
+      "name": "2-phenylindoles"
+     },
+     {
+      "id": "CHEMONTID:0003755",
+      "name": "Aspidofractine alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0004162",
+      "name": "Hydroxyindoles"
+     },
+     {
+      "id": "CHEMONTID:0004196",
+      "name": "3-alkylindoles"
+     },
+     {
+      "id": "CHEMONTID:0004197",
+      "name": "N-alkylindoles"
+     },
+     {
+      "id": "CHEMONTID:0004271",
+      "name": "N-acylserotonins"
+     },
+     {
+      "id": "CHEMONTID:0004273",
+      "name": "Long-chain N-acylserotonins"
+     },
+     {
+      "id": "CHEMONTID:0004529",
+      "name": "3-methylindoles"
+     },
+     {
+      "id": "CHEMONTID:0004720",
+      "name": "N-acylcarbazoles"
      }
     ]
    },
@@ -799,6 +967,22 @@
      {
       "id": "CHEMONTID:0004643",
       "name": "Phenylacetic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004699",
+      "name": "m-Hydroxybenzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004700",
+      "name": "o-Hydroxybenzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004701",
+      "name": "p-Hydroxybenzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004702",
+      "name": "p-Hydroxybenzoic acid alkyl esters"
      }
     ]
    },
@@ -1001,8 +1185,16 @@
     ],
     "compatible": [
      {
+      "id": "CHEMONTID:0000147",
+      "name": "Macrolides and analogues"
+     },
+     {
       "id": "CHEMONTID:0000219",
       "name": "Pyrrolizines"
+     },
+     {
+      "id": "CHEMONTID:0004184",
+      "name": "Trialkyl amine oxides"
      }
     ]
    },
@@ -1480,6 +1672,10 @@
      {
       "id": "CHEMONTID:0004546",
       "name": "S-(2-hydroxyacyl)glutathiones"
+     },
+     {
+      "id": "CHEMONTID:0004831",
+      "name": "Oligopeptides"
      }
     ]
    },
@@ -1561,6 +1757,10 @@
      {
       "id": "CHEMONTID:0004546",
       "name": "S-(2-hydroxyacyl)glutathiones"
+     },
+     {
+      "id": "CHEMONTID:0004831",
+      "name": "Oligopeptides"
      }
     ]
    },
@@ -1803,8 +2003,24 @@
       "name": "Flavones"
      },
      {
+      "id": "CHEMONTID:0001759",
+      "name": "Furanoflavones"
+     },
+     {
       "id": "CHEMONTID:0003501",
       "name": "3-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003502",
+      "name": "3'-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003503",
+      "name": "6-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003504",
+      "name": "8-prenylated flavones"
      }
     ]
    },
@@ -2020,6 +2236,10 @@
      {
       "id": "CHEMONTID:0003510",
       "name": "3'-prenylated chalcones"
+     },
+     {
+      "id": "CHEMONTID:0003542",
+      "name": "Furanochalcones"
      }
     ]
    },
@@ -2113,6 +2333,10 @@
      {
       "id": "CHEMONTID:0003510",
       "name": "3'-prenylated chalcones"
+     },
+     {
+      "id": "CHEMONTID:0003542",
+      "name": "Furanochalcones"
      },
      {
       "id": "CHEMONTID:0003588",
@@ -2793,6 +3017,14 @@
       "name": "Steroidal glycosides"
      },
      {
+      "id": "CHEMONTID:0001361",
+      "name": "Anthocyanins"
+     },
+     {
+      "id": "CHEMONTID:0001447",
+      "name": "Steroid glucuronide conjugates"
+     },
+     {
       "id": "CHEMONTID:0001542",
       "name": "Disaccharides"
      },
@@ -2801,20 +3033,184 @@
       "name": "Flavonoid O-glycosides"
      },
      {
+      "id": "CHEMONTID:0001599",
+      "name": "Disaccharide phosphates"
+     },
+     {
       "id": "CHEMONTID:0001600",
       "name": "Anthraquinone glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001687",
+      "name": "Cucurbitacin glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001738",
+      "name": "Aurone O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001739",
+      "name": "Chalcone- and dihydrochalcone O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001741",
+      "name": "Rotenoid O-glycosides"
      },
      {
       "id": "CHEMONTID:0001743",
       "name": "Coumarin glycosides"
      },
      {
+      "id": "CHEMONTID:0001755",
+      "name": "Diterpene glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001756",
+      "name": "Steviol glycosides"
+     },
+     {
       "id": "CHEMONTID:0002049",
       "name": "Terpene glycosides"
      },
      {
+      "id": "CHEMONTID:0002191",
+      "name": "Oligosaccharide phosphates"
+     },
+     {
       "id": "CHEMONTID:0002207",
       "name": "O-glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002358",
+      "name": "Triterpene saponins"
+     },
+     {
+      "id": "CHEMONTID:0002364",
+      "name": "Steroidal saponins"
+     },
+     {
+      "id": "CHEMONTID:0002708",
+      "name": "Anthocyanidin 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002709",
+      "name": "Anthocyanidin 3p-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002710",
+      "name": "Anthocyanidin 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002711",
+      "name": "Anthocyanidin 3-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002712",
+      "name": "Anthocyanidin 3-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002713",
+      "name": "Anthocyanidin 3p-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002714",
+      "name": "Anthocyanidin 3p-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002715",
+      "name": "Anthocyanidin 5-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002716",
+      "name": "Anthocyanidin 5-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002897",
+      "name": "Neoflavonoid 5-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002934",
+      "name": "Flavonoid O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0002935",
+      "name": "Neoflavonoid 7-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002996",
+      "name": "Anthocyanidin-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002997",
+      "name": "Anthocyanidin-5-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003307",
+      "name": "Disaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003308",
+      "name": "Oligosaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003531",
+      "name": "Flavonoid-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003532",
+      "name": "Flavonoid-3-O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0003533",
+      "name": "Flavonoid-7-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003534",
+      "name": "Flavonoid-7-O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0003540",
+      "name": "Flavonoid-8-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003541",
+      "name": "Flavonoid-8-O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0003551",
+      "name": "Anthocyanin-3'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003552",
+      "name": "Anthocyanin-4'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003553",
+      "name": "Anthocyanidin 7-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003554",
+      "name": "Anthocyanidin 7-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003555",
+      "name": "Anthocyanidin-7-O-Glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003556",
+      "name": "Anthocyanidin 7-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003678",
+      "name": "Flavonoid 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003679",
+      "name": "Flavonoid 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003681",
+      "name": "Flavonoid 3p-O-p-coumaroyl glycosides"
      },
      {
       "id": "CHEMONTID:0004081",
@@ -2886,6 +3282,42 @@
       "name": "Rotenoid O-glycosides"
      },
      {
+      "id": "CHEMONTID:0002708",
+      "name": "Anthocyanidin 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002709",
+      "name": "Anthocyanidin 3p-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002710",
+      "name": "Anthocyanidin 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002711",
+      "name": "Anthocyanidin 3-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002712",
+      "name": "Anthocyanidin 3-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002713",
+      "name": "Anthocyanidin 3p-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002714",
+      "name": "Anthocyanidin 3p-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002715",
+      "name": "Anthocyanidin 5-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002716",
+      "name": "Anthocyanidin 5-O-2-p-coumaroyl glycosides"
+     },
+     {
       "id": "CHEMONTID:0002897",
       "name": "Neoflavonoid 5-O-glycosides"
      },
@@ -2898,16 +3330,72 @@
       "name": "Neoflavonoid 7-O-glycosides"
      },
      {
+      "id": "CHEMONTID:0002996",
+      "name": "Anthocyanidin-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002997",
+      "name": "Anthocyanidin-5-O-glycosides"
+     },
+     {
       "id": "CHEMONTID:0003531",
       "name": "Flavonoid-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003532",
+      "name": "Flavonoid-3-O-glucuronides"
      },
      {
       "id": "CHEMONTID:0003533",
       "name": "Flavonoid-7-O-glycosides"
      },
      {
+      "id": "CHEMONTID:0003534",
+      "name": "Flavonoid-7-O-glucuronides"
+     },
+     {
       "id": "CHEMONTID:0003540",
       "name": "Flavonoid-8-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003541",
+      "name": "Flavonoid-8-O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0003551",
+      "name": "Anthocyanin-3'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003552",
+      "name": "Anthocyanin-4'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003553",
+      "name": "Anthocyanidin 7-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003554",
+      "name": "Anthocyanidin 7-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003555",
+      "name": "Anthocyanidin-7-O-Glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003556",
+      "name": "Anthocyanidin 7-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003678",
+      "name": "Flavonoid 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003679",
+      "name": "Flavonoid 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003681",
+      "name": "Flavonoid 3p-O-p-coumaroyl glycosides"
      }
     ]
    },
@@ -3241,8 +3729,16 @@
     ],
     "compatible": [
      {
+      "id": "CHEMONTID:0000237",
+      "name": "Acyl monophosphates"
+     },
+     {
       "id": "CHEMONTID:0000408",
       "name": "Phosphate esters"
+     },
+     {
+      "id": "CHEMONTID:0001266",
+      "name": "Phosphoethanolamines"
      },
      {
       "id": "CHEMONTID:0003457",
@@ -3284,6 +3780,10 @@
      {
       "id": "CHEMONTID:0002810",
       "name": "Cinnamic acid amides"
+     },
+     {
+      "id": "CHEMONTID:0004561",
+      "name": "N-cinnamoylanthranilic acids"
      }
     ]
    },
@@ -5465,18 +5965,22 @@
       "name": "Nucleosides, nucleotides, and analogues"
      },
      {
-      "id": "CHEMONTID:0002105",
-      "name": "Glycosyl compounds"
-     }
-    ],
-    "compatible": [
-     {
       "id": "CHEMONTID:0000480",
       "name": "Pyrimidine nucleosides"
      },
      {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
       "id": "CHEMONTID:0002204",
       "name": "C-glycosyl compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0003737",
+      "name": "Nucleoside and nucleotide analogues"
      }
     ]
    },
@@ -5727,6 +6231,10 @@
      }
     ],
     "compatible": [
+     {
+      "id": "CHEMONTID:0000142",
+      "name": "Stilbene glycosides"
+     },
      {
       "id": "CHEMONTID:0000253",
       "name": "Stilbenes"
@@ -6112,6 +6620,14 @@
       "name": "Steroidal glycosides"
      },
      {
+      "id": "CHEMONTID:0001447",
+      "name": "Steroid glucuronide conjugates"
+     },
+     {
+      "id": "CHEMONTID:0001687",
+      "name": "Cucurbitacin glycosides"
+     },
+     {
       "id": "CHEMONTID:0002364",
       "name": "Steroidal saponins"
      }
@@ -6195,6 +6711,10 @@
      {
       "id": "CHEMONTID:0003456",
       "name": "Alkyl sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003925",
+      "name": "Alkylglucosinolates"
      },
      {
       "id": "CHEMONTID:0004181",
@@ -6498,6 +7018,18 @@
       "name": "Lysophosphatidic acids"
      },
      {
+      "id": "CHEMONTID:0001397",
+      "name": "1-(1Z-alkenyl),2-acyl-glycerophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001404",
+      "name": "1-alkyl,2-acylglycerophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001406",
+      "name": "Monoalkylglycerophosphates"
+     },
+     {
       "id": "CHEMONTID:0001541",
       "name": "Monosaccharide phosphates"
      },
@@ -6528,6 +7060,10 @@
      {
       "id": "CHEMONTID:0002141",
       "name": "Purine 2'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002142",
+      "name": "Purine 3'-deoxyribonucleoside monophosphates"
      },
      {
       "id": "CHEMONTID:0002151",
@@ -6564,6 +7100,10 @@
      {
       "id": "CHEMONTID:0003446",
       "name": "Glycerone phosphates"
+     },
+     {
+      "id": "CHEMONTID:0003448",
+      "name": "O-acylglycerone-phosphates"
      },
      {
       "id": "CHEMONTID:0003458",
@@ -6662,6 +7202,290 @@
      {
       "id": "CHEMONTID:0000258",
       "name": "Steroids and steroid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000260",
+      "name": "Monohydroxy bile acids, alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000516",
+      "name": "Dihydroxy bile acids, alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001013",
+      "name": "Steroidal glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001104",
+      "name": "Trihydroxy bile acids, alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001110",
+      "name": "Tetrahydroxy bile acids, alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001124",
+      "name": "Glycinated bile acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001159",
+      "name": "Taurinated bile acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001194",
+      "name": "Oxosteroids"
+     },
+     {
+      "id": "CHEMONTID:0001295",
+      "name": "Hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0001403",
+      "name": "Ergosterols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001445",
+      "name": "Bile acids, alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001447",
+      "name": "Steroid glucuronide conjugates"
+     },
+     {
+      "id": "CHEMONTID:0001466",
+      "name": "Estrane steroids"
+     },
+     {
+      "id": "CHEMONTID:0001467",
+      "name": "Androgens and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001468",
+      "name": "Gluco/mineralocorticoids, progestogins and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001469",
+      "name": "Cholesterols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001490",
+      "name": "Cholesteryl esters"
+     },
+     {
+      "id": "CHEMONTID:0001555",
+      "name": "Cardenolides and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001557",
+      "name": "Bufanolides and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001559",
+      "name": "Cardenolide glycosides and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001560",
+      "name": "Withanolides and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001561",
+      "name": "Withanolide glycosides and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001686",
+      "name": "Cucurbitacins"
+     },
+     {
+      "id": "CHEMONTID:0001687",
+      "name": "Cucurbitacin glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001691",
+      "name": "Steroid esters"
+     },
+     {
+      "id": "CHEMONTID:0001692",
+      "name": "Sulfated steroids"
+     },
+     {
+      "id": "CHEMONTID:0001701",
+      "name": "Furostanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001702",
+      "name": "Furospirostanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001703",
+      "name": "Solanidines and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001704",
+      "name": "Spirosolanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001807",
+      "name": "Spironolactones and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002031",
+      "name": "Stigmastanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002039",
+      "name": "Gorgostanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002194",
+      "name": "Hydroxy bile acids, alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002198",
+      "name": "Pentahydroxy bile acids, alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002321",
+      "name": "Cycloartanols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002340",
+      "name": "Azasteroids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002364",
+      "name": "Steroidal saponins"
+     },
+     {
+      "id": "CHEMONTID:0002381",
+      "name": "17-furanylsteroids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002645",
+      "name": "Halogenated steroids"
+     },
+     {
+      "id": "CHEMONTID:0002725",
+      "name": "Solanocapsine-type alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0002731",
+      "name": "Conanine-type alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0002732",
+      "name": "22,26-epiminocholestanes"
+     },
+     {
+      "id": "CHEMONTID:0002971",
+      "name": "3-hydroxy delta-5-steroids"
+     },
+     {
+      "id": "CHEMONTID:0002977",
+      "name": "Delta-1,4-steroids"
+     },
+     {
+      "id": "CHEMONTID:0002979",
+      "name": "Delta-5-steroids"
+     },
+     {
+      "id": "CHEMONTID:0002984",
+      "name": "Delta-7-steroids"
+     },
+     {
+      "id": "CHEMONTID:0002985",
+      "name": "3-hydroxy delta-7-steroids"
+     },
+     {
+      "id": "CHEMONTID:0003027",
+      "name": "3-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003053",
+      "name": "25-azasteroids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003058",
+      "name": "20-oxosteroids"
+     },
+     {
+      "id": "CHEMONTID:0003059",
+      "name": "11-oxosteroids"
+     },
+     {
+      "id": "CHEMONTID:0003061",
+      "name": "C24-propyl sterols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003095",
+      "name": "21-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003228",
+      "name": "11-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003229",
+      "name": "16-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003233",
+      "name": "3-beta-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003236",
+      "name": "17-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003238",
+      "name": "7-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003241",
+      "name": "12-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003250",
+      "name": "5,6-epoxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0003364",
+      "name": "Steroid acids"
+     },
+     {
+      "id": "CHEMONTID:0003368",
+      "name": "3-carboxy steroids"
+     },
+     {
+      "id": "CHEMONTID:0003566",
+      "name": "Cholestane steroids"
+     },
+     {
+      "id": "CHEMONTID:0003567",
+      "name": "Ergostane steroids"
+     },
+     {
+      "id": "CHEMONTID:0003568",
+      "name": "Androstane steroids"
+     },
+     {
+      "id": "CHEMONTID:0003569",
+      "name": "Pregnane steroids"
+     },
+     {
+      "id": "CHEMONTID:0003570",
+      "name": "Estrogens and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003578",
+      "name": "6-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0004159",
+      "name": "18-hydroxysteroids"
+     },
+     {
+      "id": "CHEMONTID:0004813",
+      "name": "Ecdysteroids"
      }
     ]
    },

@@ -15,433 +15,433 @@
   },
   "rules/acylated_glycoside_ester.caffeoyl_hexose_ester.neg.json": {
    "cases": 13,
-   "sha256": "97f52fc19d720c0cc76584a241b1bcd59bb7c357ba2ab4f2f3e093b3446e6e13"
+   "sha256": "b9d07803ca8eae27c13e6c2d3c1094c3ce952c71b0e4035d76501b66bf0432cd"
   },
   "rules/acylated_glycoside_ester.caffeoyl_hexose_ester.pos.json": {
    "cases": 13,
-   "sha256": "6954ae6e8e969e91467be9564776483e419a5afddc0e5497ef79e6cd7e25ac35"
+   "sha256": "2cedff281f21c5b7b97ef64e364ea77c1661b86e718704ce49f255ec435ec147"
   },
   "rules/acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg.json": {
-   "cases": 14,
-   "sha256": "0a8f41bbcc73e6092dee4a021a7b6fd85a6222fd6018f83d471b2af5f657fa50"
+   "cases": 18,
+   "sha256": "504883146451859b603f10131d310f5cdedb527bbcec27563251b1e7bda9150d"
   },
   "rules/acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos.json": {
-   "cases": 14,
-   "sha256": "b18ea5b125bbe595dc223b244cfbac73939629775ce80af5d859628a4b7ba98d"
+   "cases": 16,
+   "sha256": "edd035b92d438a33c49732cce6803565de6ec97387a4a032e999496e7e8649d6"
   },
   "rules/acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg.json": {
-   "cases": 14,
-   "sha256": "ed7540f1b20f9c3e37713c6179664c2f9ad03eee5e57a7b90ac664a8602d61dc"
+   "cases": 18,
+   "sha256": "b3f5322254550759aef35d603e729e22a9816645bdb973ca4f7d708f9388278e"
   },
   "rules/acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.pos.json": {
-   "cases": 14,
-   "sha256": "404fedd4cc30ef997e670037d118410d29b5da2df27877d4b7f0e2f47da19ac4"
+   "cases": 16,
+   "sha256": "84dc0cf4ee80229884a1d7d6655fd2e0f474e1566f894cecbc89e7c3bf2f3764"
   },
   "rules/acylated_glycoside_ester.hydroxycinnamoyl_hexose_ester.neg.json": {
-   "cases": 13,
-   "sha256": "27c34bb93e7098ee18ecbe92cff6c8d166a3b8bbecd6f6a506a02f6e081882ca"
+   "cases": 14,
+   "sha256": "b06cbe84cb2c21c3d350ad64da0acb8c3e94a215c92f7db08179195a214aeefa"
   },
   "rules/acylated_glycoside_ester.hydroxycinnamoyl_hexose_ester.pos.json": {
-   "cases": 12,
-   "sha256": "f224660a4fc6ed4f176a6ed7e34c338eea649ff0c2f0db44f5cd0ddcb19e832a"
+   "cases": 13,
+   "sha256": "7011c3a03a80a74b61e8a4d4c1e6fef0fcf95e7bc03d4f9618683b6474d689f6"
   },
   "rules/acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg.json": {
    "cases": 15,
-   "sha256": "1890a5e7fcf978f6426341471824d903af2f5c96bc3ba8f914eea42c1f7a96d6"
+   "sha256": "d79eb0589c12d76780896f9660dd3942c0a907771d82163c919eea5bde30686f"
   },
   "rules/acylated_glycoside_ester.malonyl_flavonoid_glycoside.pos.json": {
-   "cases": 14,
-   "sha256": "09d67b1bce6acd5060428b05b318fc8872692ede13896d6f99c04fc3e78fd314"
+   "cases": 18,
+   "sha256": "1ac407ab6ff3bbf4ae12b3ac5bc7d4bdfe23b00a03c58f5634cf02b6dbe1a9b6"
   },
   "rules/acylated_glycoside_ester.protocatechuoyl_flavonoid_glycoside.neg.json": {
-   "cases": 14,
-   "sha256": "c1a55bcdfdb406f023b014e97f55afc710b2a54e4b3c4e15799d591f3381b57c"
+   "cases": 18,
+   "sha256": "d0c0b3e45945a4d0da7ed2bf0d4ca8ec1bf2a2eaa9c1689a6b2688f0f2ebf011"
   },
   "rules/acylcarnitine.acylcarnitine.pos.json": {
    "cases": 18,
-   "sha256": "1b2bd2fe3158128d56eb364e866c87bd5abf47dfd327f0bbc2e12edca5701b62"
+   "sha256": "459c176b4f3ebd0a0ac9db2faf7cf6711f61b8cd35efcfb4bc42b16a7b2d3668"
   },
   "rules/acylcarnitine.hydroxyacylcarnitine.pos.json": {
    "cases": 14,
-   "sha256": "f830f0dc0ddab515f4d527cf936a60c146f20418f7345a2b4494a5ac8849cc73"
+   "sha256": "bcf0f9c056a101ab52353cfa742191f028fdc7d855f2016f443c59154946c8ef"
   },
   "rules/alkaloid_benzylisoquinoline.aporphine.pos.json": {
-   "cases": 16,
-   "sha256": "4c67e9565b821c3fe797b30525a3e8e3e0e9ab927789825ac94495c26a91c693"
+   "cases": 17,
+   "sha256": "62f84b05336f2ff14e167e83aca7580480ef0abffbe6201b0d32afe1eda82795"
   },
   "rules/alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos.json": {
-   "cases": 14,
-   "sha256": "6a4e4c8332fe31140f8d6c30b93c513b515c765e0ed64cf8d03d03da6a108a06"
+   "cases": 15,
+   "sha256": "d324b802571db999b47928c7d8536dbab0c4b93bc9ca0f561060104f9574bcdc"
   },
   "rules/alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos.json": {
-   "cases": 16,
-   "sha256": "480a3772b4748ce483d25b74b88f56bc073f78a07cba1680da9a84a76a750002"
+   "cases": 17,
+   "sha256": "3579f0cc19093c0debf318dc1eedee558cbfcdc5671d2b92105a62c736891dad"
   },
   "rules/alkaloid_benzylisoquinoline.morphinan.pos.json": {
-   "cases": 14,
-   "sha256": "414959b4e8b2077b4cb6040f5b20c728a50144b335c433ef6304bd8cf6cce09b"
+   "cases": 15,
+   "sha256": "2bc11e2c23506ad2eccad36110e46c3273a9473b85f462f608d3f5e90160865e"
   },
   "rules/alkaloid_benzylisoquinoline.protoberberine_quaternary.pos.json": {
-   "cases": 14,
-   "sha256": "e0163a0e214c8ee8f245cf19a9b52edb72827e22b0875742ba207bc7fa8b7709"
+   "cases": 15,
+   "sha256": "5d5056da5aa8e9a650da7bc63510792ec85c2aa2ac19c03e696ce28219803b18"
   },
   "rules/alkaloid_benzylisoquinoline.protopine.pos.json": {
    "cases": 14,
-   "sha256": "5a8ec1770a047f80c1e74a53cd67dbbb06730a2be19d898e3d81027eb2de6d56"
+   "sha256": "d2a1d4400e023c6c4f09353c3f253f4bc6db2f9eeca44bb24aadf86e799a1c77"
   },
   "rules/alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos.json": {
    "cases": 13,
-   "sha256": "b25e0ed01edb7f81bab07deb7d4d2d413b3e21420134480f6c345a3896d31b1d"
+   "sha256": "4ce790f59eba138094d877683feee9ab32e9879ba660e88080f773a901765185"
   },
   "rules/alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos.json": {
    "cases": 13,
-   "sha256": "4cd789424671836ff1082f84f5822747862e46f8b425fb10607b447e0b1613ad"
+   "sha256": "200f7e4974f5a86cc9fa7fd1072c18e07b3c1420fe1bf85aa01c47c0792c74d9"
   },
   "rules/alkaloid_monoterpene_indole.aryl_acyl_ester.pos.json": {
    "cases": 13,
-   "sha256": "e9569c5529b2ceb1b4c08802bbf1fa0ab3135596524835eb99eba08363780bbe"
+   "sha256": "a9c0ce45f9853dab2b1699ee4013e4538682f579aa02af5aefbe0e96f587ee14"
   },
   "rules/alkaloid_monoterpene_indole.aspidospermane.neg.json": {
    "cases": 14,
-   "sha256": "07d60ea92fba15d619f53ff693229fe34f69215b4cd83779dc036df245d4af01"
+   "sha256": "0752bae89a04c069c0776a6e0ecf82d07b4f64a80559296e4ba9b8a86269381b"
   },
   "rules/alkaloid_monoterpene_indole.aspidospermane.pos.json": {
    "cases": 14,
-   "sha256": "4a66dfbd91b168d37032313e8f7d10f531886ecd6d8cd1fe3f5c5d9f44e15563"
+   "sha256": "3b0ba038dc214a359344b97715e0146f49c1b2981ee32c37e30c342e4dbf02ff"
   },
   "rules/alkaloid_monoterpene_indole.indole_acetate_or_methyl_ester.pos.json": {
    "cases": 14,
-   "sha256": "2babd892293dd4ca20eb040ab92ede57ae510d7a6e67f6bd0fc36e025c5b7df9"
+   "sha256": "a02b63687483722208f363fe6c26266008bb2e78fbcec4416d70f11210b1f831"
   },
   "rules/alkaloid_monoterpene_indole.indole_c10h10n_only.pos.json": {
    "cases": 13,
-   "sha256": "9a2f9a9bbc0ad79bdfc4ea443fc6ea8943b234fe994525f409b0940f8545f1b6"
+   "sha256": "956d0868747f5109cf1691f17447aceaf702970a94094aa807026a75700a6755"
   },
   "rules/alkaloid_monoterpene_indole.indole_core.pos.json": {
    "cases": 15,
-   "sha256": "6493fbc2390ac7e12874a21ef212454290801649ed7e82fdc0c861b2d9c23c3d"
+   "sha256": "5759847f74b5e9bc06b883e077ead53dc800fa6a294c0ad75fdcefa5665daed9"
   },
   "rules/alkaloid_monoterpene_indole.indole_omethyl.pos.json": {
    "cases": 16,
-   "sha256": "b58f118215c749c0b95a6ecd9c2253914d4eabdc77c4bb7e23e65d9d0ba2f546"
+   "sha256": "c7e9cf8bc11a06639028d10279d47b76043e82e55e64aaa4b97d813e0dea7b90"
   },
   "rules/alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos.json": {
    "cases": 13,
-   "sha256": "d0a49c8787f3da14af3b5888f5ec26b412c283061713b5eb13320c0a0c048147"
+   "sha256": "dac382299390f93fb889dcd8b6f4067be26bfaefbb54ff1bc42008523e9447d1"
   },
   "rules/alkaloid_pyrrolizidine.macrocyclic_diester.pos.json": {
    "cases": 15,
-   "sha256": "4b363f7c61e4c411af1014247832c6478bd1cbfd2e16438f963307384ae5d6f3"
+   "sha256": "8cf355f9dc1f67723375aeaa7e7d39607390732ec29f0229f232731f6d8cc1ea"
   },
   "rules/alkaloid_pyrrolizidine.monoester.pos.json": {
    "cases": 15,
-   "sha256": "6b68a39d861a2a6d2b4e5c64e545b68bd8972ff1e53ca7319403cda175781be1"
+   "sha256": "07c8091485f9bc4c3a724a2d013f318b74edda4cc1d2781b9dc2d28955720a04"
   },
   "rules/alkaloid_pyrrolizidine.otonecine_type.pos.json": {
    "cases": 14,
-   "sha256": "c2f1e61b47fab511495af11c23b7ba388cc33f442addad4ff716730dc72d2db4"
+   "sha256": "44b2012cd5177255f5a2aabb975ac6d5c254f6006b1b3327cee993a21a933b76"
   },
   "rules/alkaloid_pyrrolizidine.platynecine_type.pos.json": {
    "cases": 14,
-   "sha256": "33a0ea4a8b2d607ed6f02a321a03320024f976f69d6b0292355b347219602ba8"
+   "sha256": "6fbe3fafd8f11c5d93aecce0376f29cdf672908ffc641b31822f745142e61121"
   },
   "rules/alkaloid_pyrrolizidine.retronecine_n_oxide.pos.json": {
-   "cases": 16,
-   "sha256": "576337b3f4b6ba3baedd47bbba63f741c886e059220788df6ab719daf46a9f99"
+   "cases": 17,
+   "sha256": "bcda87ed27c0133f1782c830b9d781db10f77117050dd4ad22730d070292e694"
   },
   "rules/alkaloid_pyrrolizidine.retronecine_type.pos.json": {
    "cases": 14,
-   "sha256": "79a4666be4d66d5838184ecbaeea5350902e1cde9deaba143bb8527ff508f92c"
+   "sha256": "7fe9dbff5669b352fc1b713e82e2d9c64857fa39ad232a8f0512dc18820a1f3f"
   },
   "rules/alkaloid_quinolizidine.matrine_type.pos.json": {
    "cases": 13,
-   "sha256": "368fa039f0387656554e8553e231de9b9ea73c5ab9f24e096b3d8330b26a1e3c"
+   "sha256": "38ac83cdf0072f98573f2af9b1ed672d14e6a8527653749bc41eb7e3db8cd93d"
   },
   "rules/alkaloid_tropane.hydroxytropane_ester.pos.json": {
    "cases": 14,
-   "sha256": "b1e4ca73cf2df9823cf266da68eec4d0269e3b18c7a41761e88c5892f925c80f"
+   "sha256": "e28f399a7c29861e109796e7e7578369efb9ca116b7a50b09670230533f9f5c2"
   },
   "rules/alkaloid_tropane.nortropane_ester.pos.json": {
    "cases": 13,
-   "sha256": "f8352993447645b15af34b848a7309f482dc5bfe2f50872c7803ffb41d9d82c1"
+   "sha256": "5310a2a2a3ce6fed31d6296ba31cc997246c7832af486972a3d7755aca21737f"
   },
   "rules/alkaloid_tropane.scopine_type.pos.json": {
    "cases": 14,
-   "sha256": "42b31269a1604810799b1e274b44f30324d545a7e58af71948bf6a61c450478f"
+   "sha256": "a803e41fec63c45ffa6537363a9bae88bf7fd541b0122a58c142f3f319b41082"
   },
   "rules/alkaloid_tropane.tropine_ester.pos.json": {
-   "cases": 15,
-   "sha256": "244015a0837cacd14d32485d545e8a2f9afc77c8ee86a2612e8e7a5491eebaa1"
+   "cases": 16,
+   "sha256": "b8b3d379b489306ce6325a520b02d85cc64c55ff3f2619cf3f5c8341fb792d2b"
   },
   "rules/anthocyanin.anthocyanin.pos.json": {
    "cases": 15,
-   "sha256": "3f705e67555500d5501c8947fe54e8cafc2e9c32d3044da51129bb2a029631c7"
+   "sha256": "5132bab581d8dd4c7ae6183130695bd15bdb199d84a2c841e8cdb1cd709389bf"
   },
   "rules/cyanogenic_glycoside.mandelonitrile_glycoside.neg.json": {
    "cases": 12,
-   "sha256": "e4fa70faac6932fe8da1361ce0b151e5dd5918c665c7bc55a65e3c7f1f70a08d"
+   "sha256": "f711c90afed95b5f1100c11075f71920c0b24b84a58624dc5fdafccef8afdaa1"
   },
   "rules/flavonoid_aglycone.dihydroflavonol.pos.json": {
    "cases": 14,
-   "sha256": "30d2c3b09cb6d15f711625b7ecdf5759dd03fbc94964bc565b8182c9ff86912d"
+   "sha256": "17930259048468cdbe02ec45a3fbee0a8472ef24bf9b4655856c66a26d95e833"
   },
   "rules/flavonoid_aglycone.flavan_3_ol.pos.json": {
-   "cases": 15,
-   "sha256": "1f1fe799507d4795b06a3c7f05662ae6d71f47981c5d5e6868045d65e6ba7c41"
+   "cases": 16,
+   "sha256": "3820ff163b38d5aa4ec65cd77feabe4b37d9743f9bb52599ebec08da80362064"
   },
   "rules/flavonoid_aglycone.flavanone.neg.json": {
    "cases": 13,
-   "sha256": "f09d9e0a3ac749aa9f3e8cb9e643ddae2e95348fc5594f66dd7f4d77210ce301"
+   "sha256": "ace4016ab876013d14e2c99e8aabb1f36f802603368e7cd949cdecfca3ed48b8"
   },
   "rules/flavonoid_aglycone.flavanone.pos.json": {
    "cases": 14,
-   "sha256": "7eda68bc01cd21e1724a103fdfdb0809e615bb9585e4504455bb7b91d56fbbd3"
+   "sha256": "4bbffb3e2e4f6a3a34de08999bd71d6072152e850812a14d21d76d60b75697a7"
   },
   "rules/flavonoid_aglycone.flavone.neg.json": {
    "cases": 13,
-   "sha256": "3dedd6a07c4f3e0a735153545f692dd59d990f7094aff70a168c52eb418769f5"
+   "sha256": "819da816fd8035722d9ce30024dc09517cac568eb8f66536fb92ac2bb7dbe4af"
   },
   "rules/flavonoid_aglycone.flavone.pos.json": {
-   "cases": 15,
-   "sha256": "27ca15ff7fc1efb1ee9099aee3df3760325aa00559780e2945934c7fbc88ceed"
+   "cases": 16,
+   "sha256": "2bf1cda4097fc322da07a0d519fcd103f70a3c8b1c49d7bdf66c7bfe0cffd18d"
   },
   "rules/flavonoid_aglycone.flavonol.neg.json": {
    "cases": 13,
-   "sha256": "35912fda656a6aeb0f4b9934544b9bb6855d328dec1fa417340357c6cc10a6ed"
+   "sha256": "9da393244377bab38e089f4347cc8329a52808adf87ed58eb270887e162d5f7a"
   },
   "rules/flavonoid_aglycone.flavonol.pos.json": {
    "cases": 14,
-   "sha256": "c9600794e13a4bca556c3f62db589710260cd2d52e7b868320f7771d8222f079"
+   "sha256": "551e64fa5be415fa146e23edd945a045bad3915feae91eefa9d2dddda6863930"
   },
   "rules/flavonoid_aglycone.isoflavone.neg.json": {
    "cases": 13,
-   "sha256": "d8309334803eaf1517a5a0b7849c99cb75cb6040e2a1ba5510f09c578e9964fb"
+   "sha256": "ed56e748b9ec874ec55814f5de8b0ec9c07808bda321595e54f61645b8e80dcc"
   },
   "rules/flavonoid_c_glycoside.di_c_glycoside.neg.json": {
    "cases": 16,
-   "sha256": "4ccf40ff5c05f357f4c972c9d2cc8d4da8f5ab7fb18057dcb07a3a5a3ff891b6"
+   "sha256": "96057eb576b45a3edf57475fca8c98b3144feb381085c5c6d460a8a941e8de49"
   },
   "rules/flavonoid_c_glycoside.di_c_glycoside.pos.json": {
-   "cases": 19,
-   "sha256": "9b667a87d2c9d2d62a912be813458ce40ad6dd42712353e12078704781c45c12"
+   "cases": 21,
+   "sha256": "b8ef8b4618d06d34258dbf6c6134fafcb87ae3d541deeb725d889d1f701b3fb9"
   },
   "rules/flavonoid_c_glycoside.mono_c_glycoside.neg.json": {
    "cases": 16,
-   "sha256": "23a13e2ef5fdaf2b0f21ecabbd2d887a33fdfdf1a215f51c9841d064b11bd276"
+   "sha256": "2b4f9cac162ea562df360f30d04dc8c976371d73e919432bde5252d7994576ce"
   },
   "rules/flavonoid_c_glycoside.mono_c_glycoside.pos.json": {
    "cases": 16,
-   "sha256": "6bf8b8900564db8e328477c15a0646d1593216a35c9a5d16ba2e49ead60ee77d"
+   "sha256": "6cdc88e61f8dbd891c9b144f12beeb63d18e5a86a23c424d3f160f251bcb1fce"
   },
   "rules/flavonoid_c_glycoside.o_c_glycoside.neg.json": {
-   "cases": 17,
-   "sha256": "6134d5ad681d5fa24f740329085719bc1fcda4d7fec978e8e322071ca8e02d72"
+   "cases": 19,
+   "sha256": "eba0cf2104c8a3eb8cde7aff765eb7fe06a0a0b3f141152636d55f3f766038fa"
   },
   "rules/flavonoid_c_glycoside.o_c_glycoside.pos.json": {
    "cases": 14,
-   "sha256": "cfcf17e4302a4074ad48f3a7e958582b48c4f5d0da996605812c78e54e3e9667"
+   "sha256": "d5458c98cbc48173c9611beb3e75615ce5342a9064a93f974e5d8399a0ff428c"
   },
   "rules/flavonoid_o_glycoside.flavonoid_glycoside_scaffold.neg.json": {
-   "cases": 15,
-   "sha256": "0a4a6014cf4bc1d41beee0832e945dadfce0d4ce05daf8357d0a1963460d3d2b"
+   "cases": 16,
+   "sha256": "895372e3e9d7cd573b3c729aac360f2c4ff081f41b591dcb377970bb90b59a94"
   },
   "rules/flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos.json": {
    "cases": 14,
-   "sha256": "bd6f400b8125893844e08295bf7187503b653406967a0560365c69f021240714"
+   "sha256": "7d32619e6b5c103d878146fe1a482ee57b0ff19ea4cb3a0a11ea43b85beeb620"
   },
   "rules/flavonoid_o_glycoside.listed_aglycone_glycoside.neg.json": {
-   "cases": 16,
-   "sha256": "e9cb419158992aa30036c42c66ad1d831ded6f96c0fdf5436eca50cb9713388b"
+   "cases": 17,
+   "sha256": "c3a740532ab63b1a41e9d05e68f644583e8cd9030a17de4fe504d2433ce2ba01"
   },
   "rules/flavonoid_o_glycoside.listed_aglycone_glycoside.pos.json": {
    "cases": 15,
-   "sha256": "3e6912a2be7a81def8a199845c21a4730773b96e3875b0b158d8115df3449544"
+   "sha256": "a9a52e54257d8e95dbe4faf29ecf03d2dfb53d991ce0c11544cf870f638c79ca"
   },
   "rules/glucosinolate.2_hydroxyalkyl.neg.json": {
    "cases": 16,
-   "sha256": "5c37d82b8dc8e57281f4c0d46cfada1a3bc1fd2bacefc8828a1dd3235dfc6a04"
+   "sha256": "f11957208a14033c9e41b026d2daddc31f8ca06ece522d0f60e4cd465eb2085b"
   },
   "rules/glucosinolate.glucosinolate.neg.json": {
    "cases": 15,
-   "sha256": "cd950cd8e3a8fc75c5165414c5955848dde4e80ed2475747e1cd12159194eaf2"
+   "sha256": "3e8389d12959626a34ed40b527332470f5aa793d651028df21c3490fc151ee06"
   },
   "rules/glucosinolate.methylsulfinylalkyl.neg.json": {
    "cases": 15,
-   "sha256": "0e1c40de365800246cdba9277c888f82d83804af9e94e687c41a8acd43db4d4d"
+   "sha256": "15f83e5d549c0b0fcf0a6f4f6342c6760dabd4c1f042fc87ce8030892d1221c5"
   },
   "rules/glucosinolate.n_methoxy.neg.json": {
    "cases": 15,
-   "sha256": "1c43d03613625ce4f54ab7982721bf775ac233602a565dff2471f8d6ed33d608"
+   "sha256": "e9384835a4027874bfce41936c62a8d254232bd0433c822d84762acfa71e17ec"
   },
   "rules/glutathione_conjugate.glutathionyl.neg.json": {
    "cases": 13,
-   "sha256": "7391dfe099c358a855c693cabe9412a367f761e87ea6a68f868fd9ccdc04da10"
+   "sha256": "0d69106e7f4d4a6cf93a37cfbb83dcb11e5c74e2bc93a4af79267dd2c6f8b4a4"
   },
   "rules/glutathione_conjugate.glutathionyl.pos.json": {
-   "cases": 15,
-   "sha256": "24f3e786b4704c0e209cc660b6f82afd63223124d58717d85673d750f708d5e6"
+   "cases": 17,
+   "sha256": "374e02ebf1a7f7741a52b4f32df35eed92e5ea17ed7ca6596769ac6714ecc388"
   },
   "rules/hydroxycinnamic_acid_amide.aminobutyl_polyamine.pos.json": {
    "cases": 14,
-   "sha256": "a5892e3e9a73a81541aafe34f9aba7caf55fb318f9ad0366ad088a2978b00b66"
+   "sha256": "d1652266ad195c139b123e1f85962608aad1a748b3e2336fa0ec2e0798153779"
   },
   "rules/hydroxycinnamic_acid_amide.oleracein.neg.json": {
-   "cases": 15,
-   "sha256": "a25d5bfd48e9894a733a8cb52c629f79081ecf965bca558f31b1100b8bba7aed"
+   "cases": 17,
+   "sha256": "a8dbd5defd2474915da78c92062bf8f0c8021c146fcd91ce2b17e2a09bb990a0"
   },
   "rules/hydroxycinnamic_acid_amide.secondary_amide.neg.json": {
    "cases": 14,
-   "sha256": "bd78b4115741d268aa4428f9b7212a071be6e866f6c982aa6f6dd53b55e25bf9"
+   "sha256": "c961f96b4db99cf14433bb55f305a84dd7e7d10dde2beb8bca6189046245b0ef"
   },
   "rules/hydroxycinnamic_acid_amide.spermidine.pos.json": {
    "cases": 14,
-   "sha256": "2352d17932fba69a5e517f04b3a9c78aeee4eb5d36539604a4eb890d3fb55cd0"
+   "sha256": "5492926154d30a6548cdea0c18ad0639c6c401d2c22bd2c75beda116a9c83d01"
   },
   "rules/hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg.json": {
-   "cases": 17,
-   "sha256": "c91559b7585a0d2f14f5ae2998e0eb5a63fe37070757f891bd41404ebf575a75"
+   "cases": 24,
+   "sha256": "85a5676c51f0c6357fedd1e9ad7f4e1c1dbdca8389338117068792a2666b216a"
   },
   "rules/hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.pos.json": {
-   "cases": 14,
-   "sha256": "18bcf498280636d9fe19b3ce8c70361b45cae8ca37c3bf889def3180b8731fc9"
+   "cases": 17,
+   "sha256": "90c110160c80b2736df2583d9279da5f76accb777a52df82d9ee6d88c20cd5c1"
   },
   "rules/hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg.json": {
    "cases": 13,
-   "sha256": "881b0ea5875d1ef4e9e8ea6ca0781d36c87a27df71ac467479dbeab80bece332"
+   "sha256": "388c3f6a24cdbaacd66f9c549dd425b5762d98d21b986801cab83f949e793e3f"
   },
   "rules/iridoid.c4_carboxy_glycoside.neg.json": {
-   "cases": 15,
-   "sha256": "b1b1cc9e4e4686c3b125f499bf4f15c920a408aac6983a39142a39b88efe0672"
+   "cases": 16,
+   "sha256": "1a853360b763e58a298b35aabfc2a91a27b8e62f11b53978853676e406f9fccb"
   },
   "rules/iridoid.c4_methoxycarbonyl_glycoside.neg.json": {
-   "cases": 17,
-   "sha256": "6695098fe1eb5e6a6d28606de77d05688787b877a2a3ec4af1811e460612f727"
+   "cases": 19,
+   "sha256": "0a380b895d4ae0d652bb8df166ab2eb274c3bd1cbb6bee115e3a886fd11468b2"
   },
   "rules/lignan.dibenzocyclooctadiene.pos.json": {
    "cases": 13,
-   "sha256": "dd30272b185a5b075d9250ae135481b5f07b9f14d876ae56fbf596e0d0207bdc"
+   "sha256": "88b277175d45e64f4a4e7ddc704ae270bf5c20b11689bac15328a595fe3671f4"
   },
   "rules/lignan.dibenzocyclooctadiene_ester.pos.json": {
    "cases": 14,
-   "sha256": "ac4836697932ffbf356e4b76ed7ce06632293ccec7bdc664530b640b66dbb936"
+   "sha256": "6e6a9b3769123585307523087db32e5ef108b6a4a2e5463c10a947b9b9f17255"
   },
   "rules/lignan.furofuran.neg.json": {
    "cases": 14,
-   "sha256": "614d1f1fd40297de44dcfb8db7d29f3f1bd15db755291760a25d29839ba238f9"
+   "sha256": "d46e5081a5bd8262d92671b3f32741cc0a02367d88137c70256b51e1a7a72307"
   },
   "rules/lignan.guaiacyl_hexoside.pos.json": {
-   "cases": 14,
-   "sha256": "7a02b67d14e3e79569b95a9d5a4bd756a008ee2ab3943fa2b1bd0acd4fd24e92"
+   "cases": 15,
+   "sha256": "e2e923934ca601fd3619f8bbf7cc0ac8694a7a6b7d720b537ba5d3663c31b395"
   },
   "rules/nucleoside_nucleotide.nucleoside.neg.json": {
-   "cases": 15,
-   "sha256": "493d2af78daf7b05da561328c557cd60f1fa243bbf7b5785b8249f0b1fa39340"
+   "cases": 16,
+   "sha256": "e74c820e9de4f8bb2be1205a043a20a9f8971c0b4bd2ad8eead8d176aea4925a"
   },
   "rules/nucleoside_nucleotide.nucleoside.pos.json": {
    "cases": 14,
-   "sha256": "116bc41a1caec5be989beea23635e260c6123d36b3c292559882c5b97b8eb5aa"
+   "sha256": "0dec98e126a4db0f16feb5c7f2b0e2c018ea859d06cddec51507f0c2eb7cf57c"
   },
   "rules/nucleoside_nucleotide.nucleoside_monophosphate.neg.json": {
-   "cases": 16,
-   "sha256": "d2f0acd648ac3d530b93a6331fec421698ca512dd23812048cbb23c24829a32a"
+   "cases": 18,
+   "sha256": "cba0d01d041363da55ad8ce9a6a2914eefeee3e3c5784d00c8fdfdb270ffcdbc"
   },
   "rules/nucleoside_nucleotide.nucleoside_monophosphate.pos.json": {
    "cases": 14,
-   "sha256": "f3b9b67d994ca63ac5f691f3cdddd0d3276f6230f27ee76812bc4df5c639a3fe"
+   "sha256": "654ee88a1ff617c5e355b997b579fa67c5a15516d9c2b15f1e7d0c9368cf2451"
   },
   "rules/nucleoside_nucleotide.nucleoside_polyphosphate.neg.json": {
-   "cases": 16,
-   "sha256": "d6136adb9fb4ce5ddd60c1740c4a4bde3280578ff478bdd6a5ec5e95d0482cfc"
+   "cases": 18,
+   "sha256": "fe7cdba19c9f9b8a5287692e786a5f2f68791d2029221fe41bf1a021f60d8af9"
   },
   "rules/phenolics_other.ellagitannin.neg.json": {
    "cases": 13,
-   "sha256": "eb310f9a429171ea13b4f44a17921058c0ce0d156efa078113d8433e875d2f8c"
+   "sha256": "3c8610e67c054d89c3f79c7778badeb508e01b9af1eab7a144efd80502a72fdc"
   },
   "rules/phenolics_other.galloyl_glucose.neg.json": {
    "cases": 13,
-   "sha256": "9b442daa8e95809760dc61369f0bcd02d1d4dd62f77d95147db7d5eddfd11baa"
+   "sha256": "9a19f6fa2e316b15803ac2dc630f4f263d4b649ec71d89a10b30ba9eb1189356"
   },
   "rules/phenolics_other.o_substituted_furanocoumarin.pos.json": {
-   "cases": 17,
-   "sha256": "b34ac12d8e99b5c2ef47b5b11f4003371d9cd87d724dc410b3a86a49f422f03d"
+   "cases": 18,
+   "sha256": "221da32dd5931fedcc964c3de7fc90145dc5230bbdf89980db74e35e83fdd536"
   },
   "rules/phenolics_other.proanthocyanidin.neg.json": {
    "cases": 14,
-   "sha256": "b9865c0c6babe05f17207be590e4ec06919133bc0e6962760622b128e0970a0b"
+   "sha256": "646e6167830fde90881711987a65a19fccc09b0e26cd8391be59d5d35eb8d362"
   },
   "rules/phenolics_other.proanthocyanidin.pos.json": {
-   "cases": 13,
-   "sha256": "f2845864f3f41e91f4f5d33a5918ddccb0e6e9c033cceda88dc9bb7b37324e32"
+   "cases": 17,
+   "sha256": "165f245d5225ea5e29b2e70b3bcb8f2915bc52dc7fed995a009b3d6ae59d697f"
   },
   "rules/phenolics_other.resorcinol_stilbene.neg.json": {
    "cases": 13,
-   "sha256": "a2e53ca3706819b9cfd4d7702ddaeafda6af89c63cb5140ac94cea1e552e6fdf"
+   "sha256": "9546fc8fca48395d0233ee54eb9b883a7404168d3fe82ea441fa74aef3e01543"
   },
   "rules/phenolics_other.stilbenoid_oligomer.neg.json": {
    "cases": 13,
-   "sha256": "3b4d2f7cbe569aa4a631c2d4727b406df57e9fa37dcdab563ddfaecc17f3732d"
+   "sha256": "de3f8506c888669f6e22daff1af036cb0555d22bbed34cf2268dabd3cfabdf89"
   },
   "rules/prenylated_flavonoid.c_prenyl.pos.json": {
    "cases": 13,
-   "sha256": "a7b2d950d16c29b8317859f209730ac898f4b68c4aea1b1f4ce6e16e2365f93c"
+   "sha256": "0d1c98e519eb00f6e145908d3f6b5a169c677a9685fc766fbe4418e65be2c5dc"
   },
   "rules/steroidal_glycoside.spirostane_furostane_saponin.pos.json": {
    "cases": 15,
-   "sha256": "51efba73d92018541aeadd66ec7340e2e55768f24ff09547363ba863dd866743"
+   "sha256": "64769d6956b8474abcc8516215623e41d6f7dbc765621ec21148998d346d2653"
   },
   "rules/steroidal_glycoside.steroidal_glycoalkaloid.pos.json": {
    "cases": 14,
-   "sha256": "884f5c5e3166f04aaee0af87df3c4c9c096b47d523982f462c84b4050082f09b"
+   "sha256": "8cf1e9204418dad1bb17d89b08f118198066e024fa3dec2d70d590144d89ab61"
   },
   "rules/steryl_glycoside_bile_acid.amino_acid_conjugate.pos.json": {
    "cases": 14,
-   "sha256": "b966e40ba7649be350ea353b1112840dff164f9e81e08045f90df5e3878ab584"
+   "sha256": "42438c880e73fb65da7162c554f00e8682a9cf6780f3471aa19e9b39ac4fe07d"
   },
   "rules/steryl_glycoside_bile_acid.glycine_conjugate.neg.json": {
    "cases": 12,
-   "sha256": "60e706a2deed966e303a134454471174fb8e3929af4899fb9ca8762d5d954e38"
+   "sha256": "30ae2f4fd8952bd18a58aa886714291b8167c42aa40120f6581e87d9f000ca87"
   },
   "rules/steryl_glycoside_bile_acid.glycine_conjugate.pos.json": {
    "cases": 14,
-   "sha256": "524e3088ccc8800abe09fd4d738e171021e265ee686d5ec54d1db96ac483996c"
+   "sha256": "f2b310bfb9ff0831e39d8aaea625fff811e5e94255445192b23b98006a828a2f"
   },
   "rules/steryl_glycoside_bile_acid.steryl_hexoside.pos.json": {
-   "cases": 12,
-   "sha256": "ec7addc0b294e37d6f8c0cece77c23187c1303c323eced522f61872e6e9caf80"
+   "cases": 13,
+   "sha256": "6a05848ebadc072234214545d8c8889eeac92f5415496f35a9ae28173f1b2258"
   },
   "rules/steryl_glycoside_bile_acid.taurine_conjugate.neg.json": {
    "cases": 13,
-   "sha256": "60d5146715695f55f4ac33bea2c0993df850a218d6a243a6ecdbb9a1cb638e88"
+   "sha256": "aea1f3130f1cbb4cf8d0d06da2f3ea00314698e6033f307e1e7faded3121071f"
   },
   "rules/steryl_glycoside_bile_acid.taurine_conjugate.pos.json": {
    "cases": 14,
-   "sha256": "4a771737c1742fc49b840b18414ebdaf18a9d6ca3ffbef8bcdeb21b324de8afb"
+   "sha256": "361b279c580d82538ea3a9d712868de2b57b3ecc48328b90ff763b11817ad654"
   },
   "rules/sulfated_metabolite.alkyl_sulfate.neg.json": {
-   "cases": 15,
-   "sha256": "8ab194de3481cef7dd6b6b11db05cd941508a20f652f5fb7138d21db9f25e8e2"
+   "cases": 16,
+   "sha256": "c164c7cd5585ac79cb515b51a61a0c4890c4fbddcd4bbb947cc7f97541b92698"
   },
   "rules/sulfated_metabolite.aryl_sulfate.neg.json": {
    "cases": 15,
-   "sha256": "8859134101b296e95bad787f9df52fe4e8419d729458afa1432447f3d37c7d4c"
+   "sha256": "9da3d991453e6aed619c06adf476786f7f07d11241b1acf600c4bc326da07d14"
   },
   "rules/sulfated_metabolite.organosulfate.neg.json": {
-   "cases": 16,
-   "sha256": "9db27b6d2d24d2e95c4464edcddccdc78002fb5938088cd21b634aaf4002336e"
+   "cases": 17,
+   "sha256": "3f9c0ec4b9288d1c8941d9d3a483d5b55c5c72ea397815bee697cb35db0f3fc7"
   },
   "rules/triterpenoid_saponin.triterpenoid_saponin.neg.json": {
-   "cases": 15,
-   "sha256": "4ded6decf040d8eac61923f5e5c9238b441769a2e26d9ea9affd2e0f28673d45"
+   "cases": 19,
+   "sha256": "7cd2ddc6de2df09debaa4c3cc6c38f5c226259729507a76981c3124de2b0acd9"
   },
   "rules/triterpenoid_saponin.triterpenoid_saponin.pos.json": {
-   "cases": 15,
-   "sha256": "e648c1ca9c364d3faa3a021e7fbad1f061267483fa406697db628ac9ea471d46"
+   "cases": 19,
+   "sha256": "6785650b208111f8ea404a5ed16fbece9429ae955e63e07ec6532a9c60cde82d"
   }
  },
  "format": "msfinder-diagnostic-rule-fixture-manifest",
  "format_version": 1,
  "rule_set": {
-  "sha256": "b1f2f8290f35bfd06af829d6434917165d95212fa6a9a5bb55dfb367b88b6955",
+  "sha256": "73b8a0980d5241d6125bf92a89a1f2a69396aa9f470e4a7b1e5c2eb7c123bda5",
   "version": "0.1.0"
  }
 }

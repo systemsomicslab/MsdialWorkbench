@@ -215,6 +215,24 @@ public class EmbeddedRuleSetTests
         return null;
     }
 
+    /// <summary>The committed files of the source folder that are not embedded (its README.md) get the same privacy
+    /// check as the embedded ones; .gitattributes holds only git attributes.</summary>
+    [TestMethod]
+    public void NoSourceFileOfTheRuleSetHoldsPrivateContent() {
+        var root = SourceRuleSetDirectory();
+        if (root is null) {
+            Assert.Inconclusive("the RuleSet source folder is not above the test output");
+        }
+        var files = Directory.GetFiles(root!, "*", SearchOption.AllDirectories).Where(f => Path.GetFileName(f) != ".gitattributes")
+                             .OrderBy(f => f, StringComparer.Ordinal).ToList();
+        Assert.IsTrue(files.Any(f => Path.GetFileName(f) == "README.md"), "README.md is not in the source folder");
+        foreach (var f in files) {
+            var relative = f.Substring(root!.Length).TrimStart(Path.DirectorySeparatorChar).Replace(Path.DirectorySeparatorChar, '/');
+            var found = PrivateContent(relative, File.ReadAllBytes(f));
+            Assert.IsNull(found, relative + ": " + found);
+        }
+    }
+
     [TestMethod]
     public void TheEmbeddedSetEqualsItsSourceDirectory() {
         var root = SourceRuleSetDirectory();

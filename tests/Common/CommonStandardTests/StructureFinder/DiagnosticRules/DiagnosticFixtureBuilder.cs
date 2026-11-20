@@ -12,8 +12,8 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Tests;
 /// <summary>
 /// The independent mass oracle of the per-rule fixtures (design 7.2): NCDK's BODR major-isotope masses, summed as
 /// doubles in symbol order, with the P3 electron 0.000549. Peaks are placed at these m/z values, never at the
-/// engine's own pDa arithmetic. The oracle agrees with the element table within 1e-7 Da per formula of the shipped
-/// set, far inside the 2e-6 Da fixture margin.
+/// engine's own pDa arithmetic. The oracle agrees with the embedded element table (tables/elements.json) within 1e-7
+/// Da per formula of the shipped set, far inside the 2e-6 Da fixture margin.
 /// </summary>
 internal static class NcdkOracle
 {
@@ -758,10 +758,13 @@ internal sealed class RuleFixtureCase
 /// Builds the cases of <c>rules/&lt;rule_id&gt;.json</c> constructively (design 7.2). It picks a target hypothesis
 /// h* of the rule's own adducts whose positive spectrum makes it the chosen hypothesis, places one peak at the oracle
 /// m/z of every member of every support term of h* (outside the precursor region), adds the precursor peak, and
-/// derives: the positive case; each required term dropped; each k_of node at k and k-1 evidence units; each veto
-/// triggered; each ordering reversed; a support peak at the product tolerance edge, in and out on both sides; the
-/// precursor at its tolerance edge, in and out on both sides; the wrong ion mode; a multi-hypothesis tie where two
-/// hypotheses can share a precursor; and the decoy shift +5 Da. Every m/z is integer micro-Da and every intensity an
+/// derives: the positive case; each required term dropped (on h*, or on the first other hypothesis that places a peak
+/// of the term when h* has none; a peak shared with a complementary partner goes for both, and the description says
+/// so); each any node with every alternative dropped; each k_of node at k and k-1 evidence units; each veto
+/// triggered (with a member that leaves h* chosen and not fired, when one exists); each ordering reversed; a support
+/// peak at the product tolerance edge, in and out on both sides, and again on a target at or above m/z 500 when the
+/// first is below it; the precursor at its tolerance edge, in and out on both sides; the wrong ion mode; a
+/// multi-hypothesis tie where two hypotheses can share a precursor; and the decoy shift +5 Da. Every m/z is integer micro-Da and every intensity an
 /// integer, so the decimal text is exact; every case keeps a 5e-6 Da margin from every boundary
 /// (<see cref="NaiveRule.MarginViolation"/>), or it is left out and named in <see cref="Skipped"/>. The expectation of
 /// each case is the naive model's outcome: fired, the chosen hypothesis, its matched term:member@peak list, the ties
@@ -900,12 +903,15 @@ internal sealed class DiagnosticFixtureBuilder
     private string Where(Placed p) => _rule.TermId(p.Term) + ":" + p.Key;
 
     /// <summary>Picks h*: the first hypothesis of the rule's own adducts (id order) whose positive spectrum keeps its
-    /// margins and makes it the chosen hypothesis; failing that, the first that fires; failing that, the first.</summary>
-    private (NaiveHypothesis H, long PMicro, List<Placed> Support)? PickTarget() {
+    /// margins and makes it the chosen hypothesis; failing that, the first that fires; failing that, the first. Sets
+    /// <paramref name="capped"/> when the search stopped at <see cref="MaxTargetTries"/>.</summary>
+    private (NaiveHypothesis H, long PMicro, List<Placed> Support)? PickTarget(out bool capped) {
         (NaiveHypothesis, long, List<Placed>)? firing = null, any = null;
         var tries = 0;
+        capped = false;
         foreach (var h in _rule.All.Where(h => h.Adduct.FromRule)) {
             if (tries++ >= MaxTargetTries) {
+                capped = true;
                 break;
             }
             var pMicro = Micro(h.Mz);
@@ -930,11 +936,87 @@ internal sealed class DiagnosticFixtureBuilder
         return firing ?? any;
     }
 
+    /// <summary>The placed peaks of term <paramref name="t"/> in <paramref name="support"/>: the peaks placed for
+    /// it, or, when every member of the term coincides with a peak placed for another term (a complementary partner,
+    /// say), the placed peaks within the product tolerance of one of its members.</summary>
+    private List<Placed> TermPeaks(int t, NaiveHypothesis h, double precursor, List<Placed> support) {
+        var own = support.Where(s => s.Term == t).ToList();
+        if (own.Count > 0) {
+            return own;
+        }
+        var members = _rule.Members(t, h, precursor, 0);
+        return support.Where(s => members.Any(m => Math.Abs(s.Micro / 1e6 - m.Mz) <= NaiveRule.Tolerance(m.Mz))).ToList();
+    }
+
+    /// <summary>The other support terms with a member within the product tolerance of a peak of
+    /// <paramref name="removed"/>, by term order.</summary>
+    private List<string> AlsoMatched(IEnumerable<int> terms, NaiveHypothesis h, double precursor, List<Placed> removed) {
+        var skip = new HashSet<int>(terms);
+        return Enumerable.Range(0, _rule.Terms.Count)
+            .Where(u => _rule.IsSupport(u) && !skip.Contains(u)
+                        && _rule.Members(u, h, precursor, 0).Any(m => removed.Any(s => Math.Abs(s.Micro / 1e6 - m.Mz) <= NaiveRule.Tolerance(m.Mz))))
+            .Select(_rule.TermId).ToList();
+    }
+
+    /// <summary>
+    /// The positive spectrum a case about term <paramref name="t"/> is built on: h*'s when a peak of the term is placed
+    /// there; otherwise the first other hypothesis of the rule's own adducts (id order) whose positive spectrum places
+    /// one, keeps its margins and makes it the chosen hypothesis, failing that the first that fires. Null, with the
+    /// reason, when there is none.
+    /// </summary>
+    private (NaiveHypothesis H, long PMicro, List<Placed> Support, List<Placed> Peaks)? Basis(int t, NaiveHypothesis h, long pMicro, List<Placed> support, out string reason) {
+        reason = "";
+        var peaks = TermPeaks(t, h, pMicro / 1e6, support);
+        if (peaks.Count > 0) {
+            return (h, pMicro, support, peaks);
+        }
+        (NaiveHypothesis, long, List<Placed>, List<Placed>)? firing = null;
+        var tries = 0;
+        foreach (var other in _rule.All.Where(x => x.Adduct.FromRule && x.Id != h.Id)) {
+            if (tries++ >= MaxTargetTries) {
+                reason = "h* has no peak of the term, and no hypothesis among the first " + MaxTargetTries.ToString(CultureInfo.InvariantCulture)
+                         + " others of the rule's adducts places one and fires (search capped)";
+                return firing;
+            }
+            var oMicro = Micro(other.Mz);
+            var op = oMicro / 1e6;
+            var oSupport = PlaceSupport(other, op);
+            var oPeaks = TermPeaks(t, other, op, oSupport);
+            if (oPeaks.Count == 0) {
+                continue;
+            }
+            var spectrum = Spectrum(oSupport, oMicro);
+            if (_rule.MarginViolation(spectrum, op, 0, BuilderMargin) != null) {
+                continue;
+            }
+            var o = _rule.Outcome(spectrum, op, _rule.Mode, 0);
+            if (o.Fired) {
+                firing ??= (other, oMicro, oSupport, oPeaks);
+                if (o.Chosen == other.Id) {
+                    return (other, oMicro, oSupport, oPeaks);
+                }
+            }
+        }
+        reason = "h* has no peak of the term, and no other hypothesis of the rule's adducts places one and fires";
+        return firing;
+    }
+
+    private static string On(NaiveHypothesis basis, NaiveHypothesis h) =>
+        basis.Id == h.Id ? h.Id : basis.Id + " (h* " + h.Id + " has no peak of the term)";
+
+    /// <summary>The description suffix naming the other support terms the removed peaks also match.</summary>
+    private string Also(IEnumerable<int> terms, NaiveHypothesis h, long pMicro, List<Placed> removed) {
+        var also = AlsoMatched(terms, h, pMicro / 1e6, removed);
+        return also.Count == 0 ? "" : "; the removed peaks also match " + string.Join(", ", also) + ", which lose them too";
+    }
+
     public List<RuleFixtureCase> Build() {
         var cases = new List<RuleFixtureCase>();
-        var picked = PickTarget();
+        var picked = PickTarget(out var targetCapped);
         if (picked is null) {
-            Skipped.Add("no hypothesis of the rule's adducts gives a spectrum with its margins");
+            Skipped.Add(targetCapped
+                ? "no hypothesis among the first " + MaxTargetTries.ToString(CultureInfo.InvariantCulture) + " of the rule's adducts gives a spectrum with its margins (search capped)"
+                : "no hypothesis of the rule's adducts gives a spectrum with its margins");
             return cases;
         }
         var (h, pMicro, support) = picked.Value;
@@ -955,10 +1037,76 @@ internal sealed class DiagnosticFixtureBuilder
         var hDescription = "h* = " + h.Id + ", precursor at its oracle m/z";
         Add("positive", hDescription + "; one peak per support member: " + string.Join(", ", support.Select(Where)), positive, pMicro);
 
-        // Each required term dropped.
-        foreach (var t in Enumerable.Range(0, _rule.Terms.Count).Where(t => _rule.Role(t) == "required" && support.Any(s => s.Term == t))) {
-            Add("drop_" + _rule.TermId(t), "the positive spectrum of " + h.Id + " without the peaks of required term " + _rule.TermId(t),
-                Spectrum(support.Where(s => s.Term != t), pMicro), pMicro);
+        // Each required term dropped, on h* or, when h* has no peak of the term, on another hypothesis that has one.
+        foreach (var t in Enumerable.Range(0, _rule.Terms.Count).Where(t => _rule.Role(t) == "required")) {
+            var basis = Basis(t, h, pMicro, support, out var reason);
+            if (basis is null) {
+                Skipped.Add("drop_" + _rule.TermId(t) + ": " + reason);
+                continue;
+            }
+            var (bh, bMicro, bSupport, bPeaks) = basis.Value;
+            Add("drop_" + _rule.TermId(t), "the positive spectrum of " + On(bh, h) + " without the peaks of required term " + _rule.TermId(t)
+                                           + Also(new[] { t }, bh, bMicro, bPeaks),
+                Spectrum(bSupport.Where(s => !bPeaks.Contains(s)), bMicro), bMicro);
+        }
+
+        // Each any node with every alternative dropped: the peaks of every support term under it.
+        var anyNodes = new List<JsonArray>();
+        void CollectAny(JsonValue node) {
+            foreach (var m in ((JsonObject)node).Members) {
+                if (m.Key == "any") {
+                    anyNodes.Add((JsonArray)m.Value);
+                }
+                if (m.Key is "all" or "any") {
+                    foreach (var c in (JsonArray)m.Value) {
+                        CollectAny(c);
+                    }
+                }
+                else if (m.Key == "k_of") {
+                    foreach (var c in (JsonArray)((JsonObject)m.Value)["of"]) {
+                        CollectAny(c);
+                    }
+                }
+                else if (m.Key == "not") {
+                    CollectAny(m.Value);
+                }
+            }
+        }
+        CollectAny(_rule.Doc["logic"]);
+        for (var n = 0; n < anyNodes.Count; n++) {
+            var under = new List<int>();
+            void Terms(JsonValue node) {
+                foreach (var m in ((JsonObject)node).Members) {
+                    if (m.Key == "term") {
+                        var t = _rule.TermIndex[((JsonString)m.Value).Value];
+                        if (_rule.IsSupport(t) && !under.Contains(t)) {
+                            under.Add(t);
+                        }
+                    }
+                    else if (m.Key is "all" or "any") {
+                        foreach (var c in (JsonArray)m.Value) {
+                            Terms(c);
+                        }
+                    }
+                    else if (m.Key == "k_of") {
+                        foreach (var c in (JsonArray)((JsonObject)m.Value)["of"]) {
+                            Terms(c);
+                        }
+                    }
+                }
+            }
+            foreach (var c in anyNodes[n]) {
+                Terms(c);
+            }
+            var name = "drop_any" + n.ToString(CultureInfo.InvariantCulture);
+            var removed = under.SelectMany(t => TermPeaks(t, h, p, support)).Distinct().ToList();
+            if (removed.Count == 0) {
+                Skipped.Add(name + ": no peak of a term under any node " + n.ToString(CultureInfo.InvariantCulture) + " is placed at " + h.Id);
+                continue;
+            }
+            Add(name, "the positive spectrum of " + h.Id + " without the peaks of every support term under any node " + n.ToString(CultureInfo.InvariantCulture)
+                      + " (pre-order): " + string.Join(", ", under.Select(_rule.TermId)) + Also(under, h, pMicro, removed),
+                Spectrum(support.Where(s => !removed.Contains(s)), pMicro), pMicro);
         }
 
         // Each k_of node at k and k-1 evidence units.
@@ -1002,38 +1150,70 @@ internal sealed class DiagnosticFixtureBuilder
             }
         }
 
-        // Each veto triggered, at the strongest intensity.
+        // Each veto triggered, at the strongest intensity. The member is the first (away from the precursor first)
+        // whose case leaves h* chosen and not fired, so the case shows h* vetoed and no other hypothesis taking over.
         foreach (var t in Enumerable.Range(0, _rule.Terms.Count).Where(_rule.IsVeto)) {
             var members = _rule.Members(t, h, p, 0);
-            var m = members.FirstOrDefault(x => Math.Abs(x.Mz - p) > 1.05) ?? members.FirstOrDefault();
-            if (m is null) {
+            var ordered = members.Where(x => Math.Abs(x.Mz - p) > 1.05).Concat(members.Where(x => Math.Abs(x.Mz - p) <= 1.05)).ToList();
+            if (ordered.Count == 0) {
                 Skipped.Add("veto_" + _rule.TermId(t) + ": no member at " + h.Id);
                 continue;
             }
-            var micro = Micro(m.Mz);
-            var rest = support.Where(s => s.Micro != micro).ToList();
-            Add("veto_" + _rule.TermId(t), "the positive spectrum of " + h.Id + " plus veto " + _rule.TermId(t) + ":" + m.Key + " at intensity " + Strong,
-                Spectrum(rest, pMicro, new[] { new BuiltPeak(micro, Strong) }), pMicro);
+            List<BuiltPeak> VetoSpectrum(NaiveMember x) {
+                var micro = Micro(x.Mz);
+                return Spectrum(support.Where(s => s.Micro != micro), pMicro, new[] { new BuiltPeak(micro, Strong) });
+            }
+            var m = ordered.FirstOrDefault(x => {
+                var peaks = VetoSpectrum(x);
+                if (_rule.MarginViolation(peaks, p, 0, BuilderMargin) != null) {
+                    return false;
+                }
+                var o = _rule.Outcome(peaks, p, _rule.Mode, 0);
+                return !o.Fired && o.Chosen == h.Id;
+            });
+            var alone = m != null;
+            m ??= ordered[0];
+            Add("veto_" + _rule.TermId(t), "the positive spectrum of " + h.Id + " plus veto " + _rule.TermId(t) + ":" + m.Key + " at intensity " + Strong
+                                           + (alone ? "" : "; every member of the veto lets another hypothesis fire, so h* is not the chosen one"),
+                VetoSpectrum(m), pMicro);
         }
 
-        // Each ordering reversed: A weaker than the than-terms.
-        foreach (var t in Enumerable.Range(0, _rule.Terms.Count).Where(t => _rule.Role(t) == "ordering" && support.Any(s => s.Term == t))) {
-            var reversed = support.Select(s => s.Term == t ? new Placed { Term = s.Term, Key = s.Key, Unit = s.Unit, Micro = s.Micro, Intensity = Weak } : s);
-            Add("ordering_reversed_" + _rule.TermId(t), "the positive spectrum of " + h.Id + " with ordering term " + _rule.TermId(t) + " at intensity " + Weak
-                + " below its than-terms", Spectrum(reversed, pMicro), pMicro);
+        // Each ordering reversed: A weaker than the than-terms, on h* or, when h* has no peak of the term, on another
+        // hypothesis that has one.
+        foreach (var t in Enumerable.Range(0, _rule.Terms.Count).Where(t => _rule.Role(t) == "ordering")) {
+            var basis = Basis(t, h, pMicro, support, out var reason);
+            if (basis is null) {
+                Skipped.Add("ordering_reversed_" + _rule.TermId(t) + ": " + reason);
+                continue;
+            }
+            var (bh, bMicro, bSupport, bPeaks) = basis.Value;
+            var reversed = bSupport.Select(s => bPeaks.Contains(s) ? new Placed { Term = s.Term, Key = s.Key, Unit = s.Unit, Micro = s.Micro, Intensity = Weak } : s);
+            Add("ordering_reversed_" + _rule.TermId(t), "the positive spectrum of " + On(bh, h) + " with ordering term " + _rule.TermId(t) + " at intensity " + Weak
+                + " below its than-terms", Spectrum(reversed, bMicro), bMicro);
         }
 
         // The product tolerance edge of the first placed required (or other support) peak.
+        // When that target is below m/z 500 (the 0.005 Da branch), the same four cases again with the placed support
+        // peak of the highest target at or above m/z 500 (the 10 ppm branch), named tolerance_ppm_*.
+        double TargetMz(Placed s) => _rule.Members(s.Term, h, p, 0).Single(m => m.Key == s.Key).Mz;
         var probe = support.OrderBy(s => _rule.Role(s.Term) == "required" ? 0 : 1).ThenBy(s => support.IndexOf(s)).First();
-        var target = _rule.Members(probe.Term, h, p, 0).Single(m => m.Key == probe.Key).Mz;
-        var tol = NaiveRule.Tolerance(target);
-        foreach (var (name, offset) in new[] { ("tolerance_in_high", tol - EdgeDa), ("tolerance_out_high", tol + EdgeDa),
-                                               ("tolerance_in_low", -(tol - EdgeDa)), ("tolerance_out_low", -(tol + EdgeDa)) }) {
-            var moved = Micro(target + offset);
-            var shifted = support.Select(s => s == probe ? new Placed { Term = s.Term, Key = s.Key, Unit = s.Unit, Micro = moved, Intensity = s.Intensity } : s);
-            Add(name, "the positive spectrum of " + h.Id + " with " + Where(probe) + " moved "
-                      + (offset > 0 ? "+" : "-") + "(tol " + (Math.Abs(offset) < tol ? "- " : "+ ") + "1e-5) Da, tol = max(0.005 Da, 10 ppm)",
-                Spectrum(shifted, pMicro), pMicro);
+        var probes = new List<(string Prefix, Placed Probe)> { ("tolerance_", probe) };
+        if (TargetMz(probe) < 500.0) {
+            var ppm = support.Where(s => TargetMz(s) >= 500.0).OrderByDescending(TargetMz).ThenBy(s => support.IndexOf(s)).FirstOrDefault();
+            if (ppm != null) {
+                probes.Add(("tolerance_ppm_", ppm));
+            }
+        }
+        foreach (var (prefix, pr) in probes) {
+            var target = TargetMz(pr);
+            var tol = NaiveRule.Tolerance(target);
+            foreach (var (edge, offset) in new[] { ("in_high", tol - EdgeDa), ("out_high", tol + EdgeDa), ("in_low", -(tol - EdgeDa)), ("out_low", -(tol + EdgeDa)) }) {
+                var moved = Micro(target + offset);
+                var shifted = support.Select(s => s == pr ? new Placed { Term = s.Term, Key = s.Key, Unit = s.Unit, Micro = moved, Intensity = s.Intensity } : s);
+                Add(prefix + edge, "the positive spectrum of " + h.Id + " with " + Where(pr) + " moved "
+                                   + (offset > 0 ? "+" : "-") + "(tol " + (Math.Abs(offset) < tol ? "- " : "+ ") + "1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+                    Spectrum(shifted, pMicro), pMicro);
+            }
         }
 
         // The precursor tolerance edge; the support peaks follow an observed loss reference.
@@ -1050,9 +1230,11 @@ internal sealed class DiagnosticFixtureBuilder
             positive, pMicro, _rule.Mode == "pos" ? "neg" : "pos", verbose: true);
 
         // A multi-hypothesis tie: two hypotheses that share a precursor, with the union of their positive peaks.
-        var tie = FindTie();
+        var tie = FindTie(out var tieCapped);
         if (tie is null) {
-            Skipped.Add("tie: no two hypotheses that share a precursor tie on the union of their peaks");
+            Skipped.Add(tieCapped
+                ? "tie: no tie among the first " + MaxTiePairs.ToString(CultureInfo.InvariantCulture) + " pairs of hypotheses that share a precursor (search capped)"
+                : "tie: no two hypotheses that share a precursor tie on the union of their peaks");
         }
         else {
             Add("tie", "the union of the positive spectra of " + tie.Value.A.Id + " and " + tie.Value.B.Id + " at the precursor of the first",
@@ -1063,14 +1245,18 @@ internal sealed class DiagnosticFixtureBuilder
         return cases;
     }
 
-    private (NaiveHypothesis A, NaiveHypothesis B, List<BuiltPeak> Peaks, long PMicro)? FindTie() {
+    /// <summary>The first pair of hypotheses that share a precursor and tie on the union of their positive peaks;
+    /// <paramref name="capped"/> is set when the search stopped at <see cref="MaxTiePairs"/> pairs.</summary>
+    private (NaiveHypothesis A, NaiveHypothesis B, List<BuiltPeak> Peaks, long PMicro)? FindTie(out bool capped) {
         var byMz = _rule.All.OrderBy(x => x.Mz).ThenBy(x => x.Id, StringComparer.Ordinal).ToList();
         var pairs = 0;
+        capped = false;
         foreach (var a in _rule.All.Where(x => x.Adduct.FromRule)) {
             var pMicro = Micro(a.Mz);
             var p = pMicro / 1e6;
             foreach (var b in byMz.Where(x => x.Id != a.Id && Math.Abs(x.Mz - p) <= _rule.PrecursorTolerance - 2e-5)) {
                 if (pairs++ >= MaxTiePairs) {
+                    capped = true;
                     return null;
                 }
                 var placed = PlaceSupport(a, p);
