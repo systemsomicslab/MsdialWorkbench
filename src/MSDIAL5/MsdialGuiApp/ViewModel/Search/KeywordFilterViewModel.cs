@@ -1,10 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 
@@ -16,16 +14,9 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public KeywordFilterViewModel(KeywordFilterModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
-            Keywords = new ReactivePropertySlim<string>(string.Join(" ", model.Keywords)).AddTo(Disposables);
+            Keywords = model.ToReactivePropertySlimAsSynchronized(m => m.KeywordText).AddTo(Disposables);
             ClearCommand = new ReactiveCommand().AddTo(Disposables);
             ClearCommand.Subscribe(_ => Clear()).AddTo(Disposables);
-            Keywords.Where(keywords => keywords != null)
-                .SelectSwitch(keywords => Observable.FromAsync(token => model.SetKeywordsAsync(keywords.Split(), token)))
-                .Subscribe()
-                .AddTo(Disposables);
-            Observable.FromEventPattern(handler => model.KeywordsCleared += handler, handler => model.KeywordsCleared -= handler)
-                .Subscribe(_ => Keywords.Value = string.Empty)
-                .AddTo(Disposables);
         }
 
         public string Label => _model.Label;

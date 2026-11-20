@@ -1,11 +1,8 @@
 ﻿using CompMs.CommonMVVM;
-using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -18,12 +15,10 @@ namespace CompMs.App.Msdial.Model.Search
 
     public sealed class KeywordFilterModel : DisposableModelBase
     {
-        private readonly SemaphoreSlim _sem;
         private readonly List<string> _keywords;
         private IKeywordFiltering _method;
 
         public KeywordFilterModel(string label, KeywordFilteringType type = KeywordFilteringType.IgnoreIfWordIsNull) {
-            _sem = new SemaphoreSlim(1, 1).AddTo(Disposables);
             _keywords = [];
             Keywords = _keywords.AsReadOnly();
             switch (type) {
@@ -46,30 +41,18 @@ namespace CompMs.App.Msdial.Model.Search
 
         public ReadOnlyCollection<string> Keywords { get; }
 
-        public async Task SetKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
-            token.ThrowIfCancellationRequested();
-            await _sem.WaitAsync().ConfigureAwait(false);
-            try {
-                token.ThrowIfCancellationRequested();
-                SetKeywords(_method.Filter(keywords));
-            }
-            finally {
-                _sem.Release();
+        public string KeywordText {
+            get => _keywordText;
+            set {
+                if (_keywordText == value) return;
+                _keywordText = value;
+                SetKeywords(_method.Filter(value.Split()));
+                OnPropertyChanged(nameof(KeywordText));
             }
         }
+        private string _keywordText = string.Empty;
 
-        public event EventHandler? KeywordsCleared;
-
-        public void ClearKeywords() {
-            _sem.Wait();
-            try {
-                SetKeywords([]);
-            }
-            finally {
-                _sem.Release();
-            }
-            KeywordsCleared?.Invoke(this, EventArgs.Empty);
-        }
+        public void ClearKeywords() => KeywordText = string.Empty;
 
         private void SetKeywords(IEnumerable<string> keywords) {
             _keywords.Clear();
@@ -93,8 +76,7 @@ namespace CompMs.App.Msdial.Model.Search
             bool Match(string word, List<string> keywords);
         }
 
-        // Keywords keep the case the user typed, because they are shown back in the filter box.
-        // Only the comparison ignores case.
+        // Keyword comparisons ignore case without changing the text the user typed.
         private static bool ContainsIgnoreCase(string word, string keyword) {
             return word.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
         }
