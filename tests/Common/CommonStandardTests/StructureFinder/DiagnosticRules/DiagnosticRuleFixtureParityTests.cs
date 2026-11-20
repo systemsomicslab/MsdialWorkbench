@@ -170,9 +170,14 @@ public class DiagnosticRuleFixtureParityTests
         Assert.AreEqual(invariant, actual);
     }
 
+    /// <summary>The semantics cases that sit on a ratio comparison on purpose, built from exactly representable
+    /// intensities (design 7.2): their ratio violations are expected, every other margin still holds.</summary>
+    private static readonly string[] DeliberateRatioEqualities = { "ordering_equal", "veto_stronger_than_equal" };
+
     [TestMethod]
     public void TheSemanticsInputsKeepTheirMargins() {
         var failures = new List<string>();
+        var equalities = new HashSet<string>(StringComparer.Ordinal);
         foreach (var c in Cases(EngineFixtures.SemanticsFile)) {
             var peaks = (JsonArray)((JsonObject)c["input"])["peaks"];
             foreach (var p in peaks.Cast<JsonArray>().SelectMany(x => x).Cast<JsonString>()) {
@@ -181,10 +186,16 @@ public class DiagnosticRuleFixtureParityTests
                 Assert.IsTrue(dot > 0 && p.Value.Length - dot - 1 <= 6, Name(c) + " " + p.Value);
             }
             foreach (var v in EngineFixtures.AuditMargins(c)) {
+                if (DeliberateRatioEqualities.Contains(Name(c)) && v.Contains(" ratio: ")) {
+                    equalities.Add(Name(c));
+                    continue;
+                }
                 failures.Add(Name(c) + ": " + v);
             }
         }
         Assert.AreEqual(0, failures.Count, string.Join("\n", failures));
+        // The audit sees each deliberate equality, so it would flag one that is not deliberate.
+        CollectionAssert.AreEquivalent(DeliberateRatioEqualities, equalities.ToList());
     }
 
     [TestMethod]

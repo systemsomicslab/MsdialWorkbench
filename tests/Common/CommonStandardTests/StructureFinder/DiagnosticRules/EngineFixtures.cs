@@ -39,6 +39,10 @@ internal static class EngineFixtures
     /// <summary>Relative intensities sit at least this far (relative) from every floor.</summary>
     public const double FloorMargin = 1e-6;
 
+    /// <summary>An ordering or veto_stronger_than term's I_raw sits at least this far (relative) from ratio times the
+    /// largest I_raw of its than-terms.</summary>
+    public const double RatioMargin = 1e-6;
+
     private static KeyValuePair<string, JsonValue> M(string key, JsonValue value) => new KeyValuePair<string, JsonValue>(key, value);
 
     private static string Str(JsonObject o, string key) => ((JsonString)o[key]).Value;
@@ -386,7 +390,9 @@ internal static class EngineFixtures
     /// every peak sits at least <see cref="MarginDa"/> from each target's tolerance (or window) boundary, from the
     /// 1.0 Da loss constraint and from the precursor region, and every hit's relative intensity at least
     /// <see cref="FloorMargin"/> (relative) from the term's floor. Every composition sits at least MarginDa from the
-    /// precursor tolerance boundary. Returns the violations.
+    /// precursor tolerance boundary. In every such hypothesis, the I_raw of every ordering or veto_stronger_than term
+    /// with a hit sits at least <see cref="RatioMargin"/> (relative) from ratio times the largest I_raw of its
+    /// than-terms (design 4.7), unless the case is a deliberate equality case. Returns the violations.
     /// </summary>
     public static List<string> AuditMargins(JsonObject caseObject) =>
         AuditMargins(DiagnosticRuleSet.LoadFiles(CaseFiles(caseObject), RuleSetSource.Inline), (JsonObject)caseObject["options"], (JsonObject)caseObject["input"]);
@@ -424,7 +430,9 @@ internal static class EngineFixtures
                     if (d > engine.PrecursorTolerance) {
                         continue;
                     }
-                    foreach (var term in engine.Builder.Build(h.Series, engine.DecoyPda, engine.LossReference, p)) {
+                    var targets = engine.Builder.Build(h.Series, engine.DecoyPda, engine.LossReference, p);
+                    var iRaw = new double[targets.Count];
+                    foreach (var term in targets) {
                         foreach (var member in term.Members) {
                             var t = member.TargetMz;
                             var tol = term.IsWindow ? term.HalfWidthDa : engine.Tolerance.At(t);
@@ -444,7 +452,23 @@ internal static class EngineFixtures
                                     violations.Add(where + " floor: rel " + rel.ToString("R", CultureInfo.InvariantCulture) + " at floor "
                                                    + floor.ToString("R", CultureInfo.InvariantCulture));
                                 }
+                                if (!double.IsNaN(rel) && !(member.IsLoss && member.LossReferenceMz - x.pk.Mz < SpectrumView.MinLossDa)) {
+                                    iRaw[term.Term.Index] = Math.Max(iRaw[term.Term.Index], rel);
+                                }
                             }
+                        }
+                    }
+                    foreach (var term in targets) {
+                        if (!(term.Term.Role is "ordering" or "veto_stronger_than") || term.Term.Obj["than"] is not JsonArray than || iRaw[term.Term.Index] <= 0.0) {
+                            continue;
+                        }
+                        var ratio = term.Term.Obj.TryGetValue("ratio", out var ratioValue) && ratioValue is JsonFloat ratioFloat ? ratioFloat.Value : 1.0;
+                        var thanIndex = than.Cast<JsonString>().Select(s => targets.First(x => x.Term.Tid == s.Value).Term.Index);
+                        var bound = ratio * thanIndex.Select(i => iRaw[i]).DefaultIfEmpty(0.0).Max();
+                        if (bound > 0.0 && Math.Abs(iRaw[term.Term.Index] - bound) < RatioMargin * bound) {
+                            violations.Add(rule.RuleId + " " + h.HypothesisId + " " + term.Term.Tid + " ratio: I_raw "
+                                           + iRaw[term.Term.Index].ToString("R", CultureInfo.InvariantCulture) + " at "
+                                           + bound.ToString("R", CultureInfo.InvariantCulture));
                         }
                     }
                 }

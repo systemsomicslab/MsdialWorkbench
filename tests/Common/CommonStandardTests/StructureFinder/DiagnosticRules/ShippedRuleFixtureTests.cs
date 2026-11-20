@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using static CompMs.Common.StructureFinder.DiagnosticRules.Tests.DiagnosticRuleFixtures;
 
 namespace CompMs.Common.StructureFinder.DiagnosticRules.Tests;
@@ -125,6 +126,99 @@ public class ShippedRuleFixtureTests
             }
         }
         Assert.AreEqual(0, missing.Count, string.Join("\n", missing));
+    }
+
+    private static readonly Regex FiresOnTarget = new Regex(@"^(positive|tolerance_(ppm_)?in_(high|low)|precursor_in_(high|low)|k_of[0-9]+_at_k)$");
+    private static readonly Regex DoesNotFire = new Regex(@"^(k_of[0-9]+_at_k_minus_1|decoy_plus_5)$");
+
+    /// <summary>
+    /// The outcome each case kind is built for, from its recorded expectation (which another test checks against the
+    /// engine): positive, the _in_ edges and k_of at k fire with h* (named by the positive case) chosen; a veto leaves
+    /// h* chosen and not fired, or, when its description says another hypothesis takes over, h* neither chosen nor
+    /// tied; k_of at k - 1 and the decoy do not fire; wrong_mode fails its precondition; a tie ties; an upgrade case
+    /// reports its upgrade. So a regenerated fixture cannot silently lose the coverage its case names promise.
+    /// </summary>
+    [TestMethod]
+    public void EveryCaseHasTheOutcomeItsKindPromises() {
+        var failures = new List<string>();
+        foreach (var id in ShippedRuleFixtures.RuleIds()) {
+            var cases = ((JsonArray)Fixture(ShippedRuleFixtures.RuleFile(id))["cases"]).Cast<JsonObject>().ToList();
+            JsonObject? Outcome(JsonObject c) => ((JsonObject)((JsonObject)c["expect"])["outcomes"]).TryGetValue(id, out var o) ? (JsonObject)o : null;
+            bool Fired(JsonObject? o) => o != null && ((JsonBoolean)o["fired"]).Value;
+            string? Chosen(JsonObject? o) => o?["chosen"] is JsonString s ? s.Value : null;
+            List<string> Ids(JsonObject? o, string key) => o?[key] is JsonArray a ? a.Cast<JsonString>().Select(s => s.Value).ToList() : new List<string>();
+            var positive = cases.SingleOrDefault(c => Name(c) == "positive");
+            if (positive is null) {
+                failures.Add(id + ": no positive case");
+                continue;
+            }
+            var description = ((JsonString)positive["description"]).Value;
+            var end = description.IndexOf(", precursor at its oracle m/z", StringComparison.Ordinal);
+            if (!description.StartsWith("h* = ", StringComparison.Ordinal) || end < 0) {
+                failures.Add(id + "/positive: the description does not name h*");
+                continue;
+            }
+            var target = description.Substring(5, end - 5);
+            foreach (var c in cases) {
+                var name = Name(c);
+                var o = Outcome(c);
+                string? wrong = null;
+                if (FiresOnTarget.IsMatch(name)) {
+                    wrong = Fired(o) && Chosen(o) == target ? null : "does not fire with h* chosen";
+                }
+                else if (DoesNotFire.IsMatch(name)) {
+                    wrong = Fired(o) ? "fires" : null;
+                }
+                else if (name.StartsWith("veto_", StringComparison.Ordinal)) {
+                    wrong = ((JsonString)c["description"]).Value.Contains("lets another hypothesis fire")
+                        ? Chosen(o) == target || Ids(o, "tied_hypothesis_ids").Contains(target) ? "h* is still chosen or tied" : null
+                        : !Fired(o) && Chosen(o) == target ? null : "does not leave h* vetoed and chosen";
+                }
+                else if (name == "wrong_mode") {
+                    wrong = !Fired(o) && o?["precondition_failure"] is JsonString f && f.Value == "ion_mode" ? null : "does not fail on the ion mode";
+                }
+                else if (name == "tie") {
+                    wrong = Fired(o) && Ids(o, "tied_hypothesis_ids").Count >= 2 ? null : "does not tie";
+                }
+                else if (name.StartsWith("upgrade_", StringComparison.Ordinal)) {
+                    var term = name.Substring("upgrade_".Length) + ":";
+                    wrong = Ids(o, "upgrades").Any(u => u.StartsWith(term, StringComparison.Ordinal)) ? null : "does not report the upgrade";
+                }
+                if (wrong != null) {
+                    failures.Add(id + "/" + name + ": " + wrong);
+                }
+            }
+        }
+        Assert.AreEqual(0, failures.Count, string.Join("\n", failures));
+    }
+
+    [TestMethod]
+    public void AnOrderingRuleTiesWithItsOrderingTermAtItsOwnIntensity() {
+        // alkyl_sulfate.neg is all(hso4, any(...)) with hso4 ordered above so3_radical and loss_so3 (ratio 1): with every
+        // peak at one intensity hso4 is not stronger and nothing fires, so the tie keeps hso4 at its placed intensity.
+        const string id = "sulfated_metabolite.alkyl_sulfate.neg";
+        var built = new DiagnosticFixtureBuilder(ShippedRuleFixtures.NaiveModel(id)).Build();
+        var tie = built.SingleOrDefault(c => c.Name == "tie");
+        Assert.IsNotNull(tie, "no tie case for " + id);
+        var outcome = (JsonObject)((JsonObject)tie!.Expect["outcomes"])[id];
+        Assert.IsTrue(((JsonBoolean)outcome["fired"]).Value);
+        Assert.IsTrue(((JsonArray)outcome["tied_hypothesis_ids"]).Count >= 2);
+    }
+
+    [TestMethod]
+    public void TheBuilderMarginFlagsARatioEquality() {
+        // The positive spectrum of alkyl_sulfate.neg with every product peak at one intensity puts hso4 exactly on
+        // ratio 1.0 times its than-terms: a case there would test the equality by accident, so the builder refuses it.
+        const string id = "sulfated_metabolite.alkyl_sulfate.neg";
+        var naive = ShippedRuleFixtures.NaiveModel(id);
+        var positive = new DiagnosticFixtureBuilder(naive).Build().Single(c => c.Name == "positive");
+        var precursorMicro = DiagnosticFixtureBuilder.Micro(double.Parse(((JsonString)positive.Input["precursor_mz"]).Value, CultureInfo.InvariantCulture));
+        var peaks = ((JsonArray)positive.Input["peaks"]).Cast<JsonArray>().Select(p => new BuiltPeak(
+            DiagnosticFixtureBuilder.Micro(double.Parse(((JsonString)p[0]).Value, CultureInfo.InvariantCulture)),
+            (long)Math.Round(double.Parse(((JsonString)p[1]).Value, CultureInfo.InvariantCulture) / 1e6))).ToList();
+        Assert.IsNull(naive.MarginViolation(peaks, precursorMicro / 1e6, 0, 5e-6));
+        var flat = peaks.Select(p => p.Micro == precursorMicro ? p : new BuiltPeak(p.Micro, 500)).ToList();
+        StringAssert.Contains(naive.MarginViolation(flat, precursorMicro / 1e6, 0, 5e-6) ?? "", "on the ratio");
     }
 
     // ------------------------------------------------------------------------------------------------ replay

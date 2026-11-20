@@ -170,6 +170,9 @@ internal sealed class NaiveEvaluation
     public bool FiredIgnoringVetoes;
     public double Score;
     public List<string> Matched = new List<string>();
+    /// <summary>Per upgrade member, its first candidate (present, outside the precursor region, in the order of the
+    /// support candidates; sharing with support peaks allowed), as term_id:member_key@peak_index.</summary>
+    public List<string> Upgrades = new List<string>();
 }
 
 /// <summary>The naive outcome of one rule on one spectrum: the constructive expectation.</summary>
@@ -180,6 +183,7 @@ internal sealed class NaiveOutcome
     public bool Fired;
     public string? Chosen;
     public List<string>? Matched;
+    public List<string>? Upgrades;
     public List<string> Tied = new List<string>();
 }
 
@@ -585,6 +589,17 @@ internal sealed class NaiveRule
                                  + items[i].Candidates[choice[i]].Peak.ToString(CultureInfo.InvariantCulture));
             }
         }
+        for (var t = 0; t < Terms.Count; t++) {
+            if (Role(t) != "upgrade") {
+                continue;
+            }
+            for (var m = 0; m < members[t].Count; m++) {
+                var first = hits[t][m].Where(x => x.Present && !x.InRegion).OrderByDescending(x => x.Rel).ThenBy(x => x.Err).ThenBy(x => x.Peak).FirstOrDefault();
+                if (first != null) {
+                    eval.Upgrades.Add(TermId(t) + ":" + members[t][m].Key + "@" + first.Peak.ToString(CultureInfo.InvariantCulture));
+                }
+            }
+        }
         return eval;
     }
 
@@ -692,16 +707,46 @@ internal sealed class NaiveRule
         }
         outcome.Chosen = chosen?.Hypothesis.Id;
         outcome.Matched = chosen?.Matched;
+        outcome.Upgrades = chosen?.Upgrades;
         return outcome;
     }
 
     // ------------------------------------------------------------------------------------------------ margins
 
+    /// <summary>The relative margin of an ordering or veto_stronger_than comparison from its equality.</summary>
+    public const double RatioMargin = 1e-6;
+
+    /// <summary>I_raw of every term of <paramref name="h"/> (design 4.7): the largest relative intensity of a peak
+    /// within the tolerance of one of its members (and 1 Da below a loss reference), present or not, in the
+    /// precursor region or not; 0 when there is none.</summary>
+    private double[] RawIntensities(NaiveHypothesis h, IReadOnlyList<BuiltPeak> peaks, double precursor, int decoy) {
+        var outside = peaks.Where(p => Math.Abs(p.Mz - precursor) > RegionDa).Select(p => (double)p.Intensity).ToList();
+        var iRaw = new double[Terms.Count];
+        if (outside.Count == 0) {
+            return iRaw;
+        }
+        var baseI = outside.Max();
+        for (var t = 0; t < Terms.Count; t++) {
+            foreach (var m in Members(t, h, precursor, decoy)) {
+                var tol = Str(Terms[t], "kind") == "window" ? HalfWidth(t) : Tolerance(m.Mz);
+                foreach (var p in peaks) {
+                    if (Math.Abs(p.Mz - m.Mz) <= tol + Slack && !(m.IsLoss && !(m.Reference - p.Mz >= 1.0))) {
+                        iRaw[t] = Math.Max(iRaw[t], p.Intensity / baseI);
+                    }
+                }
+            }
+        }
+        return iRaw;
+    }
+
     /// <summary>
     /// The builder's own margin check, wider than the engine audit (<see cref="EngineFixtures.AuditMargins"/>):
     /// every hypothesis within 1 Da of the precursor tolerance sits at least <paramref name="margin"/> from it, and
     /// every peak sits at least <paramref name="margin"/> from every tolerance boundary of every member of every
-    /// passing hypothesis, from the 1 Da loss constraint and from the precursor region. Returns the first violation.
+    /// passing hypothesis, from the 1 Da loss constraint and from the precursor region; and in every passing
+    /// hypothesis, the I_raw of every ordering or veto_stronger_than term with a peak sits at least
+    /// <see cref="RatioMargin"/> (relative) from ratio times the largest I_raw of its than-terms. Returns the first
+    /// violation.
     /// </summary>
     public string? MarginViolation(IReadOnlyList<BuiltPeak> peaks, double precursor, int decoy, double margin) {
         foreach (var p in peaks) {
@@ -729,6 +774,17 @@ internal sealed class NaiveRule
                             return h.Id + " " + TermId(t) + ":" + m.Key + " peak " + p.Micro + " on the loss constraint";
                         }
                     }
+                }
+            }
+            var iRaw = RawIntensities(h, peaks, precursor, decoy);
+            for (var t = 0; t < Terms.Count; t++) {
+                if (Role(t) is not ("ordering" or "veto_stronger_than") || Terms[t]["than"] is not JsonArray than || iRaw[t] <= 0.0) {
+                    continue;
+                }
+                var bound = (Terms[t]["ratio"] is JsonFloat r ? r.Value : 1.0) * than.Cast<JsonString>().Select(s => iRaw[TermIndex[s.Value]]).DefaultIfEmpty(0.0).Max();
+                if (bound > 0.0 && Math.Abs(iRaw[t] - bound) < RatioMargin * bound) {
+                    return h.Id + " " + TermId(t) + " on the ratio: I_raw " + iRaw[t].ToString("R", CultureInfo.InvariantCulture) + " against "
+                           + bound.ToString("R", CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -761,14 +817,16 @@ internal sealed class RuleFixtureCase
 /// derives: the positive case; each required term dropped (on h*, or on the first other hypothesis that places a peak
 /// of the term when h* has none; a peak shared with a complementary partner goes for both, and the description says
 /// so); each any node with every alternative dropped; each k_of node at k and k-1 evidence units; each veto
-/// triggered (with a member that leaves h* chosen and not fired, when one exists); each ordering reversed; a support
-/// peak at the product tolerance edge, in and out on both sides, and again on a target at or above m/z 500 when the
-/// first is below it; the precursor at its tolerance edge, in and out on both sides; the wrong ion mode; a
-/// multi-hypothesis tie where two hypotheses can share a precursor; and the decoy shift +5 Da. Every m/z is integer micro-Da and every intensity an
-/// integer, so the decimal text is exact; every case keeps a 5e-6 Da margin from every boundary
-/// (<see cref="NaiveRule.MarginViolation"/>), or it is left out and named in <see cref="Skipped"/>. The expectation of
-/// each case is the naive model's outcome: fired, the chosen hypothesis, its matched term:member@peak list, the ties
-/// and n_hypotheses. Rules with measure:false are built alike.
+/// triggered (with a member that leaves h* chosen and not fired, when one exists); each ordering reversed; each
+/// upgrade term with a peak at a member of h*; a support peak at the product tolerance edge, in and out on both sides,
+/// and again on a target at or above m/z 500 when the first is below it; the precursor at its tolerance edge, in and
+/// out on both sides; the wrong ion mode; a multi-hypothesis tie where two hypotheses can share a precursor (unless
+/// the positive case already is one); and the decoy shift +5 Da. Every m/z is integer micro-Da and every intensity an
+/// integer, so the decimal text is exact; every case keeps a 5e-6 Da margin from every boundary and a 1e-6 relative
+/// margin from every ratio comparison (<see cref="NaiveRule.MarginViolation"/>), or it is left out and named in
+/// <see cref="Skipped"/>. The expectation of each case is the naive model's outcome: fired, the chosen hypothesis,
+/// its matched and upgrade term:member@peak lists, the ties and n_hypotheses. Rules with measure:false are built
+/// alike.
 /// </summary>
 internal sealed class DiagnosticFixtureBuilder
 {
@@ -883,6 +941,7 @@ internal sealed class DiagnosticFixtureBuilder
                 M("n_hypotheses", JsonValue.Of(o.NHypotheses)),
                 M("precondition_failure", JsonValue.OfNullable(o.PreconditionFailure)),
                 M("tied_hypothesis_ids", Strings(o.Tied)),
+                M("upgrades", Strings(o.Upgrades)),
             })),
         })),
         M("refusals", JsonArray.Empty),
@@ -904,11 +963,13 @@ internal sealed class DiagnosticFixtureBuilder
 
     /// <summary>Picks h*: the first hypothesis of the rule's own adducts (id order) whose positive spectrum keeps its
     /// margins and makes it the chosen hypothesis; failing that, the first that fires; failing that, the first. Sets
-    /// <paramref name="capped"/> when the search stopped at <see cref="MaxTargetTries"/>.</summary>
-    private (NaiveHypothesis H, long PMicro, List<Placed> Support)? PickTarget(out bool capped) {
+    /// <paramref name="capped"/> when the search stopped at <see cref="MaxTargetTries"/>, and
+    /// <paramref name="fallback"/> to the reason when h* is not chosen on its own positive spectrum (empty otherwise).</summary>
+    private (NaiveHypothesis H, long PMicro, List<Placed> Support)? PickTarget(out bool capped, out string fallback) {
         (NaiveHypothesis, long, List<Placed>)? firing = null, any = null;
         var tries = 0;
         capped = false;
+        fallback = "";
         foreach (var h in _rule.All.Where(h => h.Adduct.FromRule)) {
             if (tries++ >= MaxTargetTries) {
                 capped = true;
@@ -933,7 +994,17 @@ internal sealed class DiagnosticFixtureBuilder
                 }
             }
         }
-        return firing ?? any;
+        var searched = capped ? "among the first " + MaxTargetTries.ToString(CultureInfo.InvariantCulture) + " of the rule's adducts (search capped)" : "of the rule's adducts";
+        if (firing != null) {
+            fallback = "h*: no hypothesis " + searched + " is the chosen one on its own positive spectrum; h* = " + firing.Value.Item1.Id
+                       + " fires there, but another hypothesis is chosen";
+            return firing;
+        }
+        if (any != null) {
+            fallback = "h*: no hypothesis " + searched + " fires on its own positive spectrum; h* = " + any.Value.Item1.Id
+                       + ", and its positive case does not fire";
+        }
+        return any;
     }
 
     /// <summary>The placed peaks of term <paramref name="t"/> in <paramref name="support"/>: the peaks placed for
@@ -1012,17 +1083,21 @@ internal sealed class DiagnosticFixtureBuilder
 
     public List<RuleFixtureCase> Build() {
         var cases = new List<RuleFixtureCase>();
-        var picked = PickTarget(out var targetCapped);
+        var picked = PickTarget(out var targetCapped, out var fallback);
         if (picked is null) {
             Skipped.Add(targetCapped
                 ? "no hypothesis among the first " + MaxTargetTries.ToString(CultureInfo.InvariantCulture) + " of the rule's adducts gives a spectrum with its margins (search capped)"
                 : "no hypothesis of the rule's adducts gives a spectrum with its margins");
             return cases;
         }
+        if (fallback.Length > 0) {
+            Skipped.Add(fallback);
+        }
         var (h, pMicro, support) = picked.Value;
         Target = h;
         var p = pMicro / 1e6;
-        void Add(string name, string description, List<BuiltPeak> peaks, long precursorMicro, string mode = "", int decoy = 0, bool verbose = false) {
+        void Add(string name, string description, List<BuiltPeak> peaks, long precursorMicro, string mode = "", int decoy = 0, bool verbose = false,
+                 Func<NaiveOutcome, string>? suffix = null) {
             mode = mode.Length == 0 ? _rule.Mode : mode;
             var precursor = precursorMicro / 1e6;
             var violation = _rule.MarginViolation(peaks, precursor, decoy, BuilderMargin);
@@ -1031,7 +1106,8 @@ internal sealed class DiagnosticFixtureBuilder
                 return;
             }
             var outcome = _rule.Outcome(peaks, precursor, mode, decoy);
-            cases.Add(new RuleFixtureCase(name, description, Options(decoy, verbose), Input(peaks, precursorMicro, mode), Expectation(outcome, verbose)));
+            cases.Add(new RuleFixtureCase(name, description + (suffix is null ? "" : suffix(outcome)), Options(decoy, verbose), Input(peaks, precursorMicro, mode),
+                                          Expectation(outcome, verbose)));
         }
         var positive = Spectrum(support, pMicro);
         var hDescription = "h* = " + h.Id + ", precursor at its oracle m/z";
@@ -1047,7 +1123,10 @@ internal sealed class DiagnosticFixtureBuilder
             var (bh, bMicro, bSupport, bPeaks) = basis.Value;
             Add("drop_" + _rule.TermId(t), "the positive spectrum of " + On(bh, h) + " without the peaks of required term " + _rule.TermId(t)
                                            + Also(new[] { t }, bh, bMicro, bPeaks),
-                Spectrum(bSupport.Where(s => !bPeaks.Contains(s)), bMicro), bMicro);
+                Spectrum(bSupport.Where(s => !bPeaks.Contains(s)), bMicro), bMicro,
+                suffix: o => !o.Fired ? "; the rule does not fire"
+                    : o.Chosen == bh.Id ? "; " + bh.Id + " still fires, because the logic has an alternative to the term"
+                    : "; another hypothesis fires and is chosen");
         }
 
         // Each any node with every alternative dropped: the peaks of every support term under it.
@@ -1139,14 +1218,16 @@ internal sealed class DiagnosticFixtureBuilder
             var units = support.Where(s => termChildren.Contains(s.Term)).Select(s => s.Unit).Distinct().ToList();
             var need = k - subtrees;
             if (need < 1 || need > units.Count) {
-                Skipped.Add("k_of" + n + ": k " + k + " needs " + need + " of " + units.Count + " placed units");
+                Skipped.Add("k_of" + n.ToString(CultureInfo.InvariantCulture) + ": k " + k.ToString(CultureInfo.InvariantCulture) + " needs "
+                            + need.ToString(CultureInfo.InvariantCulture) + " of " + units.Count.ToString(CultureInfo.InvariantCulture) + " placed units");
                 continue;
             }
             foreach (var keep in new[] { need, need - 1 }) {
                 var dropped = new HashSet<int>(units.Skip((int)keep));
                 var name = "k_of" + n.ToString(CultureInfo.InvariantCulture) + (keep == need ? "_at_k" : "_at_k_minus_1");
-                Add(name, "the positive spectrum of " + h.Id + " with " + (keep + subtrees) + " of the k = " + k + " evidence units of k_of node "
-                          + n + " (pre-order) present", Spectrum(support.Where(s => !dropped.Contains(s.Unit)), pMicro), pMicro);
+                Add(name, "the positive spectrum of " + h.Id + " with " + (keep + subtrees).ToString(CultureInfo.InvariantCulture) + " of the k = "
+                          + k.ToString(CultureInfo.InvariantCulture) + " evidence units of k_of node " + n.ToString(CultureInfo.InvariantCulture)
+                          + " (pre-order) present", Spectrum(support.Where(s => !dropped.Contains(s.Unit)), pMicro), pMicro);
             }
         }
 
@@ -1173,7 +1254,8 @@ internal sealed class DiagnosticFixtureBuilder
             });
             var alone = m != null;
             m ??= ordered[0];
-            Add("veto_" + _rule.TermId(t), "the positive spectrum of " + h.Id + " plus veto " + _rule.TermId(t) + ":" + m.Key + " at intensity " + Strong
+            Add("veto_" + _rule.TermId(t), "the positive spectrum of " + h.Id + " plus veto " + _rule.TermId(t) + ":" + m.Key + " at intensity "
+                                           + Strong.ToString(CultureInfo.InvariantCulture)
                                            + (alone ? "" : "; every member of the veto lets another hypothesis fire, so h* is not the chosen one"),
                 VetoSpectrum(m), pMicro);
         }
@@ -1188,8 +1270,29 @@ internal sealed class DiagnosticFixtureBuilder
             }
             var (bh, bMicro, bSupport, bPeaks) = basis.Value;
             var reversed = bSupport.Select(s => bPeaks.Contains(s) ? new Placed { Term = s.Term, Key = s.Key, Unit = s.Unit, Micro = s.Micro, Intensity = Weak } : s);
-            Add("ordering_reversed_" + _rule.TermId(t), "the positive spectrum of " + On(bh, h) + " with ordering term " + _rule.TermId(t) + " at intensity " + Weak
-                + " below its than-terms", Spectrum(reversed, bMicro), bMicro);
+            Add("ordering_reversed_" + _rule.TermId(t), "the positive spectrum of " + On(bh, h) + " with ordering term " + _rule.TermId(t) + " at intensity "
+                + Weak.ToString(CultureInfo.InvariantCulture) + " below its than-terms", Spectrum(reversed, bMicro), bMicro);
+        }
+
+        // Each upgrade term: the positive spectrum of h* plus one peak at the first member of the term (by target)
+        // that lies outside the precursor region and apart from every placed peak, so that the chosen hypothesis
+        // reports it. An upgrade is never in the logic; the expectation records what the extra peak does elsewhere.
+        foreach (var t in Enumerable.Range(0, _rule.Terms.Count).Where(t => _rule.Role(t) == "upgrade")) {
+            var name = "upgrade_" + _rule.TermId(t);
+            var members = _rule.Members(t, h, p, 0);
+            if (members.Count == 0) {
+                Skipped.Add(name + ": no member at " + h.Id);
+                continue;
+            }
+            var free = members.FirstOrDefault(x => Math.Abs(x.Mz - p) > 1.05 && x.Mz >= 2.0
+                && !support.Any(s => Math.Abs(s.Micro / 1e6 - x.Mz) <= 2.0 * Math.Max(NaiveRule.Tolerance(x.Mz), NaiveRule.Tolerance(s.Micro / 1e6)) + 1e-4));
+            if (free is null) {
+                Skipped.Add(name + ": every member at " + h.Id + " lies in the precursor region or on a placed support peak");
+                continue;
+            }
+            Add(name, "the positive spectrum of " + h.Id + " plus upgrade " + _rule.TermId(t) + ":" + free.Key + " at intensity "
+                      + Support.ToString(CultureInfo.InvariantCulture),
+                Spectrum(support, pMicro, new[] { new BuiltPeak(Micro(free.Mz), Support) }), pMicro);
         }
 
         // The product tolerance edge of the first placed required (or other support) peak.
@@ -1229,12 +1332,21 @@ internal sealed class DiagnosticFixtureBuilder
         Add("wrong_mode", "the positive spectrum of " + h.Id + " in the other ion mode, verbose so that the outcome with no hypothesis is listed",
             positive, pMicro, _rule.Mode == "pos" ? "neg" : "pos", verbose: true);
 
-        // A multi-hypothesis tie: two hypotheses that share a precursor, with the union of their positive peaks.
-        var tie = FindTie(out var tieCapped);
-        if (tie is null) {
+        // A multi-hypothesis tie: two hypotheses that share a precursor, with the union of their positive peaks. When
+        // the positive case already is a tie and the first tie found has its input, the tie case is left out.
+        var positiveOutcome = _rule.Outcome(positive, p, _rule.Mode, 0);
+        var positiveTies = positiveOutcome.Fired && positiveOutcome.Tied.Count >= 2;
+        var tie = FindTie(out var tieCapped, out var nPairs);
+        if (positiveTies && (tie is null || (tie.Value.PMicro == pMicro && tie.Value.Peaks.Select(x => (x.Micro, x.Intensity)).SequenceEqual(positive.Select(x => (x.Micro, x.Intensity)))))) {
+            Skipped.Add("tie: the positive case already is a tie of " + positiveOutcome.Tied.Count.ToString(CultureInfo.InvariantCulture) + " hypotheses"
+                        + (tie is null ? "" : ", with the input of the first tie found"));
+        }
+        else if (tie is null) {
             Skipped.Add(tieCapped
                 ? "tie: no tie among the first " + MaxTiePairs.ToString(CultureInfo.InvariantCulture) + " pairs of hypotheses that share a precursor (search capped)"
-                : "tie: no two hypotheses that share a precursor tie on the union of their peaks");
+                : nPairs == 0
+                    ? "tie: no two hypotheses share a precursor (within precursor_tolerance_da - 2e-5 Da)"
+                    : "tie: none of the " + nPairs.ToString(CultureInfo.InvariantCulture) + " pairs of hypotheses that share a precursor ties on the union of their peaks");
         }
         else {
             Add("tie", "the union of the positive spectra of " + tie.Value.A.Id + " and " + tie.Value.B.Id + " at the precursor of the first",
@@ -1245,11 +1357,13 @@ internal sealed class DiagnosticFixtureBuilder
         return cases;
     }
 
-    /// <summary>The first pair of hypotheses that share a precursor and tie on the union of their positive peaks;
-    /// <paramref name="capped"/> is set when the search stopped at <see cref="MaxTiePairs"/> pairs.</summary>
-    private (NaiveHypothesis A, NaiveHypothesis B, List<BuiltPeak> Peaks, long PMicro)? FindTie(out bool capped) {
+    /// <summary>The first pair of hypotheses that share a precursor and tie on the union of their positive peaks,
+    /// each placed peak at its own intensity (an ordering term stronger than its than-terms, as in the positive
+    /// case); <paramref name="capped"/> is set when the search stopped at <see cref="MaxTiePairs"/> pairs, and
+    /// <paramref name="pairs"/> counts the pairs tried.</summary>
+    private (NaiveHypothesis A, NaiveHypothesis B, List<BuiltPeak> Peaks, long PMicro)? FindTie(out bool capped, out int pairs) {
         var byMz = _rule.All.OrderBy(x => x.Mz).ThenBy(x => x.Id, StringComparer.Ordinal).ToList();
-        var pairs = 0;
+        pairs = 0;
         capped = false;
         foreach (var a in _rule.All.Where(x => x.Adduct.FromRule)) {
             var pMicro = Micro(a.Mz);
@@ -1268,7 +1382,7 @@ internal sealed class DiagnosticFixtureBuilder
                 if (placed.Count == 0) {
                     continue;
                 }
-                var peaks = Spectrum(placed.Select(s => new Placed { Term = s.Term, Key = s.Key, Unit = s.Unit, Micro = s.Micro, Intensity = Support }), pMicro);
+                var peaks = Spectrum(placed, pMicro);
                 if (_rule.MarginViolation(peaks, p, 0, BuilderMargin) != null) {
                     continue;
                 }

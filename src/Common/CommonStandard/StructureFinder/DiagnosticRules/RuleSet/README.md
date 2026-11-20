@@ -51,22 +51,41 @@ yet: every rule is `author_reviewed: false` with `review: null`, so no outcome i
 
 ## ChemOnt nodes
 
-Each motif row's `chemont` lists ChemOnt nodes as `{id, name}`, sorted by id: `compatible` holds the classes a
-compound carrying the motif is expected to fall in, `broader` the ancestors and wider classes that still contain it.
+Each motif row's `chemont` lists ChemOnt nodes as `{id, name}`, sorted by id, and no node is in both lists:
+
+- `compatible` holds classes that a compound carrying the motif is expected to fall in. A listed class is not one
+  whose members mostly carry the motif: a class picked by hand stays `compatible` however few of its database
+  compounds carry it (`Stilbenes` for `resorcinol_stilbene`, say).
+- `broader` holds every ancestor of a `compatible` class below the kingdoms (the root and `Organic compounds` are
+  never listed), and wider classes picked by hand that hold the motif's compounds among many that do not. It is not
+  a list of every class a carrier can fall in.
+
 A report compares a ClassyFire class or FSEA term with them by name (`agree`, `broader`, `differs`), so the names are
-the ontology's own, spelling included. The field is report-only: it is left out of every `rule_semantic_sha256`, so
-editing it changes the rule-set sha256 but no rule's semantics or review.
+the ontology's own, spelling included. A class in neither list reads `differs`, including one whose compounds carry
+the motif but that no step below reached; hierarchy-aware comparison is the harness's, with the local ChemOnt (design
+5.7). The field is report-only: it is left out of every `rule_semantic_sha256`, so editing it changes the rule-set
+sha256 but no rule's semantics or review.
 
 The class compared is a candidate's ClassyFire direct parent, often a deep class, and the comparison is by name, so
-`compatible` lists the deep classes as well:
+the lists name the deep classes as well. They were built in four steps:
 
-- Descendants. Each descendant of a `compatible` node that is the direct parent of compounds in the MS-FINDER
-  structure database (MsfinderStructureDB-VS15 joined with InchikeyClassyfireDB-VS5 by InChIKey; up to 400
-  compounds per class) was checked with the motif's SMARTS in NCDK. It is `compatible` when at least two of its
-  compounds, and at least a quarter of those checked, carry the motif; a descendant whose compounds do not (vitamin D
-  under `steroid`, say) is left out, so a candidate there reads `differs`.
+- Hand-picked. Per motif, from its SMARTS and sources, the classes the motif's compounds belong to (`compatible`)
+  and wider classes (`broader`).
+- Checked classes. A class is checked when it is the direct parent of compounds in the MS-FINDER structure database
+  (MsfinderStructureDB-VS15 joined with InchikeyClassyfireDB-VS5 by InChIKey; up to 400 compounds per class) and its
+  compounds are matched with the motif's SMARTS in NCDK. It is added to `compatible` when at least two of its
+  compounds, and at least a quarter of those checked, carry the motif. Checked were every descendant of a
+  `compatible` class and, for classes ChemOnt files elsewhere, every class under `Alkaloids and derivatives` for the
+  four indole motifs, the O-methylated flavonoid classes for the five flavone, flavonol, flavanone and
+  dihydroflavonol motifs, and the prenylated xanthone and neoflavonoid classes for `c_prenyl_aryl`. A checked class
+  that fails is left out (vitamin D for `steroid`, `Harmala alkaloids` for `beta_carboline_unsaturated_omethyl`,
+  `Prenylated neoflavonoids`), except that an O-methylated flavonoid class with at least one carrier is `broader`, as
+  the O-methylated isoflavonoid classes are for `isoflavone_core`.
 - Nesting. A compound carrying a child motif carries its parent, so every class `compatible` with the child is
   `compatible` or `broader` for the parent (`MotifTests` checks it).
+- Ancestors. Every ancestor of a `compatible` class below the kingdoms that is not `compatible` is `broader`, so a
+  class between two listed ones (`Steroid lactones` between `Steroids and steroid derivatives` and `Cardenolides`)
+  reads `broader`, not `differs`.
 
 - Source: ChemOnt 2.1, the ClassyFire ontology file `ChemOnt_2_1.obo` (OBO header `data-version: 2.1`,
   `date: 26:08:2016 16:28`; ClassyFire download path `/system/downloads/1_0/chemont/ChemOnt_2_1.obo.zip`), sha256
@@ -74,5 +93,8 @@ The class compared is a candidate's ClassyFire direct parent, often a deep class
   checked against that file. The ontology itself is not committed.
 - Citation: Djoumbou Feunang Y. et al., ClassyFire: automated chemical classification with a comprehensive,
   computable taxonomy. J. Cheminform. 8, 61 (2016), doi:10.1186/s13321-016-0174-y.
-- In 0.1.0 all 106 motifs carry nodes (1,293 in all, 593 distinct); 12 have an empty `compatible` list because no
-  ChemOnt class matches the motif itself, and one (`c_prenyl_aryl`) has an empty `broader` list.
+- In 0.1.0 all 106 motifs carry nodes (1,598 in all: 1,021 `compatible` and 577 `broader`; 671 distinct); 9 have an
+  empty `compatible` list because no ChemOnt class matches the motif itself.
+- The version of the ontology is recorded here only: the motif table's closed format has no field for it, and the
+  README is not hashed. A ClassyFire database built on a later ChemOnt that renames a class would read `differs`
+  for it.

@@ -82,6 +82,29 @@ public class EmbeddedRuleSetTests
         CollectionAssert.AreEqual(expected, names);
     }
 
+    /// <summary>
+    /// The released rows of ruleset-history.tsv (design 3.3: append-only, so a label never names two contents), as
+    /// they are on master. The history must start with exactly these lines, in this order; a row is added here when
+    /// the change that adds it to the history is merged, and is never edited or removed afterwards. The manifest pin
+    /// above follows the embedded files, so this list is what keeps a released row from being rewritten.
+    /// </summary>
+    private static readonly string[] ReleasedHistoryRows =
+    {
+        "0.0.1-skeleton\t7f84e0fe34bd672e375191e282e32e85618ce51079577b71001063ee1250774e\t2026-11-19",
+    };
+
+    [TestMethod]
+    public void TheHistoryStartsWithEveryReleasedRowUnchanged() {
+        var history = Encoding.ASCII.GetString(DiagnosticRuleSetLoader.ReadEmbedded()[DiagnosticRuleSetLoader.HistoryFile]);
+        var lines = history.Split('\n');
+        Assert.IsTrue(history.EndsWith("\n", StringComparison.Ordinal), "ruleset-history.tsv does not end with a newline");
+        Assert.IsTrue(lines.Length - 1 >= ReleasedHistoryRows.Length, "a released history row is missing");
+        CollectionAssert.AreEqual(ReleasedHistoryRows, lines.Take(ReleasedHistoryRows.Length).ToArray(), "a released history row was edited, removed or moved");
+        // Later rows name versions no released row names.
+        var released = new HashSet<string>(ReleasedHistoryRows.Select(r => r.Split('\t')[0]), StringComparer.Ordinal);
+        Assert.IsFalse(lines.Skip(ReleasedHistoryRows.Length).Where(l => l.Length > 0).Any(l => released.Contains(l.Split('\t')[0])), "a released version is pinned again");
+    }
+
     [TestMethod]
     public void TheHistoryPinsTheEmbeddedSha256() {
         var files = DiagnosticRuleSetLoader.ReadEmbedded();
@@ -124,6 +147,9 @@ public class EmbeddedRuleSetTests
     private static readonly Regex InChIKey = new Regex("[A-Z]{14}-[A-Z]{10}-[A-Z]");
     private static readonly Regex DrivePath = new Regex(@"(^|[^A-Za-z])[A-Za-z]:[\\/]");
     private static readonly Regex UncPath = new Regex(@"\\\\[A-Za-z0-9]");
+    /// <summary>An absolute POSIX or MSYS path: a slash at the start of a word followed by a one-letter drive
+    /// (/c/..., the Git Bash form) or a usual home or mount root.</summary>
+    private static readonly Regex PosixPath = new Regex(@"(^|[\s""'`(=,;<>\[])/([A-Za-z]|home|Users|mnt|root|tmp|var|opt|media)/[A-Za-z0-9_.~-]");
     private static readonly Regex Email = new Regex(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}");
 
     /// <summary>The first kind of private content in a rule-set file, or null. Every check runs on the raw text and,
@@ -145,6 +171,12 @@ public class EmbeddedRuleSetTests
             }
             if (text.IndexOf("local-vs21", StringComparison.OrdinalIgnoreCase) >= 0) {
                 return "a local-vs21 name";
+            }
+            if (PosixPath.IsMatch(text)) {
+                return "a POSIX path";
+            }
+            if (FixtureProvenanceLintTests.VsName(text) != null) {
+                return "a VS20/VS21 name";
             }
         }
         return decoded.Any(t => UncPath.IsMatch(t)) ? "a UNC path" : null;
@@ -192,6 +224,13 @@ public class EmbeddedRuleSetTests
         Assert.AreEqual("an InChIKey", Check("{\"notes\":\"AAAAAAAAAAAAAA-BBBBBBBBBB-C\"}"));
         Assert.AreEqual("an e-mail address", Check("{\"notes\":\"a.b@example.org\"}"));
         Assert.AreEqual("a local-vs21 name", Check("{\"Local-VS21\":1}"));
+        Assert.AreEqual("a POSIX path", Check("{\"notes\":\"see /f/data/x.json\"}"));
+        Assert.AreEqual("a POSIX path", Check("{\"notes\":\"/home/someone/x\"}"));
+        Assert.AreEqual("a POSIX path", PrivateContent("README.md", Encoding.ASCII.GetBytes("under `/mnt/c/x`\n")));
+        Assert.AreEqual("a VS20/VS21 name", Check("{\"notes\":\"tuned on VS21 record 1234\"}"));
+        // Not private: the origin token, a relative path, a URL path and a SMILES stereo bond.
+        Assert.IsNull(Check("{\"origin\":\"tuned_vs20\",\"notes\":\"see rules/x.json\",\"smiles\":\"C/C=C/C\"}"));
+        Assert.IsNull(PrivateContent("README.md", Encoding.ASCII.GetBytes("download path `/system/downloads/1_0/chemont/x.zip`, https://example.org/a/b\n")));
     }
 
     /// <summary>The source folder, found from this source file's path (independent of where MSTest deploys the
