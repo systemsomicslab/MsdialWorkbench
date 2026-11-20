@@ -44,6 +44,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     var line = sr.ReadLine();
                     if (line == string.Empty) continue;
                     if (line.Length != 0 && line[0] == '#') continue;
+                    if (DiagnosticRules.DiagnosticRuleIni.TryRead(line, param.DiagnosticRules)) continue;
 
                     var ans = string.Empty;
                     int intValue;
@@ -838,6 +839,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                 sw.WriteLine("StructurePredictionTimeOut=" + param.StructurePredictionTimeOut);
 
                 sw.WriteLine();
+                DiagnosticRules.DiagnosticRuleIni.Write(sw, param.DiagnosticRules);
             }
         }
 

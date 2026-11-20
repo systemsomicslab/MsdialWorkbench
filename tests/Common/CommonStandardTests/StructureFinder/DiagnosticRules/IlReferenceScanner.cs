@@ -79,6 +79,19 @@ internal sealed class IlReferenceScanner
         _engine = engine;
     }
 
+    private readonly Func<Type, Site, string?> _typeReason = EngineRules.TypeReason;
+    private readonly Func<MethodBase, Site, string?> _memberReason = EngineRules.MemberReason;
+
+    /// <summary>
+    /// A scanner that judges references by another allowlist (MS-FINDER's adapter member allowlist, design 6.1
+    /// item 3) instead of the engine's.
+    /// </summary>
+    public IlReferenceScanner(Assembly engine, Func<Type, Site, string?> typeReason, Func<MethodBase, Site, string?> memberReason) {
+        _engine = engine;
+        _typeReason = typeReason;
+        _memberReason = memberReason;
+    }
+
     public IReadOnlyList<Finding> Findings => _findings;
 
     /// <summary>How many member references were judged (a scan that decodes nothing would pass vacuously).</summary>
@@ -236,7 +249,7 @@ internal sealed class IlReferenceScanner
                         CheckType(a, site, where);
                     }
                 }
-                Report(site, where, Describe(m), EngineRules.MemberReason(m, site));
+                Report(site, where, Describe(m), _memberReason(m, site));
                 return;
         }
     }
@@ -260,7 +273,7 @@ internal sealed class IlReferenceScanner
         if (!_typeSeen.Add(key)) {
             return;
         }
-        Report(site, where, t.FullName ?? t.Name, EngineRules.TypeReason(t, site));
+        Report(site, where, t.FullName ?? t.Name, _typeReason(t, site));
     }
 }
 
