@@ -4,8 +4,118 @@
  "motifs": [
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001391",
+      "name": "Hydroxycinnamic acids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000465",
+      "name": "Coumaric acid esters"
+     },
+     {
+      "id": "CHEMONTID:0002682",
+      "name": "Coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002683",
+      "name": "M-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002684",
+      "name": "O-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002685",
+      "name": "P-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002708",
+      "name": "Anthocyanidin 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002709",
+      "name": "Anthocyanidin 3p-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002710",
+      "name": "Anthocyanidin 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002711",
+      "name": "Anthocyanidin 3-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002712",
+      "name": "Anthocyanidin 3-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002713",
+      "name": "Anthocyanidin 3p-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002714",
+      "name": "Anthocyanidin 3p-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002715",
+      "name": "Anthocyanidin 5-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002716",
+      "name": "Anthocyanidin 5-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003002",
+      "name": "Hydroxycinnamic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0003003",
+      "name": "Hydroxycinnamic acid glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003004",
+      "name": "Chlorogenic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003553",
+      "name": "Anthocyanidin 7-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003554",
+      "name": "Anthocyanidin 7-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003556",
+      "name": "Anthocyanidin 7-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003678",
+      "name": "Flavonoid 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003679",
+      "name": "Flavonoid 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003680",
+      "name": "Flavonoid 7-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003681",
+      "name": "Flavonoid 3p-O-p-coumaroyl glycosides"
+     }
+    ]
    },
    "motif_id": "hydroxycinnamoyl_ester",
    "origin": "source_defined",
@@ -27,7 +137,28 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000133",
+      "name": "1,3-dicarbonyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000265",
+      "name": "Carboxylic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000346",
+      "name": "Dicarboxylic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001238",
+      "name": "Carboxylic acid esters"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "malonyl_ester",
@@ -50,8 +181,70 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000176",
+      "name": "Benzoic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001248",
+      "name": "Hydroxybenzoic acid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001251",
+      "name": "Gallic acid and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001350",
+      "name": "Benzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0002279",
+      "name": "Benzene and substituted derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002448",
+      "name": "Benzenoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001587",
+      "name": "Catechin gallates"
+     },
+     {
+      "id": "CHEMONTID:0001645",
+      "name": "Depsides and depsidones"
+     },
+     {
+      "id": "CHEMONTID:0001710",
+      "name": "Hydrolyzable tannins"
+     },
+     {
+      "id": "CHEMONTID:0002513",
+      "name": "O-galloylquinic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003539",
+      "name": "Galloyl esters"
+     },
+     {
+      "id": "CHEMONTID:0004699",
+      "name": "m-Hydroxybenzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004700",
+      "name": "o-Hydroxybenzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004701",
+      "name": "p-Hydroxybenzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004702",
+      "name": "p-Hydroxybenzoic acid alkyl esters"
+     }
+    ]
    },
    "motif_id": "hydroxybenzoyl_ester",
    "origin": "source_defined",
@@ -73,7 +266,36 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001391",
+      "name": "Hydroxycinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002207",
+      "name": "O-glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0004165",
+      "name": "Phenolic glycosides"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "hydroxycinnamic_acid_o_glycoside",
@@ -92,8 +314,42 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000278",
+      "name": "Organonitrogen compounds"
+     },
+     {
+      "id": "CHEMONTID:0000324",
+      "name": "Fatty acid esters"
+     },
+     {
+      "id": "CHEMONTID:0000503",
+      "name": "Quaternary ammonium salts"
+     },
+     {
+      "id": "CHEMONTID:0003909",
+      "name": "Fatty Acyls"
+     },
+     {
+      "id": "CHEMONTID:0004707",
+      "name": "Organic nitrogen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001095",
+      "name": "Acyl carnitines"
+     },
+     {
+      "id": "CHEMONTID:0001609",
+      "name": "Carnitines"
+     }
+    ]
    },
    "motif_id": "carnitine",
    "origin": "source_defined",
@@ -111,8 +367,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000324",
+      "name": "Fatty acid esters"
+     },
+     {
+      "id": "CHEMONTID:0003909",
+      "name": "Fatty Acyls"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001095",
+      "name": "Acyl carnitines"
+     }
+    ]
    },
    "motif_id": "hydroxyacylcarnitine",
    "origin": "source_defined",
@@ -130,8 +404,62 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000278",
+      "name": "Organonitrogen compounds"
+     },
+     {
+      "id": "CHEMONTID:0004707",
+      "name": "Organic nitrogen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000386",
+      "name": "Acyl cholines"
+     },
+     {
+      "id": "CHEMONTID:0000503",
+      "name": "Quaternary ammonium salts"
+     },
+     {
+      "id": "CHEMONTID:0001012",
+      "name": "Cholines"
+     },
+     {
+      "id": "CHEMONTID:0001095",
+      "name": "Acyl carnitines"
+     },
+     {
+      "id": "CHEMONTID:0001131",
+      "name": "Sphingomyelins"
+     },
+     {
+      "id": "CHEMONTID:0001250",
+      "name": "Phosphocholines"
+     },
+     {
+      "id": "CHEMONTID:0001408",
+      "name": "Phosphatidylcholines"
+     },
+     {
+      "id": "CHEMONTID:0001413",
+      "name": "Lysophosphatidylcholines"
+     },
+     {
+      "id": "CHEMONTID:0001609",
+      "name": "Carnitines"
+     },
+     {
+      "id": "CHEMONTID:0002213",
+      "name": "Glycerophosphocholines"
+     },
+     {
+      "id": "CHEMONTID:0004225",
+      "name": "Tetraalkylammonium salts"
+     }
+    ]
    },
    "motif_id": "trimethylammonium",
    "origin": "source_defined",
@@ -149,8 +477,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001909",
+      "name": "Protoberberine alkaloids and derivatives"
+     }
+    ]
    },
    "motif_id": "protoberberine_quaternary",
    "origin": "source_defined",
@@ -172,8 +510,22 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002665",
+      "name": "Benzophenanthridine alkaloids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002669",
+      "name": "Quaternary benzophenanthridine alkaloids"
+     }
+    ]
    },
    "motif_id": "benzophenanthridine_quaternary",
    "origin": "source_defined",
@@ -191,8 +543,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000381",
+      "name": "Aporphines"
+     },
+     {
+      "id": "CHEMONTID:0003021",
+      "name": "Hydroxy-7-aporphines"
+     },
+     {
+      "id": "CHEMONTID:0003022",
+      "name": "Methyl-7-aporphines"
+     }
+    ]
    },
    "motif_id": "aporphine",
    "origin": "source_defined",
@@ -210,8 +580,22 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     },
+     {
+      "id": "CHEMONTID:0002566",
+      "name": "Isoquinolines and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000054",
+      "name": "Benzylisoquinolines"
+     }
+    ]
    },
    "motif_id": "benzyltetrahydroisoquinoline",
    "origin": "source_defined",
@@ -229,8 +613,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001909",
+      "name": "Protoberberine alkaloids and derivatives"
+     }
+    ]
    },
    "motif_id": "tetrahydroprotoberberine",
    "origin": "source_defined",
@@ -248,8 +642,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002743",
+      "name": "Protopine alkaloids"
+     }
+    ]
    },
    "motif_id": "protopine",
    "origin": "source_defined",
@@ -267,8 +671,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000058",
+      "name": "Morphinans"
+     }
+    ]
    },
    "motif_id": "morphinan",
    "origin": "source_defined",
@@ -286,8 +700,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000211",
+      "name": "Indoles and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001146",
+      "name": "Indolines"
+     },
+     {
+      "id": "CHEMONTID:0002497",
+      "name": "Indoles"
+     }
+    ]
    },
    "motif_id": "indole_or_indoline_ring",
    "origin": "source_defined",
@@ -309,7 +741,24 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     },
+     {
+      "id": "CHEMONTID:0000211",
+      "name": "Indoles and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001146",
+      "name": "Indolines"
+     },
+     {
+      "id": "CHEMONTID:0002497",
+      "name": "Indoles"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "indole_or_indoline_omethyl",
@@ -332,8 +781,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0002279",
+      "name": "Benzene and substituted derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002448",
+      "name": "Benzenoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001350",
+      "name": "Benzoic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004643",
+      "name": "Phenylacetic acid esters"
+     }
+    ]
    },
    "motif_id": "monocyclic_aryl_acyl_ester",
    "origin": "source_defined",
@@ -355,7 +822,24 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     },
+     {
+      "id": "CHEMONTID:0000211",
+      "name": "Indoles and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001213",
+      "name": "Pyridoindoles"
+     },
+     {
+      "id": "CHEMONTID:0001914",
+      "name": "Beta carbolines"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "beta_carboline_unsaturated_omethyl",
@@ -378,7 +862,24 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     },
+     {
+      "id": "CHEMONTID:0000211",
+      "name": "Indoles and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001146",
+      "name": "Indolines"
+     },
+     {
+      "id": "CHEMONTID:0002497",
+      "name": "Indoles"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "indole_or_indoline_acetate_or_methyl_ester",
@@ -401,8 +902,30 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002672",
+      "name": "Plumeran-type alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0002755",
+      "name": "Aspidospermatan-type alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0002756",
+      "name": "Vinca alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0003755",
+      "name": "Aspidofractine alkaloids"
+     }
+    ]
    },
    "motif_id": "aspidospermane",
    "origin": "source_defined",
@@ -420,8 +943,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002246",
+      "name": "Cinchona alkaloids"
+     }
+    ]
    },
    "motif_id": "cinchona_quinoline_quinuclidine",
    "origin": "source_defined",
@@ -435,8 +968,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002757",
+      "name": "Quebrachamine alkaloids"
+     }
+    ]
    },
    "motif_id": "quebrachamine_skeleton",
    "origin": "source_defined",
@@ -450,8 +993,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000219",
+      "name": "Pyrrolizines"
+     }
+    ]
    },
    "motif_id": "pyrrolizidine_retronecine_type",
    "origin": "source_defined",
@@ -473,8 +1026,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     },
+     {
+      "id": "CHEMONTID:0003993",
+      "name": "Aminoxides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000219",
+      "name": "Pyrrolizines"
+     },
+     {
+      "id": "CHEMONTID:0004184",
+      "name": "Trialkyl amine oxides"
+     }
+    ]
    },
    "motif_id": "pyrrolizidine_retronecine_n_oxide",
    "origin": "source_defined",
@@ -496,7 +1067,16 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     },
+     {
+      "id": "CHEMONTID:0004139",
+      "name": "Azacyclic compounds"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "pyrrolizidine_otonecine_type",
@@ -519,8 +1099,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000220",
+      "name": "Pyrrolizidines"
+     }
+    ]
    },
    "motif_id": "pyrrolizidine_platynecine_type",
    "origin": "source_defined",
@@ -542,8 +1132,22 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000147",
+      "name": "Macrolides and analogues"
+     },
+     {
+      "id": "CHEMONTID:0000219",
+      "name": "Pyrrolizines"
+     }
+    ]
    },
    "motif_id": "pyrrolizidine_retronecine_macrocyclic_diester",
    "origin": "source_defined",
@@ -561,8 +1165,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000219",
+      "name": "Pyrrolizines"
+     }
+    ]
    },
    "motif_id": "pyrrolizidine_retronecine_monoester",
    "origin": "source_defined",
@@ -584,8 +1198,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000219",
+      "name": "Pyrrolizines"
+     }
+    ]
    },
    "motif_id": "pyrrolizidine_crotanecine_type",
    "origin": "source_defined",
@@ -599,8 +1223,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000219",
+      "name": "Pyrrolizines"
+     }
+    ]
    },
    "motif_id": "pyrrolizidine_supinidine_type",
    "origin": "source_defined",
@@ -614,8 +1248,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000492",
+      "name": "Tropane alkaloids"
+     }
+    ]
    },
    "motif_id": "tropane_tropine_type",
    "origin": "source_defined",
@@ -637,8 +1281,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000492",
+      "name": "Tropane alkaloids"
+     }
+    ]
    },
    "motif_id": "tropane_6_oxygenated",
    "origin": "source_defined",
@@ -660,8 +1314,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000492",
+      "name": "Tropane alkaloids"
+     }
+    ]
    },
    "motif_id": "tropane_6_7_dioxygenated",
    "origin": "source_defined",
@@ -683,8 +1347,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000492",
+      "name": "Tropane alkaloids"
+     }
+    ]
    },
    "motif_id": "nortropane_3_substituted",
    "origin": "source_defined",
@@ -702,8 +1376,22 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002719",
+      "name": "Lupin alkaloids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002720",
+      "name": "Matrine alkaloids"
+     }
+    ]
    },
    "motif_id": "quinolizidine_matrine_type",
    "origin": "source_defined",
@@ -725,8 +1413,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002719",
+      "name": "Lupin alkaloids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001795",
+      "name": "Sparteine, lupanine, and related alkaloids"
+     },
+     {
+      "id": "CHEMONTID:0002723",
+      "name": "Anagyrine-type alkaloids"
+     }
+    ]
    },
    "motif_id": "quinolizidine_sparteine_type",
    "origin": "source_defined",
@@ -744,8 +1450,38 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000013",
+      "name": "Amino acids, peptides, and analogues"
+     },
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000265",
+      "name": "Carboxylic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000348",
+      "name": "Peptides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0003051",
+      "name": "N-acylglutathiones"
+     },
+     {
+      "id": "CHEMONTID:0003052",
+      "name": "S-acylglutathiones"
+     },
+     {
+      "id": "CHEMONTID:0004546",
+      "name": "S-(2-hydroxyacyl)glutathiones"
+     }
+    ]
    },
    "motif_id": "glutathione_tripeptide",
    "origin": "source_defined",
@@ -763,8 +1499,70 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000013",
+      "name": "Amino acids, peptides, and analogues"
+     },
+     {
+      "id": "CHEMONTID:0000060",
+      "name": "Alpha amino acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000265",
+      "name": "Carboxylic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000347",
+      "name": "Amino acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000348",
+      "name": "Peptides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0003024",
+      "name": "Gamma-glutamyl amino acids"
+     },
+     {
+      "id": "CHEMONTID:0003025",
+      "name": "Gamma-glutamyl peptides"
+     },
+     {
+      "id": "CHEMONTID:0003051",
+      "name": "N-acylglutathiones"
+     },
+     {
+      "id": "CHEMONTID:0003052",
+      "name": "S-acylglutathiones"
+     },
+     {
+      "id": "CHEMONTID:0004022",
+      "name": "(5L-glutamyl)-alpha-peptides"
+     },
+     {
+      "id": "CHEMONTID:0004023",
+      "name": "5L-glutamyl alpha-amino-acids"
+     },
+     {
+      "id": "CHEMONTID:0004267",
+      "name": "N-acyl-L-glutamines"
+     },
+     {
+      "id": "CHEMONTID:0004315",
+      "name": "Glutamine and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0004546",
+      "name": "S-(2-hydroxyacyl)glutathiones"
+     }
+    ]
    },
    "motif_id": "gamma_glutamyl_amide",
    "origin": "source_defined",
@@ -782,8 +1580,30 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002365",
+      "name": "Cyanogenic glycosides"
+     }
+    ]
    },
    "motif_id": "mandelonitrile_glycoside",
    "origin": "source_defined",
@@ -805,8 +1625,114 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0001111",
+      "name": "Flavonoid glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001583",
+      "name": "Flavonoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003678",
+      "name": "Flavonoid 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003679",
+      "name": "Flavonoid 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003680",
+      "name": "Flavonoid 7-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003681",
+      "name": "Flavonoid 3p-O-p-coumaroyl glycosides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001361",
+      "name": "Anthocyanins"
+     },
+     {
+      "id": "CHEMONTID:0002708",
+      "name": "Anthocyanidin 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002709",
+      "name": "Anthocyanidin 3p-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002710",
+      "name": "Anthocyanidin 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002711",
+      "name": "Anthocyanidin 3-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002712",
+      "name": "Anthocyanidin 3-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002713",
+      "name": "Anthocyanidin 3p-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002714",
+      "name": "Anthocyanidin 3p-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002715",
+      "name": "Anthocyanidin 5-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002716",
+      "name": "Anthocyanidin 5-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002996",
+      "name": "Anthocyanidin-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002997",
+      "name": "Anthocyanidin-5-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003551",
+      "name": "Anthocyanin-3'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003552",
+      "name": "Anthocyanin-4'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003553",
+      "name": "Anthocyanidin 7-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003554",
+      "name": "Anthocyanidin 7-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003555",
+      "name": "Anthocyanidin-7-O-Glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003556",
+      "name": "Anthocyanidin 7-O-p-coumaroyl glycosides"
+     }
+    ]
    },
    "motif_id": "anthocyanin",
    "origin": "source_defined",
@@ -824,8 +1750,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0001615",
+      "name": "Flavones"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001136",
+      "name": "Flavonols"
+     }
+    ]
    },
    "motif_id": "flavonol_core",
    "origin": "source_defined",
@@ -843,8 +1787,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001615",
+      "name": "Flavones"
+     },
+     {
+      "id": "CHEMONTID:0003501",
+      "name": "3-prenylated flavones"
+     }
+    ]
    },
    "motif_id": "flavone_c3_nonoxy",
    "origin": "source_defined",
@@ -862,8 +1824,70 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0002506",
+      "name": "Isoflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0002586",
+      "name": "O-methylated isoflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0002602",
+      "name": "7-O-methylated isoflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0002605",
+      "name": "3'-O-methylated isoflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0002606",
+      "name": "4'-O-methylated isoflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0002901",
+      "name": "Isoflav-2-enes"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000494",
+      "name": "Isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0002687",
+      "name": "4'-O-methylisoflavones"
+     },
+     {
+      "id": "CHEMONTID:0002689",
+      "name": "7-O-methylisoflavones"
+     },
+     {
+      "id": "CHEMONTID:0002690",
+      "name": "3'-O-methylisoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003512",
+      "name": "3'-prenylated isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003513",
+      "name": "6-prenylated isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003514",
+      "name": "8-prenylated isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003580",
+      "name": "2'-prenylated isoflavones"
+     }
+    ]
    },
    "motif_id": "isoflavone_core",
    "origin": "source_defined",
@@ -881,8 +1905,74 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0000337",
+      "name": "Flavans"
+     },
+     {
+      "id": "CHEMONTID:0003641",
+      "name": "7-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003642",
+      "name": "8-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003643",
+      "name": "3'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003644",
+      "name": "4'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003645",
+      "name": "2'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003646",
+      "name": "6-prenylated flavans"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001632",
+      "name": "Flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003506",
+      "name": "3'-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003507",
+      "name": "6-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003508",
+      "name": "8-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003588",
+      "name": "2'-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003647",
+      "name": "7-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003648",
+      "name": "4-prenylated flavanones"
+     }
+    ]
    },
    "motif_id": "flavanone_core",
    "origin": "source_defined",
@@ -900,8 +1990,38 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0003467",
+      "name": "Linear 1,3-diarylpropanoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001630",
+      "name": "Chalcones and dihydrochalcones"
+     },
+     {
+      "id": "CHEMONTID:0003472",
+      "name": "2'-Hydroxychalcones"
+     },
+     {
+      "id": "CHEMONTID:0003474",
+      "name": "Retrochalcones"
+     },
+     {
+      "id": "CHEMONTID:0003509",
+      "name": "3-prenylated chalcones"
+     },
+     {
+      "id": "CHEMONTID:0003510",
+      "name": "3'-prenylated chalcones"
+     }
+    ]
    },
    "motif_id": "chalcone_core",
    "origin": "source_defined",
@@ -915,8 +2035,98 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0000337",
+      "name": "Flavans"
+     },
+     {
+      "id": "CHEMONTID:0003467",
+      "name": "Linear 1,3-diarylpropanoids"
+     },
+     {
+      "id": "CHEMONTID:0003641",
+      "name": "7-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003642",
+      "name": "8-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003643",
+      "name": "3'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003644",
+      "name": "4'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003645",
+      "name": "2'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003646",
+      "name": "6-prenylated flavans"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001630",
+      "name": "Chalcones and dihydrochalcones"
+     },
+     {
+      "id": "CHEMONTID:0001632",
+      "name": "Flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003472",
+      "name": "2'-Hydroxychalcones"
+     },
+     {
+      "id": "CHEMONTID:0003474",
+      "name": "Retrochalcones"
+     },
+     {
+      "id": "CHEMONTID:0003506",
+      "name": "3'-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003507",
+      "name": "6-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003508",
+      "name": "8-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003509",
+      "name": "3-prenylated chalcones"
+     },
+     {
+      "id": "CHEMONTID:0003510",
+      "name": "3'-prenylated chalcones"
+     },
+     {
+      "id": "CHEMONTID:0003588",
+      "name": "2'-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003647",
+      "name": "7-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003648",
+      "name": "4-prenylated flavanones"
+     }
+    ]
    },
    "motif_id": "flavanone_or_chalcone",
    "origin": "source_defined",
@@ -934,8 +2144,30 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0000337",
+      "name": "Flavans"
+     },
+     {
+      "id": "CHEMONTID:0001632",
+      "name": "Flavanones"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001362",
+      "name": "Flavanonols"
+     }
+    ]
    },
    "motif_id": "dihydroflavonol_core",
    "origin": "source_defined",
@@ -953,8 +2185,62 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000238",
+      "name": "Tannins"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0000337",
+      "name": "Flavans"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000379",
+      "name": "Proanthocyanidins"
+     },
+     {
+      "id": "CHEMONTID:0001138",
+      "name": "Leucoanthocyanidins"
+     },
+     {
+      "id": "CHEMONTID:0001584",
+      "name": "Catechins"
+     },
+     {
+      "id": "CHEMONTID:0001587",
+      "name": "Catechin gallates"
+     },
+     {
+      "id": "CHEMONTID:0001594",
+      "name": "Epigallocatechins"
+     },
+     {
+      "id": "CHEMONTID:0003012",
+      "name": "Flavan-3-ols"
+     },
+     {
+      "id": "CHEMONTID:0004818",
+      "name": "B-type proanthocyanidins"
+     },
+     {
+      "id": "CHEMONTID:0004828",
+      "name": "A-type proanthocyanidins"
+     },
+     {
+      "id": "CHEMONTID:0004829",
+      "name": "C-type proanthocyanidins"
+     }
+    ]
    },
    "motif_id": "flavan_3_ol_core",
    "origin": "source_defined",
@@ -973,7 +2259,132 @@
   {
    "chemont": {
     "broader": [],
-    "compatible": []
+    "compatible": [
+     {
+      "id": "CHEMONTID:0003501",
+      "name": "3-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003502",
+      "name": "3'-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003503",
+      "name": "6-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003504",
+      "name": "8-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003506",
+      "name": "3'-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003507",
+      "name": "6-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003508",
+      "name": "8-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003509",
+      "name": "3-prenylated chalcones"
+     },
+     {
+      "id": "CHEMONTID:0003510",
+      "name": "3'-prenylated chalcones"
+     },
+     {
+      "id": "CHEMONTID:0003511",
+      "name": "4-prenylated 2-arybenzofurans"
+     },
+     {
+      "id": "CHEMONTID:0003512",
+      "name": "3'-prenylated isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003513",
+      "name": "6-prenylated isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003514",
+      "name": "8-prenylated isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003515",
+      "name": "7-prenylated 2-arybenzofurans"
+     },
+     {
+      "id": "CHEMONTID:0003516",
+      "name": "4'-prenylated 2-arybenzofurans"
+     },
+     {
+      "id": "CHEMONTID:0003525",
+      "name": "3'-prenylated isoflavanones"
+     },
+     {
+      "id": "CHEMONTID:0003526",
+      "name": "6-prenylated isoflavanones"
+     },
+     {
+      "id": "CHEMONTID:0003527",
+      "name": "8-prenylated isoflavanones"
+     },
+     {
+      "id": "CHEMONTID:0003579",
+      "name": "2'-prenylated isoflavanones"
+     },
+     {
+      "id": "CHEMONTID:0003580",
+      "name": "2'-prenylated isoflavones"
+     },
+     {
+      "id": "CHEMONTID:0003587",
+      "name": "2'-prenylated flavones"
+     },
+     {
+      "id": "CHEMONTID:0003588",
+      "name": "2'-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003641",
+      "name": "7-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003642",
+      "name": "8-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003643",
+      "name": "3'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003644",
+      "name": "4'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003645",
+      "name": "2'-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003646",
+      "name": "6-prenylated flavans"
+     },
+     {
+      "id": "CHEMONTID:0003647",
+      "name": "7-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003648",
+      "name": "4-prenylated flavanones"
+     },
+     {
+      "id": "CHEMONTID:0003649",
+      "name": "5-prenylated 2-arybenzofurans"
+     }
+    ]
    },
    "motif_id": "c_prenyl_aryl",
    "origin": "source_defined",
@@ -987,8 +2398,30 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0003467",
+      "name": "Linear 1,3-diarylpropanoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001630",
+      "name": "Chalcones and dihydrochalcones"
+     },
+     {
+      "id": "CHEMONTID:0003473",
+      "name": "2'-Hydroxy-dihydrochalcones"
+     },
+     {
+      "id": "CHEMONTID:0003475",
+      "name": "Retro-dihydrochalcones"
+     }
+    ]
    },
    "motif_id": "dihydrochalcone_core",
    "origin": "source_defined",
@@ -1002,8 +2435,58 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0001111",
+      "name": "Flavonoid glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002204",
+      "name": "C-glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002506",
+      "name": "Isoflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001737",
+      "name": "Flavonoid C-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002896",
+      "name": "Isoflavonoid C-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003535",
+      "name": "Flavonoid 8-C-glycosides"
+     }
+    ]
    },
    "motif_id": "flavonoid_c_glycoside",
    "origin": "tuned_vs20",
@@ -1025,8 +2508,198 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002207",
+      "name": "O-glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000142",
+      "name": "Stilbene glycosides"
+     },
+     {
+      "id": "CHEMONTID:0000507",
+      "name": "Isoflavonoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001361",
+      "name": "Anthocyanins"
+     },
+     {
+      "id": "CHEMONTID:0001583",
+      "name": "Flavonoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001600",
+      "name": "Anthraquinone glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001738",
+      "name": "Aurone O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001739",
+      "name": "Chalcone- and dihydrochalcone O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001741",
+      "name": "Rotenoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001743",
+      "name": "Coumarin glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002708",
+      "name": "Anthocyanidin 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002709",
+      "name": "Anthocyanidin 3p-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002710",
+      "name": "Anthocyanidin 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002711",
+      "name": "Anthocyanidin 3-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002712",
+      "name": "Anthocyanidin 3-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002713",
+      "name": "Anthocyanidin 3p-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002714",
+      "name": "Anthocyanidin 3p-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002715",
+      "name": "Anthocyanidin 5-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002716",
+      "name": "Anthocyanidin 5-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002897",
+      "name": "Neoflavonoid 5-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002934",
+      "name": "Flavonoid O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0002935",
+      "name": "Neoflavonoid 7-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002996",
+      "name": "Anthocyanidin-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002997",
+      "name": "Anthocyanidin-5-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003498",
+      "name": "Benzofuran-2-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003500",
+      "name": "Benzofuran-5-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003531",
+      "name": "Flavonoid-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003532",
+      "name": "Flavonoid-3-O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0003533",
+      "name": "Flavonoid-7-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003534",
+      "name": "Flavonoid-7-O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0003540",
+      "name": "Flavonoid-8-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003541",
+      "name": "Flavonoid-8-O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0003551",
+      "name": "Anthocyanin-3'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003552",
+      "name": "Anthocyanin-4'-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003553",
+      "name": "Anthocyanidin 7-O-2-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003554",
+      "name": "Anthocyanidin 7-O-6-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003555",
+      "name": "Anthocyanidin-7-O-Glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003556",
+      "name": "Anthocyanidin 7-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003678",
+      "name": "Flavonoid 3-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003679",
+      "name": "Flavonoid 5-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003680",
+      "name": "Flavonoid 7-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003681",
+      "name": "Flavonoid 3p-O-p-coumaroyl glycosides"
+     },
+     {
+      "id": "CHEMONTID:0004165",
+      "name": "Phenolic glycosides"
+     }
+    ]
    },
    "motif_id": "aryl_o_pyranoside",
    "origin": "source_defined",
@@ -1044,7 +2717,36 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000018",
+      "name": "Anthracenes"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002204",
+      "name": "C-glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002448",
+      "name": "Benzenoids"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "anthrone_c_glycoside",
@@ -1059,8 +2761,70 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000198",
+      "name": "Oligosaccharides"
+     },
+     {
+      "id": "CHEMONTID:0000507",
+      "name": "Isoflavonoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001013",
+      "name": "Steroidal glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001542",
+      "name": "Disaccharides"
+     },
+     {
+      "id": "CHEMONTID:0001583",
+      "name": "Flavonoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001600",
+      "name": "Anthraquinone glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001743",
+      "name": "Coumarin glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002049",
+      "name": "Terpene glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002207",
+      "name": "O-glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0004081",
+      "name": "Iridoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0004165",
+      "name": "Phenolic glycosides"
+     }
+    ]
    },
    "motif_id": "o_glycoside",
    "origin": "source_defined",
@@ -1074,8 +2838,78 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0001111",
+      "name": "Flavonoid glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001614",
+      "name": "Neoflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0002506",
+      "name": "Isoflavonoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000507",
+      "name": "Isoflavonoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001361",
+      "name": "Anthocyanins"
+     },
+     {
+      "id": "CHEMONTID:0001583",
+      "name": "Flavonoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001738",
+      "name": "Aurone O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001739",
+      "name": "Chalcone- and dihydrochalcone O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001741",
+      "name": "Rotenoid O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002897",
+      "name": "Neoflavonoid 5-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002934",
+      "name": "Flavonoid O-glucuronides"
+     },
+     {
+      "id": "CHEMONTID:0002935",
+      "name": "Neoflavonoid 7-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003531",
+      "name": "Flavonoid-3-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003533",
+      "name": "Flavonoid-7-O-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003540",
+      "name": "Flavonoid-8-O-glycosides"
+     }
+    ]
    },
    "motif_id": "flavonoid_o_glycoside",
    "origin": "source_defined",
@@ -1093,8 +2927,54 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0001111",
+      "name": "Flavonoid glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001737",
+      "name": "Flavonoid C-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002204",
+      "name": "C-glycosyl compounds"
+     },
+     {
+      "id": "CHEMONTID:0002896",
+      "name": "Isoflavonoid C-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003497",
+      "name": "Benzofuran-2-C-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003499",
+      "name": "Benzofuran-5-C-glycosides"
+     },
+     {
+      "id": "CHEMONTID:0003535",
+      "name": "Flavonoid 8-C-glycosides"
+     }
+    ]
    },
    "motif_id": "aryl_c_glycoside",
    "origin": "source_defined",
@@ -1112,8 +2992,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000018",
+      "name": "Anthracenes"
+     },
+     {
+      "id": "CHEMONTID:0000151",
+      "name": "Anthraquinones"
+     },
+     {
+      "id": "CHEMONTID:0002448",
+      "name": "Benzenoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001600",
+      "name": "Anthraquinone glycosides"
+     }
+    ]
    },
    "motif_id": "anthraquinone_o_glycoside",
    "origin": "source_defined",
@@ -1127,8 +3025,38 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0001498",
+      "name": "Hexoses"
+     },
+     {
+      "id": "CHEMONTID:0001540",
+      "name": "Monosaccharides"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000373",
+      "name": "Glucosinolates"
+     },
+     {
+      "id": "CHEMONTID:0003925",
+      "name": "Alkylglucosinolates"
+     }
+    ]
    },
    "motif_id": "glucosinolate",
    "origin": "source_defined",
@@ -1146,8 +3074,38 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0001498",
+      "name": "Hexoses"
+     },
+     {
+      "id": "CHEMONTID:0001540",
+      "name": "Monosaccharides"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000373",
+      "name": "Glucosinolates"
+     },
+     {
+      "id": "CHEMONTID:0003925",
+      "name": "Alkylglucosinolates"
+     }
+    ]
    },
    "motif_id": "glucosinolate_methylsulfinylalkyl",
    "origin": "source_defined",
@@ -1169,8 +3127,38 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0001498",
+      "name": "Hexoses"
+     },
+     {
+      "id": "CHEMONTID:0001540",
+      "name": "Monosaccharides"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000373",
+      "name": "Glucosinolates"
+     },
+     {
+      "id": "CHEMONTID:0003925",
+      "name": "Alkylglucosinolates"
+     }
+    ]
    },
    "motif_id": "glucosinolate_n_methoxy",
    "origin": "source_defined",
@@ -1188,8 +3176,38 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0001498",
+      "name": "Hexoses"
+     },
+     {
+      "id": "CHEMONTID:0001540",
+      "name": "Monosaccharides"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000373",
+      "name": "Glucosinolates"
+     },
+     {
+      "id": "CHEMONTID:0003925",
+      "name": "Alkylglucosinolates"
+     }
+    ]
    },
    "motif_id": "glucosinolate_2_hydroxyalkyl",
    "origin": "source_defined",
@@ -1211,8 +3229,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000402",
+      "name": "Organic phosphoric acids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000408",
+      "name": "Phosphate esters"
+     },
+     {
+      "id": "CHEMONTID:0003457",
+      "name": "Alkyl phosphates"
+     },
+     {
+      "id": "CHEMONTID:0003458",
+      "name": "Monoalkyl phosphates"
+     },
+     {
+      "id": "CHEMONTID:0003459",
+      "name": "Dialkyl phosphates"
+     }
+    ]
    },
    "motif_id": "phosphate_ester",
    "origin": "source_defined",
@@ -1226,8 +3270,22 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002810",
+      "name": "Cinnamic acid amides"
+     }
+    ]
    },
    "motif_id": "hcaa_cinnamoyl_amide",
    "origin": "source_defined",
@@ -1241,7 +3299,20 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002810",
+      "name": "Cinnamic acid amides"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "hcaa_aminobutyl_amide",
@@ -1256,7 +3327,20 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002810",
+      "name": "Cinnamic acid amides"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "hcaa_spermidine_amide",
@@ -1275,7 +3359,28 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000059",
+      "name": "Coumaric acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001391",
+      "name": "Hydroxycinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002810",
+      "name": "Cinnamic acid amides"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "hcaa_p_hydroxy_secondary_amide",
@@ -1290,8 +3395,22 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000279",
+      "name": "Alkaloids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001435",
+      "name": "Betalains"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001434",
+      "name": "Betacyanins and derivatives"
+     }
+    ]
    },
    "motif_id": "hcaa_cyclodopa_core",
    "origin": "source_defined",
@@ -1305,7 +3424,24 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000002",
+      "name": "Organoheterocyclic compounds"
+     },
+     {
+      "id": "CHEMONTID:0000211",
+      "name": "Indoles and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001146",
+      "name": "Indolines"
+     },
+     {
+      "id": "CHEMONTID:0002013",
+      "name": "Indolecarboxylic acids and derivatives"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "hcaa_n_acyl_cyclodopa",
@@ -1320,8 +3456,54 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000129",
+      "name": "Alcohols and polyols"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001292",
+      "name": "Cyclic alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001391",
+      "name": "Hydroxycinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002509",
+      "name": "Cyclitols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003002",
+      "name": "Hydroxycinnamic acid esters"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002512",
+      "name": "Quinic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003004",
+      "name": "Chlorogenic acids and derivatives"
+     }
+    ]
    },
    "motif_id": "hydroxycinnamoyl_quinate",
    "origin": "source_defined",
@@ -1343,8 +3525,50 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000129",
+      "name": "Alcohols and polyols"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0000476",
+      "name": "Cinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001292",
+      "name": "Cyclic alcohols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001391",
+      "name": "Hydroxycinnamic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002509",
+      "name": "Cyclitols and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0004603",
+      "name": "Organic oxygen compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002278",
+      "name": "Shikimic acids and derivatves"
+     },
+     {
+      "id": "CHEMONTID:0003002",
+      "name": "Hydroxycinnamic acid esters"
+     }
+    ]
    },
    "motif_id": "hydroxycinnamoyl_shikimate",
    "origin": "source_defined",
@@ -1366,8 +3590,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000259",
+      "name": "Prenol lipids"
+     },
+     {
+      "id": "CHEMONTID:0002049",
+      "name": "Terpene glycosides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0004081",
+      "name": "Iridoid O-glycosides"
+     }
+    ]
    },
    "motif_id": "iridoid_c4_methoxycarbonyl_glycoside",
    "origin": "source_defined",
@@ -1397,8 +3639,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000259",
+      "name": "Prenol lipids"
+     },
+     {
+      "id": "CHEMONTID:0002049",
+      "name": "Terpene glycosides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0004081",
+      "name": "Iridoid O-glycosides"
+     }
+    ]
    },
    "motif_id": "iridoid_c4_carboxy_glycoside",
    "origin": "source_defined",
@@ -1420,8 +3680,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0001392",
+      "name": "Lignans, neolignans and related compounds"
+     },
+     {
+      "id": "CHEMONTID:0001604",
+      "name": "Tetrahydrofuran lignans"
+     },
+     {
+      "id": "CHEMONTID:0003686",
+      "name": "Furanoid lignans"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001971",
+      "name": "Furofuran lignans"
+     },
+     {
+      "id": "CHEMONTID:0003422",
+      "name": "7,9'-epoxylignans"
+     },
+     {
+      "id": "CHEMONTID:0003423",
+      "name": "7,7'-epoxylignans"
+     }
+    ]
    },
    "motif_id": "guaiacyl_aryltetrahydrofuran",
    "origin": "source_defined",
@@ -1443,8 +3729,30 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0001392",
+      "name": "Lignans, neolignans and related compounds"
+     },
+     {
+      "id": "CHEMONTID:0001604",
+      "name": "Tetrahydrofuran lignans"
+     },
+     {
+      "id": "CHEMONTID:0003424",
+      "name": "9,9'-epoxylignans"
+     },
+     {
+      "id": "CHEMONTID:0003686",
+      "name": "Furanoid lignans"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001613",
+      "name": "Dibenzylbutyrolactone lignans"
+     }
+    ]
    },
    "motif_id": "dibenzylbutyrolactone_lignan",
    "origin": "source_defined",
@@ -1462,8 +3770,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0001392",
+      "name": "Lignans, neolignans and related compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001623",
+      "name": "Dibenzocyclooctadiene lignans"
+     }
+    ]
    },
    "motif_id": "dibenzocyclooctadiene_lignan",
    "origin": "source_defined",
@@ -1485,8 +3803,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0001392",
+      "name": "Lignans, neolignans and related compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001623",
+      "name": "Dibenzocyclooctadiene lignans"
+     }
+    ]
    },
    "motif_id": "dibenzocyclooctadiene_benzylic_ester",
    "origin": "source_defined",
@@ -1508,8 +3836,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0001392",
+      "name": "Lignans, neolignans and related compounds"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001511",
+      "name": "Lignan glycosides"
+     },
+     {
+      "id": "CHEMONTID:0004165",
+      "name": "Phenolic glycosides"
+     }
+    ]
    },
    "motif_id": "guaiacyl_4_o_hexoside",
    "origin": "source_defined",
@@ -1531,8 +3885,30 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000011",
+      "name": "Carbohydrates and carbohydrate conjugates"
+     },
+     {
+      "id": "CHEMONTID:0000323",
+      "name": "Organooxygen compounds"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001511",
+      "name": "Lignan glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002207",
+      "name": "O-glycosyl compounds"
+     }
+    ]
    },
    "motif_id": "alkyl_o_hexoside",
    "origin": "source_defined",
@@ -1554,8 +3930,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0001392",
+      "name": "Lignans, neolignans and related compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0003418",
+      "name": "Dihydrobenzofuran and benzofuran lignans"
+     }
+    ]
    },
    "motif_id": "phenylcoumaran_neolignan",
    "origin": "source_defined",
@@ -1569,8 +3955,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0001392",
+      "name": "Lignans, neolignans and related compounds"
+     },
+     {
+      "id": "CHEMONTID:0001510",
+      "name": "Lignan lactones"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000047",
+      "name": "Podophyllotoxins"
+     },
+     {
+      "id": "CHEMONTID:0001625",
+      "name": "1-aryltetralin lactones"
+     },
+     {
+      "id": "CHEMONTID:0003425",
+      "name": "Aryltetralin lignans"
+     },
+     {
+      "id": "CHEMONTID:0003426",
+      "name": "9,9p-dihydroxyaryltetralin lignans"
+     }
+    ]
    },
    "motif_id": "aryltetralin_lignan",
    "origin": "source_defined",
@@ -1592,8 +4004,602 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000289",
+      "name": "Nucleosides, nucleotides, and analogues"
+     },
+     {
+      "id": "CHEMONTID:0003327",
+      "name": "Fatty acyl thioesters"
+     },
+     {
+      "id": "CHEMONTID:0003737",
+      "name": "Nucleoside and nucleotide analogues"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000026",
+      "name": "Purine ribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0000479",
+      "name": "Purine nucleosides"
+     },
+     {
+      "id": "CHEMONTID:0000480",
+      "name": "Pyrimidine nucleosides"
+     },
+     {
+      "id": "CHEMONTID:0001090",
+      "name": "Acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001143",
+      "name": "Coenzyme A and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001171",
+      "name": "Steroidal acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001293",
+      "name": "Purine nucleotide sugars"
+     },
+     {
+      "id": "CHEMONTID:0001296",
+      "name": "Pyrimidine nucleotide sugars"
+     },
+     {
+      "id": "CHEMONTID:0001328",
+      "name": "3-oxo-acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001329",
+      "name": "Flavin nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001491",
+      "name": "Cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001492",
+      "name": "Cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001494",
+      "name": "2',3'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001495",
+      "name": "2',3'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001502",
+      "name": "3',5'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001503",
+      "name": "3',5'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001506",
+      "name": "Purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001509",
+      "name": "Pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001544",
+      "name": "Purine ribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001617",
+      "name": "Purine ribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001618",
+      "name": "Purine ribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001619",
+      "name": "Purine ribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001620",
+      "name": "Pyrimidine ribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001621",
+      "name": "Pyrimidine ribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001622",
+      "name": "Pyrimidine ribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001627",
+      "name": "Purine ribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001628",
+      "name": "Pyrimidine ribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001653",
+      "name": "Long-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001752",
+      "name": "8,2'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001904",
+      "name": "Pyrimidine ribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001993",
+      "name": "2',5'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002121",
+      "name": "2',5'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002134",
+      "name": "Purine deoxyribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002135",
+      "name": "Purine deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002136",
+      "name": "Purine deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002137",
+      "name": "Purine deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002138",
+      "name": "Purine deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002139",
+      "name": "Purine 2'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002140",
+      "name": "Purine 3'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002141",
+      "name": "Purine 2'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002142",
+      "name": "Purine 3'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002143",
+      "name": "Purine 2'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002144",
+      "name": "Purine 3'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002145",
+      "name": "Purine 2'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002146",
+      "name": "Purine 3'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002147",
+      "name": "Pyrimidine ribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002148",
+      "name": "Pyrimidine deoxyribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002149",
+      "name": "Pyrimidine deoxyribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002150",
+      "name": "Pyrimidine deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002151",
+      "name": "Pyrimidine deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002152",
+      "name": "Pyrimidine deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002153",
+      "name": "Pyrimidine deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002154",
+      "name": "Pyrimidine deoxyribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002155",
+      "name": "Pyrimidine deoxyribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002156",
+      "name": "Pyrimidine 2'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002157",
+      "name": "Pyrimidine 3'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002158",
+      "name": "Pyrimidine 2'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002159",
+      "name": "Pyrimidine 3'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002160",
+      "name": "Pyrimidine 2'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002161",
+      "name": "Pyrimidine 3'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002162",
+      "name": "Pyrimidine 2'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002163",
+      "name": "Pyrimidine 3'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002165",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002166",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002167",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002168",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002169",
+      "name": "Purine 2',3'-dideoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002170",
+      "name": "Purine 2',3'-dideoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002171",
+      "name": "Purine 2',3'-dideoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002172",
+      "name": "Purine 2',3'-dideoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002173",
+      "name": "Purine deoxyribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002175",
+      "name": "Purine deoxyribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002176",
+      "name": "Purine deoxyribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002177",
+      "name": "Purine 2'-deoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0002178",
+      "name": "Purine 3'-deoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0002179",
+      "name": "Purine 2',3'-dideoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0002180",
+      "name": "Pyrimidine 2'-deoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0002181",
+      "name": "Pyrimidine 3'-deoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0002182",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0002208",
+      "name": "Purine ribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002209",
+      "name": "Purine ribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002244",
+      "name": "8,2'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002248",
+      "name": "Pyrimidine ribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002249",
+      "name": "Pyrimidine ribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002960",
+      "name": "3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003175",
+      "name": "Very long-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003176",
+      "name": "Long-chain 3-oxoacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003177",
+      "name": "Very-long-chain 3-oxoacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003178",
+      "name": "Long-chain 3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003179",
+      "name": "Very long-chain 3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003180",
+      "name": "Enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003181",
+      "name": "2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003182",
+      "name": "3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003183",
+      "name": "Long-chain enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003184",
+      "name": "Long-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003185",
+      "name": "Long-chain 3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003206",
+      "name": "Medium-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003207",
+      "name": "Medium-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003208",
+      "name": "2,3,4-saturated fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003224",
+      "name": "(R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003225",
+      "name": "(S)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003235",
+      "name": "Delta-11-acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003329",
+      "name": "3,4-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003330",
+      "name": "2,4-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003331",
+      "name": "2,5-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003393",
+      "name": "(2'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003394",
+      "name": "(3'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003395",
+      "name": "5'-phospho-(2'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003396",
+      "name": "5'-phospho-(3'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003440",
+      "name": "S-alkyl-CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003468",
+      "name": "(5'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003654",
+      "name": "Molybdopterin dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003656",
+      "name": "Alkyl-CoA disulfides"
+     },
+     {
+      "id": "CHEMONTID:0003792",
+      "name": "(3'->5')-cyclic dinucleotides and analogues"
+     },
+     {
+      "id": "CHEMONTID:0003793",
+      "name": "(3'->5')-cyclic dinucleotide bis(phosphoromonothioate) analogues"
+     },
+     {
+      "id": "CHEMONTID:0003794",
+      "name": "(3'->5')-cyclic dinucleotide phosphoromonothioate analogues"
+     },
+     {
+      "id": "CHEMONTID:0003795",
+      "name": "(3'->5')-cyclic dinucleotide phosphorotrithioate analogues"
+     },
+     {
+      "id": "CHEMONTID:0003796",
+      "name": "(3'->5')-dinucleotides and analogues"
+     },
+     {
+      "id": "CHEMONTID:0003797",
+      "name": "(3'->5')-dinucleotide phosphorothioates"
+     },
+     {
+      "id": "CHEMONTID:0003798",
+      "name": "(3'->5')-dinucleotide phosphorodithioates"
+     },
+     {
+      "id": "CHEMONTID:0003800",
+      "name": "Phosphorothioate oligonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003801",
+      "name": "Purine nucleoside phosphorothioates"
+     },
+     {
+      "id": "CHEMONTID:0003802",
+      "name": "Pyrimidine nucleoside phosphorothioates"
+     },
+     {
+      "id": "CHEMONTID:0003803",
+      "name": "2',3'-cyclic purine nucleoside phosphorothioates"
+     },
+     {
+      "id": "CHEMONTID:0003804",
+      "name": "2',3'-cyclic pyrimidine nucleoside phosphorothioates"
+     },
+     {
+      "id": "CHEMONTID:0004179",
+      "name": "Long-chain (3R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004180",
+      "name": "Very-long-chain (3R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004232",
+      "name": "5'-O-tritylated nucleosides and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0004256",
+      "name": "Very long-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004257",
+      "name": "Very long-chain 3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004301",
+      "name": "3-hydroxy-3-alkylglutaryl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004302",
+      "name": "(S)-3-hydroxy-3-alkylglutaryl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004351",
+      "name": "Oligonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0004352",
+      "name": "(3'->5')-cyclic dinucleotide bis(carbamate) analogues"
+     },
+     {
+      "id": "CHEMONTID:0004364",
+      "name": "Ribonucleoside phosphoramidites"
+     },
+     {
+      "id": "CHEMONTID:0004404",
+      "name": "Ribonucleoside 3'-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0004496",
+      "name": "3',5'-cyclic purine nucleoside phosphorothioates"
+     },
+     {
+      "id": "CHEMONTID:0004497",
+      "name": "3',5'-cyclic pyrimidine nucleoside phosphorothioates"
+     },
+     {
+      "id": "CHEMONTID:0004502",
+      "name": "5'-deoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0004503",
+      "name": "5'-deoxy-5'-thionucleosides"
+     },
+     {
+      "id": "CHEMONTID:0004547",
+      "name": "5'-acylphosphoadenosines"
+     },
+     {
+      "id": "CHEMONTID:0004795",
+      "name": "CDP-ethanolamines"
+     },
+     {
+      "id": "CHEMONTID:0004799",
+      "name": "2',5'-dideoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0004800",
+      "name": "5'-S-alkylthio-5'-deoxyribonucleosides"
+     },
+     {
+      "id": "CHEMONTID:0004801",
+      "name": "5'-azido-5'-deoxyribonucleosides"
+     }
+    ]
    },
    "motif_id": "nucleoside",
    "origin": "source_defined",
@@ -1611,8 +4617,490 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000289",
+      "name": "Nucleosides, nucleotides, and analogues"
+     },
+     {
+      "id": "CHEMONTID:0003327",
+      "name": "Fatty acyl thioesters"
+     },
+     {
+      "id": "CHEMONTID:0003737",
+      "name": "Nucleoside and nucleotide analogues"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000026",
+      "name": "Purine ribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001090",
+      "name": "Acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001143",
+      "name": "Coenzyme A and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001171",
+      "name": "Steroidal acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001293",
+      "name": "Purine nucleotide sugars"
+     },
+     {
+      "id": "CHEMONTID:0001296",
+      "name": "Pyrimidine nucleotide sugars"
+     },
+     {
+      "id": "CHEMONTID:0001328",
+      "name": "3-oxo-acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001329",
+      "name": "Flavin nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001491",
+      "name": "Cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001492",
+      "name": "Cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001494",
+      "name": "2',3'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001495",
+      "name": "2',3'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001502",
+      "name": "3',5'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001503",
+      "name": "3',5'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001506",
+      "name": "Purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001509",
+      "name": "Pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001544",
+      "name": "Purine ribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001617",
+      "name": "Purine ribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001618",
+      "name": "Purine ribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001619",
+      "name": "Purine ribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001620",
+      "name": "Pyrimidine ribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001621",
+      "name": "Pyrimidine ribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001622",
+      "name": "Pyrimidine ribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001627",
+      "name": "Purine ribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001628",
+      "name": "Pyrimidine ribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001653",
+      "name": "Long-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001752",
+      "name": "8,2'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001904",
+      "name": "Pyrimidine ribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001993",
+      "name": "2',5'-cyclic purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002121",
+      "name": "2',5'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002134",
+      "name": "Purine deoxyribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002135",
+      "name": "Purine deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002136",
+      "name": "Purine deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002137",
+      "name": "Purine deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002138",
+      "name": "Purine deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002139",
+      "name": "Purine 2'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002140",
+      "name": "Purine 3'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002141",
+      "name": "Purine 2'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002142",
+      "name": "Purine 3'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002143",
+      "name": "Purine 2'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002144",
+      "name": "Purine 3'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002145",
+      "name": "Purine 2'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002146",
+      "name": "Purine 3'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002147",
+      "name": "Pyrimidine ribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002148",
+      "name": "Pyrimidine deoxyribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002149",
+      "name": "Pyrimidine deoxyribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002150",
+      "name": "Pyrimidine deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002151",
+      "name": "Pyrimidine deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002152",
+      "name": "Pyrimidine deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002153",
+      "name": "Pyrimidine deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002154",
+      "name": "Pyrimidine deoxyribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002155",
+      "name": "Pyrimidine deoxyribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002156",
+      "name": "Pyrimidine 2'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002157",
+      "name": "Pyrimidine 3'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002158",
+      "name": "Pyrimidine 2'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002159",
+      "name": "Pyrimidine 3'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002160",
+      "name": "Pyrimidine 2'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002161",
+      "name": "Pyrimidine 3'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002162",
+      "name": "Pyrimidine 2'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002163",
+      "name": "Pyrimidine 3'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002165",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002166",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002167",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002168",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002169",
+      "name": "Purine 2',3'-dideoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002170",
+      "name": "Purine 2',3'-dideoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002171",
+      "name": "Purine 2',3'-dideoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002172",
+      "name": "Purine 2',3'-dideoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002173",
+      "name": "Purine deoxyribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002175",
+      "name": "Purine deoxyribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002176",
+      "name": "Purine deoxyribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002208",
+      "name": "Purine ribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002209",
+      "name": "Purine ribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002244",
+      "name": "8,2'-cyclic pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002248",
+      "name": "Pyrimidine ribonucleoside 2',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002249",
+      "name": "Pyrimidine ribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002960",
+      "name": "3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003175",
+      "name": "Very long-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003176",
+      "name": "Long-chain 3-oxoacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003177",
+      "name": "Very-long-chain 3-oxoacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003178",
+      "name": "Long-chain 3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003179",
+      "name": "Very long-chain 3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003180",
+      "name": "Enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003181",
+      "name": "2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003182",
+      "name": "3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003183",
+      "name": "Long-chain enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003184",
+      "name": "Long-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003185",
+      "name": "Long-chain 3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003206",
+      "name": "Medium-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003207",
+      "name": "Medium-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003208",
+      "name": "2,3,4-saturated fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003224",
+      "name": "(R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003225",
+      "name": "(S)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003235",
+      "name": "Delta-11-acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003329",
+      "name": "3,4-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003330",
+      "name": "2,4-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003331",
+      "name": "2,5-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003393",
+      "name": "(2'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003394",
+      "name": "(3'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003395",
+      "name": "5'-phospho-(2'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003396",
+      "name": "5'-phospho-(3'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003440",
+      "name": "S-alkyl-CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003468",
+      "name": "(5'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003654",
+      "name": "Molybdopterin dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003656",
+      "name": "Alkyl-CoA disulfides"
+     },
+     {
+      "id": "CHEMONTID:0003792",
+      "name": "(3'->5')-cyclic dinucleotides and analogues"
+     },
+     {
+      "id": "CHEMONTID:0003796",
+      "name": "(3'->5')-dinucleotides and analogues"
+     },
+     {
+      "id": "CHEMONTID:0004179",
+      "name": "Long-chain (3R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004180",
+      "name": "Very-long-chain (3R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004256",
+      "name": "Very long-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004257",
+      "name": "Very long-chain 3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004301",
+      "name": "3-hydroxy-3-alkylglutaryl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004302",
+      "name": "(S)-3-hydroxy-3-alkylglutaryl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004351",
+      "name": "Oligonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0004404",
+      "name": "Ribonucleoside 3'-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0004547",
+      "name": "5'-acylphosphoadenosines"
+     },
+     {
+      "id": "CHEMONTID:0004795",
+      "name": "CDP-ethanolamines"
+     }
+    ]
    },
    "motif_id": "nucleotide",
    "origin": "source_defined",
@@ -1630,8 +5118,330 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000026",
+      "name": "Purine ribonucleoside bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0000289",
+      "name": "Nucleosides, nucleotides, and analogues"
+     },
+     {
+      "id": "CHEMONTID:0001506",
+      "name": "Purine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001509",
+      "name": "Pyrimidine nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001544",
+      "name": "Purine ribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002134",
+      "name": "Purine deoxyribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002147",
+      "name": "Pyrimidine ribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002148",
+      "name": "Pyrimidine deoxyribonucleotides"
+     },
+     {
+      "id": "CHEMONTID:0002209",
+      "name": "Purine ribonucleoside 3',5'-bisphosphates"
+     },
+     {
+      "id": "CHEMONTID:0003327",
+      "name": "Fatty acyl thioesters"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001090",
+      "name": "Acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001143",
+      "name": "Coenzyme A and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001171",
+      "name": "Steroidal acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001293",
+      "name": "Purine nucleotide sugars"
+     },
+     {
+      "id": "CHEMONTID:0001296",
+      "name": "Pyrimidine nucleotide sugars"
+     },
+     {
+      "id": "CHEMONTID:0001328",
+      "name": "3-oxo-acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0001329",
+      "name": "Flavin nucleotides"
+     },
+     {
+      "id": "CHEMONTID:0001618",
+      "name": "Purine ribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001619",
+      "name": "Purine ribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001621",
+      "name": "Pyrimidine ribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001622",
+      "name": "Pyrimidine ribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001627",
+      "name": "Purine ribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001628",
+      "name": "Pyrimidine ribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0001653",
+      "name": "Long-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0002136",
+      "name": "Purine deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002137",
+      "name": "Purine deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002138",
+      "name": "Purine deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002139",
+      "name": "Purine 2'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002140",
+      "name": "Purine 3'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002143",
+      "name": "Purine 2'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002144",
+      "name": "Purine 3'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002145",
+      "name": "Purine 2'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002146",
+      "name": "Purine 3'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002150",
+      "name": "Pyrimidine deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002152",
+      "name": "Pyrimidine deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002153",
+      "name": "Pyrimidine deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002156",
+      "name": "Pyrimidine 2'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002157",
+      "name": "Pyrimidine 3'-deoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002160",
+      "name": "Pyrimidine 2'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002161",
+      "name": "Pyrimidine 3'-deoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002162",
+      "name": "Pyrimidine 2'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002163",
+      "name": "Pyrimidine 3'-deoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002165",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002167",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002168",
+      "name": "Pyrimidine 2',3'-dideoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002169",
+      "name": "Purine 2',3'-dideoxyribonucleoside diphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002171",
+      "name": "Purine 2',3'-dideoxyribonucleoside polyphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002172",
+      "name": "Purine 2',3'-dideoxyribonucleoside triphosphates"
+     },
+     {
+      "id": "CHEMONTID:0002960",
+      "name": "3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003175",
+      "name": "Very long-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003176",
+      "name": "Long-chain 3-oxoacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003177",
+      "name": "Very-long-chain 3-oxoacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003178",
+      "name": "Long-chain 3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003179",
+      "name": "Very long-chain 3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003180",
+      "name": "Enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003181",
+      "name": "2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003182",
+      "name": "3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003183",
+      "name": "Long-chain enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003184",
+      "name": "Long-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003185",
+      "name": "Long-chain 3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003206",
+      "name": "Medium-chain fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003207",
+      "name": "Medium-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003208",
+      "name": "2,3,4-saturated fatty acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003224",
+      "name": "(R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003225",
+      "name": "(S)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003235",
+      "name": "Delta-11-acyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003329",
+      "name": "3,4-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003330",
+      "name": "2,4-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003331",
+      "name": "2,5-dienoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003440",
+      "name": "S-alkyl-CoAs"
+     },
+     {
+      "id": "CHEMONTID:0003468",
+      "name": "(5'->5')-dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003654",
+      "name": "Molybdopterin dinucleotides"
+     },
+     {
+      "id": "CHEMONTID:0003656",
+      "name": "Alkyl-CoA disulfides"
+     },
+     {
+      "id": "CHEMONTID:0004179",
+      "name": "Long-chain (3R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004180",
+      "name": "Very-long-chain (3R)-3-hydroxyacyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004256",
+      "name": "Very long-chain 2-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004257",
+      "name": "Very long-chain 3-enoyl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004301",
+      "name": "3-hydroxy-3-alkylglutaryl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004302",
+      "name": "(S)-3-hydroxy-3-alkylglutaryl CoAs"
+     },
+     {
+      "id": "CHEMONTID:0004795",
+      "name": "CDP-ethanolamines"
+     }
+    ]
    },
    "motif_id": "nucleoside_polyphosphate",
    "origin": "source_defined",
@@ -1649,8 +5459,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000289",
+      "name": "Nucleosides, nucleotides, and analogues"
+     },
+     {
+      "id": "CHEMONTID:0002105",
+      "name": "Glycosyl compounds"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000480",
+      "name": "Pyrimidine nucleosides"
+     },
+     {
+      "id": "CHEMONTID:0002204",
+      "name": "C-glycosyl compounds"
+     }
+    ]
    },
    "motif_id": "c_glycosyl_pyrimidine",
    "origin": "source_defined",
@@ -1668,8 +5496,42 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000238",
+      "name": "Tannins"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0000334",
+      "name": "Flavonoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000379",
+      "name": "Proanthocyanidins"
+     },
+     {
+      "id": "CHEMONTID:0001586",
+      "name": "Biflavonoids and polyflavonoids"
+     },
+     {
+      "id": "CHEMONTID:0004818",
+      "name": "B-type proanthocyanidins"
+     },
+     {
+      "id": "CHEMONTID:0004828",
+      "name": "A-type proanthocyanidins"
+     },
+     {
+      "id": "CHEMONTID:0004829",
+      "name": "C-type proanthocyanidins"
+     }
+    ]
    },
    "motif_id": "proanthocyanidin",
    "origin": "source_defined",
@@ -1691,8 +5553,50 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000176",
+      "name": "Benzoic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000238",
+      "name": "Tannins"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0001248",
+      "name": "Hydroxybenzoic acid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001251",
+      "name": "Gallic acid and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002448",
+      "name": "Benzenoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001587",
+      "name": "Catechin gallates"
+     },
+     {
+      "id": "CHEMONTID:0001710",
+      "name": "Hydrolyzable tannins"
+     },
+     {
+      "id": "CHEMONTID:0002513",
+      "name": "O-galloylquinic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003539",
+      "name": "Galloyl esters"
+     }
+    ]
    },
    "motif_id": "galloyl_ester",
    "origin": "source_defined",
@@ -1710,8 +5614,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000238",
+      "name": "Tannins"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     },
+     {
+      "id": "CHEMONTID:0002448",
+      "name": "Benzenoids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000236",
+      "name": "Ellagic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001710",
+      "name": "Hydrolyzable tannins"
+     },
+     {
+      "id": "CHEMONTID:0001712",
+      "name": "Complex tannins"
+     }
+    ]
    },
    "motif_id": "hhdp_or_ellagic_unit",
    "origin": "source_defined",
@@ -1729,8 +5659,50 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000145",
+      "name": "Coumarins and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000202",
+      "name": "Psoralens"
+     },
+     {
+      "id": "CHEMONTID:0000358",
+      "name": "Furanocoumarins"
+     },
+     {
+      "id": "CHEMONTID:0002568",
+      "name": "Angular furanocoumarins"
+     },
+     {
+      "id": "CHEMONTID:0002569",
+      "name": "Linear furanocoumarins"
+     },
+     {
+      "id": "CHEMONTID:0002830",
+      "name": "5-hydroxypsoralens"
+     },
+     {
+      "id": "CHEMONTID:0002831",
+      "name": "8-hydroxypsoralens"
+     },
+     {
+      "id": "CHEMONTID:0002832",
+      "name": "5-methoxypsoralens"
+     },
+     {
+      "id": "CHEMONTID:0002833",
+      "name": "8-methoxypsoralens"
+     }
+    ]
    },
    "motif_id": "furanocoumarin",
    "origin": "source_defined",
@@ -1748,8 +5720,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000253",
+      "name": "Stilbenes"
+     }
+    ]
    },
    "motif_id": "resorcinol_stilbene",
    "origin": "source_defined",
@@ -1767,7 +5749,16 @@
   },
   {
    "chemont": {
-    "broader": [],
+    "broader": [
+     {
+      "id": "CHEMONTID:0000253",
+      "name": "Stilbenes"
+     },
+     {
+      "id": "CHEMONTID:0000261",
+      "name": "Phenylpropanoids and polyketides"
+     }
+    ],
     "compatible": []
    },
    "motif_id": "stilbenoid_oligomer",
@@ -1786,8 +5777,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001013",
+      "name": "Steroidal glycosides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001700",
+      "name": "Spirostanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001701",
+      "name": "Furostanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002364",
+      "name": "Steroidal saponins"
+     }
+    ]
    },
    "motif_id": "spirostane_furostane_glycoside",
    "origin": "source_defined",
@@ -1809,8 +5826,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002724",
+      "name": "Steroidal alkaloids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001703",
+      "name": "Solanidines and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001704",
+      "name": "Spirosolanes and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0004156",
+      "name": "Steroidal alkaloid glycosides"
+     }
+    ]
    },
    "motif_id": "steroidal_glycoalkaloid",
    "origin": "source_defined",
@@ -1832,8 +5875,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001445",
+      "name": "Bile acids, alcohols and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001159",
+      "name": "Taurinated bile acids and derivatives"
+     }
+    ]
    },
    "motif_id": "taurine_conjugate",
    "origin": "source_defined",
@@ -1855,8 +5916,46 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000013",
+      "name": "Amino acids, peptides, and analogues"
+     },
+     {
+      "id": "CHEMONTID:0000060",
+      "name": "Alpha amino acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000265",
+      "name": "Carboxylic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000347",
+      "name": "Amino acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001189",
+      "name": "N-acyl-alpha amino acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002402",
+      "name": "N-acyl-alpha amino acids"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000276",
+      "name": "Acyl glycines"
+     },
+     {
+      "id": "CHEMONTID:0001124",
+      "name": "Glycinated bile acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001318",
+      "name": "Hippuric acids"
+     }
+    ]
    },
    "motif_id": "glycine_conjugate",
    "origin": "source_defined",
@@ -1874,8 +5973,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001445",
+      "name": "Bile acids, alcohols and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001124",
+      "name": "Glycinated bile acids and derivatives"
+     }
+    ]
    },
    "motif_id": "glycine_conjugated_bile_acid",
    "origin": "source_defined",
@@ -1897,8 +6014,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001445",
+      "name": "Bile acids, alcohols and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001159",
+      "name": "Taurinated bile acids and derivatives"
+     }
+    ]
    },
    "motif_id": "taurine_conjugated_bile_acid",
    "origin": "source_defined",
@@ -1916,8 +6051,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001445",
+      "name": "Bile acids, alcohols and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001124",
+      "name": "Glycinated bile acids and derivatives"
+     }
+    ]
    },
    "motif_id": "bile_acid_amino_acid_conjugate",
    "origin": "source_defined",
@@ -1943,8 +6096,26 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001013",
+      "name": "Steroidal glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002364",
+      "name": "Steroidal saponins"
+     }
+    ]
    },
    "motif_id": "steryl_hexoside",
    "origin": "source_defined",
@@ -1962,8 +6133,78 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000403",
+      "name": "Organic sulfuric acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003455",
+      "name": "Sulfuric acid esters"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000373",
+      "name": "Glucosinolates"
+     },
+     {
+      "id": "CHEMONTID:0001185",
+      "name": "Sulfuric acid monoesters"
+     },
+     {
+      "id": "CHEMONTID:0001425",
+      "name": "Sulfated fatty acids"
+     },
+     {
+      "id": "CHEMONTID:0001440",
+      "name": "Sulfatides"
+     },
+     {
+      "id": "CHEMONTID:0001692",
+      "name": "Sulfated steroids"
+     },
+     {
+      "id": "CHEMONTID:0002626",
+      "name": "Phenylsulfates"
+     },
+     {
+      "id": "CHEMONTID:0003005",
+      "name": "Sulfated flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0003110",
+      "name": "Hydroxylamine O-sulfonic acids"
+     },
+     {
+      "id": "CHEMONTID:0003306",
+      "name": "Monosaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003307",
+      "name": "Disaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003308",
+      "name": "Oligosaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003456",
+      "name": "Alkyl sulfates"
+     },
+     {
+      "id": "CHEMONTID:0004181",
+      "name": "3-sulfated flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0004258",
+      "name": "Arylsulfates"
+     }
+    ]
    },
    "motif_id": "organosulfate_monoester",
    "origin": "source_defined",
@@ -1985,8 +6226,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000403",
+      "name": "Organic sulfuric acids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0002626",
+      "name": "Phenylsulfates"
+     },
+     {
+      "id": "CHEMONTID:0003005",
+      "name": "Sulfated flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0004181",
+      "name": "3-sulfated flavonoids"
+     },
+     {
+      "id": "CHEMONTID:0004258",
+      "name": "Arylsulfates"
+     }
+    ]
    },
    "motif_id": "aryl_or_vinyl_sulfate",
    "origin": "source_defined",
@@ -2012,8 +6279,54 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000403",
+      "name": "Organic sulfuric acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003455",
+      "name": "Sulfuric acid esters"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001185",
+      "name": "Sulfuric acid monoesters"
+     },
+     {
+      "id": "CHEMONTID:0001425",
+      "name": "Sulfated fatty acids"
+     },
+     {
+      "id": "CHEMONTID:0001440",
+      "name": "Sulfatides"
+     },
+     {
+      "id": "CHEMONTID:0001692",
+      "name": "Sulfated steroids"
+     },
+     {
+      "id": "CHEMONTID:0003306",
+      "name": "Monosaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003307",
+      "name": "Disaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003308",
+      "name": "Oligosaccharide sulfates"
+     },
+     {
+      "id": "CHEMONTID:0003456",
+      "name": "Alkyl sulfates"
+     }
+    ]
    },
    "motif_id": "sulfate_ester",
    "origin": "source_defined",
@@ -2027,8 +6340,78 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000270",
+      "name": "Organosulfonic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0002237",
+      "name": "Arylsulfonic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0003136",
+      "name": "Alkanesulfonic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0004434",
+      "name": "Organic sulfonic acids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001159",
+      "name": "Taurinated bile acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0001179",
+      "name": "Organosulfonic acids"
+     },
+     {
+      "id": "CHEMONTID:0002264",
+      "name": "Sulfoquinovosyldiacylglycerols"
+     },
+     {
+      "id": "CHEMONTID:0003062",
+      "name": "Sulfoquinovosylmonoacylglycerols"
+     },
+     {
+      "id": "CHEMONTID:0003063",
+      "name": "Sulfoquinovosyl 1-monoacylglycerols"
+     },
+     {
+      "id": "CHEMONTID:0003064",
+      "name": "Sulfoquinovosyl 2-monoacylglycerols"
+     },
+     {
+      "id": "CHEMONTID:0003074",
+      "name": "Arylsufonic acids"
+     },
+     {
+      "id": "CHEMONTID:0003075",
+      "name": "1-sulfo,2-unsubstituted aromatic compounds"
+     },
+     {
+      "id": "CHEMONTID:0003082",
+      "name": "Acylsulfonic acids"
+     },
+     {
+      "id": "CHEMONTID:0003311",
+      "name": "Alkanesulfonic acids"
+     },
+     {
+      "id": "CHEMONTID:0003312",
+      "name": "1,1-diunsubstituted alkanesulfonic acids"
+     },
+     {
+      "id": "CHEMONTID:0004438",
+      "name": "Organic sulfonic acids"
+     }
+    ]
    },
    "motif_id": "c_sulfonic_acid",
    "origin": "source_defined",
@@ -2046,8 +6429,30 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000039",
+      "name": "Sulfamic acid derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000403",
+      "name": "Organic sulfuric acids and derivatives"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000365",
+      "name": "Cyclamates"
+     },
+     {
+      "id": "CHEMONTID:0001181",
+      "name": "Sulfuric acid monoamides"
+     }
+    ]
    },
    "motif_id": "n_sulfamic_acid",
    "origin": "source_defined",
@@ -2065,8 +6470,114 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000264",
+      "name": "Organic acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000402",
+      "name": "Organic phosphoric acids and derivatives"
+     },
+     {
+      "id": "CHEMONTID:0000408",
+      "name": "Phosphate esters"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000237",
+      "name": "Acyl monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001299",
+      "name": "1,2-diacylglycerol-3-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0001320",
+      "name": "Lysophosphatidic acids"
+     },
+     {
+      "id": "CHEMONTID:0001541",
+      "name": "Monosaccharide phosphates"
+     },
+     {
+      "id": "CHEMONTID:0001617",
+      "name": "Purine ribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001620",
+      "name": "Pyrimidine ribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0001635",
+      "name": "Pyridoxal 5'-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0001685",
+      "name": "1-acylglycerol-3-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0001688",
+      "name": "2-acylglycerol-3-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0002135",
+      "name": "Purine deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002141",
+      "name": "Purine 2'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002151",
+      "name": "Pyrimidine deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002158",
+      "name": "Pyrimidine 2'-deoxyribonucleoside monophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002214",
+      "name": "Glycerophosphates"
+     },
+     {
+      "id": "CHEMONTID:0002255",
+      "name": "Glyceraldehyde-3-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0002259",
+      "name": "Pentose phosphates"
+     },
+     {
+      "id": "CHEMONTID:0002260",
+      "name": "Hexose phosphates"
+     },
+     {
+      "id": "CHEMONTID:0002511",
+      "name": "Inositol phosphates"
+     },
+     {
+      "id": "CHEMONTID:0003390",
+      "name": "Ceramide-1-phosphates"
+     },
+     {
+      "id": "CHEMONTID:0003446",
+      "name": "Glycerone phosphates"
+     },
+     {
+      "id": "CHEMONTID:0003458",
+      "name": "Monoalkyl phosphates"
+     },
+     {
+      "id": "CHEMONTID:0004617",
+      "name": "Aryl phosphomonoesters"
+     },
+     {
+      "id": "CHEMONTID:0004696",
+      "name": "Phenyl phosphates"
+     }
+    ]
    },
    "motif_id": "organophosphate_monoester",
    "origin": "source_defined",
@@ -2088,8 +6599,34 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     },
+     {
+      "id": "CHEMONTID:0000259",
+      "name": "Prenol lipids"
+     },
+     {
+      "id": "CHEMONTID:0002049",
+      "name": "Terpene glycosides"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0001580",
+      "name": "Triterpene glycosides"
+     },
+     {
+      "id": "CHEMONTID:0001687",
+      "name": "Cucurbitacin glycosides"
+     },
+     {
+      "id": "CHEMONTID:0002358",
+      "name": "Triterpene saponins"
+     }
+    ]
    },
    "motif_id": "triterpenoid_saponin",
    "origin": "source_defined",
@@ -2115,8 +6652,18 @@
   },
   {
    "chemont": {
-    "broader": [],
-    "compatible": []
+    "broader": [
+     {
+      "id": "CHEMONTID:0000012",
+      "name": "Lipids and lipid-like molecules"
+     }
+    ],
+    "compatible": [
+     {
+      "id": "CHEMONTID:0000258",
+      "name": "Steroids and steroid derivatives"
+     }
+    ]
    },
    "motif_id": "steroid",
    "origin": "source_defined",

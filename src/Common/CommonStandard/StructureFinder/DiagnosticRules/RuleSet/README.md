@@ -46,4 +46,21 @@ over the element, adduct and unit tables of the 0.0.1-skeleton format release. I
 nesting, unit and adduct staging rows merged into the four tables (table rows first, then the staging files in path
 order, as a draft directory set loads them), so every rule's `rule_semantic_sha256` is the one the draft gave. No
 rule has had the author's review yet: every rule is `author_reviewed: false` with no `review`, so no outcome is
-claim-eligible (each lists `not_reviewed`), and the motif ChemOnt nodes are still empty.
+claim-eligible (each lists `not_reviewed`). The motifs carry ChemOnt nodes, which are report-only (below).
+
+## ChemOnt nodes
+
+Each motif row's `chemont` lists ChemOnt nodes as `{id, name}`, sorted by id: `compatible` holds the classes a
+compound carrying the motif is expected to fall in, `broader` the ancestors and wider classes that still contain it.
+A report compares a ClassyFire class or FSEA term with them by name (`agree`, `broader`, `differs`), so the names are
+the ontology's own, spelling included. The field is report-only: it is left out of every `rule_semantic_sha256`, so
+editing it changes the rule-set sha256 but no rule's semantics or review.
+
+- Source: ChemOnt 2.1, the ClassyFire ontology file `ChemOnt_2_1.obo` (OBO header `data-version: 2.1`,
+  `date: 26:08:2016 16:28`; ClassyFire download path `/system/downloads/1_0/chemont/ChemOnt_2_1.obo.zip`), sha256
+  `8616a6ecb96c8aeb204739a4de045cd290eab9a0e164d0ceaa5d888d0751fe22` (2,032,131 bytes). Every id and name was
+  checked against that file. The ontology itself is not committed.
+- Citation: Djoumbou Feunang Y. et al., ClassyFire: automated chemical classification with a comprehensive,
+  computable taxonomy. J. Cheminform. 8, 61 (2016), doi:10.1186/s13321-016-0174-y.
+- In 0.1.0 all 106 motifs carry nodes (1,087 in all); 12 have an empty `compatible` list because no ChemOnt class
+  matches the motif itself, and one (`c_prenyl_aryl`) has an empty `broader` list.
