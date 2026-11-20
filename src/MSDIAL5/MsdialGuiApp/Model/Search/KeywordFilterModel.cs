@@ -58,15 +58,18 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-public void ClearKeywords() {
-    _sem.Wait();
-    try {
-        SetKeywords([]);
-    }
-    finally {
-        _sem.Release();
-    }
-}
+        public event EventHandler? KeywordsCleared;
+
+        public void ClearKeywords() {
+            _sem.Wait();
+            try {
+                SetKeywords([]);
+            }
+            finally {
+                _sem.Release();
+            }
+            KeywordsCleared?.Invoke(this, EventArgs.Empty);
+        }
 
         private void SetKeywords(IEnumerable<string> keywords) {
             _keywords.Clear();
