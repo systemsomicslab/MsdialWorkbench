@@ -1,0 +1,158 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "C8H14NO2_156"
+  ],
+  "motif_id": "pyrrolizidine_retronecine_monoester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5281735,
+    "smiles": "C/C=C(/C)\\C(=O)O[C@H]1CCN2[C@@H]1C(=CC2)COC(=O)[C@@]([C@H](C)OC)(C(C)(C)O)O"
+   },
+   {
+    "pubchem_cid": 5281743,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CCN3[C@H]2[C@@H](CC3)OC1=O)(CO)O)C"
+   },
+   {
+    "pubchem_cid": 5459074,
+    "smiles": "C/C=C/1\\C[C@H]([C@@](C(=O)OCC2=CCN3C2[C@@H]([C@@H](C3)OC1=O)O)(C)O)C"
+   }
+  ],
+  "non_claims": [
+   "the esterified position (C-7 or C-9) is not resolved",
+   "retronecine versus heliotridine (C-7 epimers) is not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 107938,
+    "smiles": "C[C@@H]([C@@](C(C)C)(C(=O)OCC1=CCN2[C@H]1[C@@H](CC2)O)O)O"
+   },
+   {
+    "pubchem_cid": 906426,
+    "smiles": "C[C@H]([C@@](C(C)C)(C(=O)OCC1=CCN2[C@H]1[C@H](CC2)O)O)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "C8H14NO2_156"
+   },
+   {
+    "term": "C8H12NO_138"
+   },
+   {
+    "term": "C8H10N_120"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Only 156 separates necine monoesters from diesters, which also give it weakly, and These 2013 ranks its intensity only against 120 with no printed threshold, so the rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "pyrrolizidine_retronecine_type",
+    "note": "diesters also give 156 weakly (These 2013; Jahouh 2015 lists it for retrorsine)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_pyrrolizidine_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_pyrrolizidine.monoester.pos",
+ "source": [
+  {
+   "doi": "10.1007/s00216-013-7365-4",
+   "locator": "Results (p. 9379); Fig. 2a (p. 9377); Table 1 (p. 9378)"
+  },
+  {
+   "doi": "10.1016/j.foodchem.2015.01.053",
+   "locator": "Sec. 3.3 (p. 143); Table 3 (p. 146)"
+  },
+  {
+   "doi": "10.20450/mjcce.2022.2491",
+   "locator": "Abstract (p. 99); Results and Discussion (p. 102); Table 1 rows 1-9; Table 2"
+  },
+  {
+   "doi": "10.1101/2020.08.23.260091",
+   "locator": "Sec. 1.2, 2.1, 2.2, 2.9, 4.4 (bioRxiv preprint; the journal version, doi 10.1016/j.phytochem.2021.112662, is not open access and was not checked)"
+  },
+  {
+   "doi": "10.1002/rcm.7276",
+   "locator": "Table 2 (p. 1736)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "formula": "C8H14NO2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H14NO2_156",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C8H12NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H12NO_138",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C8H10N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H10N_120",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

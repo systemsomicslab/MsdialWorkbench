@@ -39,6 +39,10 @@ internal static class EngineFixtures
     /// <summary>Relative intensities sit at least this far (relative) from every floor.</summary>
     public const double FloorMargin = 1e-6;
 
+    /// <summary>An ordering or veto_stronger_than term's I_raw sits at least this far (relative) from ratio times the
+    /// largest I_raw of its than-terms.</summary>
+    public const double RatioMargin = 1e-6;
+
     private static KeyValuePair<string, JsonValue> M(string key, JsonValue value) => new KeyValuePair<string, JsonValue>(key, value);
 
     private static string Str(JsonObject o, string key) => ((JsonString)o[key]).Value;
@@ -386,13 +390,19 @@ internal static class EngineFixtures
     /// every peak sits at least <see cref="MarginDa"/> from each target's tolerance (or window) boundary, from the
     /// 1.0 Da loss constraint and from the precursor region, and every hit's relative intensity at least
     /// <see cref="FloorMargin"/> (relative) from the term's floor. Every composition sits at least MarginDa from the
-    /// precursor tolerance boundary. Returns the violations.
+    /// precursor tolerance boundary. In every such hypothesis, the I_raw of every ordering or veto_stronger_than term
+    /// with a hit sits at least <see cref="RatioMargin"/> (relative) from ratio times the largest I_raw of its
+    /// than-terms (design 4.7), unless the case is a deliberate equality case. Returns the violations.
     /// </summary>
-    public static List<string> AuditMargins(JsonObject caseObject) {
+    public static List<string> AuditMargins(JsonObject caseObject) =>
+        AuditMargins(DiagnosticRuleSet.LoadFiles(CaseFiles(caseObject), RuleSetSource.Inline), (JsonObject)caseObject["options"], (JsonObject)caseObject["input"]);
+
+    /// <summary>The margins of <paramref name="input"/> under <paramref name="options"/> for every rule of
+    /// <paramref name="set"/> (see <see cref="AuditMargins(JsonObject)"/>).</summary>
+    public static List<string> AuditMargins(DiagnosticRuleSet set, JsonObject options, JsonObject input) {
         var violations = new List<string>();
-        var set = DiagnosticRuleSet.LoadFiles(CaseFiles(caseObject), RuleSetSource.Inline);
-        var settings = EvaluationSettings.From(Options((JsonObject)caseObject["options"]));
-        var spectrum = Spectrum((JsonObject)caseObject["input"]);
+        var settings = EvaluationSettings.From(Options(options));
+        var spectrum = Spectrum(input);
         var view = SpectrumView.Create(spectrum);
         if (view.Status != SpectrumStatus.Evaluated) {
             return violations;
@@ -420,7 +430,9 @@ internal static class EngineFixtures
                     if (d > engine.PrecursorTolerance) {
                         continue;
                     }
-                    foreach (var term in engine.Builder.Build(h.Series, engine.DecoyPda, engine.LossReference, p)) {
+                    var targets = engine.Builder.Build(h.Series, engine.DecoyPda, engine.LossReference, p);
+                    var iRaw = new double[targets.Count];
+                    foreach (var term in targets) {
                         foreach (var member in term.Members) {
                             var t = member.TargetMz;
                             var tol = term.IsWindow ? term.HalfWidthDa : engine.Tolerance.At(t);
@@ -440,7 +452,23 @@ internal static class EngineFixtures
                                     violations.Add(where + " floor: rel " + rel.ToString("R", CultureInfo.InvariantCulture) + " at floor "
                                                    + floor.ToString("R", CultureInfo.InvariantCulture));
                                 }
+                                if (!double.IsNaN(rel) && !(member.IsLoss && member.LossReferenceMz - x.pk.Mz < SpectrumView.MinLossDa)) {
+                                    iRaw[term.Term.Index] = Math.Max(iRaw[term.Term.Index], rel);
+                                }
                             }
+                        }
+                    }
+                    foreach (var term in targets) {
+                        if (!(term.Term.Role is "ordering" or "veto_stronger_than") || term.Term.Obj["than"] is not JsonArray than || iRaw[term.Term.Index] <= 0.0) {
+                            continue;
+                        }
+                        var ratio = term.Term.Obj.TryGetValue("ratio", out var ratioValue) && ratioValue is JsonFloat ratioFloat ? ratioFloat.Value : 1.0;
+                        var thanIndex = than.Cast<JsonString>().Select(s => targets.First(x => x.Term.Tid == s.Value).Term.Index);
+                        var bound = ratio * thanIndex.Select(i => iRaw[i]).DefaultIfEmpty(0.0).Max();
+                        if (bound > 0.0 && Math.Abs(iRaw[term.Term.Index] - bound) < RatioMargin * bound) {
+                            violations.Add(rule.RuleId + " " + h.HypothesisId + " " + term.Term.Tid + " ratio: I_raw "
+                                           + iRaw[term.Term.Index].ToString("R", CultureInfo.InvariantCulture) + " at "
+                                           + bound.ToString("R", CultureInfo.InvariantCulture));
                         }
                     }
                 }
@@ -496,7 +524,12 @@ internal static class EngineFixtures
 
     // ------------------------------------------------------------------------------------------------ manifest
 
-    public static JsonObject Manifest(IEnumerable<(string Path, byte[] Bytes)> files) => new JsonObject(new[]
+    /// <summary>
+    /// <c>manifest.json</c>: each fixture's raw sha256 and case count, and the shipped rule set (version and rule-set
+    /// sha256) that the per-rule fixtures and <c>masses.json</c> were generated from. It is the one place a test reads
+    /// the shipped set's sha256 from (<see cref="ShippedRuleFixtures.PinnedRuleSet"/>).
+    /// </summary>
+    public static JsonObject Manifest(IEnumerable<(string Path, byte[] Bytes)> files, string ruleSetVersion, string ruleSetSha256) => new JsonObject(new[]
     {
         M("engine_semantics", JsonValue.Of(DiagnosticRuleEvaluator.EngineSemantics)),
         M("files", new JsonObject(files.OrderBy(f => f.Path, StringComparer.Ordinal).Select(f => M(f.Path, new JsonObject(new[]
@@ -506,6 +539,7 @@ internal static class EngineFixtures
         }))))),
         M("format", JsonValue.Of(ManifestFormat)),
         M("format_version", JsonValue.Of(1)),
+        M("rule_set", new JsonObject(new[] { M("sha256", JsonValue.Of(ruleSetSha256)), M("version", JsonValue.Of(ruleSetVersion)) })),
     });
 
     /// <summary>The engine fixtures' SOURCE.md, naming each file's sha256 and case count.</summary>
@@ -545,14 +579,14 @@ internal static class EngineFixtures
             + "the files are written under `<dir>` (this layout) and the test ends Inconclusive. Copy them here unchanged." + NL;
     }
 
-    /// <summary>Every generated file, by path relative to the fixture folder.</summary>
+    /// <summary>Every generated engine file, by path relative to the fixture folder. <c>manifest.json</c>, which also
+    /// pins the per-rule fixtures and the shipped rule set, is generated by <see cref="ShippedRuleFixtures.Generate"/>.</summary>
     public static List<(string Path, byte[] Bytes)> Generate() {
         var semantics = PrettyJson.ToBytes(SemanticsDocument(SemanticsFixtureCases.All()));
         var loader = PrettyJson.ToBytes(LoaderErrorsDocument());
         var nSemantics = ((JsonArray)StrictJsonReader.Read(semantics)["cases"]).Count;
         var nLoader = ((JsonArray)StrictJsonReader.Read(loader)["cases"]).Count;
-        var manifest = PrettyJson.ToBytes(Manifest(new[] { (SemanticsFile, semantics), (LoaderErrorsFile, loader) }));
         var source = Encoding.ASCII.GetBytes(SourceMd(semantics, nSemantics, loader, nLoader));
-        return new List<(string, byte[])> { (ManifestFile, manifest), (SemanticsFile, semantics), (LoaderErrorsFile, loader), (SourceFile, source) };
+        return new List<(string, byte[])> { (SemanticsFile, semantics), (LoaderErrorsFile, loader), (SourceFile, source) };
     }
 }

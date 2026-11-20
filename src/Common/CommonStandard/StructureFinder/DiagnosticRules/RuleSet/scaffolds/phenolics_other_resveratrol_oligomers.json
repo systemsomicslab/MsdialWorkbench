@@ -1,0 +1,91 @@
+{
+ "entries": [
+  {
+   "class": "stilbene_oligomer",
+   "formula": "C28H22O6",
+   "ions": {},
+   "name": "resveratrol dimers (epsilon-viniferin, pallidol, quadrangularin A)",
+   "origin": "as_published",
+   "scaffold_id": "resveratrol_dimer",
+   "source": [
+    {
+     "doi": "10.1007/s13659-019-0212-3",
+     "locator": "Zhang 2019: negative-mode MSn of compound 1 (453 to 359, 347)"
+    },
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Goufo 2020: Table 2 IDs 131, 132, 134, 141, 149, 152 (both losses); 116, 130, 144 (phenol only)"
+    },
+    {
+     "doi": "10.1002/rcm.70074",
+     "locator": "Besrukow 2026: Section 3.2; Table 1 row F0 (453 to 347 only)"
+    }
+   ]
+  },
+  {
+   "class": "stilbene_oligomer",
+   "formula": "C28H22O7",
+   "ions": {},
+   "name": "hydroxylated resveratrol dimer (ampelopsin A)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxy_resveratrol_dimer",
+   "source": [
+    {
+     "doi": "10.1002/rcm.70074",
+     "locator": "Besrukow 2026: Section 3.2; Table 1 row E0 (469 to 375, 363)"
+    }
+   ]
+  },
+  {
+   "class": "stilbene_oligomer",
+   "formula": "C42H32O9",
+   "ions": {},
+   "name": "resveratrol trimers (miyabenol C, davidiol A, suffruticosols A and C)",
+   "origin": "as_published",
+   "scaffold_id": "resveratrol_trimer",
+   "source": [
+    {
+     "doi": "10.1007/s13659-019-0212-3",
+     "locator": "Zhang 2019: negative-mode MSn of suffruticosols A (3) and C (4) (679 to 585, 573)"
+    },
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Goufo 2020: Table 2 IDs 139, 140 (both losses), 142 (phenol only)"
+    }
+   ]
+  },
+  {
+   "class": "stilbene_oligomer",
+   "formula": "C42H30O9",
+   "ions": {},
+   "name": "alpha-viniferin",
+   "origin": "as_published",
+   "scaffold_id": "dehydro_resveratrol_trimer",
+   "source": [
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Goufo 2020: Table 2 ID 143 (677 to 571, 583)"
+    }
+   ]
+  },
+  {
+   "class": "stilbene_oligomer",
+   "formula": "C56H42O12",
+   "ions": {},
+   "name": "resveratrol tetramers (hopeaphenol, isohopeaphenol, vitisins A and B)",
+   "origin": "as_published",
+   "scaffold_id": "resveratrol_tetramer",
+   "source": [
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Goufo 2020: Table 2 ID 150 (905 to 799, 811); IDs 129, 133, 137, 138, 147 list only the phenol losses"
+    },
+    {
+     "doi": "10.1002/rcm.70074",
+     "locator": "Besrukow 2026: Table 1 rows G0, H0, I0 (standards; no MS2 fragment or 811 at 1 %)"
+    }
+   ]
+  }
+ ],
+ "list_id": "phenolics_other_resveratrol_oligomers"
+}

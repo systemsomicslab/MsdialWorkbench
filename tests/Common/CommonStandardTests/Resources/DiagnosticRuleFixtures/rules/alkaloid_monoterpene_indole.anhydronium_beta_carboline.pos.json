@@ -1,0 +1,674 @@
+{
+ "cases": [
+  {
+   "description": "h* = serpentine||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_C16H11N2O2:C16H11N2O2, loss_CH4O:CH4O",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": "serpentine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C16H11N2O2:C16H11N2O2@0",
+       "loss_CH4O:CH4O@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "serpentine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"d8964d9d5582424e5f55683152a4e0f770c9a12c506a82c416b6aee7c80b01bd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"serpentine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"serpentine||[M+H]+\",\"hypothesis_mz\":349.154669,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H11N2O2\",\"kind\":\"product_ion\",\"member_key\":\"C16H11N2O2\",\"peak_index\":0,\"peak_mz\":263.081504,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":263.081504,\"term_id\":\"ion_C16H11N2O2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"CH4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4O\",\"peak_index\":1,\"peak_mz\":317.128454,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.128454,\"term_id\":\"loss_CH4O\",\"unit_id\":1}],\"neutral_formula\":\"C21H20N2O3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"serpentine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"serpentine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "528bb7593e32c9f074119513bdd728bcc929fea4f86c52e5fe48e730d1a3ec65"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ without the peaks of required term ion_C16H11N2O2; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "drop_ion_C16H11N2O2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"06ee4a090904fa031c15053dccc6152a6579a914c0eaa7b32a2a3ac866bd85ea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8f01210f3abbb895ba9a5e51aa630a6bc14358cfec99111292a178b74a0dcd5d"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ without the peaks of required term loss_CH4O; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "drop_loss_CH4O",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"6aa114f531c8dc9c49f4d780904188030431294864d134c548433afed1519877\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3a0e1457390501e57c804965b7fa8f4b9286a393cbe6f12f1f33fe4d9cd0f07c"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ plus upgrade ion_C15H11N2O:C15H11N2O at intensity 500",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": "serpentine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C16H11N2O2:C16H11N2O2@1",
+       "loss_CH4O:CH4O@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "serpentine||[M+H]+"
+      ],
+      "upgrades": [
+       "ion_C15H11N2O:C15H11N2O@0"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "235.086589",
+      "500.0"
+     ],
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "upgrade_ion_C15H11N2O",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"fa9b63cd55e2ac3b952cba6141d9e3cd584b183baacbd34b8b60b18ee1034644\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"serpentine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"serpentine||[M+H]+\",\"hypothesis_mz\":349.154669,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H11N2O2\",\"kind\":\"product_ion\",\"member_key\":\"C16H11N2O2\",\"peak_index\":1,\"peak_mz\":263.081504,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":263.081504,\"term_id\":\"ion_C16H11N2O2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"CH4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4O\",\"peak_index\":2,\"peak_mz\":317.128454,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.128454,\"term_id\":\"loss_CH4O\",\"unit_id\":1}],\"neutral_formula\":\"C21H20N2O3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"serpentine\",\"score\":2.000000,\"units\":{},\"upgrades\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11N2O\",\"kind\":\"product_ion\",\"member_key\":\"C15H11N2O\",\"peak_index\":0,\"peak_mz\":235.086589,\"rel_intensity\":1.000000,\"role\":\"upgrade\",\"target_mz\":235.086589,\"term_id\":\"ion_C15H11N2O\",\"unit_id\":null}],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"serpentine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "61638ef8c2f349eecea98454b3db0394e30c22c9f469539781ec2e113a96027f"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with ion_C16H11N2O2:C16H11N2O2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": "serpentine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C16H11N2O2:C16H11N2O2@0",
+       "loss_CH4O:CH4O@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "serpentine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.086494",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"967685c2b2316a4d1fe5b7a9e9a2cc8ab45b73f8b0b3c20cc14ba3b5bf666f5c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"serpentine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"serpentine||[M+H]+\",\"hypothesis_mz\":349.154669,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":18.969,\"ion_formula\":\"C16H11N2O2\",\"kind\":\"product_ion\",\"member_key\":\"C16H11N2O2\",\"peak_index\":0,\"peak_mz\":263.086494,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":263.081504,\"term_id\":\"ion_C16H11N2O2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"CH4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4O\",\"peak_index\":1,\"peak_mz\":317.128454,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.128454,\"term_id\":\"loss_CH4O\",\"unit_id\":1}],\"neutral_formula\":\"C21H20N2O3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"serpentine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"serpentine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "641447e1e73f09d7df1667c08693b432b53b93290a58e5c43e114bb9011b9f7e"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with ion_C16H11N2O2:C16H11N2O2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.086514",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"b9f5c292707e503e0e4b13832ca53cb72e5bd6813b909ec6b7f46abf20698ec9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "84c16c1b58d5700fc1104338c1ec1a42a11b83fc6e8af313016b037a5821e474"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with ion_C16H11N2O2:C16H11N2O2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": "serpentine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C16H11N2O2:C16H11N2O2@0",
+       "loss_CH4O:CH4O@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "serpentine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.076514",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"02033ca9b2be790838c9d804bbdf2f6a9be0c40f60b47687dc80f38b17e8861a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"serpentine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"serpentine||[M+H]+\",\"hypothesis_mz\":349.154669,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-18.966,\"ion_formula\":\"C16H11N2O2\",\"kind\":\"product_ion\",\"member_key\":\"C16H11N2O2\",\"peak_index\":0,\"peak_mz\":263.076514,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":263.081504,\"term_id\":\"ion_C16H11N2O2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"CH4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4O\",\"peak_index\":1,\"peak_mz\":317.128454,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.128454,\"term_id\":\"loss_CH4O\",\"unit_id\":1}],\"neutral_formula\":\"C21H20N2O3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"serpentine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"serpentine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7146655f161c780a67f29528ac529a787bdd79a1bdb99ecea2330186a62ac73d"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with ion_C16H11N2O2:C16H11N2O2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.076494",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"0e7b8ea0584a2a0983ecb6a2bb22e437393f40777b0fa2fc6ad2d3bd4c6a7d68\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c2e917bb3357bb41aed2b66399f44c0792bc4ae2bd5189a1d8296e22742ec27d"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": "serpentine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C16H11N2O2:C16H11N2O2@0",
+       "loss_CH4O:CH4O@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "serpentine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.164659",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.164659"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"0a15cd06a7607663de86d09497d737123dc0872a03eb86f9582a7ef00dd9d52f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"serpentine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"serpentine||[M+H]+\",\"hypothesis_mz\":349.154669,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H11N2O2\",\"kind\":\"product_ion\",\"member_key\":\"C16H11N2O2\",\"peak_index\":0,\"peak_mz\":263.081504,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":263.081504,\"term_id\":\"ion_C16H11N2O2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"CH4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4O\",\"peak_index\":1,\"peak_mz\":317.128454,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.128454,\"term_id\":\"loss_CH4O\",\"unit_id\":1}],\"neutral_formula\":\"C21H20N2O3\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"serpentine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"serpentine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.164659,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b98e76ff36ba8343a51f62947130b82cc30dfdf61494cd60596c0e51b49cbd16"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.164679",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.164679"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"38adb6c906aad79d7162c48fa0a97a38ef912ffa11dd089e061ff819b74f11cd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.164679,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "80de27ce59ac36660284716c74dff6dbc913a31c9dd90ae678e3d778e04ba78d"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": "serpentine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C16H11N2O2:C16H11N2O2@0",
+       "loss_CH4O:CH4O@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "serpentine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.144679",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.144679"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"b9f7462dce9c61e81a7a9b485d9f4751855089ca1ee9e4147bab99590f787fcf\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"beta_carboline_unsaturated_omethyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"serpentine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"serpentine||[M+H]+\",\"hypothesis_mz\":349.154669,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H11N2O2\",\"kind\":\"product_ion\",\"member_key\":\"C16H11N2O2\",\"peak_index\":0,\"peak_mz\":263.081504,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":263.081504,\"term_id\":\"ion_C16H11N2O2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"CH4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4O\",\"peak_index\":1,\"peak_mz\":317.128454,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.128454,\"term_id\":\"loss_CH4O\",\"unit_id\":1}],\"neutral_formula\":\"C21H20N2O3\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"serpentine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"serpentine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.144679,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b86d0d8f84defb1eb2f62d4029c0856fee4b84edf9396f1e7ed044aba9d793fe"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.144659",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.144659"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"1765de6b890213bac309ba5c87cd0884c3460e7fa13202a9dbeea8e003a3c7dc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.144659,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1aa77d8008a19402f7edca9fb2cccac17bc230c5268a95a0af4b29523f28d10c"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"4286cda143a61f025eb5328e9f9f48fac13cd29377962ca08a4af7f5cd82848f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "09a2a9c5457ff557afd12e95b422b3dd67ffda4ce122c730cffafa0d7735addf"
+  },
+  {
+   "description": "the positive spectrum of serpentine||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "263.081504",
+      "500.0"
+     ],
+     [
+      "317.128454",
+      "500.0"
+     ],
+     [
+      "349.154669",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "349.154669"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"input_sha256\":\"d8964d9d5582424e5f55683152a4e0f770c9a12c506a82c416b6aee7c80b01bd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"beta_carboline_unsaturated_omethyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.anhydronium_beta_carboline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":349.154669,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"091ec758c5e94d2e1364bd485abdb30cda1a572735db774a7cefd4ff29ee521b\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "436d2305f7f675d9e655790588a93102f2dbfd81c17f257dc1cfe40e862f3e23"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

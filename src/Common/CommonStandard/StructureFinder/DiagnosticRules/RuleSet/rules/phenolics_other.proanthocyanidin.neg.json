@@ -1,0 +1,257 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "qm_terminal",
+   "qm_extension",
+   "rda",
+   "hrf"
+  ],
+  "motif_id": "proanthocyanidin",
+  "negative_examples": [
+   {
+    "pubchem_cid": 9064,
+    "smiles": "C1[C@@H]([C@H](OC2=CC(=CC(=C21)O)O)C3=CC(=C(C=C3)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Interflavan position (C4-C8 versus C4-C6) and stereochemistry are not resolved (Gu 2003)",
+   "Which unit is terminal is a hypothesis choice, not a claim",
+   "A-type linkages and galloylated units are outside the composition series",
+   "Trimers and larger are outside the series: their MS2 shows dimer-size QM ions and the 407 ion rather than these losses (Gu 2003 Table 3; Qian 2022 Tables 2-3)"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 122738,
+    "smiles": "C1[C@H]([C@H](OC2=C1C(=CC(=C2[C@@H]3[C@H]([C@H](OC4=CC(=CC(=C34)O)O)C5=CC(=C(C=C5)O)O)O)O)O)C6=CC(=C(C=C6)O)O)O"
+   },
+   {
+    "pubchem_cid": 169853,
+    "smiles": "C1[C@H]([C@H](OC2=C1C(=CC(=C2[C@@H]3[C@H]([C@H](OC4=C(C(=CC(=C34)O)O)[C@@H]5[C@H]([C@H](OC6=CC(=CC(=C56)O)O)C7=CC(=C(C=C7)O)O)O)C8=CC(=C(C=C8)O)O)O)O)O)C9=CC(=C(C=C9)O)O)O"
+   },
+   {
+    "pubchem_cid": 13831068,
+    "smiles": "C1[C@@H]([C@H](OC2=C1C(=CC(=C2[C@H]3[C@@H]([C@H](OC4=CC(=CC(=C34)O)O)C5=CC(=C(C(=C5)O)O)O)O)O)O)C6=CC(=C(C(=C6)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:7",
+   "of": [
+    {
+     "term": "qm_terminal"
+    },
+    {
+     "term": "qm_extension"
+    },
+    {
+     "term": "rda"
+    },
+    {
+     "term": "rda_h2o"
+    },
+    {
+     "term": "rda_h2o_pl"
+    },
+    {
+     "term": "hrf"
+    }
+   ]
+  }
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): RDA+H2O is the RDA product minus H2O, and in some hypotheses the extension QM ion is the terminal QM ion minus H2 or H2O, so the two-of-six count can rest on one channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavan_3_ol_core",
+    "note": "flavan-3-ol monomers and their conjugates give the unit ions without an interflavan bond"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "phenolics_other_flavan_3_ol_terminal_units",
+   "unit_totals": {
+    "conjugate": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "procyanidin_ext": [
+     0,
+     1
+    ],
+    "prodelphinidin_ext": [
+     0,
+     1
+    ],
+    "propelargonidin_ext": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "phenolics_other.proanthocyanidin.neg",
+ "source": [
+  {
+   "doi": "10.3390/molecules26071873",
+   "locator": "Karonen 2021: Results 2.1 (B-type dimer MS/MS: QM 287 and 289, RDA 425, RDA-H2O 407, HRF 451); Figure 3; Materials and Methods (Q Exactive, stepped NCE 20/50/80)"
+  },
+  {
+   "doi": "10.3390/molecules27092684",
+   "locator": "Qian 2022: Table 3 peak 2 (B-type dimer 577: 289 QM, 407 RDA-H2O); Table 2 peaks 2, 4 and Table 3 peak 5 (trimer and tetramer MS/MS); Table 1 peak 3 (305 QM); Section 2 (2 H per B-type link)"
+  },
+  {
+   "doi": "10.3390/antiox9050398",
+   "locator": "Goufo 2020: Table 1 IDs 6, 25, 26, 29 (procyanidins B1-B4 577: 425, 407, 289; compiled)"
+  },
+  {
+   "doi": "10.1021/jf034815d",
+   "locator": "Gu 2003: p. 7516 (dimers 561: 425, 407, 435, 271, 289 and 593: 425, 467, 303, 289); Fig. 2 (p. 7517); Fig. 3 and Scheme 2 (p. 7518); Table 3 (p. 7519, trimers and larger)"
+  },
+  {
+   "doi": "10.1021/jf500745y",
+   "locator": "Engstrom 2014: Fig. 1B (p. 3391); Optimization of the MRM Methods (pp. 3392-3393); Fig. 3 (p. 3393; unit ions 287, 289, 303, 305 by in-source fragmentation)"
+  },
+  {
+   "doi": "10.1021/acs.jafc.5c02379",
+   "locator": "Lin 2025: Table 6 (p. 13857; procyanidin B2 577.1 to 425.1 collision-cell MRM); Table 1 (p. 13854; in-source 577 to 407)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions this work must respect",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision that a class claim needs two or three diagnostic ions jointly (author, 2026-11-15)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "QM terminal-unit anion [unit-H]-: 289 (epi)catechin (Gu 2003; Karonen 2021; Qian 2022), 305 (epi)gallocatechin (Qian 2022 Table 1 peak 3)",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "qm_terminal",
+   "term_source": "src:3",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "QM extension-unit anion: 287 procyanidin (Karonen 2021), 303 prodelphinidin and 271 propelargonidin unit (Gu 2003)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "qm_extension",
+   "term_source": "src:3",
+   "than": null,
+   "unit": {
+    "class": "conjugate",
+    "minus": "H",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:6",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "RDA loss on the extension unit: 152 procyanidin (577 to 425, Karonen 2021), 168 prodelphinidin (593 to 425) and 136 propelargonidin (561 to 425, Gu 2003)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "rda",
+   "term_source": "src:3",
+   "than": null,
+   "unit": {
+    "class": "conjugate",
+    "minus": "C7H4O3",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:6",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "RDA plus water on a procyanidin extension unit, 170 (577 to 407; Karonen 2021; Qian 2022)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "rda_h2o",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": "C7H2O2",
+    "name": "procyanidin_ext",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:6",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "RDA plus water on a propelargonidin extension unit, 154 (561 to 407; Gu 2003); no cited source prints it for prodelphinidin units",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "rda_h2o_pl",
+   "term_source": "src:3",
+   "than": null,
+   "unit": {
+    "minus": "C7H2O2",
+    "name": "propelargonidin_ext",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C6H6O3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "HRF loss of the extension-unit A ring, C6H6O3 126 (577 to 451, Karonen 2021; 561 to 435 and 593 to 467, Gu 2003)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "hrf",
+   "term_source": "src:3",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

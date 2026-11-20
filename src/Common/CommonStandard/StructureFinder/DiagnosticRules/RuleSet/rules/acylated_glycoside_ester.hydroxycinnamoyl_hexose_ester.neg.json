@@ -1,0 +1,183 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "acid_anion",
+   "loss_hexose"
+  ],
+  "motif_id": "hydroxycinnamoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 14825516,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281759,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the acylated hexose position and the anomer are not resolved",
+   "the acyl identity comes from the hypothesis and is reported, not claimed"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280406,
+    "smiles": "COC1=CC(=CC(=C1O)OC)/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 13962928,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281761,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [
+  [
+   "acid_anion",
+   "loss_hexose"
+  ]
+ ],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "acid_anion"
+   },
+   {
+    "term": "loss_hexose"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured: the acid anion and the hexose loss are one peak (caffeoyl-hexose 341.0878 case) and caffeic acid O-glucosides give it too; caffeoyl hexose esters have their own two-ion rule.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hydroxycinnamic_acid_o_glycoside",
+    "note": "caffeic acid 3-O- and 4-O-glucosides give the same caffeate anion (src:2)"
+   }
+  ],
+  "composition": {
+   "core": "H2O",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     1
+    ],
+    "caffeoyl": [
+     0,
+     1
+    ],
+    "coumaroyl": [
+     0,
+     1
+    ],
+    "feruloyl": [
+     0,
+     1
+    ],
+    "sinapoyl": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.hydroxycinnamoyl_hexose_ester.neg",
+ "source": [
+  {
+   "doi": "10.1155/2021/6393246",
+   "locator": "Sec. 3.4 (Others); Table 1"
+  },
+  {
+   "doi": "10.1021/jf062431s",
+   "locator": "Table 2 (E4)"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Tandem Mass Spectra of O-Caffeoyl Glycosides (11 and 12); Fig. 13"
+  },
+  {
+   "doi": "10.1002/rcm.3884",
+   "locator": "Results and Discussion, Cinnamoyl glycosides (42-44); Table 6; Table 7"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Fragmentation of 1-Caffeoylglucoses (1 and 2); Figs. 6, 11; Table 1"
+  }
+ ],
+ "source_checked": false,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "deprotonated hydroxycinnamic acid: caffeate 179 from caffeoyl hexoside 341 in src:0 and src:1, and the base peak of one 1-O-caffeoylglucose anomer in src:5; src:3 reports only hexose ions 161 and 133 for a caffeoyl hexose",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acid_anion",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "class": "acyl",
+    "minus": null,
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C6H10O5",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of the hexose residue 162.0528 (src:0, src:5), the same peak as the acid anion",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_hexose",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18) from the LLM-extracted candidate records of candidates-20261118; source_checked false since 2026-11-19: three acid_anion members have no cited source, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

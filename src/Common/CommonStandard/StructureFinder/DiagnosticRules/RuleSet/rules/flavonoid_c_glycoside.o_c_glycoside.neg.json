@@ -1,0 +1,254 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "a41",
+   "a71",
+   "a71w"
+  ],
+  "motif_id": "flavonoid_c_glycoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280805,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC(=C(C=C5)O)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5318767,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC=C(C=C5)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 46173997,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OCC2=CC3=C(C(=C2)O)C(=O)C4=C([C@@H]3[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C=CC=C4O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The C-glycosylation position (6-C versus 8-C) is not claimed; the published intensity-ratio criteria for it depend on collision energy and instrument",
+   "Sugar identity (hexose versus pentose), unit counts and the aglycone formula come from the chosen hypothesis and are not claimed",
+   "The aglycone skeleton rests on the precondition's flavonoid formula list, which isobaric non-flavonoid aglycones can share (for example aloe-emodin anthrone, C15H12O4, in aloin); anthrone C-glycosides are listed as a competitor",
+   "Which hydroxyl carries the O-linked sugar (phenolic, 2'' or 6'') is not claimed"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 441381,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C(=C(C=C3O2)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5282151,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)O[C@@H]2[C@H]([C@@H]([C@H](O[C@H]2C3=C(C=C(C4=C3OC(=CC4=O)C5=CC=C(C=C5)O)O)O)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 185995,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(O2)C=C(C(=C3O)[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "a41"
+     },
+     {
+      "term": "a41w"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "a71"
+     },
+     {
+      "term": "a71w"
+     }
+    ]
+   },
+   {
+    "not": {
+     "term": "y0"
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): the dehydrated +41 ion is the +71 ion minus OH and OCH3 (CH4O2, a two-radical sum in the WS0 list), so +71 with dehydrated +41 is one channel.",
+ "parameters_origin": "tuned_vs20",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "aryl_o_pyranoside",
+    "note": "Flavonoid O-glycosides share compositions with C-glycosides (apigenin 7-O-glucoside and vitexin are both C21H20O10) and lose whole sugars to a strong Y0."
+   },
+   {
+    "motif_id": "anthrone_c_glycoside",
+    "note": "Aloinosides (aloin O-rhamnosides, C27H32O13) have the composition of C15H12O4|Hex1,dHex1 hypotheses, so the aglycone+41 and +71 targets coincide with the C-glucose ions of aloin."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycones",
+   "unit_totals": {
+    "sugar": [
+     2,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     3
+    ],
+    "Pen": [
+     0,
+     2
+    ],
+    "dHex": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_c_glycoside.o_c_glycoside.neg",
+ "source": [
+  {
+   "doi": "10.1016/j.chroma.2007.05.103",
+   "locator": "Sec. 3.1-3.3; Tables 2-4; Figs 2-8; Sec. 4"
+  },
+  {
+   "doi": "10.1002/rcm.9936",
+   "locator": "Sec. 3.1 (pathways 2-3); Fig. 2; Tables 1-4"
+  },
+  {
+   "doi": "10.3390/molecules21111494",
+   "locator": "Sec. 4, Fig. 3 (ref 36)"
+  },
+  {
+   "doi": "10.1002/rcm.4910",
+   "locator": "Results, non-acylated C-glycosyl flavonoids; Table 1 (compounds 1, 14, 22)"
+  },
+  {
+   "doi": "10.1002/rcm.7202",
+   "locator": "Results, identification of C-glycosides (compound 11); Table 1"
+  },
+  {
+   "doi": "10.1002/jms.3803",
+   "locator": "Results; Figure 7; Table 3"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[Ag+41]-, the 0,2X ion of the C-sugar after loss of the O-linked sugar",
+   "plus": "C2H2O",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a41",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[Ag+71]-, the 0,3X ion of the C-sugar after loss of the O-linked sugar",
+   "plus": "C3H4O2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a71",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[Ag+41-H2O]-, abundant when the O-linked sugar sits on a hydroxyl of the C-sugar (2''-O; also 4''-O in one standards study)",
+   "plus": "C2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a41w",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[Ag+71-H2O]-, the dehydrated 0,3X-type ion",
+   "plus": "C3H2O",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a71w",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Y0 [aglycone-H]-, not abundant for C-glycosyl flavones",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "veto_stronger_than",
+   "term_id": "y0",
+   "term_source": "src:0",
+   "than": [
+    "a41",
+    "a71",
+    "a41w",
+    "a71w"
+   ]
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting subagent), 2026-11-18, from LLM-extracted candidate records",
+ "version": 1,
+ "veto_excludes_motif": false
+}

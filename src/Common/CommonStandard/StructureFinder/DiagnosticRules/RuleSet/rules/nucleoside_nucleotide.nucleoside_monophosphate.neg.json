@@ -1,0 +1,235 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "po3",
+   "h2po4",
+   "sugar_phosphate",
+   "base_anion"
+  ],
+  "motif_id": "nucleotide",
+  "negative_examples": [
+   {
+    "pubchem_cid": 439424,
+    "smiles": "C1=C(C(=O)NC(=O)N1)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5958,
+    "smiles": "C([C@@H]1[C@H]([C@@H]([C@H](C(O1)O)O)O)O)OP(=O)(O)O"
+   }
+  ],
+  "non_claims": [
+   "The phosphate position (5', 3' or 2') is not resolved.",
+   "Ribose versus 2'-deoxyribose is read from the precursor composition hypothesis; the pentose phosphate ion (211 or 195) follows it.",
+   "Base modifications are read from the composition hypothesis, not localised by these ions."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 6083,
+    "smiles": "C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)O)O)O)N"
+   },
+   {
+    "pubchem_cid": 135398597,
+    "smiles": "C1[C@@H]([C@H](O[C@H]1N2C=NC3=C2N=C(NC3=O)N)COP(=O)(O)O)O"
+   },
+   {
+    "pubchem_cid": 6030,
+    "smiles": "C1=CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O"
+   },
+   {
+    "pubchem_cid": 6131,
+    "smiles": "C1=CN(C(=O)N=C1N)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "po3"
+     },
+     {
+      "term": "h2po4"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "sugar_phosphate"
+     },
+     {
+      "term": "base_anion"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Nucleoside monophosphate [M-H]- gives PO3- and H2PO4- with the pentose phosphate left after neutral base loss (211 ribo, 195 deoxy) or the base anion (Strzelecka 2017; Kamel 2004; Beres 2010).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "c_glycosyl_pyrimidine",
+    "note": "Pseudouridine 5'-phosphate is a C-glycoside isomer of UMP."
+   },
+   {
+    "motif_id": "phosphate_ester",
+    "note": "Any organophosphate gives PO3- and H2PO4-; the second ion must be the pentose phosphate or the base anion."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "nucleoside_nucleotide_nucleobases",
+   "unit_totals": {
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Pen": [
+     0,
+     1
+    ],
+    "dPen": [
+     0,
+     1
+    ],
+    "phosphate": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Nucleotides ionise best as [M-H]- because of the phosphate group.",
+    "source": "src:7"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "nucleoside_nucleotide.nucleoside_monophosphate.neg",
+ "source": [
+  {
+   "doi": "10.1038/s41598-017-09416-6",
+   "locator": "Results (NMP section); Fig. 2; Conclusions"
+  },
+  {
+   "doi": "10.1038/s41598-017-09416-6",
+   "locator": "Results (NMP section: RbP m/z 211 and dRbP m/z 195 signals); Fig. 2"
+  },
+  {
+   "doi": "10.1255/ejms.538",
+   "locator": "Fig. 6; Table 4; Scheme 8"
+  },
+  {
+   "doi": "10.1007/s00216-010-4126-5",
+   "locator": "Results and discussion; Fig. 2a,d"
+  },
+  {
+   "doi": "10.3390/foods13182959",
+   "locator": "Section 2 (m/z 79 and 97); Fig. 5"
+  },
+  {
+   "doi": "10.1038/s41598-017-09416-6",
+   "locator": "Results (NMP section)"
+  },
+  {
+   "doi": "10.1007/s00216-010-4126-5",
+   "locator": "Results and discussion; Fig. 2"
+  },
+  {
+   "doi": "10.1002/mas.21388",
+   "locator": "Sec. II"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": false,
+ "terms": [
+  {
+   "floor_source": "src:8",
+   "formula": "O3P",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Metaphosphate PO3- (78.9591).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "po3",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "H2O4P",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Dihydrogen phosphate H2PO4- (96.9696).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "h2po4",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Pentose phosphate left after neutral base loss: C5H8O7P- 211.0013 (ribose) or C5H8O6P- 195.0064 (deoxyribose).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "sugar_phosphate",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "class": "sugar",
+    "minus": "H",
+    "plus": "HO3P"
+   }
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:8",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Deprotonated base [B-H]-; very weak for vidarabine monophosphate (Kamel 2004); the C and U values printed by Strzelecka 2017 do not match [B-H]- (see audit).",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "base_anion",
+   "term_source": "src:5",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 drafting from the normalised candidates (candidates-20261118), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,151 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "a12",
+   "b12"
+  ],
+  "motif_id": "flavonol_core",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280445,
+    "smiles": "C1=CC(=C(C=C1C2=CC(=O)C3=C(C=C(C=C3O2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281801,
+    "smiles": "C1=CC(=C(C=C1C2=COC3=CC(=CC(=C3C2=O)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Hydroxyl and methoxyl positions beyond the hypothesis scaffold are not resolved",
+   "Free aglycone versus an in-source aglycone ion of a conjugate is not decided by this rule",
+   "Precursors at the other common negative adducts tried under adduct_ambiguous ([M+HCOO]-, [M+CH3COO]-, [M+Cl]-) are not described by the cited [M-H]- fragmentation"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280343,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281614,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(O2)C=C(C=C3)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "a12"
+   },
+   {
+    "term": "b12"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Flavonol aglycone [M-H]-: the 1,2A- and 1,2B- ions of the 1,2 C-ring cleavage that Fabre 2001 report for 3',4'-dihydroxyflavonols, where flavones give the 1,3 pair.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavone_c3_nonoxy",
+    "note": "luteolin shares C15H10O6 with fisetin"
+   },
+   {
+    "motif_id": "isoflavone_core",
+    "note": "orobol shares C15H10O6 with fisetin"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycone_flavonol_neg",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_aglycone.flavonol.neg",
+ "source": [
+  {
+   "doi": "10.1016/s1044-0305(01)00226-4",
+   "locator": "Table 2 (p. 710); Fragmentation of Flavonol Aglycones and Scheme 3 (pp. 713-714)"
+  },
+  {
+   "doi": "10.1255/ejms.1206",
+   "locator": "Table 3 (p. 498); CID of flavonols (p. 497); Scheme 1 (p. 499)"
+  },
+  {
+   "doi": "10.1007/s00216-020-02547-2",
+   "locator": "Table 2, row Qstd (p. 3009)"
+  },
+  {
+   "doi": "10.1021/ac102546x",
+   "locator": "p. 413, Results, Flavonoids with Different Hydroxylation Patterns"
+  },
+  {
+   "doi": "10.3390/antiox9050398",
+   "locator": "Table 1, IDs 82 (quercetin) and 68 (myricetin); compiled data"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "p. 6, Flavonoid aglycone, Negative ion mode"
+  },
+  {
+   "doi": "10.1002/mas.20212",
+   "locator": "pp. 10-11, Sec. IV.E Nature of the Aglycone; Fig. 9c,d (p. 10)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,2A- (base peak for quercetin and fisetin); also Yang 2012, Pascale 2020, van der Hooft 2011; Yang 2012 also give it as base peak for kaempferol and myricetin",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_12a",
+   "term_id": "a12",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,2B- of a 3',4'-dihydroxy B ring: Fabre 2001 at 1 % (quercetin) and 4 % (fisetin), Pascale 2020 for quercetin, Yang 2012 at 5 % for fisetin only",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_12b",
+   "term_id": "b12",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

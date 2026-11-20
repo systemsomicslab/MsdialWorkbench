@@ -1,0 +1,616 @@
+{
+ "cases": [
+  {
+   "description": "h* = dehydro_resveratrol_trimer||[M-H]-, precursor at its oracle m/z; one peak per support member: loss_phenol:C6H6O, loss_methylenecyclohexadienone:C7H6O",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": "dehydro_resveratrol_trimer||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_phenol:C6H6O@1",
+       "loss_methylenecyclohexadienone:C7H6O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dehydro_resveratrol_trimer||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"stilbenoid_oligomer\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"86dc592ed1f533fb23a281d896905fc84124be8bb4a66bc9d4707051de2f048a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"stilbenoid_oligomer\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dehydro_resveratrol_trimer|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dehydro_resveratrol_trimer||[M-H]-\",\"hypothesis_mz\":677.181707,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O\",\"peak_index\":1,\"peak_mz\":583.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":583.139842,\"term_id\":\"loss_phenol\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O\",\"peak_index\":0,\"peak_mz\":571.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":571.139842,\"term_id\":\"loss_methylenecyclohexadienone\",\"unit_id\":1}],\"neutral_formula\":\"C42H30O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dehydro_resveratrol_trimer\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dehydro_resveratrol_trimer||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e2d8db708e05d4c0f8e8e7bd33e02755b3616f7cd3f162c3f80ba422702ccd74"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- without the peaks of required term loss_phenol; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "drop_loss_phenol",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"076414b06e84b76eea2152cd60ca6cf96ac70190d6713fec0ac88c9249b77296\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "517e6a4401d37a10d5433866eae5e202b1aa04453e320d2ac0449c11cec67131"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- without the peaks of required term loss_methylenecyclohexadienone; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "drop_loss_methylenecyclohexadienone",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"b12b017c7f51ee327a639c813602bdbd30797a734f4605ead55a2f1e22e74bab\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6ccf8d16618f03de8a6ebccbbbe02b55f4a35686b3d7cca640057ce194e491ba"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with loss_phenol:C6H6O moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": "dehydro_resveratrol_trimer||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_phenol:C6H6O@1",
+       "loss_methylenecyclohexadienone:C7H6O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dehydro_resveratrol_trimer||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.145663",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"stilbenoid_oligomer\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"df81a7468962538ceeb1e3bcc3c244d74ae9a46918275f98a8591112550249a0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"stilbenoid_oligomer\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dehydro_resveratrol_trimer|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dehydro_resveratrol_trimer||[M-H]-\",\"hypothesis_mz\":677.181707,\"k_of\":[],\"matched\":[{\"error_da\":0.005821,\"error_ppm\":9.983,\"ion_formula\":\"C6H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O\",\"peak_index\":1,\"peak_mz\":583.145663,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":583.139842,\"term_id\":\"loss_phenol\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O\",\"peak_index\":0,\"peak_mz\":571.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":571.139842,\"term_id\":\"loss_methylenecyclohexadienone\",\"unit_id\":1}],\"neutral_formula\":\"C42H30O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dehydro_resveratrol_trimer\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dehydro_resveratrol_trimer||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4db9898259df22ee928230bc93ccbcc1aaf7e8c91ecda1484eb655da10f70a34"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with loss_phenol:C6H6O moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.145683",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"a795c7235b0fd04e7ea99ebc3ed79817ba992eefa65e239dad91f92a729a987b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5356be14b5bc642e61fb693419c4a7794b46cad97c8edcc3541901b0ed09188f"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with loss_phenol:C6H6O moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": "dehydro_resveratrol_trimer||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_phenol:C6H6O@1",
+       "loss_methylenecyclohexadienone:C7H6O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dehydro_resveratrol_trimer||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.13402",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"stilbenoid_oligomer\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"0d11e8c54a613945126a40541696624abd264e5087be1b20f9d36cb96fa6da52\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"stilbenoid_oligomer\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dehydro_resveratrol_trimer|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dehydro_resveratrol_trimer||[M-H]-\",\"hypothesis_mz\":677.181707,\"k_of\":[],\"matched\":[{\"error_da\":-0.005822,\"error_ppm\":-9.983,\"ion_formula\":\"C6H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O\",\"peak_index\":1,\"peak_mz\":583.134020,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":583.139842,\"term_id\":\"loss_phenol\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O\",\"peak_index\":0,\"peak_mz\":571.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":571.139842,\"term_id\":\"loss_methylenecyclohexadienone\",\"unit_id\":1}],\"neutral_formula\":\"C42H30O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dehydro_resveratrol_trimer\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dehydro_resveratrol_trimer||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a7d0cf871939b997e012e33ff06b42f05391fc6f4df57179a8544a4788384380"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with loss_phenol:C6H6O moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.134",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"3d3e78ab19412d37622cddfcb1702bb98777d340193220f02c77a4406bd1fd72\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1957355b97511a3a7744a89c6706840d66a7e08255355e312a82ff7930008997"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": "dehydro_resveratrol_trimer||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_phenol:C6H6O@1",
+       "loss_methylenecyclohexadienone:C7H6O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dehydro_resveratrol_trimer||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.191697",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.191697"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"stilbenoid_oligomer\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"794e125084700b6a68f3841f196b3bd5dad8b8ba2e14275277d5773f4913eee6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"stilbenoid_oligomer\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dehydro_resveratrol_trimer|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dehydro_resveratrol_trimer||[M-H]-\",\"hypothesis_mz\":677.181707,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O\",\"peak_index\":1,\"peak_mz\":583.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":583.139842,\"term_id\":\"loss_phenol\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O\",\"peak_index\":0,\"peak_mz\":571.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":571.139842,\"term_id\":\"loss_methylenecyclohexadienone\",\"unit_id\":1}],\"neutral_formula\":\"C42H30O9\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"dehydro_resveratrol_trimer\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dehydro_resveratrol_trimer||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.191697,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "291f015cc11c18b8d39382a8833f74a9f56a05c3a427882df06d81dd01ef6287"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.191717",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.191717"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"c6529dd60617403c849ba22741fe5ced11cc3b390a356891b394c352855c71f6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.191717,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0c0ea84ad2a33bda1c2f33b057da8d9805f7fec02a793590443d088b25ce528c"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": "dehydro_resveratrol_trimer||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_phenol:C6H6O@1",
+       "loss_methylenecyclohexadienone:C7H6O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dehydro_resveratrol_trimer||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.171717",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.171717"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"stilbenoid_oligomer\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"1d7a8561d2d8d102d2904cff14cfc16cff56a350c937ff37eb06336ea3140a69\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"stilbenoid_oligomer\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dehydro_resveratrol_trimer|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dehydro_resveratrol_trimer||[M-H]-\",\"hypothesis_mz\":677.181707,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O\",\"peak_index\":1,\"peak_mz\":583.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":583.139842,\"term_id\":\"loss_phenol\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H6O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O\",\"peak_index\":0,\"peak_mz\":571.139842,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":571.139842,\"term_id\":\"loss_methylenecyclohexadienone\",\"unit_id\":1}],\"neutral_formula\":\"C42H30O9\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"dehydro_resveratrol_trimer\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dehydro_resveratrol_trimer||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.171717,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a8e053ec1be10ede236a9fd64fddceca3f689ecc6f919d83ed45a98cac172de0"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.171697",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.171697"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"b70263d1aa482df8b858d49d19f21cc43b363405cae451ca70daa1041dd0b797\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.171697,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bdaba8d7339c9e184a196bc6cceaea9eabd38da237b41499b8a723f521dbe70c"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"48dcc9fd6e2b63326b85e9c0231f9dd92afca05611f876b54c32bd6b6053cdb4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e6c28b6753b2ce8b9c565dd9975c682c77ab0b141cb9b1343ea6fd38b7ef630c"
+  },
+  {
+   "description": "the positive spectrum of dehydro_resveratrol_trimer||[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.stilbenoid_oligomer.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.stilbenoid_oligomer.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "571.139842",
+      "500.0"
+     ],
+     [
+      "583.139842",
+      "500.0"
+     ],
+     [
+      "677.181707",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "677.181707"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"input_sha256\":\"86dc592ed1f533fb23a281d896905fc84124be8bb4a66bc9d4707051de2f048a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"stilbenoid_oligomer\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.stilbenoid_oligomer.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":677.181707,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"42440da96a75b682ee03ff170e8c646677ed4b91bcc06d1d68ba7255b0a92921\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a2d7b65455268a08a7a5e93c3c684f6332f1e30ed3c1d115fe467ef6a38b90f8"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

@@ -1,0 +1,196 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "y0",
+   "yseries"
+  ],
+  "motif_id": "o_glycoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 442664,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C(=C(C(=C3O2)[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O)[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280441,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(O2)C(=C(C=C3O)O)[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Sugar identity (for example glucose versus galactose), interglycosidic linkage, sequence and glycosylation position are not claimed",
+   "Unit counts and the aglycone formula are recorded with the chosen hypothesis and are not claimed",
+   "The aglycone class is not claimed: non-flavonoid aglycones (for example emodin for apigenin) share listed formulas"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280805,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC(=C(C=C5)O)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 442428,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)O[C@@H]2[C@H]([C@@H]([C@H](O[C@H]2OC3=CC(=C4C(=O)C[C@H](OC4=C3)C5=CC=C(C=C5)O)O)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5318767,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC=C(C=C5)O)O)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "y0"
+   },
+   {
+    "k_of": {
+     "k": {
+      "min": 1,
+      "offset": -1,
+      "var": "n_units"
+     },
+     "k_source": "src:1",
+     "of": [
+      {
+       "term": "yseries"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Sequential whole-sugar losses of an O-glycoside give Y0 plus one distinct partial Y ion per inner cleavage, so a 2-3 sugar hypothesis on a listed aglycone formula needs Y0 and n_units-1 partial Y ions.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "aryl_c_glycoside",
+    "note": "C-glycosyl flavonoids of the same composition lose sugar by cross-ring cleavage and give little or no Y0."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycones",
+   "unit_totals": {
+    "sugar": [
+     2,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     3
+    ],
+    "HexA": [
+     0,
+     2
+    ],
+    "Pen": [
+     0,
+     2
+    ],
+    "dHex": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "One to three pentose, deoxyhexose or hexose losses give the Y ions and the sugar count; the series stops at three sugar units.",
+    "source": "src:4"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_o_glycoside.listed_aglycone_glycoside.pos",
+ "source": [
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "Flavonoid O-glycosides; Fig. 4a"
+  },
+  {
+   "doi": "10.1002/pca.1189",
+   "locator": "Results, fragmentation pathways of flavone di- and triglycosides; Table 2; Fig. 2"
+  },
+  {
+   "doi": "10.1002/jms.224",
+   "locator": "Results (positive mode); Table 1; Figs. 2-3; Scheme 1"
+  },
+  {
+   "doi": "10.1002/jms.1344",
+   "locator": "Results, A. thaliana; Table 1; Fig. 2(b); Fig. 5(b)"
+  },
+  {
+   "doi": "10.1021/acs.analchem.8b05479",
+   "locator": "Table 2"
+  },
+  {
+   "doi": "10.1007/s11306-011-0287-2",
+   "locator": "Table 1"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Y0, [aglycone+H]+ after loss of every sugar unit",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "y0",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "ion_series",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Partial Y ions, [aglycone+sugar subset+H]+",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "yseries",
+   "term_source": "src:1",
+   "than": null,
+   "unit_classes": [
+    "sugar"
+   ]
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting subagent), 2026-11-18, from LLM-extracted candidate records",
+ "version": 1,
+ "veto_excludes_motif": false
+}

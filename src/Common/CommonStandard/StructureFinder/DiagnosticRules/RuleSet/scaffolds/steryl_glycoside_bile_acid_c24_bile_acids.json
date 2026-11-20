@@ -1,0 +1,79 @@
+{
+ "entries": [
+  {
+   "class": "c24_bile_acid",
+   "formula": "C24H40O3",
+   "ions": {
+    "core_dehydrated": {
+     "neg": [],
+     "pos": [
+      "C24H37O",
+      "C24H35"
+     ]
+    }
+   },
+   "name": "monohydroxy C24 bile acid (lithocholic acid and isomers)",
+   "origin": "as_published",
+   "scaffold_id": "monohydroxy_c24_bile_acid",
+   "source": [
+    {
+     "doi": "10.1021/acs.jafc.5c03548",
+     "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs); Table 2"
+    }
+   ]
+  },
+  {
+   "class": "c24_bile_acid",
+   "formula": "C24H40O4",
+   "ions": {
+    "core_dehydrated": {
+     "neg": [],
+     "pos": [
+      "C24H35O",
+      "C24H33"
+     ]
+    }
+   },
+   "name": "dihydroxy C24 bile acid (CDCA, DCA, UDCA, HDCA and isomers)",
+   "origin": "as_published",
+   "scaffold_id": "dihydroxy_c24_bile_acid",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.5c05677",
+     "locator": "Results and Discussion, Development of Multistep MassQL Filtering Trees (Step 1); Figure 2; Methods, Generation and Validation of MassQL Queries"
+    },
+    {
+     "doi": "10.1016/j.cell.2024.02.019",
+     "locator": "Results (Stage 1 MassQL paragraph, di-hydroxylated core); Figure 1a"
+    },
+    {
+     "doi": "10.1016/j.steroids.2011.11.008",
+     "locator": "Sec. 3.3; Table 2"
+    }
+   ]
+  },
+  {
+   "class": "c24_bile_acid",
+   "formula": "C24H40O5",
+   "ions": {
+    "core_dehydrated": {
+     "neg": [],
+     "pos": [
+      "C24H33O",
+      "C24H31"
+     ]
+    }
+   },
+   "name": "trihydroxy C24 bile acid (CA, MCA, HCA, UCA and isomers)",
+   "origin": "as_published",
+   "scaffold_id": "trihydroxy_c24_bile_acid",
+   "source": [
+    {
+     "doi": "10.1016/j.cell.2024.02.019",
+     "locator": "Results (Stage 1 MassQL paragraph); Figure 1a"
+    }
+   ]
+  }
+ ],
+ "list_id": "steryl_glycoside_bile_acid_c24_bile_acids"
+}

@@ -1,0 +1,97 @@
+{
+ "entries": [
+  {
+   "class": "matrine_type_quinolizidine",
+   "formula": "C15H24N2O",
+   "ions": {},
+   "name": "matrine, sophoridine, isomatrine",
+   "origin": "as_published",
+   "scaffold_id": "mt_c15h24n2o",
+   "source": [
+    {
+     "doi": "10.1155/2021/9915027",
+     "locator": "Sec. 3.2; Table 1 (compounds 2, 5)"
+    },
+    {
+     "doi": "10.1016/j.jpba.2010.12.024",
+     "locator": "Sec. 3.2 (p. 1070); Table 1 (p. 1069)"
+    }
+   ]
+  },
+  {
+   "class": "matrine_type_quinolizidine",
+   "formula": "C15H24N2O2",
+   "ions": {},
+   "name": "oxymatrine, sophoranol, 9alpha-hydroxymatrine",
+   "origin": "as_published",
+   "scaffold_id": "mt_c15h24n2o2",
+   "source": [
+    {
+     "doi": "10.1155/2021/9915027",
+     "locator": "Sec. 3.2; Table 1 (compounds 8, 11)"
+    },
+    {
+     "doi": "10.1016/j.jpba.2010.12.024",
+     "locator": "Sec. 3.2 (p. 1071); Table 1 (p. 1069); Fig. 3C-D (p. 1071)"
+    }
+   ]
+  },
+  {
+   "class": "matrine_type_quinolizidine",
+   "formula": "C15H22N2O",
+   "ions": {},
+   "name": "sophocarpine, isosophocarpine, 7,11-dehydromatrine",
+   "origin": "as_published",
+   "scaffold_id": "mt_c15h22n2o",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2010.12.024",
+     "locator": "Sec. 3.2 (pp. 1069-1070); Table 1 (p. 1069)"
+    }
+   ]
+  },
+  {
+   "class": "matrine_type_quinolizidine",
+   "formula": "C15H22N2O2",
+   "ions": {},
+   "name": "oxysophocarpine, leontalbinine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "mt_c15h22n2o2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2010.12.024",
+     "locator": "Sec. 3.2 (p. 1071); Table 1 (p. 1069); Fig. 3A-B (p. 1071)"
+    }
+   ]
+  },
+  {
+   "class": "matrine_type_quinolizidine",
+   "formula": "C15H20N2O2",
+   "ions": {},
+   "name": "7alpha- and 9alpha-hydroxysophoramine",
+   "origin": "as_published",
+   "scaffold_id": "mt_c15h20n2o2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2010.12.024",
+     "locator": "Sec. 3.2 (p. 1070); Scheme 1G; Table 1 (p. 1069)"
+    }
+   ]
+  },
+  {
+   "class": "matrine_type_quinolizidine",
+   "formula": "C15H24N2O3",
+   "ions": {},
+   "name": "sophoranol N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "mt_c15h24n2o3",
+   "source": [
+    {
+     "doi": "10.1155/2021/9915027",
+     "locator": "Sec. 3.2; Table 1 (compound 12)"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloids_misc_and_other_matrine_type"
+}

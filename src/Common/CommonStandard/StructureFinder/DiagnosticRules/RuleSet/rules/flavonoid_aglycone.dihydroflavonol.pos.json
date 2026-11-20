@@ -1,0 +1,143 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "abl"
+  ],
+  "motif_id": "dihydroflavonol_core",
+  "negative_examples": [
+   {
+    "pubchem_cid": 440735,
+    "smiles": "C1[C@H](OC2=CC(=CC(=C2C1=O)O)O)C3=CC(=C(C=C3)O)O"
+   }
+  ],
+  "non_claims": [
+   "Hydroxyl and methoxyl positions beyond the hypothesis scaffold are not resolved",
+   "Free aglycone versus an in-source aglycone ion of a conjugate is not decided by this rule",
+   "The [0,2A-H2O]+ claim ion is C8H5O3+: by calculation C8H5O3+ (149.0233) is also protonated phthalic anhydride, the usual fragment of phthalate plasticizers, so a co-isolated phthalate can supply this claim ion (inference, not from a cited source)",
+   "Precursors at the other common positive adducts tried under adduct_ambiguous ([M+NH4]+, [M+Na]+, [M+K]+) are not described by the cited [M+H]+ fragmentation"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 439533,
+    "smiles": "C1=CC(=C(C=C1[C@@H]2[C@H](C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 122850,
+    "smiles": "C1=CC(=CC=C1[C@@H]2[C@H](C(=O)C3=C(C=C(C=C3O2)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "a13"
+   },
+   {
+    "term": "abl"
+   },
+   {
+    "term": "a02w"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): [0,2A-H2O]+ C8H5O3+ is the B-ring-loss ion C9H7O5+ minus H2O and CO, so the two claim ions are one parent-daughter channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavanone_core",
+    "note": "eriodictyol shares C15H12O6 with aromadendrin"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycone_dihydroflavonol_pos",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_aglycone.dihydroflavonol.pos",
+ "source": [
+  {
+   "doi": "10.3390/12030593",
+   "locator": "Table 2 (taxifolin); Table 3 (peak A taxifolin; peak B aromadendrin, assigned without a standard)"
+  },
+  {
+   "doi": "10.1016/j.jchromb.2026.125348",
+   "locator": "Sec. 3.8 (p. 9); Fig. 8 (p. 10); Table 1 (p. 4)"
+  },
+  {
+   "doi": "10.3390/plants12193388",
+   "locator": "Sec. 2.1, third paragraph (MS2 ions of compounds 1-3, printed in the text only); Table 1 (precursor ions only)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C7H5O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,3A+ (35 % for taxifolin, 33 % for aromadendrin); Zhang 2026 also report it; not a claim term",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a13",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C9H7O5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "ion after loss of the B ring: 195 for taxifolin (16 %) and aromadendrin (15 %) in Tsimogiannis 2007, for aromadendrin in Alperth 2023; absent from the Zhang 2026 Table 1 list for taxifolin",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "abl",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C8H5O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[0,2A-H2O]+ 149 in Tsimogiannis 2007 (taxifolin 3 %, aromadendrin 4.5 %); Zhang 2026 print 149.023 for taxifolin, labelled 0,2A+",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a02w",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

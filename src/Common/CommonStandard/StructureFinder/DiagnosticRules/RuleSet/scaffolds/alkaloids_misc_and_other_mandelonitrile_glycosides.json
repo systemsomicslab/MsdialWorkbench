@@ -1,0 +1,33 @@
+{
+ "entries": [
+  {
+   "class": "cyanogenic_glycoside",
+   "formula": "C14H17NO6",
+   "ions": {},
+   "name": "prunasin and sambunigrin (mandelonitrile glucosides; galloyl esters in Hooi Poay 2011)",
+   "origin": "as_published",
+   "scaffold_id": "prunasin",
+   "source": [
+    {
+     "doi": "10.1002/pca.1312",
+     "locator": "Results, Galloylated cyanogenic glucosides (p. 521); Table 1 (pp. 518-519)"
+    }
+   ]
+  },
+  {
+   "class": "cyanogenic_glycoside",
+   "formula": "C20H27NO11",
+   "ions": {},
+   "name": "amygdalin and neoamygdalin (mandelonitrile gentiobiosides)",
+   "origin": "as_published",
+   "scaffold_id": "amygdalin",
+   "source": [
+    {
+     "doi": "10.3390/molecules22091425",
+     "locator": "Sec. 2.1; Table 1"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloids_misc_and_other_mandelonitrile_glycosides"
+}

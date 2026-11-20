@@ -1,0 +1,378 @@
+{
+ "entries": [
+  {
+   "class": "dammarane",
+   "formula": "C30H52O3",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H51O3"
+     ],
+     "pos": []
+    }
+   },
+   "name": "20(S)-protopanaxadiol (PPD-type ginsenoside aglycone)",
+   "origin": "as_published",
+   "scaffold_id": "protopanaxadiol",
+   "source": [
+    {
+     "doi": "10.1016/j.jgr.2024.01.004",
+     "locator": "Section 1; Table 1"
+    },
+    {
+     "doi": "10.1002/rcm.899",
+     "locator": "MS/MS analysis of malonyl ginsenosides; Fig. 4(c)"
+    }
+   ]
+  },
+  {
+   "class": "dammarane",
+   "formula": "C30H52O4",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H51O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "20(S)-protopanaxatriol (PPT-type ginsenoside aglycone)",
+   "origin": "as_published",
+   "scaffold_id": "protopanaxatriol",
+   "source": [
+    {
+     "doi": "10.1016/j.jgr.2024.01.004",
+     "locator": "Section 1; Table 1"
+    },
+    {
+     "doi": "10.1002/rcm.899",
+     "locator": "MS/MS analysis of malonyl ginsenosides; Fig. 4(c)"
+    }
+   ]
+  },
+  {
+   "class": "dammarane",
+   "formula": "C30H52O5",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H51O5"
+     ],
+     "pos": []
+    }
+   },
+   "name": "ocotillol-type ginsenoside aglycone (pseudoginsenoside F11 type)",
+   "origin": "as_published",
+   "scaffold_id": "ocotillol_ppt",
+   "source": [
+    {
+     "doi": "10.1016/j.jgr.2024.01.004",
+     "locator": "Section 1 (Introduction)"
+    },
+    {
+     "doi": "10.1002/rcm.3917",
+     "locator": "Results (three aglycone types; type III aglycone 492 Da from [M+Na]+ MSn); Figures 2-3"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H48O3",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H47O3"
+     ],
+     "pos": []
+    }
+   },
+   "name": "oleanolic acid (soyasapogenol E has the same formula)",
+   "origin": "as_published",
+   "scaffold_id": "oleanolic_acid",
+   "source": [
+    {
+     "doi": "10.1016/j.jgr.2024.01.004",
+     "locator": "Section 1; Table 1"
+    },
+    {
+     "doi": "10.1002/rcm.3261",
+     "locator": "Results; Table 1"
+    },
+    {
+     "doi": "10.1021/jf8036984",
+     "locator": "p. 2828, Chemical data of saponins 1-19; Results"
+    },
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H50O3",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H49O3"
+     ],
+     "pos": []
+    }
+   },
+   "name": "soyasapogenol B",
+   "origin": "as_published",
+   "scaffold_id": "soyasapogenol_b",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    },
+    {
+     "doi": "10.1021/jf8036984",
+     "locator": "p. 2828, Chemical data of saponins 1-19; Results"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H48O4",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H47O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "hederagenin (echinocystic acid, 2beta-hydroxyoleanolic acid and queretaroic acid have the same formula)",
+   "origin": "as_published",
+   "scaffold_id": "hederagenin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3261",
+     "locator": "Results; Table 1"
+    },
+    {
+     "doi": "10.1021/jf8036984",
+     "locator": "p. 2828, Chemical data of saponins 1-19; Results"
+    },
+    {
+     "doi": "10.1021/jf2005854",
+     "locator": "p. 6144, Chemical data of saponins 1-3, 5, 8, 10, 11; Results (pp. 6144-6145)"
+    },
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    },
+    {
+     "doi": "10.1002/jms.3806",
+     "locator": "Results (ESI- fragmentation of reference standards; peaks 12 and 14); Figure 3"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H48O4",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C29H43O3",
+      "C30H47O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "saikogenins F and G (13,28-epoxy oleananes of saikosaponins a and d)",
+   "origin": "as_published",
+   "scaffold_id": "saikogenin_f",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8415",
+     "locator": "Sec. 3.1; Fig. 2B-C, 2G-H; Fig. 3A"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H50O4",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H49O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "soyasapogenol A",
+   "origin": "as_published",
+   "scaffold_id": "soyasapogenol_a",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H48O5",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H47O5"
+     ],
+     "pos": []
+    }
+   },
+   "name": "bayogenin (caulophyllogenin and 2beta,3beta,30-trihydroxyolean-12-en-28-oic acid have the same formula)",
+   "origin": "as_published",
+   "scaffold_id": "bayogenin",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    },
+    {
+     "doi": "10.1021/jf8036984",
+     "locator": "p. 2828, Chemical data of saponins 1-19; Results"
+    },
+    {
+     "doi": "10.1021/jf2005854",
+     "locator": "p. 6144, Chemical data of saponins 1-3, 5, 8, 10, 11; Results (pp. 6144-6145)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H46O4",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H45O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "Medicago aglycone B (C30H46O4)",
+   "origin": "as_published",
+   "scaffold_id": "medicago_aglycone_b",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H46O5",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H45O5"
+     ],
+     "pos": []
+    }
+   },
+   "name": "Medicago aglycone A (C30H46O5)",
+   "origin": "as_published",
+   "scaffold_id": "medicago_aglycone_a",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H50O5",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C30H49O5"
+     ],
+     "pos": []
+    }
+   },
+   "name": "Medicago aglycone D (C30H50O5)",
+   "origin": "as_published",
+   "scaffold_id": "medicago_aglycone_d",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H46O6",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C29H43O3",
+      "C30H45O6"
+     ],
+     "pos": []
+    }
+   },
+   "name": "medicagenic acid (C-23 carboxyl)",
+   "origin": "as_published",
+   "scaffold_id": "medicagenic_acid",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "Fig. 3C (p. 1472); p. 1473 (Most Abundant Compounds); p. 1474 (Ten Different Aglycones; Table 2)"
+    },
+    {
+     "doi": "10.1021/jf051256x",
+     "locator": "p. 7658, Table 1 (zanhic acid compounds 1-4, 6-9; medicagenic acid compounds 5, 10-15)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H46O7",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C29H43O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "zanhic acid (C-23 carboxyl)",
+   "origin": "as_published",
+   "scaffold_id": "zanhic_acid",
+   "source": [
+    {
+     "doi": "10.1021/jf051256x",
+     "locator": "p. 7658, Table 1 (zanhic acid compounds 1-4, 6-9; medicagenic acid compounds 5, 10-15)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H44O6",
+   "ions": {
+    "y0": {
+     "neg": [
+      "C29H41O3"
+     ],
+     "pos": []
+    }
+   },
+   "name": "Medicago aglycone C (C-23 carboxyl; C30H44O6 by calculation)",
+   "origin": "as_published",
+   "scaffold_id": "medicago_aglycone_c",
+   "source": [
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "Fig. 3C (p. 1472); p. 1473 (Most Abundant Compounds); p. 1474 (Ten Different Aglycones; Table 2)"
+    }
+   ]
+  }
+ ],
+ "list_id": "triterpenoid_saponin_sapogenins_neg"
+}

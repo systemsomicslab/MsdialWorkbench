@@ -1,0 +1,149 @@
+{
+ "entries": [
+  {
+   "class": "glutathione",
+   "formula": "C10H17N3O6S",
+   "ions": {},
+   "name": "glutathione (GSH; [M-H]- 306 in the MSn pathway 306, 272, 254)",
+   "origin": "as_published",
+   "scaffold_id": "glutathione",
+   "source": [
+    {
+     "doi": "10.1021/tx049741u",
+     "locator": "Results 1. GSH (p. 633); Scheme 1 (p. 634); Figure 1 (p. 632)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione",
+   "formula": "C20H32N6O12S2",
+   "ions": {},
+   "name": "oxidized glutathione (GSSG, [M-H]- 611)",
+   "origin": "as_published",
+   "scaffold_id": "glutathione_disulfide",
+   "source": [
+    {
+     "doi": "10.1021/tx049741u",
+     "locator": "Results, Use of Negative Ion Precursor Scan of m/z 272 (p. 635); Figures 3-4 (p. 637)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C18H24N4O8S",
+   "ions": {},
+   "name": "3-(glutathion-S-yl)acetaminophen ([M-H]- 455; formula from the named conjugate)",
+   "origin": "as_published",
+   "scaffold_id": "gs_acetaminophen",
+   "source": [
+    {
+     "doi": "10.1021/tx049741u",
+     "locator": "Results, Use of Negative Ion Precursor Scan of m/z 272 (p. 635); Figures 3-4 (p. 637)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C24H26Cl2N4O9S",
+   "ions": {},
+   "name": "hydroxydiclofenac glutathione conjugate ([M-H]- 615; formula from the named conjugate)",
+   "origin": "as_published",
+   "scaffold_id": "gs_hydroxydiclofenac",
+   "source": [
+    {
+     "doi": "10.1021/tx049741u",
+     "locator": "Results, Use of Negative Ion Precursor Scan of m/z 272 (p. 635); Figures 3-4 (p. 637)"
+    },
+    {
+     "doi": "10.1002/rcm.3458",
+     "locator": "Abstract (p. 1032); Results, diclofenac (pp. 1034-1035); Figure 2 (p. 1035)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C24H26Cl2N4O7S",
+   "ions": {},
+   "name": "diclofenac S-acyl-glutathione (D-SG, [M+H]+ 585)",
+   "origin": "as_published",
+   "scaffold_id": "gs_diclofenac_acyl",
+   "source": [
+    {
+     "doi": "10.1021/tx049741u",
+     "locator": "Results 4. D-SG (p. 635)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C34H42N4O11S2",
+   "ions": {},
+   "name": "troglitazone glutathione conjugate ([M-H]- 745; formula from the named conjugate)",
+   "origin": "as_published",
+   "scaffold_id": "gs_troglitazone",
+   "source": [
+    {
+     "doi": "10.1021/tx049741u",
+     "locator": "Results, Use of Negative Ion Precursor Scan of m/z 272 (p. 635); Figures 3-4 (p. 637)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C25H27N5O7S",
+   "ions": {},
+   "name": "carbamazepine glutathione conjugate ([M-H]- 540)",
+   "origin": "as_published",
+   "scaffold_id": "gs_carbamazepine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3458",
+     "locator": "Results, carbamazepine (p. 1035); Figure 3 (p. 1036)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C25H29N5O8S",
+   "ions": {},
+   "name": "carbamazepine epoxide-derived glutathione conjugate ([M-H]- 558)",
+   "origin": "as_published",
+   "scaffold_id": "gs_carbamazepine_hydroxy",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3458",
+     "locator": "Results, carbamazepine (p. 1035); Figure 3 (p. 1036)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C19H24N4O6S",
+   "ions": {},
+   "name": "3-methylindole glutathione conjugate ([M-H]- 435)",
+   "origin": "as_published",
+   "scaffold_id": "gs_methylindole",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3458",
+     "locator": "Results, 3-methyl indole (pp. 1035-1037); Figure 4 (p. 1036)"
+    }
+   ]
+  },
+  {
+   "class": "glutathione_conjugate",
+   "formula": "C19H24N4O7S",
+   "ions": {},
+   "name": "oxidized 3-methylindole glutathione conjugate ([M-H]- 451)",
+   "origin": "as_published",
+   "scaffold_id": "gs_methylindole_oxy",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3458",
+     "locator": "Results, 3-methyl indole (pp. 1035-1037); Figure 4 (p. 1036)"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloids_misc_and_other_glutathione_compounds"
+}

@@ -1,0 +1,291 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "methyl_gsl_332",
+   "methyl_gsl_m196_136",
+   "hso4_97",
+   "glc_sulfate_259",
+   "thioglc_sulfate_275",
+   "thioglc_195"
+  ],
+  "motif_id": "glucosinolate_2_hydroxyalkyl",
+  "negative_examples": [
+   {
+    "pubchem_cid": 9548620,
+    "smiles": "C=CCC/C(=N\\OS(=O)(=O)O)/S[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 6911854,
+    "smiles": "C=CC/C(=N\\OS(=O)(=O)O)/S[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The configuration at C-2 (progoitrin versus epiprogoitrin) is not resolved.",
+   "The rest of the side chain (the aldehyde lost) is assigned by the precursor composition hypothesis."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5281139,
+    "smiles": "C=C[C@@H](CC(=NOS(=O)(=O)O)S[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 3035040,
+    "smiles": "C=C[C@H](CC(=NOS(=O)(=O)O)S[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 9548636,
+    "smiles": "C=CCC(C/C(=N\\OS(=O)(=O)O)/S[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "hso4_97"
+   },
+   {
+    "k_of": {
+     "k": 1,
+     "k_source": "src:0",
+     "of": [
+      {
+       "term": "glc_sulfate_259"
+      },
+      {
+       "term": "thioglc_sulfate_275"
+      },
+      {
+       "term": "thioglc_195"
+      }
+     ]
+    }
+   },
+   {
+    "k_of": {
+     "k": 1,
+     "k_source": "src:19",
+     "of": [
+      {
+       "term": "methyl_gsl_332"
+      },
+      {
+       "term": "methyl_gsl_m196_136"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "The 332 and 136 ions are reported for progoitrin, epiprogoitrin, glucosibarin and gluconapoleiferin in four ion-trap papers (three with standards) and one QqQ-LIT paper; no QTOF or Orbitrap data exist, so the rule is calibrated on other.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "glucosinolate",
+    "note": "Alkenyl glucosinolates without the 2-hydroxy group (sinigrin, gluconapin) show neither ion (Fabre 2007 Table 1; Lee 2008 Table 2; Hooshmand 2021 Table 4)."
+   }
+  ],
+  "composition": {
+   "core": "C7H12NO9S2",
+   "scaffold_list": "glucosinolate_sidechains_2_hydroxyalkyl",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "In negative-mode direct infusion of the standards only the deprotonated glucosinolate ions were seen, with no adduct or degradation ions.",
+    "source": "src:12"
+   },
+   {
+    "note": "The deprotonated sulfate [M-H]- is the predominant glucosinolate ion in negative ESI.",
+    "source": "src:13"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "glucosinolate.2_hydroxyalkyl.neg",
+ "source": [
+  {
+   "doi": "10.1002/pca.983",
+   "locator": "pp. 309-310, Results, Diagnostic product ions of the common moiety of glucosinolates; p. 308, Table 1; p. 311, Table 2; p. 312, Fig. 3"
+  },
+  {
+   "doi": "10.1002/pca.2350",
+   "locator": "p. 523, Results, Detection and identification of GS in Arabidopsis leaf extracts; p. 524, Table 2; p. 525, Fig. 3"
+  },
+  {
+   "doi": "10.3390/metabo16040274",
+   "locator": "Sec. 2; Sec. 3.2; Fig. 3"
+  },
+  {
+   "doi": "10.3390/metabo11010047",
+   "locator": "Introduction; Section 2.4; Table 4"
+  },
+  {
+   "doi": "10.1002/rcm.3101",
+   "locator": "p. 2383, Results, MS/MS of naturally occurring GLSs in leaves of E. sativa; p. 2383, Table 4; p. 2384, Table 5"
+  },
+  {
+   "doi": "10.1021/ac100703w",
+   "locator": "p. 5689, Results, Hidden Gold of A + 2 Isotopic Peaks; p. 5689, Fig. 2; p. 5691, Table 1"
+  },
+  {
+   "doi": "10.1002/rcm.3669",
+   "locator": "pp. 2829-2830, Results; p. 2826, Fig. 1; p. 2830, Table 2"
+  },
+  {
+   "doi": "10.1002/jms.1711",
+   "locator": "p. 275, Results and Discussion; pp. 277-279, Schemes 4, 7-8; p. 282, Table 1"
+  },
+  {
+   "doi": "10.1021/acs.jafc.6b01277",
+   "locator": "p. 4409, Results, Typical Fragmentation of Aliphatic, Aromatic, and Indolyl Glucosinolate"
+  },
+  {
+   "doi": "10.1021/jf405538d",
+   "locator": "Results; Table 1"
+  },
+  {
+   "doi": "10.1038/s41592-019-0358-2",
+   "locator": "p. 297, Fig. 2b"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.1002/rcm.3669",
+   "locator": "p. 2827, Results, Optimization of the LC/ESI-ITMS analysis"
+  },
+  {
+   "doi": "10.1021/ac100703w",
+   "locator": "p. 5688, Results, LC/ESI/LTQ MS analysis of GLSs; p. 5689, Fig. 1"
+  },
+  {
+   "doi": "10.1039/d1np00014d",
+   "locator": "p.1738, Sec. 3.2.3"
+  },
+  {
+   "doi": "10.1002/pca.983",
+   "locator": "p. 308, Table 1; p. 312, Results, Diagnostic product ions of the variable side chain (progoitrin)"
+  },
+  {
+   "doi": "10.1021/ac100703w",
+   "locator": "p. 5690, Results, Hidden Gold of A + 2 Isotopic Peaks (progoitrin); p. 5691, Fig. 4"
+  },
+  {
+   "doi": "10.1002/rcm.3101",
+   "locator": "p. 2383, Table 4"
+  },
+  {
+   "doi": "10.1002/rcm.3669",
+   "locator": "p. 2830, Table 2; p. 2833, Results"
+  },
+  {
+   "doi": "10.3390/metabo11010047",
+   "locator": "Section 2.4, Table 4 (rows 2OH-3but and 2OH-4pent)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:11",
+   "formula": "C8H14NO9S2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Methyl glucosinolate (glucocapparin) anion after loss of the side-chain aldehyde; formula by calculation.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "methyl_gsl_332",
+   "term_source": "src:15",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "formula": "C2H2NO4S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "The 332 ion after further loss of thioglucose (C6H12O5S); formula by calculation.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "methyl_gsl_m196_136",
+   "term_source": "src:16",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "formula": "HO4S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "hso4_97",
+   "term_source": "src:7",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "formula": "C6H11O9S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "glc_sulfate_259",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "formula": "C6H11O8S2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "thioglc_sulfate_275",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "formula": "C6H11O5S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "thioglc_195",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, glucosinolate family), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,162 @@
+{
+ "entries": [
+  {
+   "class": "oleanane",
+   "formula": "C30H50O3",
+   "ions": {
+    "y0": {
+     "neg": [],
+     "pos": [
+      "C30H49O2"
+     ]
+    }
+   },
+   "name": "soyasapogenol B",
+   "origin": "as_published",
+   "scaffold_id": "soyasapogenol_b",
+   "source": [
+    {
+     "doi": "10.1038/s41592-019-0358-2",
+     "locator": "Fig. 2b (triterpene saponin entry)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H48O3",
+   "ions": {
+    "y0": {
+     "neg": [],
+     "pos": [
+      "C30H47O2",
+      "C30H49O3"
+     ]
+    }
+   },
+   "name": "oleanolic acid (soyasapogenol E has the same formula)",
+   "origin": "as_published",
+   "scaffold_id": "oleanolic_acid",
+   "source": [
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "Results; Table 1 (p. 799); Table 2 (p. 800); Figures 4-5 (pp. 802-803)"
+    },
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "pp. 799-801 (Results, Assignment and Fragmentation of Reported Saponins); Figure 4 (p. 802)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H48O4",
+   "ions": {
+    "y0": {
+     "neg": [],
+     "pos": [
+      "C30H45O2",
+      "C30H47O3",
+      "C30H49O4"
+     ]
+    }
+   },
+   "name": "hederagenin (echinocystic acid and saikogenin F have the same formula)",
+   "origin": "as_published",
+   "scaffold_id": "hederagenin",
+   "source": [
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "Results; Table 1 (p. 799); Table 2 (p. 800); Figures 4-5 (pp. 802-803)"
+    },
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "pp. 799-801 (Results, Assignment and Fragmentation of Reported Saponins); Figure 4 (p. 802)"
+    },
+    {
+     "doi": "10.1002/rcm.8415",
+     "locator": "Sec. 3.1 (positive full scan, in-source ions from [M+H]+); Fig. 2D, 2I; Fig. 3B-C"
+    },
+    {
+     "doi": "10.1002/jms.3806",
+     "locator": "Results (peak 14 and peak 12 sections); Figures 4C, 5B"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C30H48O5",
+   "ions": {
+    "y0": {
+     "neg": [],
+     "pos": [
+      "C30H45O3",
+      "C30H47O4"
+     ]
+    }
+   },
+   "name": "bayogenin / caulophyllogenin (same formula; positive ions reported for caulophyllogenin)",
+   "origin": "as_published",
+   "scaffold_id": "bayogenin",
+   "source": [
+    {
+     "doi": "10.1002/jms.3806",
+     "locator": "Results (peak 14 and peak 12 sections); Figures 4C, 5B"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C31H48O6",
+   "ions": {
+    "y0": {
+     "neg": [],
+     "pos": [
+      "C31H45O4",
+      "C31H47O5",
+      "C31H49O6"
+     ]
+    }
+   },
+   "name": "phytolaccagenic acid",
+   "origin": "as_published",
+   "scaffold_id": "phytolaccagenic_acid",
+   "source": [
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "Results; Table 1 (p. 799); Table 2 (p. 800); Figures 4-5 (pp. 802-803)"
+    },
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "pp. 799-801 (Results, Assignment and Fragmentation of Reported Saponins); Figure 4 (p. 802)"
+    }
+   ]
+  },
+  {
+   "class": "oleanane",
+   "formula": "C31H48O5",
+   "ions": {
+    "y0": {
+     "neg": [],
+     "pos": [
+      "C31H47O4",
+      "C31H49O5"
+     ]
+    }
+   },
+   "name": "serjanic acid",
+   "origin": "as_published",
+   "scaffold_id": "serjanic_acid",
+   "source": [
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "Results; Table 1 (p. 799); Table 2 (p. 800); Figures 4-5 (pp. 802-803)"
+    },
+    {
+     "doi": "10.1016/j.jasms.2006.02.013",
+     "locator": "pp. 799-801 (Results, Assignment and Fragmentation of Reported Saponins); Figure 4 (p. 802)"
+    }
+   ]
+  }
+ ],
+ "list_id": "triterpenoid_saponin_sapogenins_pos"
+}

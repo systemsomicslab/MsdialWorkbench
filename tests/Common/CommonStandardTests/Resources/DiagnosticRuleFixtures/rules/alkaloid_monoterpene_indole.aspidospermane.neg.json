@@ -1,0 +1,842 @@
+{
+ "cases": [
+  {
+   "description": "h* = aspidospermidine||[M-H]-, precursor at its oracle m/z; one peak per support member: ion_C11H14N:C11H14N, ion_C13H17N2:C13H17N2, ion_C8H15N:C8H15N, ion_C2H6N:C2H6N",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": "aspidospermidine||[M-H]-",
+      "fired": true,
+      "matched": [
+       "ion_C11H14N:C11H14N@2",
+       "ion_C13H17N2:C13H17N2@3",
+       "ion_C8H15N:C8H15N@1",
+       "ion_C2H6N:C2H6N@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidospermidine||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aspidospermane\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"818301a826b5557daa1f69477a942eb40a794320c1a099110a53ceb6569b708a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aspidospermane\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidospermidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidospermidine||[M-H]-\",\"hypothesis_mz\":281.202323,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C11H14N\",\"kind\":\"product_ion\",\"member_key\":\"C11H14N\",\"peak_index\":2,\"peak_mz\":160.113173,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.113173,\"term_id\":\"ion_C11H14N\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C13H17N2\",\"kind\":\"product_ion\",\"member_key\":\"C13H17N2\",\"peak_index\":3,\"peak_mz\":201.139723,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":201.139723,\"term_id\":\"ion_C13H17N2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C8H15N\",\"kind\":\"product_ion\",\"member_key\":\"C8H15N\",\"peak_index\":1,\"peak_mz\":125.120998,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":125.120998,\"term_id\":\"ion_C8H15N\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C2H6N\",\"kind\":\"product_ion\",\"member_key\":\"C2H6N\",\"peak_index\":0,\"peak_mz\":44.050573,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":44.050573,\"term_id\":\"ion_C2H6N\",\"unit_id\":3}],\"neutral_formula\":\"C19H26N2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"aspidospermidine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidospermidine||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6bab9865e15043991c747aa37720d943102290f8075bf07c68eb77c228764677"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- without the peaks of required term ion_C11H14N; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "drop_ion_C11H14N",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"1f36291ee4d1868b15bc74c2b8fdfaf34ba204d9976be0aafac54bed02193a94\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c52570657e4aca5ec42fb33b8d28d53e7ba2213d382d0084ef43870b49c79397"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with 1 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": "aspidospermidine||[M-H]-",
+      "fired": true,
+      "matched": [
+       "ion_C11H14N:C11H14N@0",
+       "ion_C13H17N2:C13H17N2@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidospermidine||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aspidospermane\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"bd2938e23aa265abec439ec14c5a96936964d374c3bdaa90deeeacc2eb2af0b1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"aspidospermane\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidospermidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidospermidine||[M-H]-\",\"hypothesis_mz\":281.202323,\"k_of\":[{\"count\":1,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C11H14N\",\"kind\":\"product_ion\",\"member_key\":\"C11H14N\",\"peak_index\":0,\"peak_mz\":160.113173,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.113173,\"term_id\":\"ion_C11H14N\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C13H17N2\",\"kind\":\"product_ion\",\"member_key\":\"C13H17N2\",\"peak_index\":1,\"peak_mz\":201.139723,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":201.139723,\"term_id\":\"ion_C13H17N2\",\"unit_id\":1}],\"neutral_formula\":\"C19H26N2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"aspidospermidine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidospermidine||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1ae8223e30c042587e9c599df758abd8e66bd69c2ff9c5f2b59a93ee42190170"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with 0 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"019a9cf2c9584cfb6830b7d0899cead6336554eef758ded0f651a987440ea66a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "76240cc7d0b9907392ef78bf3468bc517188d53205fef65ac869e4f27135d040"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- plus upgrade loss_C3H4O:C3H4O at intensity 500",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": "aspidospermidine||[M-H]-",
+      "fired": true,
+      "matched": [
+       "ion_C11H14N:C11H14N@2",
+       "ion_C13H17N2:C13H17N2@3",
+       "ion_C8H15N:C8H15N@1",
+       "ion_C2H6N:C2H6N@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidospermidine||[M-H]-"
+      ],
+      "upgrades": [
+       "loss_C3H4O:C3H4O@4"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "225.176108",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "upgrade_loss_C3H4O",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aspidospermane\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"a1379edfd97f1b103bcb072525f9ad0d4b1560671338f141ca9b623ed4f05114\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"aspidospermane\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidospermidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidospermidine||[M-H]-\",\"hypothesis_mz\":281.202323,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C11H14N\",\"kind\":\"product_ion\",\"member_key\":\"C11H14N\",\"peak_index\":2,\"peak_mz\":160.113173,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.113173,\"term_id\":\"ion_C11H14N\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C13H17N2\",\"kind\":\"product_ion\",\"member_key\":\"C13H17N2\",\"peak_index\":3,\"peak_mz\":201.139723,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":201.139723,\"term_id\":\"ion_C13H17N2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C8H15N\",\"kind\":\"product_ion\",\"member_key\":\"C8H15N\",\"peak_index\":1,\"peak_mz\":125.120998,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":125.120998,\"term_id\":\"ion_C8H15N\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C2H6N\",\"kind\":\"product_ion\",\"member_key\":\"C2H6N\",\"peak_index\":0,\"peak_mz\":44.050573,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":44.050573,\"term_id\":\"ion_C2H6N\",\"unit_id\":3}],\"neutral_formula\":\"C19H26N2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"aspidospermidine\",\"score\":4.000000,\"units\":{},\"upgrades\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C3H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H4O\",\"peak_index\":4,\"peak_mz\":225.176108,\"rel_intensity\":1.000000,\"role\":\"upgrade\",\"target_mz\":225.176108,\"term_id\":\"loss_C3H4O\",\"unit_id\":null}],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidospermidine||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3ee9ac807fa26d8c94d73e004c292cf8a5832865fa2df9a110c5e0a5203a8da6"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with ion_C11H14N:C11H14N moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": "aspidospermidine||[M-H]-",
+      "fired": true,
+      "matched": [
+       "ion_C11H14N:C11H14N@2",
+       "ion_C13H17N2:C13H17N2@3",
+       "ion_C8H15N:C8H15N@1",
+       "ion_C2H6N:C2H6N@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidospermidine||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.118163",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aspidospermane\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"97f9a5475d91665bef3452543be4fd6bc26e39f36b6303a176ff40e435e42f03\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aspidospermane\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidospermidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidospermidine||[M-H]-\",\"hypothesis_mz\":281.202323,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":31.163,\"ion_formula\":\"C11H14N\",\"kind\":\"product_ion\",\"member_key\":\"C11H14N\",\"peak_index\":2,\"peak_mz\":160.118163,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.113173,\"term_id\":\"ion_C11H14N\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C13H17N2\",\"kind\":\"product_ion\",\"member_key\":\"C13H17N2\",\"peak_index\":3,\"peak_mz\":201.139723,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":201.139723,\"term_id\":\"ion_C13H17N2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C8H15N\",\"kind\":\"product_ion\",\"member_key\":\"C8H15N\",\"peak_index\":1,\"peak_mz\":125.120998,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":125.120998,\"term_id\":\"ion_C8H15N\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C2H6N\",\"kind\":\"product_ion\",\"member_key\":\"C2H6N\",\"peak_index\":0,\"peak_mz\":44.050573,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":44.050573,\"term_id\":\"ion_C2H6N\",\"unit_id\":3}],\"neutral_formula\":\"C19H26N2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"aspidospermidine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidospermidine||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "fd6dad40f131cfc619f82a0124e7def68a4b923929befc9d1531c9e898d81102"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with ion_C11H14N:C11H14N moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.118183",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"ddd157496572cddb907ff9dc420ba2a1e19ff836d33f48886c9c77623e66e804\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5f82892d0a761d3de7cfde5993bf932a5bdafb01d9dce96abcce65dd70cafb02"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with ion_C11H14N:C11H14N moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": "aspidospermidine||[M-H]-",
+      "fired": true,
+      "matched": [
+       "ion_C11H14N:C11H14N@2",
+       "ion_C13H17N2:C13H17N2@3",
+       "ion_C8H15N:C8H15N@1",
+       "ion_C2H6N:C2H6N@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidospermidine||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.108183",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aspidospermane\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"2aab1d10d0e032d88116b16bc42f0561e734b65ff646f750042d507b53778acc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aspidospermane\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidospermidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidospermidine||[M-H]-\",\"hypothesis_mz\":281.202323,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-31.168,\"ion_formula\":\"C11H14N\",\"kind\":\"product_ion\",\"member_key\":\"C11H14N\",\"peak_index\":2,\"peak_mz\":160.108183,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.113173,\"term_id\":\"ion_C11H14N\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C13H17N2\",\"kind\":\"product_ion\",\"member_key\":\"C13H17N2\",\"peak_index\":3,\"peak_mz\":201.139723,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":201.139723,\"term_id\":\"ion_C13H17N2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C8H15N\",\"kind\":\"product_ion\",\"member_key\":\"C8H15N\",\"peak_index\":1,\"peak_mz\":125.120998,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":125.120998,\"term_id\":\"ion_C8H15N\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C2H6N\",\"kind\":\"product_ion\",\"member_key\":\"C2H6N\",\"peak_index\":0,\"peak_mz\":44.050573,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":44.050573,\"term_id\":\"ion_C2H6N\",\"unit_id\":3}],\"neutral_formula\":\"C19H26N2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"aspidospermidine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidospermidine||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e650d7ee1420f12e2325f20a72a32cffadbd3390d87fa9313a891e66e7c82ace"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with ion_C11H14N:C11H14N moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.108163",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"7acc4f6305dae4603e0712ede52de94f068a22da093d44911c3b1f94db0af29a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7c0d2a00c3c369fe6a9a7306211e635d04dc22e03f1327fc6b5b1d4b7c0411ea"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": "aspidospermidine||[M-H]-",
+      "fired": true,
+      "matched": [
+       "ion_C11H14N:C11H14N@2",
+       "ion_C13H17N2:C13H17N2@3",
+       "ion_C8H15N:C8H15N@1",
+       "ion_C2H6N:C2H6N@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidospermidine||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.212313",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.212313"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aspidospermane\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"82a99168998f2fd15f0a63bfbf81101b9b20723a7b9d742e446030e7372ecc29\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aspidospermane\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidospermidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidospermidine||[M-H]-\",\"hypothesis_mz\":281.202323,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C11H14N\",\"kind\":\"product_ion\",\"member_key\":\"C11H14N\",\"peak_index\":2,\"peak_mz\":160.113173,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.113173,\"term_id\":\"ion_C11H14N\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C13H17N2\",\"kind\":\"product_ion\",\"member_key\":\"C13H17N2\",\"peak_index\":3,\"peak_mz\":201.139723,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":201.139723,\"term_id\":\"ion_C13H17N2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C8H15N\",\"kind\":\"product_ion\",\"member_key\":\"C8H15N\",\"peak_index\":1,\"peak_mz\":125.120998,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":125.120998,\"term_id\":\"ion_C8H15N\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C2H6N\",\"kind\":\"product_ion\",\"member_key\":\"C2H6N\",\"peak_index\":0,\"peak_mz\":44.050573,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":44.050573,\"term_id\":\"ion_C2H6N\",\"unit_id\":3}],\"neutral_formula\":\"C19H26N2\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"aspidospermidine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidospermidine||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.212313,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0ee0d2191b0d026f3f836b0e9679dec3879879189935bd85862bf440f6a73e99"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.212333",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.212333"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"f418aacadded7e0434c37899df1e53de956e130536c544cad77ed4dde2ce75a9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.212333,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "309ffe0fbf7ca037f074c3deb0096cc44010470cb2689e0a8fccb283ad3bb304"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": "aspidospermidine||[M-H]-",
+      "fired": true,
+      "matched": [
+       "ion_C11H14N:C11H14N@2",
+       "ion_C13H17N2:C13H17N2@3",
+       "ion_C8H15N:C8H15N@1",
+       "ion_C2H6N:C2H6N@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidospermidine||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.192333",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.192333"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aspidospermane\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"850538907c348845ca6ee66639dacb697e0de8ae1f5d340b342cc440dfd521c0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aspidospermane\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidospermidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidospermidine||[M-H]-\",\"hypothesis_mz\":281.202323,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C11H14N\",\"kind\":\"product_ion\",\"member_key\":\"C11H14N\",\"peak_index\":2,\"peak_mz\":160.113173,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.113173,\"term_id\":\"ion_C11H14N\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C13H17N2\",\"kind\":\"product_ion\",\"member_key\":\"C13H17N2\",\"peak_index\":3,\"peak_mz\":201.139723,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":201.139723,\"term_id\":\"ion_C13H17N2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C8H15N\",\"kind\":\"product_ion\",\"member_key\":\"C8H15N\",\"peak_index\":1,\"peak_mz\":125.120998,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":125.120998,\"term_id\":\"ion_C8H15N\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C2H6N\",\"kind\":\"product_ion\",\"member_key\":\"C2H6N\",\"peak_index\":0,\"peak_mz\":44.050573,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":44.050573,\"term_id\":\"ion_C2H6N\",\"unit_id\":3}],\"neutral_formula\":\"C19H26N2\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"aspidospermidine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidospermidine||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.192333,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e27b0354933b3cf7b48a839b52ac67d4031c811fffcebb2a61fff8efe52497a0"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.192313",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.192313"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"7086e91b80dee657366d56b0ab59a72b20f30faec72ed35a948cc5473e95aca9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.192313,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "527050fdf46a6985d87c6ff4d87d2303d2ebf2faa4313adac91f33b3ace32a7c"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"2598ebd37a8ad54644399ecc67e294c287d2a5871d05a5fc19e4d25616354f31\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "98d06e7e0bff756362e2abf4e1834825d721bfa3c0adf2909cb7fd135ced085f"
+  },
+  {
+   "description": "the positive spectrum of aspidospermidine||[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aspidospermane.neg"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aspidospermane.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "44.050573",
+      "500.0"
+     ],
+     [
+      "125.120998",
+      "500.0"
+     ],
+     [
+      "160.113173",
+      "500.0"
+     ],
+     [
+      "201.139723",
+      "500.0"
+     ],
+     [
+      "281.202323",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "281.202323"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"input_sha256\":\"818301a826b5557daa1f69477a942eb40a794320c1a099110a53ceb6569b708a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aspidospermane\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aspidospermane.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":281.202323,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2cda2137175181c0ab092eee63be8eceaf40cfe7a7ed8297465959736b5570e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b8aa158052bd4049c5a5a6a0c9f318f534b844b25ab671737bb5c3c1f8f19073"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

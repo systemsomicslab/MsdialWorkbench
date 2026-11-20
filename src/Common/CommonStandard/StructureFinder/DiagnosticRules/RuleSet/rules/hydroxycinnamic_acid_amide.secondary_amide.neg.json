@@ -1,0 +1,188 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "vinylphenolate",
+   "vinylphenol_loss"
+  ],
+  "motif_id": "hcaa_p_hydroxy_secondary_amide",
+  "negative_examples": [
+   {
+    "pubchem_cid": 1794427,
+    "smiles": "C1[C@H]([C@H]([C@@H](C[C@@]1(C(=O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 637542,
+    "smiles": "C1=CC(=CC=C1/C=C/C(=O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The amine (putrescine, agmatine, spermidine) and the number of acyl residues come from the precursor composition, not from this rule's ions.",
+   "Acyl positions are not resolved; N1 cannot be told from N10.",
+   "A feruloyl residue can give caffeoyl-like ions by methyl migration, so the acyl identity is not claimed."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5321825,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)NCCCCNC(=O)/C=C/C2=CC(=C(C=C2)O)OC)O"
+   },
+   {
+    "pubchem_cid": 6439562,
+    "smiles": "C1=CC(=CC=C1/C=C/C(=O)NCCCCN)O"
+   },
+   {
+    "pubchem_cid": 102138255,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)NCCCCNCCCNC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 46173376,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)NCCCCN=C(N)N)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "vinylphenolate"
+   },
+   {
+    "term": "vinylphenol_loss"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Secondary hydroxycinnamoyl amides with a free para-phenol lose the hydroxystyrene in negative mode and give its phenolate (imidate route), shown with synthetic standards (doi:10.1021/acs.jnatprod.3c00047).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hcaa_cinnamoyl_amide",
+    "note": "Cinnamoyl amides with only a tertiary amide (N5) lack this route, and those without a free para-phenol show it only marginally."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "hydroxycinnamic_acid_amide_polyamines",
+   "unit_totals": {
+    "acyl": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "caffeoyl": [
+     0,
+     3
+    ],
+    "coumaroyl": [
+     0,
+     3
+    ],
+    "feruloyl": [
+     0,
+     3
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Putrescine amides are included: diferuloylputrescine fragments mainly by this route.",
+    "source": "src:1"
+   },
+   {
+    "note": "Spermidine and agmatine amides are included: their spectra show the hydroxystyrene phenolate anions.",
+    "source": "src:2"
+   },
+   {
+    "note": "Non-phenolic cinnamoyl amides are left out of the units: without a phenol the phenolate-route ions are absent and the imidate-route ions only marginal.",
+    "source": "src:4"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "hydroxycinnamic_acid_amide.secondary_amide.neg",
+ "source": [
+  {
+   "doi": "10.1021/acs.jnatprod.3c00047",
+   "locator": "Results (pp. 1276-1277, 1280-1281); Scheme 4; Table 1"
+  },
+  {
+   "doi": "10.1021/acs.jnatprod.3c00047",
+   "locator": "Results (pp. 1278-1279); Fig. 5a"
+  },
+  {
+   "doi": "10.1021/acs.jafc.5c04844",
+   "locator": "Section 3.3, Figure 3B; Section 3.1, Figure 1E"
+  },
+  {
+   "doi": "10.1002/rcm.3884",
+   "locator": "Cinnamoyl-amino acid conjugates (p. 378); Table 5; Table 7"
+  },
+  {
+   "doi": "10.1021/acs.jnatprod.3c00047",
+   "locator": "Results (pp. 1276-1278); Fig. 3; Scheme 5"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Hydroxystyrene phenolate (residue + H - CO), e.g. C8H7O- for coumaroyl.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "vinylphenolate",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "class": "acyl",
+    "minus": "CO",
+    "plus": "H"
+   }
+  },
+  {
+   "floor_source": "src:5",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Loss of the hydroxystyrene (residue + H2 - CO), e.g. C8H8O for coumaroyl.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "vinylphenol_loss",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "class": "acyl",
+    "minus": "CO",
+    "plus": "H2"
+   }
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting subagent, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

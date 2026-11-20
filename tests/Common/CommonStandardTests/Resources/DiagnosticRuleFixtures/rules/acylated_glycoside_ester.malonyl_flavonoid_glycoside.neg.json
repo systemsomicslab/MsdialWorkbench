@@ -1,0 +1,745 @@
+{
+ "cases": [
+  {
+   "description": "h* = acacetin|Hex1,Pen1,malonyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: loss_co2:CO2, loss_malonyl:C3H2O3, y0:A",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_co2:CO2@2",
+       "loss_malonyl:C3H2O3@1",
+       "y0:A@0"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+       "biochanin_a|Hex1,Pen1,malonyl1|[M-H]-",
+       "calycosin|Hex1,Pen1,malonyl1|[M-H]-",
+       "genkwanin|Hex1,Pen1,malonyl1|[M-H]-",
+       "glycitein|Hex1,Pen1,malonyl1|[M-H]-",
+       "wogonin|Hex1,Pen1,malonyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"malonyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"b59c6dc6ada8bd4c9623e9ef77c316243dc1e7a91f72cbdbec5878e37e0ee07f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"malonyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,Pen1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"hypothesis_mz\":663.156674,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CO2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CO2\",\"peak_index\":2,\"peak_mz\":619.166844,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":619.166844,\"term_id\":\"loss_co2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C3H2O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H2O3\",\"peak_index\":1,\"peak_mz\":577.156280,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":577.156280,\"term_id\":\"loss_malonyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C16H11O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":283.061197,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":283.061197,\"term_id\":\"y0\",\"unit_id\":2}],\"neutral_formula\":\"C30H32O17\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"biochanin_a|Hex1,Pen1,malonyl1|[M-H]-\",\"calycosin|Hex1,Pen1,malonyl1|[M-H]-\",\"genkwanin|Hex1,Pen1,malonyl1|[M-H]-\",\"glycitein|Hex1,Pen1,malonyl1|[M-H]-\",\"wogonin|Hex1,Pen1,malonyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5828e621384641333dbef12fcb4f0c706996625f02050722cd3d686d7fcbe098"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- without the peaks of required term loss_co2; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "drop_loss_co2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"fd107b1a18e30f8a3db5722f10ae061fdcd7b9aa1362d5db446e757eeb23b267\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9df10a75c58b35be30ffb1ea18275d381801904e531585c71163d0f77200d6f7"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- without the peaks of required term loss_malonyl; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "drop_loss_malonyl",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"635c26e21bdd8ab70024e9a7ca8e19fd28576eb6047da044cb8e4d5640dfbef2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "21c84b52b89fb43d0491765e7d628abb136541688d89fdea816f4981d7d79b21"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- without the peaks of required term y0; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"4048dee386c753c98c580a320a161b02967553f98404902c1a7824fc384072ea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "65098273ea79fac94e215a88ea11358335cbdf96c67bced39f74e6a2c20d578d"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with loss_co2:CO2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_co2:CO2@2",
+       "loss_malonyl:C3H2O3@1",
+       "y0:A@0"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+       "biochanin_a|Hex1,Pen1,malonyl1|[M-H]-",
+       "calycosin|Hex1,Pen1,malonyl1|[M-H]-",
+       "genkwanin|Hex1,Pen1,malonyl1|[M-H]-",
+       "glycitein|Hex1,Pen1,malonyl1|[M-H]-",
+       "wogonin|Hex1,Pen1,malonyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.173026",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"malonyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"9474e184a9043e4b13c415b83e07512f1c0516839493c78f02b63296cc583596\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"malonyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,Pen1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"hypothesis_mz\":663.156674,\"k_of\":[],\"matched\":[{\"error_da\":0.006182,\"error_ppm\":9.984,\"ion_formula\":\"CO2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CO2\",\"peak_index\":2,\"peak_mz\":619.173026,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":619.166844,\"term_id\":\"loss_co2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C3H2O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H2O3\",\"peak_index\":1,\"peak_mz\":577.156280,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":577.156280,\"term_id\":\"loss_malonyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C16H11O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":283.061197,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":283.061197,\"term_id\":\"y0\",\"unit_id\":2}],\"neutral_formula\":\"C30H32O17\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"biochanin_a|Hex1,Pen1,malonyl1|[M-H]-\",\"calycosin|Hex1,Pen1,malonyl1|[M-H]-\",\"genkwanin|Hex1,Pen1,malonyl1|[M-H]-\",\"glycitein|Hex1,Pen1,malonyl1|[M-H]-\",\"wogonin|Hex1,Pen1,malonyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c830db82109eaf340cd6f0a85ddd42ae093ac95538755e6b7066d898c7d63fa2"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with loss_co2:CO2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.173046",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"8cbe20e05a20921ee6b69d2223469179b8fd1221f3cf33f810ccbf15c9bf72c1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "fc4ec4f0aec60aac7162340c55239405c8c6650dbd39e466dd2d4685734699ea"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with loss_co2:CO2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_co2:CO2@2",
+       "loss_malonyl:C3H2O3@1",
+       "y0:A@0"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+       "biochanin_a|Hex1,Pen1,malonyl1|[M-H]-",
+       "calycosin|Hex1,Pen1,malonyl1|[M-H]-",
+       "genkwanin|Hex1,Pen1,malonyl1|[M-H]-",
+       "glycitein|Hex1,Pen1,malonyl1|[M-H]-",
+       "wogonin|Hex1,Pen1,malonyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.160663",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"malonyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"be98541c28a73f73d332bbbc95a300d334fb108753626200a1174e7f249529a9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"malonyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,Pen1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"hypothesis_mz\":663.156674,\"k_of\":[],\"matched\":[{\"error_da\":-0.006181,\"error_ppm\":-9.983,\"ion_formula\":\"CO2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CO2\",\"peak_index\":2,\"peak_mz\":619.160663,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":619.166844,\"term_id\":\"loss_co2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C3H2O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H2O3\",\"peak_index\":1,\"peak_mz\":577.156280,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":577.156280,\"term_id\":\"loss_malonyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C16H11O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":283.061197,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":283.061197,\"term_id\":\"y0\",\"unit_id\":2}],\"neutral_formula\":\"C30H32O17\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"biochanin_a|Hex1,Pen1,malonyl1|[M-H]-\",\"calycosin|Hex1,Pen1,malonyl1|[M-H]-\",\"genkwanin|Hex1,Pen1,malonyl1|[M-H]-\",\"glycitein|Hex1,Pen1,malonyl1|[M-H]-\",\"wogonin|Hex1,Pen1,malonyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "28d181f94e190070fcd64641960db25896dc0ca2e424ad2d81a53fa4fbab40f3"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with loss_co2:CO2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.160643",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"a20b9d13ddc32774e3f8a96f02d76454d2f91945c6a391684036344980e2cfbe\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8fd3671b1b26fc0d19bceed7435b5bcf204f62e73b589f84e6270f1aa8ef1b63"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_co2:CO2@2",
+       "loss_malonyl:C3H2O3@1",
+       "y0:A@0"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+       "biochanin_a|Hex1,Pen1,malonyl1|[M-H]-",
+       "calycosin|Hex1,Pen1,malonyl1|[M-H]-",
+       "genkwanin|Hex1,Pen1,malonyl1|[M-H]-",
+       "glycitein|Hex1,Pen1,malonyl1|[M-H]-",
+       "wogonin|Hex1,Pen1,malonyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.166664",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.166664"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"malonyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"e70979fc89e67998b16616b49802b94f4cfbbe771a6e12410f75ad29136d7795\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"malonyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,Pen1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"hypothesis_mz\":663.156674,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CO2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CO2\",\"peak_index\":2,\"peak_mz\":619.166844,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":619.166844,\"term_id\":\"loss_co2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C3H2O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H2O3\",\"peak_index\":1,\"peak_mz\":577.156280,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":577.156280,\"term_id\":\"loss_malonyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C16H11O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":283.061197,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":283.061197,\"term_id\":\"y0\",\"unit_id\":2}],\"neutral_formula\":\"C30H32O17\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"biochanin_a|Hex1,Pen1,malonyl1|[M-H]-\",\"calycosin|Hex1,Pen1,malonyl1|[M-H]-\",\"genkwanin|Hex1,Pen1,malonyl1|[M-H]-\",\"glycitein|Hex1,Pen1,malonyl1|[M-H]-\",\"wogonin|Hex1,Pen1,malonyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.166664,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4fe9bb60bc483079e3e271880db522beb23478dadea70c91c9780f9ced96b4d5"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.166684",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.166684"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"4b54f9113f6ef2db920ffdd3b0d19cd8560d7a31f30cd167deadcef49fbba6e3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.166684,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d596182922c7cb7f1b19838ba86195a16f0c25adcae3f42afcc81b8eafff9d91"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_co2:CO2@2",
+       "loss_malonyl:C3H2O3@1",
+       "y0:A@0"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,Pen1,malonyl1|[M-H]-",
+       "biochanin_a|Hex1,Pen1,malonyl1|[M-H]-",
+       "calycosin|Hex1,Pen1,malonyl1|[M-H]-",
+       "genkwanin|Hex1,Pen1,malonyl1|[M-H]-",
+       "glycitein|Hex1,Pen1,malonyl1|[M-H]-",
+       "wogonin|Hex1,Pen1,malonyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.146684",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.146684"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"malonyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"73303bd5e74a38687cd9d1a27d41b937ef08685f774151e16fb133ecef401361\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"malonyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,Pen1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"hypothesis_mz\":663.156674,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CO2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CO2\",\"peak_index\":2,\"peak_mz\":619.166844,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":619.166844,\"term_id\":\"loss_co2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C3H2O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H2O3\",\"peak_index\":1,\"peak_mz\":577.156280,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":577.156280,\"term_id\":\"loss_malonyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C16H11O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":283.061197,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":283.061197,\"term_id\":\"y0\",\"unit_id\":2}],\"neutral_formula\":\"C30H32O17\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,Pen1,malonyl1|[M-H]-\",\"biochanin_a|Hex1,Pen1,malonyl1|[M-H]-\",\"calycosin|Hex1,Pen1,malonyl1|[M-H]-\",\"genkwanin|Hex1,Pen1,malonyl1|[M-H]-\",\"glycitein|Hex1,Pen1,malonyl1|[M-H]-\",\"wogonin|Hex1,Pen1,malonyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.146684,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "baf45b55c89bac1791396778d6344046e03879d699a36d2ceaee4b5f9491390a"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.146664",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.146664"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"a4e545846dfe550db5744fc3ee4670b087f28d2c3ea95d4dd244e7637ea1d5fe\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.146664,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "33a9e05d12467978567bc39694eb76921597b2d43125b34ecde07328463a2f3c"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"de715a8efe246027a343030270ed1e609b3bfe90b12aaef6079e5ed6edd6943a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "038a20f69c84a8d64a2adf5c17e3dbe705eb923510e0f6ab599a4c363c9d1dd5"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,Pen1,malonyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "283.061197",
+      "500.0"
+     ],
+     [
+      "577.15628",
+      "500.0"
+     ],
+     [
+      "619.166844",
+      "500.0"
+     ],
+     [
+      "663.156674",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "663.156674"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"input_sha256\":\"b59c6dc6ada8bd4c9623e9ef77c316243dc1e7a91f72cbdbec5878e37e0ee07f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"malonyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.malonyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":663.156674,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1da120cbc02ae564e7bcbd3b1c797d1541cbad7c64a82ec71cffe1e056227191\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f01bfd79de6f03ca59b24b72625f8a7ff513a1f83e97bdff21186d3114b8f5c0"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

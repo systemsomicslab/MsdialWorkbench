@@ -1,0 +1,59 @@
+{
+ "entries": [
+  {
+   "class": "flavanone",
+   "formula": "C15H12O5",
+   "ions": {
+    "rda_13b": {
+     "neg": [
+      "C8H7O"
+     ],
+     "pos": []
+    }
+   },
+   "name": "naringenin",
+   "origin": "as_published",
+   "scaffold_id": "naringenin",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 3 (p. 711); Fragmentation of Flavanone Aglycones and Scheme 4 (p. 714)"
+    },
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5 (p. 500); CID of flavanones and chalcones (p. 498); Scheme 1 (p. 499)"
+    },
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Table 1, IDs 103 (naringenin) and 104 (naringenin 7-O-glucoside); compiled data"
+    }
+   ]
+  },
+  {
+   "class": "flavanone",
+   "formula": "C15H12O6",
+   "ions": {
+    "rda_13b": {
+     "neg": [
+      "C8H7O2"
+     ],
+     "pos": []
+    }
+   },
+   "name": "eriodictyol",
+   "origin": "as_published",
+   "scaffold_id": "eriodictyol",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 3 (p. 711); Fragmentation of Flavanone Aglycones and Scheme 4 (p. 714)"
+    },
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Table 1, ID 95 (eriodictyol 7-O-glucoside, MS2 of the glucoside); compiled data"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_flavanone_neg"
+}

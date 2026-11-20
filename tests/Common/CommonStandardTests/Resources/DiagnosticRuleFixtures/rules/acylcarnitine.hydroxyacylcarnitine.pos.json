@@ -1,0 +1,669 @@
+{
+ "cases": [
+  {
+   "description": "h* = c10_0_oh||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_c4h5o2:C4H5O2, ion_c6h9o4:C6H9O4",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": "c10_0_oh||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@0",
+       "ion_c6h9o4:C6H9O4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0_oh||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxyacylcarnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"aaf0dd5902281966be09d777228a70b950eb4a1ac20f99d6e79c0196494ca4f4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxyacylcarnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"c10_0_oh|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0_oh||[M+H]+\",\"hypothesis_mz\":332.243149,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":0,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H9O4\",\"kind\":\"product_ion\",\"member_key\":\"C6H9O4\",\"peak_index\":1,\"peak_mz\":145.049535,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":145.049535,\"term_id\":\"ion_c6h9o4\",\"unit_id\":1}],\"neutral_formula\":\"C17H33NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0_oh\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0_oh||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c00cd84380f8d2901af4bfaa9e046d00af5abc2ee7030aedf9f055254b97dafe"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ without the peaks of required term ion_c4h5o2; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "drop_ion_c4h5o2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"0d7d763ccbee2aec104273db3c9c05b295e9a372e88d06f2dfb48940f53bbbb9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b5cfe423c9438cf51f2741ec39ca2ae28a306b6fc0d3f81c8b35586956786b3c"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ without the peaks of required term ion_c6h9o4; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "drop_ion_c6h9o4",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"d772147737af24984848b01d38a07b397aa1f9678517e8adef002150c213b73d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9ff4094ef823e24fb714ac3997bfe11f4b4a5c297022f009e0b4aeea3de07fbf"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with ion_c4h5o2:C4H5O2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": "c10_0_oh||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@0",
+       "ion_c6h9o4:C6H9O4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0_oh||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.033395",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxyacylcarnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"de9ef7812b483b47153f7b94f20bb6571fab3f291d53889fbc1347ed44ca1f93\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxyacylcarnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"c10_0_oh|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0_oh||[M+H]+\",\"hypothesis_mz\":332.243149,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":58.682,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":0,\"peak_mz\":85.033395,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H9O4\",\"kind\":\"product_ion\",\"member_key\":\"C6H9O4\",\"peak_index\":1,\"peak_mz\":145.049535,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":145.049535,\"term_id\":\"ion_c6h9o4\",\"unit_id\":1}],\"neutral_formula\":\"C17H33NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0_oh\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0_oh||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1380bc5004e5dcc5634e8d9a0ca3badce343bc5ad40729aa3ae5993c869803c8"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with ion_c4h5o2:C4H5O2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.033415",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"175841e263200404061b89761a22dfd76af38dbe1efb2cddd37fb5ae0e3f4d1b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5f5d03015ce5a617f828a5903827c17900dcefaf62bd8889fa0fb815df8248df"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with ion_c4h5o2:C4H5O2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": "c10_0_oh||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@0",
+       "ion_c6h9o4:C6H9O4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0_oh||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.023415",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxyacylcarnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"49989a90c3a9cb0b82a5c291afe496156f7ae92258650d77f2c8656a4e2ed060\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxyacylcarnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"c10_0_oh|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0_oh||[M+H]+\",\"hypothesis_mz\":332.243149,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-58.691,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":0,\"peak_mz\":85.023415,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H9O4\",\"kind\":\"product_ion\",\"member_key\":\"C6H9O4\",\"peak_index\":1,\"peak_mz\":145.049535,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":145.049535,\"term_id\":\"ion_c6h9o4\",\"unit_id\":1}],\"neutral_formula\":\"C17H33NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0_oh\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0_oh||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "489849f399ddcd79a9ed25b5031d2c68f555cafd72d56c9336bf7ebf5a454c73"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with ion_c4h5o2:C4H5O2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.023395",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"5bccdeb2b1432edcb19526d9f2f5431d365c65fb007b08a269493f4109454b42\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "385c211312274a6c2beec10d647b29c8080164a758372523b31fa51513c7cccf"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": "c10_0_oh||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@0",
+       "ion_c6h9o4:C6H9O4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0_oh||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.253139",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.253139"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxyacylcarnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"158f6e3f5153de8c5299a9e52fbf3e2c7006b3224d8685934a3bd42b74441642\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxyacylcarnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"c10_0_oh|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0_oh||[M+H]+\",\"hypothesis_mz\":332.243149,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":0,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H9O4\",\"kind\":\"product_ion\",\"member_key\":\"C6H9O4\",\"peak_index\":1,\"peak_mz\":145.049535,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":145.049535,\"term_id\":\"ion_c6h9o4\",\"unit_id\":1}],\"neutral_formula\":\"C17H33NO5\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"c10_0_oh\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0_oh||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.253139,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "36ffffe7fc31535b3be8e809e6997184816f1fc0ca740e81847546610b88ae14"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.253159",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.253159"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"842448c733f4cab0d5612c60cfbec90d2068dcf3b4603e6d0c725b3f02e3e124\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.253159,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "47e6fe177152273baf7f09340e7b69edd9434a17e3816fa13b38ffed805182a8"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": "c10_0_oh||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@0",
+       "ion_c6h9o4:C6H9O4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0_oh||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.233159",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.233159"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxyacylcarnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"1c8ddb21547eab2098928c6ec8fc6fb2acb26152a31063a64c1fc56bf9ec825c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxyacylcarnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"c10_0_oh|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0_oh||[M+H]+\",\"hypothesis_mz\":332.243149,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":0,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H9O4\",\"kind\":\"product_ion\",\"member_key\":\"C6H9O4\",\"peak_index\":1,\"peak_mz\":145.049535,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":145.049535,\"term_id\":\"ion_c6h9o4\",\"unit_id\":1}],\"neutral_formula\":\"C17H33NO5\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"c10_0_oh\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0_oh||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.233159,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "88a712953d741de231e32d491986fd46cd5ef61ce4735a215fe86b564efc54aa"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.233139",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.233139"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"b17b16e496da7a2a204d108398c2bed53c8e7be9be1ff7efd87a1874a3b286ea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.233139,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b28a07479692aec55e20ef8c997c4b922297de7279cda68329e68afb2c5b9218"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"ab745755034920a87d2ae697f9be5f12365478fe8ac77217882b8eb20f6ed8db\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "587a1ef81c89c31f10e5d942452b4d72fd86d520b7206ebeaa4dfd2735b6e6ee"
+  },
+  {
+   "description": "the union of the positive spectra of c10_3_oh||[M+H]+ and c8_0_oh||[M+Na]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": "c10_3_oh||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@0",
+       "ion_c6h9o4:C6H9O4@1"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_3_oh||[M+H]+",
+       "c8_0_oh||[M+Na]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "326.196199",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "326.196199"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxyacylcarnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"e515396ee48923363e273646ff5f0e5bd1bac5a1e85dbefa19dbe5a4f50c1582\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxyacylcarnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"c10_3_oh|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_3_oh||[M+H]+\",\"hypothesis_mz\":326.196199,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":0,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C6H9O4\",\"kind\":\"product_ion\",\"member_key\":\"C6H9O4\",\"peak_index\":1,\"peak_mz\":145.049535,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":145.049535,\"term_id\":\"ion_c6h9o4\",\"unit_id\":1}],\"neutral_formula\":\"C17H27NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_3_oh\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_3_oh||[M+H]+\",\"c8_0_oh||[M+Na]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":326.196199,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "49b03e54d325e5991111c55f1815c4e24da83bb4d73f3b537d9677454b663fa5"
+  },
+  {
+   "description": "the positive spectrum of c10_0_oh||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.hydroxyacylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.hydroxyacylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "145.049535",
+      "500.0"
+     ],
+     [
+      "332.243149",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "332.243149"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"input_sha256\":\"aaf0dd5902281966be09d777228a70b950eb4a1ac20f99d6e79c0196494ca4f4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxyacylcarnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.hydroxyacylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":332.243149,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"614ca28fc3945e2e75e35fe81342147df28c85ddb35b9c6d32e465e745bb2ef2\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3d19f89ae8b9fd20d01ecec7e2de269d14d4b1c1a887f3b57ccff20a3d252d05"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

@@ -1,0 +1,4036 @@
+{
+ "entries": [
+  {
+   "class": "fatty_acyl",
+   "formula": "C2H2O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C2H3O"
+     ]
+    }
+   },
+   "name": "fatty acyl C2:0",
+   "origin": "as_published",
+   "scaffold_id": "c2_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C3H4O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C3H5O"
+     ]
+    }
+   },
+   "name": "fatty acyl C3:0",
+   "origin": "as_published",
+   "scaffold_id": "c3_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C3H2O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C3H3O"
+     ]
+    }
+   },
+   "name": "fatty acyl C3:1",
+   "origin": "as_published",
+   "scaffold_id": "c3_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C4H6O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C4H7O"
+     ]
+    }
+   },
+   "name": "fatty acyl C4:0",
+   "origin": "as_published",
+   "scaffold_id": "c4_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C4H4O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C4H5O"
+     ]
+    }
+   },
+   "name": "fatty acyl C4:1",
+   "origin": "as_published",
+   "scaffold_id": "c4_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C5H8O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C5H9O"
+     ]
+    }
+   },
+   "name": "fatty acyl C5:0",
+   "origin": "as_published",
+   "scaffold_id": "c5_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C5H6O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C5H7O"
+     ]
+    }
+   },
+   "name": "fatty acyl C5:1",
+   "origin": "as_published",
+   "scaffold_id": "c5_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C5H4O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C5H5O"
+     ]
+    }
+   },
+   "name": "fatty acyl C5:2",
+   "origin": "as_published",
+   "scaffold_id": "c5_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C6H10O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C6H11O"
+     ]
+    }
+   },
+   "name": "fatty acyl C6:0",
+   "origin": "as_published",
+   "scaffold_id": "c6_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C6H8O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C6H9O"
+     ]
+    }
+   },
+   "name": "fatty acyl C6:1",
+   "origin": "as_published",
+   "scaffold_id": "c6_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C6H6O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C6H7O"
+     ]
+    }
+   },
+   "name": "fatty acyl C6:2",
+   "origin": "as_published",
+   "scaffold_id": "c6_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C7H12O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C7H13O"
+     ]
+    }
+   },
+   "name": "fatty acyl C7:0",
+   "origin": "as_published",
+   "scaffold_id": "c7_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C7H10O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C7H11O"
+     ]
+    }
+   },
+   "name": "fatty acyl C7:1",
+   "origin": "as_published",
+   "scaffold_id": "c7_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C7H8O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C7H9O"
+     ]
+    }
+   },
+   "name": "fatty acyl C7:2",
+   "origin": "as_published",
+   "scaffold_id": "c7_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C7H6O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C7H7O"
+     ]
+    }
+   },
+   "name": "fatty acyl C7:3",
+   "origin": "as_published",
+   "scaffold_id": "c7_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C8H14O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C8H15O"
+     ]
+    }
+   },
+   "name": "fatty acyl C8:0",
+   "origin": "as_published",
+   "scaffold_id": "c8_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C8H12O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C8H13O"
+     ]
+    }
+   },
+   "name": "fatty acyl C8:1",
+   "origin": "as_published",
+   "scaffold_id": "c8_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C8H10O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C8H11O"
+     ]
+    }
+   },
+   "name": "fatty acyl C8:2",
+   "origin": "as_published",
+   "scaffold_id": "c8_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C8H8O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C8H9O"
+     ]
+    }
+   },
+   "name": "fatty acyl C8:3",
+   "origin": "as_published",
+   "scaffold_id": "c8_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C9H16O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C9H17O"
+     ]
+    }
+   },
+   "name": "fatty acyl C9:0",
+   "origin": "as_published",
+   "scaffold_id": "c9_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C9H14O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C9H15O"
+     ]
+    }
+   },
+   "name": "fatty acyl C9:1",
+   "origin": "as_published",
+   "scaffold_id": "c9_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C9H12O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C9H13O"
+     ]
+    }
+   },
+   "name": "fatty acyl C9:2",
+   "origin": "as_published",
+   "scaffold_id": "c9_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C9H10O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C9H11O"
+     ]
+    }
+   },
+   "name": "fatty acyl C9:3",
+   "origin": "as_published",
+   "scaffold_id": "c9_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C9H8O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C9H9O"
+     ]
+    }
+   },
+   "name": "fatty acyl C9:4",
+   "origin": "as_published",
+   "scaffold_id": "c9_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C10H18O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C10H19O"
+     ]
+    }
+   },
+   "name": "fatty acyl C10:0",
+   "origin": "as_published",
+   "scaffold_id": "c10_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C10H16O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C10H17O"
+     ]
+    }
+   },
+   "name": "fatty acyl C10:1",
+   "origin": "as_published",
+   "scaffold_id": "c10_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C10H14O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C10H15O"
+     ]
+    }
+   },
+   "name": "fatty acyl C10:2",
+   "origin": "as_published",
+   "scaffold_id": "c10_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C10H12O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C10H13O"
+     ]
+    }
+   },
+   "name": "fatty acyl C10:3",
+   "origin": "as_published",
+   "scaffold_id": "c10_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C10H10O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C10H11O"
+     ]
+    }
+   },
+   "name": "fatty acyl C10:4",
+   "origin": "as_published",
+   "scaffold_id": "c10_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C11H20O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C11H21O"
+     ]
+    }
+   },
+   "name": "fatty acyl C11:0",
+   "origin": "as_published",
+   "scaffold_id": "c11_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C11H18O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C11H19O"
+     ]
+    }
+   },
+   "name": "fatty acyl C11:1",
+   "origin": "as_published",
+   "scaffold_id": "c11_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C11H16O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C11H17O"
+     ]
+    }
+   },
+   "name": "fatty acyl C11:2",
+   "origin": "as_published",
+   "scaffold_id": "c11_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C11H14O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C11H15O"
+     ]
+    }
+   },
+   "name": "fatty acyl C11:3",
+   "origin": "as_published",
+   "scaffold_id": "c11_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C11H12O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C11H13O"
+     ]
+    }
+   },
+   "name": "fatty acyl C11:4",
+   "origin": "as_published",
+   "scaffold_id": "c11_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C11H10O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C11H11O"
+     ]
+    }
+   },
+   "name": "fatty acyl C11:5",
+   "origin": "as_published",
+   "scaffold_id": "c11_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C12H22O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C12H23O"
+     ]
+    }
+   },
+   "name": "fatty acyl C12:0",
+   "origin": "as_published",
+   "scaffold_id": "c12_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C12H20O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C12H21O"
+     ]
+    }
+   },
+   "name": "fatty acyl C12:1",
+   "origin": "as_published",
+   "scaffold_id": "c12_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C12H18O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C12H19O"
+     ]
+    }
+   },
+   "name": "fatty acyl C12:2",
+   "origin": "as_published",
+   "scaffold_id": "c12_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C12H16O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C12H17O"
+     ]
+    }
+   },
+   "name": "fatty acyl C12:3",
+   "origin": "as_published",
+   "scaffold_id": "c12_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C12H14O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C12H15O"
+     ]
+    }
+   },
+   "name": "fatty acyl C12:4",
+   "origin": "as_published",
+   "scaffold_id": "c12_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C12H12O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C12H13O"
+     ]
+    }
+   },
+   "name": "fatty acyl C12:5",
+   "origin": "as_published",
+   "scaffold_id": "c12_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C13H24O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C13H25O"
+     ]
+    }
+   },
+   "name": "fatty acyl C13:0",
+   "origin": "as_published",
+   "scaffold_id": "c13_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C13H22O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C13H23O"
+     ]
+    }
+   },
+   "name": "fatty acyl C13:1",
+   "origin": "as_published",
+   "scaffold_id": "c13_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C13H20O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C13H21O"
+     ]
+    }
+   },
+   "name": "fatty acyl C13:2",
+   "origin": "as_published",
+   "scaffold_id": "c13_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C13H18O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C13H19O"
+     ]
+    }
+   },
+   "name": "fatty acyl C13:3",
+   "origin": "as_published",
+   "scaffold_id": "c13_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C13H16O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C13H17O"
+     ]
+    }
+   },
+   "name": "fatty acyl C13:4",
+   "origin": "as_published",
+   "scaffold_id": "c13_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C13H14O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C13H15O"
+     ]
+    }
+   },
+   "name": "fatty acyl C13:5",
+   "origin": "as_published",
+   "scaffold_id": "c13_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C13H12O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C13H13O"
+     ]
+    }
+   },
+   "name": "fatty acyl C13:6",
+   "origin": "as_published",
+   "scaffold_id": "c13_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C14H26O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C14H27O"
+     ]
+    }
+   },
+   "name": "fatty acyl C14:0",
+   "origin": "as_published",
+   "scaffold_id": "c14_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C14H24O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C14H25O"
+     ]
+    }
+   },
+   "name": "fatty acyl C14:1",
+   "origin": "as_published",
+   "scaffold_id": "c14_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C14H22O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C14H23O"
+     ]
+    }
+   },
+   "name": "fatty acyl C14:2",
+   "origin": "as_published",
+   "scaffold_id": "c14_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C14H20O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C14H21O"
+     ]
+    }
+   },
+   "name": "fatty acyl C14:3",
+   "origin": "as_published",
+   "scaffold_id": "c14_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C14H18O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C14H19O"
+     ]
+    }
+   },
+   "name": "fatty acyl C14:4",
+   "origin": "as_published",
+   "scaffold_id": "c14_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C14H16O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C14H17O"
+     ]
+    }
+   },
+   "name": "fatty acyl C14:5",
+   "origin": "as_published",
+   "scaffold_id": "c14_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C14H14O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C14H15O"
+     ]
+    }
+   },
+   "name": "fatty acyl C14:6",
+   "origin": "as_published",
+   "scaffold_id": "c14_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C15H28O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C15H29O"
+     ]
+    }
+   },
+   "name": "fatty acyl C15:0",
+   "origin": "as_published",
+   "scaffold_id": "c15_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C15H26O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C15H27O"
+     ]
+    }
+   },
+   "name": "fatty acyl C15:1",
+   "origin": "as_published",
+   "scaffold_id": "c15_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C15H24O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C15H25O"
+     ]
+    }
+   },
+   "name": "fatty acyl C15:2",
+   "origin": "as_published",
+   "scaffold_id": "c15_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C15H22O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C15H23O"
+     ]
+    }
+   },
+   "name": "fatty acyl C15:3",
+   "origin": "as_published",
+   "scaffold_id": "c15_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C15H20O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C15H21O"
+     ]
+    }
+   },
+   "name": "fatty acyl C15:4",
+   "origin": "as_published",
+   "scaffold_id": "c15_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C15H18O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C15H19O"
+     ]
+    }
+   },
+   "name": "fatty acyl C15:5",
+   "origin": "as_published",
+   "scaffold_id": "c15_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C15H16O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C15H17O"
+     ]
+    }
+   },
+   "name": "fatty acyl C15:6",
+   "origin": "as_published",
+   "scaffold_id": "c15_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C16H30O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C16H31O"
+     ]
+    }
+   },
+   "name": "fatty acyl C16:0",
+   "origin": "as_published",
+   "scaffold_id": "c16_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C16H28O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C16H29O"
+     ]
+    }
+   },
+   "name": "fatty acyl C16:1",
+   "origin": "as_published",
+   "scaffold_id": "c16_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C16H26O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C16H27O"
+     ]
+    }
+   },
+   "name": "fatty acyl C16:2",
+   "origin": "as_published",
+   "scaffold_id": "c16_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C16H24O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C16H25O"
+     ]
+    }
+   },
+   "name": "fatty acyl C16:3",
+   "origin": "as_published",
+   "scaffold_id": "c16_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C16H22O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C16H23O"
+     ]
+    }
+   },
+   "name": "fatty acyl C16:4",
+   "origin": "as_published",
+   "scaffold_id": "c16_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C16H20O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C16H21O"
+     ]
+    }
+   },
+   "name": "fatty acyl C16:5",
+   "origin": "as_published",
+   "scaffold_id": "c16_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C16H18O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C16H19O"
+     ]
+    }
+   },
+   "name": "fatty acyl C16:6",
+   "origin": "as_published",
+   "scaffold_id": "c16_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C17H32O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C17H33O"
+     ]
+    }
+   },
+   "name": "fatty acyl C17:0",
+   "origin": "as_published",
+   "scaffold_id": "c17_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C17H30O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C17H31O"
+     ]
+    }
+   },
+   "name": "fatty acyl C17:1",
+   "origin": "as_published",
+   "scaffold_id": "c17_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C17H28O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C17H29O"
+     ]
+    }
+   },
+   "name": "fatty acyl C17:2",
+   "origin": "as_published",
+   "scaffold_id": "c17_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C17H26O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C17H27O"
+     ]
+    }
+   },
+   "name": "fatty acyl C17:3",
+   "origin": "as_published",
+   "scaffold_id": "c17_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C17H24O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C17H25O"
+     ]
+    }
+   },
+   "name": "fatty acyl C17:4",
+   "origin": "as_published",
+   "scaffold_id": "c17_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C17H22O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C17H23O"
+     ]
+    }
+   },
+   "name": "fatty acyl C17:5",
+   "origin": "as_published",
+   "scaffold_id": "c17_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C17H20O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C17H21O"
+     ]
+    }
+   },
+   "name": "fatty acyl C17:6",
+   "origin": "as_published",
+   "scaffold_id": "c17_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C18H34O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C18H35O"
+     ]
+    }
+   },
+   "name": "fatty acyl C18:0",
+   "origin": "as_published",
+   "scaffold_id": "c18_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C18H32O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C18H33O"
+     ]
+    }
+   },
+   "name": "fatty acyl C18:1",
+   "origin": "as_published",
+   "scaffold_id": "c18_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C18H30O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C18H31O"
+     ]
+    }
+   },
+   "name": "fatty acyl C18:2",
+   "origin": "as_published",
+   "scaffold_id": "c18_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C18H28O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C18H29O"
+     ]
+    }
+   },
+   "name": "fatty acyl C18:3",
+   "origin": "as_published",
+   "scaffold_id": "c18_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C18H26O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C18H27O"
+     ]
+    }
+   },
+   "name": "fatty acyl C18:4",
+   "origin": "as_published",
+   "scaffold_id": "c18_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C18H24O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C18H25O"
+     ]
+    }
+   },
+   "name": "fatty acyl C18:5",
+   "origin": "as_published",
+   "scaffold_id": "c18_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C18H22O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C18H23O"
+     ]
+    }
+   },
+   "name": "fatty acyl C18:6",
+   "origin": "as_published",
+   "scaffold_id": "c18_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C19H36O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C19H37O"
+     ]
+    }
+   },
+   "name": "fatty acyl C19:0",
+   "origin": "as_published",
+   "scaffold_id": "c19_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C19H34O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C19H35O"
+     ]
+    }
+   },
+   "name": "fatty acyl C19:1",
+   "origin": "as_published",
+   "scaffold_id": "c19_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C19H32O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C19H33O"
+     ]
+    }
+   },
+   "name": "fatty acyl C19:2",
+   "origin": "as_published",
+   "scaffold_id": "c19_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C19H30O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C19H31O"
+     ]
+    }
+   },
+   "name": "fatty acyl C19:3",
+   "origin": "as_published",
+   "scaffold_id": "c19_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C19H28O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C19H29O"
+     ]
+    }
+   },
+   "name": "fatty acyl C19:4",
+   "origin": "as_published",
+   "scaffold_id": "c19_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C19H26O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C19H27O"
+     ]
+    }
+   },
+   "name": "fatty acyl C19:5",
+   "origin": "as_published",
+   "scaffold_id": "c19_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C19H24O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C19H25O"
+     ]
+    }
+   },
+   "name": "fatty acyl C19:6",
+   "origin": "as_published",
+   "scaffold_id": "c19_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C20H38O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C20H39O"
+     ]
+    }
+   },
+   "name": "fatty acyl C20:0",
+   "origin": "as_published",
+   "scaffold_id": "c20_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C20H36O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C20H37O"
+     ]
+    }
+   },
+   "name": "fatty acyl C20:1",
+   "origin": "as_published",
+   "scaffold_id": "c20_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C20H34O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C20H35O"
+     ]
+    }
+   },
+   "name": "fatty acyl C20:2",
+   "origin": "as_published",
+   "scaffold_id": "c20_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C20H32O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C20H33O"
+     ]
+    }
+   },
+   "name": "fatty acyl C20:3",
+   "origin": "as_published",
+   "scaffold_id": "c20_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C20H30O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C20H31O"
+     ]
+    }
+   },
+   "name": "fatty acyl C20:4",
+   "origin": "as_published",
+   "scaffold_id": "c20_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C20H28O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C20H29O"
+     ]
+    }
+   },
+   "name": "fatty acyl C20:5",
+   "origin": "as_published",
+   "scaffold_id": "c20_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C20H26O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C20H27O"
+     ]
+    }
+   },
+   "name": "fatty acyl C20:6",
+   "origin": "as_published",
+   "scaffold_id": "c20_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C21H40O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C21H41O"
+     ]
+    }
+   },
+   "name": "fatty acyl C21:0",
+   "origin": "as_published",
+   "scaffold_id": "c21_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C21H38O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C21H39O"
+     ]
+    }
+   },
+   "name": "fatty acyl C21:1",
+   "origin": "as_published",
+   "scaffold_id": "c21_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C21H36O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C21H37O"
+     ]
+    }
+   },
+   "name": "fatty acyl C21:2",
+   "origin": "as_published",
+   "scaffold_id": "c21_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C21H34O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C21H35O"
+     ]
+    }
+   },
+   "name": "fatty acyl C21:3",
+   "origin": "as_published",
+   "scaffold_id": "c21_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C21H32O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C21H33O"
+     ]
+    }
+   },
+   "name": "fatty acyl C21:4",
+   "origin": "as_published",
+   "scaffold_id": "c21_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C21H30O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C21H31O"
+     ]
+    }
+   },
+   "name": "fatty acyl C21:5",
+   "origin": "as_published",
+   "scaffold_id": "c21_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C21H28O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C21H29O"
+     ]
+    }
+   },
+   "name": "fatty acyl C21:6",
+   "origin": "as_published",
+   "scaffold_id": "c21_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C22H42O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C22H43O"
+     ]
+    }
+   },
+   "name": "fatty acyl C22:0",
+   "origin": "as_published",
+   "scaffold_id": "c22_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C22H40O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C22H41O"
+     ]
+    }
+   },
+   "name": "fatty acyl C22:1",
+   "origin": "as_published",
+   "scaffold_id": "c22_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C22H38O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C22H39O"
+     ]
+    }
+   },
+   "name": "fatty acyl C22:2",
+   "origin": "as_published",
+   "scaffold_id": "c22_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C22H36O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C22H37O"
+     ]
+    }
+   },
+   "name": "fatty acyl C22:3",
+   "origin": "as_published",
+   "scaffold_id": "c22_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C22H34O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C22H35O"
+     ]
+    }
+   },
+   "name": "fatty acyl C22:4",
+   "origin": "as_published",
+   "scaffold_id": "c22_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C22H32O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C22H33O"
+     ]
+    }
+   },
+   "name": "fatty acyl C22:5",
+   "origin": "as_published",
+   "scaffold_id": "c22_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C22H30O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C22H31O"
+     ]
+    }
+   },
+   "name": "fatty acyl C22:6",
+   "origin": "as_published",
+   "scaffold_id": "c22_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C23H44O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C23H45O"
+     ]
+    }
+   },
+   "name": "fatty acyl C23:0",
+   "origin": "as_published",
+   "scaffold_id": "c23_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C23H42O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C23H43O"
+     ]
+    }
+   },
+   "name": "fatty acyl C23:1",
+   "origin": "as_published",
+   "scaffold_id": "c23_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C23H40O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C23H41O"
+     ]
+    }
+   },
+   "name": "fatty acyl C23:2",
+   "origin": "as_published",
+   "scaffold_id": "c23_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C23H38O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C23H39O"
+     ]
+    }
+   },
+   "name": "fatty acyl C23:3",
+   "origin": "as_published",
+   "scaffold_id": "c23_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C23H36O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C23H37O"
+     ]
+    }
+   },
+   "name": "fatty acyl C23:4",
+   "origin": "as_published",
+   "scaffold_id": "c23_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C23H34O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C23H35O"
+     ]
+    }
+   },
+   "name": "fatty acyl C23:5",
+   "origin": "as_published",
+   "scaffold_id": "c23_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C23H32O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C23H33O"
+     ]
+    }
+   },
+   "name": "fatty acyl C23:6",
+   "origin": "as_published",
+   "scaffold_id": "c23_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C24H46O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C24H47O"
+     ]
+    }
+   },
+   "name": "fatty acyl C24:0",
+   "origin": "as_published",
+   "scaffold_id": "c24_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C24H44O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C24H45O"
+     ]
+    }
+   },
+   "name": "fatty acyl C24:1",
+   "origin": "as_published",
+   "scaffold_id": "c24_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C24H42O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C24H43O"
+     ]
+    }
+   },
+   "name": "fatty acyl C24:2",
+   "origin": "as_published",
+   "scaffold_id": "c24_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C24H40O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C24H41O"
+     ]
+    }
+   },
+   "name": "fatty acyl C24:3",
+   "origin": "as_published",
+   "scaffold_id": "c24_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C24H38O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C24H39O"
+     ]
+    }
+   },
+   "name": "fatty acyl C24:4",
+   "origin": "as_published",
+   "scaffold_id": "c24_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C24H36O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C24H37O"
+     ]
+    }
+   },
+   "name": "fatty acyl C24:5",
+   "origin": "as_published",
+   "scaffold_id": "c24_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C24H34O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C24H35O"
+     ]
+    }
+   },
+   "name": "fatty acyl C24:6",
+   "origin": "as_published",
+   "scaffold_id": "c24_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C25H48O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C25H49O"
+     ]
+    }
+   },
+   "name": "fatty acyl C25:0",
+   "origin": "as_published",
+   "scaffold_id": "c25_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C25H46O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C25H47O"
+     ]
+    }
+   },
+   "name": "fatty acyl C25:1",
+   "origin": "as_published",
+   "scaffold_id": "c25_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C25H44O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C25H45O"
+     ]
+    }
+   },
+   "name": "fatty acyl C25:2",
+   "origin": "as_published",
+   "scaffold_id": "c25_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C25H42O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C25H43O"
+     ]
+    }
+   },
+   "name": "fatty acyl C25:3",
+   "origin": "as_published",
+   "scaffold_id": "c25_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C25H40O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C25H41O"
+     ]
+    }
+   },
+   "name": "fatty acyl C25:4",
+   "origin": "as_published",
+   "scaffold_id": "c25_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C25H38O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C25H39O"
+     ]
+    }
+   },
+   "name": "fatty acyl C25:5",
+   "origin": "as_published",
+   "scaffold_id": "c25_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C25H36O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C25H37O"
+     ]
+    }
+   },
+   "name": "fatty acyl C25:6",
+   "origin": "as_published",
+   "scaffold_id": "c25_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C26H50O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C26H51O"
+     ]
+    }
+   },
+   "name": "fatty acyl C26:0",
+   "origin": "as_published",
+   "scaffold_id": "c26_0",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C26H48O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C26H49O"
+     ]
+    }
+   },
+   "name": "fatty acyl C26:1",
+   "origin": "as_published",
+   "scaffold_id": "c26_1",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C26H46O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C26H47O"
+     ]
+    }
+   },
+   "name": "fatty acyl C26:2",
+   "origin": "as_published",
+   "scaffold_id": "c26_2",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C26H44O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C26H45O"
+     ]
+    }
+   },
+   "name": "fatty acyl C26:3",
+   "origin": "as_published",
+   "scaffold_id": "c26_3",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C26H42O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C26H43O"
+     ]
+    }
+   },
+   "name": "fatty acyl C26:4",
+   "origin": "as_published",
+   "scaffold_id": "c26_4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C26H40O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C26H41O"
+     ]
+    }
+   },
+   "name": "fatty acyl C26:5",
+   "origin": "as_published",
+   "scaffold_id": "c26_5",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  },
+  {
+   "class": "fatty_acyl",
+   "formula": "C26H38O",
+   "ions": {
+    "acylium": {
+     "neg": [],
+     "pos": [
+      "C26H39O"
+     ]
+    }
+   },
+   "name": "fatty acyl C26:6",
+   "origin": "as_published",
+   "scaffold_id": "c26_6",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+    },
+    {
+     "doi": "10.1021/ac026073d",
+     "locator": "Experimental Section, Samples (p. 5800); Table 1 (p. 5801) (nine saturated C2-C16 standards)"
+    },
+    {
+     "locator": "Stop A handback",
+     "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+    }
+   ]
+  }
+ ],
+ "list_id": "acylcarnitine_fatty_acyl"
+}

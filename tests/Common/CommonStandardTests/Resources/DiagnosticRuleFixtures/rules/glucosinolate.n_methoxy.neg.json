@@ -1,0 +1,891 @@
+{
+ "cases": [
+  {
+   "description": "h* = neoglucobrassicin||[M-H]-, precursor at its oracle m/z; one peak per support member: loss_ch3o_31:CH3O, hso4_97:HO4S, glc_sulfate_259:C6H11O9S, thioglc_sulfate_275:C6H11O8S2, thioglc_195:C6H11O5S",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": "neoglucobrassicin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3o_31:CH3O@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "neoglucobrassicin||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_n_methoxy\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"7b35074dc2548c30e78421e6e0c6398c160ed53cbd2659232b373a6d5a583960\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_n_methoxy\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"neoglucobrassicin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"neoglucobrassicin||[M-H]-\",\"hypothesis_mz\":477.064311,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3O\",\"peak_index\":4,\"peak_mz\":446.045921,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":446.045921,\"term_id\":\"loss_ch3o_31\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C17H22N2O10S2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"neoglucobrassicin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"neoglucobrassicin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "84a1cc237a007af398b7762e1be1ea9c3b02a972d9bdb2fbf3c8ed73312e71c9"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- without the peaks of required term loss_ch3o_31; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "drop_loss_ch3o_31",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"9559b87f0a1a03f748350227229f2f614bf9ae45b5c2d6eaf98a7381fc9120b2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3ce8bd02d613ea18e4caa0479fa91e962ec5fb7c92903b25b1e361d692e182d4"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- without the peaks of required term hso4_97; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "drop_hso4_97",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"ed8d91258bf2b6becf1461e08c3ad4272e8561cc64b0defee5424f66c779194d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a1dbb716a883ec142f14ed29ce5ca3f89ee6d78bf759d074886dce3ab88a6d5d"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with 1 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": "neoglucobrassicin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3o_31:CH3O@2",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "neoglucobrassicin||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_n_methoxy\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"b914245eb53be3bac7b5055873c942e0b798fc21f4948c9f3a82a3a01f84c992\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glucosinolate_n_methoxy\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"neoglucobrassicin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"neoglucobrassicin||[M-H]-\",\"hypothesis_mz\":477.064311,\"k_of\":[{\"count\":1,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3O\",\"peak_index\":2,\"peak_mz\":446.045921,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":446.045921,\"term_id\":\"loss_ch3o_31\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":1,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2}],\"neutral_formula\":\"C17H22N2O10S2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"neoglucobrassicin\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"neoglucobrassicin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2a17877f7fa82c3060e4ebdc5cf0e47dc1afe4ee3861a905b2e2ad730bec3ef9"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with 0 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"f44688718d4ddf14d5fc6173c69259b1626bafe29797ada5803e2f892b61d062\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c257e1cbe29cc715abd9c836bbafa90f34d3ed68d319bd79af6b8f40227b6e4f"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with loss_ch3o_31:CH3O moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": "neoglucobrassicin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3o_31:CH3O@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "neoglucobrassicin||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.050911",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_n_methoxy\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"24d3a21f85971d031e60a9421790d1436625b1e24be01b6367bc04707710d2a2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_n_methoxy\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"neoglucobrassicin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"neoglucobrassicin||[M-H]-\",\"hypothesis_mz\":477.064311,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":11.187,\"ion_formula\":\"CH3O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3O\",\"peak_index\":4,\"peak_mz\":446.050911,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":446.045921,\"term_id\":\"loss_ch3o_31\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C17H22N2O10S2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"neoglucobrassicin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"neoglucobrassicin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "babc9e50dd4a267909278a9b28ec670a142a383759709d3a5def6e78d637e28c"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with loss_ch3o_31:CH3O moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.050931",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"7160b8bfd91f9ba0b4695ed5e47f6e354b6f88e22f0e14197ed7de9dbbc1674c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b6e8ebdf835b0216c302a8998b8f9aec5008f6b8a979cb58ccedee96e96b397a"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with loss_ch3o_31:CH3O moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": "neoglucobrassicin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3o_31:CH3O@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "neoglucobrassicin||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.040931",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_n_methoxy\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"a8547e3252e48304ae96601eb60f4f69408b09ff87be4c590552c09218e071c1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_n_methoxy\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"neoglucobrassicin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"neoglucobrassicin||[M-H]-\",\"hypothesis_mz\":477.064311,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-11.188,\"ion_formula\":\"CH3O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3O\",\"peak_index\":4,\"peak_mz\":446.040931,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":446.045921,\"term_id\":\"loss_ch3o_31\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C17H22N2O10S2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"neoglucobrassicin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"neoglucobrassicin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f77166a82cf0dbd3e07d93e3ec522b4bd7189033b8a2d6e6f392627151289d41"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with loss_ch3o_31:CH3O moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.040911",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"55ca500afe5738b8e9f8baf84da9fc81b3ede175c2f6adcce5907720d7b6d485\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "34dfe40b4c385dc29acab02f2bbb9ee374f989557cc759d5b1161ed6f5c767c4"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": "neoglucobrassicin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3o_31:CH3O@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "neoglucobrassicin||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.074301",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.074301"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_n_methoxy\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"4f045efff6d6be7fb9253593c8074f4901be2a7dfae3fa4bc7016079580a7c55\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_n_methoxy\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"neoglucobrassicin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"neoglucobrassicin||[M-H]-\",\"hypothesis_mz\":477.064311,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3O\",\"peak_index\":4,\"peak_mz\":446.045921,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":446.045921,\"term_id\":\"loss_ch3o_31\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C17H22N2O10S2\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"neoglucobrassicin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"neoglucobrassicin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.074301,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "13530323cc8a8ae1c82a4d4bef9a8c8c4088507d360be1f80d50358afbc786e0"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.074321",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.074321"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"1574056418f35f72f3e34b35116b18f91d5ff12e61b4e2a8d1bdd032ed2f75ed\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.074321,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9a417b7f34c4d846b6f2042dad3e1fce64492b9157b42cd66df5f5ab309c5aec"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": "neoglucobrassicin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3o_31:CH3O@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "neoglucobrassicin||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.054321",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.054321"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_n_methoxy\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"ecc82d16732224267081ddc65d568ce677a577eb9b1805da6c992ae3a17d9c96\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_n_methoxy\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"neoglucobrassicin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"neoglucobrassicin||[M-H]-\",\"hypothesis_mz\":477.064311,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3O\",\"peak_index\":4,\"peak_mz\":446.045921,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":446.045921,\"term_id\":\"loss_ch3o_31\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C17H22N2O10S2\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"neoglucobrassicin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"neoglucobrassicin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.054321,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e759ab370fef121fab8fef220303ff347fdc404dc4347166608ecd02e3814a42"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.054301",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.054301"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"d4ed94f975e3e5f9841a08b3e4aedeedc734ff4605a9614f9f1430ef5ae16967\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.054301,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "243f793125c1478778466fc023529556f93e065d7fdab4c33f39b61d64743fac"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"d2044299e34adbf097a5eaf9c46332f8dcff2f8ffdd41f7f622b0c5a088dbee9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0120cf47ed50b6a996d8d09d29b2c8174d224e5d6abe91fa44b4c83c2b171a33"
+  },
+  {
+   "description": "the positive spectrum of neoglucobrassicin||[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.n_methoxy.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.n_methoxy.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "446.045921",
+      "500.0"
+     ],
+     [
+      "477.064311",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "477.064311"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"input_sha256\":\"7b35074dc2548c30e78421e6e0c6398c160ed53cbd2659232b373a6d5a583960\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_n_methoxy\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.n_methoxy.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":477.064311,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"c1665942b23ca811a17356b684c8f18b09aa59ceefbe0a8603fada7a2a17ecba\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "27dc2f764b9330fc9183b1d58546471335a25b0c3383a89682734e4faadd9dfc"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

@@ -1,0 +1,145 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "na_hexose",
+   "na_caffeoyl"
+  ],
+  "motif_id": "hydroxycinnamoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 14825516,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281759,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the acylated hexose position (1-, 2-, 3-, 4- or 6-O) and the anomer are not resolved",
+   "the hexose identity is not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5281761,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 10427456,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)OC[C@@H]2[C@H]([C@@H]([C@H](C(O2)O)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "na_hexose"
+   },
+   {
+    "term": "na_caffeoyl"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Under [M+Na]+ every caffeoylglucose MS2 spectrum showed the sodiated hexose and sodiated caffeoyl ions (src:0); the primary mode is mz_only because a protonated, ammoniated or potassiated precursor cannot give these sodiated ions.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+Na]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hydroxycinnamic_acid_o_glycoside",
+    "note": "caffeic acid O-glucosides share the precursor; the source reports no positive-mode spectra for them (src:1)"
+   }
+  ],
+  "composition": {
+   "core": "H2O",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     1
+    ],
+    "caffeoyl": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "mz_only",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.caffeoyl_hexose_ester.pos",
+ "source": [
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Positive Ion Mode Tandem Mass Spectra; Fig. 12"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Tandem Mass Spectra of O-Caffeoyl Glycosides (11 and 12); Fig. 13"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:2",
+   "formula": "C6H12NaO6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "sodiated hexose C6H12O6+Na 203.053",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "na_hexose",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "C9H6NaO3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "sodiated caffeoyl C9H6O3+Na 185.021",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "na_caffeoyl",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18) from the LLM-extracted candidate records of candidates-20261118; source-checked 2026-11-18; review fixes 2026-11-19, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

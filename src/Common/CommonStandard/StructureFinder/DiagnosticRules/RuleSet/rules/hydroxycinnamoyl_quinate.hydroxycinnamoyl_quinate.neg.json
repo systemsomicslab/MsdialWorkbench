@@ -1,0 +1,419 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "quinate",
+   "quinate_h2o",
+   "caffeate",
+   "coumarate",
+   "ferulate",
+   "sinapate",
+   "dimethoxycinnamate",
+   "caffeate_co2",
+   "coumarate_co2",
+   "ferulate_co2_ch3"
+  ],
+  "motif_id": "hydroxycinnamoyl_quinate",
+  "negative_examples": [
+   {
+    "pubchem_cid": 439514,
+    "smiles": "COC1=C(C=C2C(=C1)C=CC(=O)O2)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281762,
+    "smiles": "C1[C@H]([C@@H]([C@@H](C=C1C(=O)O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O"
+   },
+   {
+    "pubchem_cid": 102210472,
+    "smiles": "C1[C@@H]2[C@@H]([C@@H](C[C@]1(C(=O)O2)O)OC(=O)/C=C/C3=CC(=C(C=C3)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281792,
+    "smiles": "C1=CC(=C(C=C1C[C@H](C(=O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "acyl position on quinic acid (1-, 3-, 4- or 5-O), cis/trans geometry and quinic acid stereoisomer are unresolved",
+   "the number and identity of acyl units come from the hypothesis and are reported, not claimed",
+   "a free or esterified quinic acid carboxyl is not decided by these ions"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 1794427,
+    "smiles": "C1[C@H]([C@H]([C@@H](C[C@@]1(C(=O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280633,
+    "smiles": "C1[C@H]([C@@H]([C@@H](C[C@]1(C(=O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 6474310,
+    "smiles": "C1C(C[C@H](C([C@@H]1OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)OC(=O)/C=C/C3=CC(=C(C=C3)O)O)(O)C(=O)O"
+   },
+   {
+    "pubchem_cid": 9799386,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)O[C@@H]2C[C@@](C[C@H]([C@H]2O)O)(C(=O)O)O)O"
+   },
+   {
+    "pubchem_cid": 9945785,
+    "smiles": "C1[C@H]([C@@H]([C@@H](C[C@]1(C(=O)O)O)OC(=O)/C=C/C2=CC=C(C=C2)O)O)O"
+   },
+   {
+    "pubchem_cid": 72193641,
+    "smiles": "COC1=CC(=CC(=C1O)OC)/C=C/C(=O)O[C@@H]2C[C@@](C[C@H]([C@H]2O)O)(C(=O)O)O"
+   },
+   {
+    "pubchem_cid": 6440783,
+    "smiles": "C1C(C[C@H](C([C@@H]1OC(=O)/C=C/C2=CC(=C(C=C2)O)O)OC(=O)/C=C/C3=CC(=C(C=C3)O)O)OC(=O)/C=C/C4=CC(=C(C=C4)O)O)(O)C(=O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "quinate"
+     },
+     {
+      "term": "quinate_h2o"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "caffeate"
+     },
+     {
+      "term": "coumarate"
+     },
+     {
+      "term": "ferulate"
+     },
+     {
+      "term": "sinapate"
+     },
+     {
+      "term": "dimethoxycinnamate"
+     },
+     {
+      "term": "caffeate_co2"
+     },
+     {
+      "term": "coumarate_co2"
+     },
+     {
+      "term": "ferulate_co2_ch3"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Under a quinic acid plus one-to-three cinnamoyl hypothesis the class is claimed only when a quinate ion (191 or 173) and an acid-derived ion of a hypothesised acyl are seen; positional ratios and unit counts are not claimed.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hydroxycinnamoyl_shikimate",
+    "note": "shares the acid anions and C7H9O5- (deprotonated shikimic acid); its compositions are one H2O lighter"
+   }
+  ],
+  "composition": {
+   "core": "C7H12O6",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "caffeoyl": [
+     0,
+     3
+    ],
+    "coumaroyl": [
+     0,
+     3
+    ],
+    "dimethoxycinnamoyl": [
+     0,
+     3
+    ],
+    "feruloyl": [
+     0,
+     3
+    ],
+    "sinapoyl": [
+     0,
+     3
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "one to three cinnamoyl residues per quinic acid (mono-, di- and triacyl chlorogenic acids)",
+    "source": "src:10"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg",
+ "source": [
+  {
+   "doi": "10.1007/s00216-016-9450-y",
+   "locator": "Sec. High resolution ESI-MS/MS identification for CGA; Table 1"
+  },
+  {
+   "doi": "10.1007/s00216-016-9450-y",
+   "locator": "Sec. Identification of ECQ and DQA; Table 1"
+  },
+  {
+   "doi": "10.1002/jms.4970",
+   "locator": "Sec. 3.1; Table 1; Figs 1-2"
+  },
+  {
+   "doi": "10.5702/massspectrometry.a0181",
+   "locator": "Table 3; Fig. 3"
+  },
+  {
+   "doi": "10.1186/s13065-017-0262-8",
+   "locator": "Results and discussion; Fig. 2a-c; Table 1"
+  },
+  {
+   "doi": "10.1021/jf026187q",
+   "locator": "Results and Discussion, General LC-MS Fragmentation and Identification of Isomeric Monoacyl CGA; Tables 1-2"
+  },
+  {
+   "doi": "10.1002/rcm.3884",
+   "locator": "Results and Discussion, Caffeoylquinic acids, Feruloylquinic acids and p-Coumaroylquinic acid sections; Tables 4 and 7"
+  },
+  {
+   "doi": "10.1155/2021/6393246",
+   "locator": "Sec. 2.7; Sec. 3.1; Table 1"
+  },
+  {
+   "doi": "10.1021/jf1014457",
+   "locator": "Results and Discussion, Characterization of Putative Sinapoylquinic Acids (Mr 398); Table 2"
+  },
+  {
+   "doi": "10.1021/jf0601665",
+   "locator": "Table 1; Results and Discussion, Characterization of Putative Dimethoxycinnamoylquinic Acids (7-9)"
+  },
+  {
+   "doi": "10.1002/rcm.4639",
+   "locator": "Results and Discussion, Preliminary assessment of data; Conclusions; Table 2"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:11",
+   "formula": "C7H11O6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[quinic acid-H]-; also printed in src:3, src:4, src:5, src:6 and src:7",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "quinate",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "formula": "C7H9O5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[quinic acid-H2O-H]-, base peak of 4-acyl isomers; also src:3, src:5, src:6; isobaric with deprotonated shikimic acid",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "quinate_h2o",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[caffeic acid-H]-; also src:3, src:6",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "caffeate",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "caffeoyl",
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[p-coumaric acid-H]-; also src:5",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "coumarate",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "coumaroyl",
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[ferulic acid-H]-; also src:3, src:5, src:6, src:7",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ferulate",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "feruloyl",
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[sinapic acid-H]-; also src:8",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "sinapate",
+   "term_source": "src:2",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "sinapoyl",
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[dimethoxycinnamic acid-H]-; also src:9",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "dimethoxycinnamate",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "dimethoxycinnamoyl",
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[caffeic acid-H-CO2]-; src:3 prints m/z 135.0445 with formula C8H7O3, which does not fit the mass; also src:4, src:7",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "caffeate_co2",
+   "term_source": "src:3",
+   "than": null,
+   "unit": {
+    "minus": "CO",
+    "name": "caffeoyl",
+    "plus": "H"
+   }
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[p-coumaric acid-H-CO2]-; also src:6, src:7",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "coumarate_co2",
+   "term_source": "src:4",
+   "than": null,
+   "unit": {
+    "minus": "CO",
+    "name": "coumaroyl",
+    "plus": "H"
+   }
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "radical anion [ferulic acid-H-CO2-CH3]-; also src:4, src:6, src:7",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ferulate_co2_ch3",
+   "term_source": "src:3",
+   "than": null,
+   "unit": {
+    "minus": "C2H2O",
+    "name": "feruloyl",
+    "plus": null
+   }
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:11",
+   "form": "even",
+   "kind": "ion_series",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[quinic acid + subset of the acyl units - H]-, e.g. [CQA-H]- from diCQA; unit count reported, never claimed",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "acyl_series",
+   "term_source": "src:5",
+   "than": null,
+   "unit_classes": [
+    "acyl"
+   ]
+  }
+ ],
+ "transcribed_by": "Claude (In silico run channel), WS8-P3 draft 2026-11-18 from LLM-extracted candidates-20261118",
+ "version": 1,
+ "veto_excludes_motif": false
+}

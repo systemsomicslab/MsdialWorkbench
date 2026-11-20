@@ -1,0 +1,37 @@
+{
+ "entries": [
+  {
+   "class": "aspidosperma",
+   "formula": "C19H26N2",
+   "ions": {},
+   "name": "aspidospermidine",
+   "origin": "as_published",
+   "scaffold_id": "aspidospermidine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C22H30N2O",
+   "ions": {},
+   "name": "demethoxypalosine (PubChem CID 579957, 17-demethoxypalosine)",
+   "origin": "as_published",
+   "scaffold_id": "demethoxypalosine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1"
+    },
+    {
+     "doi": "10.21577/0100-4042.20250138",
+     "locator": "Table 1"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_monoterpene_indole_aspidosperma_ring_a_unsubstituted"
+}

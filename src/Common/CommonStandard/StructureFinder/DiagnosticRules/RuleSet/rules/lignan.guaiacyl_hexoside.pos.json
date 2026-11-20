@@ -1,0 +1,169 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "ion_guaiacyl_hexoside_na"
+  ],
+  "motif_id": "guaiacyl_4_o_hexoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 13995449,
+    "smiles": "COC1=C(C=CC(=C1)[C@@H]2[C@H]3CO[C@@H]([C@]3(CO2)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)C5=CC(=C(C=C5)O)OC)O"
+   },
+   {
+    "pubchem_cid": 9917980,
+    "smiles": "COC1=C(C=CC(=C1)C[C@@H](CO[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)[C@@H](CC3=CC(=C(C=C3)O)OC)CO[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the aglycone skeleton (furofuran versus tetrahydrofuran) is decided by the precursor composition, not by these ions",
+   "the hexose identity and its anomeric configuration are not resolved",
+   "in furofurans, which of the two C7-linked guaiacyl rings carries the sugar is not resolved",
+   "isobars of the sodiated targets with C2 for NaH (C15H17O7+ 2.4 mDa from 309.0945, C8H9O5+ 2.4 mDa from 185.0420) lie inside the p2 tolerance, so the [M+H]+, [M+NH4]+ and [M+K]+ hypotheses tried under adduct_ambiguous can match these Na-containing targets"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 486614,
+    "smiles": "COC1=C(C=CC(=C1)[C@@H]2[C@H]3CO[C@@H]([C@H]3CO2)C4=CC(=C(C=C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)OC)O"
+   },
+   {
+    "pubchem_cid": 21722933,
+    "smiles": "COC1=C(C=C(C=C1)[C@@H]2[C@H]3CO[C@@H]([C@H]3CO2)C4=CC(=C(C=C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_guaiacyl_hexoside_na"
+   },
+   {
+    "any": [
+     {
+      "term": "ion_hexose_na"
+     },
+     {
+      "term": "loss_hexose"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Only the sodiated guaiacyl hexoside 309 separates these 4-O-glucosides from the isomeric 8-O-glucoside, which also gives 185 and the 162 loss (Ricci 2008 Table 1), so the claim rests on one ion and the rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+Na]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "alkyl_o_hexoside",
+    "note": "The 8-O-glucoside gives 185 (100), the 162 loss and 203 without 309 (rcm.3746 Table 1); the 7'-O-glucoside gives 203, 137 and a 180 loss without 309 (rcm.4472 p. 981)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "lignan_guaiacyl_glucoside_aglycones",
+   "unit_totals": {},
+   "units": {
+    "Hex": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "[M+H]+ of these glucosides is absent or very weak and K+, Rb+ and Cs+ adducts give only the metal ion, so the rule lists [M+Na]+ alone; the common adducts are still tried under adduct_ambiguous.",
+    "source": "src:4"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "lignan.guaiacyl_hexoside.pos",
+ "source": [
+  {
+   "doi": "10.1002/rcm.3746",
+   "locator": "Ricci 2008: Table 1 (p. 3385); Fig. 2 (p. 3384); Fig. 3 (p. 3386); CAD of alkali metal cation adducts (pp. 3384-3386); Scheme 1(c) (p. 3387)"
+  },
+  {
+   "doi": "10.1002/rcm.3746",
+   "locator": "Ricci 2008: Table 1 (p. 3385); Fig. 2a (p. 3384); Fig. 3 (p. 3386); CAD of alkali metal cation adducts (pp. 3384-3386)"
+  },
+  {
+   "doi": "10.1002/rcm.4472",
+   "locator": "Ricci 2010: [M+Na]+ CAD spectra (pp. 981-982); Figs. 2c and 3c (p. 981); Scheme 1 pathway (c) (p. 982); fragmentation mechanisms section (p. 984)"
+  },
+  {
+   "doi": "10.1002/rcm.4472",
+   "locator": "Ricci 2010: [M+Na]+ CAD spectra (p. 981); Figs. 2a, 2c and 3 (p. 981); Scheme 1 pathway (a) (p. 982); fragmentation mechanisms section (p. 984)"
+  },
+  {
+   "doi": "10.1002/rcm.3746",
+   "locator": "Ricci 2008: Results and Discussion, opening paragraph (p. 3383); CAD of alkali metal cation adducts (p. 3384)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "formula": "C13H18NaO7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Sodiated guaiacyl hexoside 309.0945; formula from the stated [CH3O-C6H4-O-glucosyl+Na]+ assignment.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_guaiacyl_hexoside_na",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C6H10NaO5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Sodiated anhydrohexose 185.0420.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_hexose_na",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C6H10O5",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Hexose residue 162.0528 lost to the sodiated aglycone.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_hexose",
+   "term_source": "src:3",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

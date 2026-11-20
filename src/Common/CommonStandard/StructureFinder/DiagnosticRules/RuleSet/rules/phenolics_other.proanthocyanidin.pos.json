@@ -1,0 +1,207 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "qm_terminal",
+   "qm_extension",
+   "rda",
+   "hrf"
+  ],
+  "motif_id": "proanthocyanidin",
+  "negative_examples": [
+   {
+    "pubchem_cid": 9064,
+    "smiles": "C1[C@@H]([C@H](OC2=CC(=CC(=C21)O)O)C3=CC(=C(C=C3)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Interflavan position (C4-C8 versus C4-C6) and stereochemistry are not resolved (Li 2007)",
+   "The unit sequence of a trimer is a hypothesis choice, not a claim",
+   "A-type linkages and galloylated units are outside the composition series",
+   "Tetramers and larger are outside the series: their MS2 shows oligomer-size QM ions only (Li 2007 Table 4; Pati 2006)"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 122738,
+    "smiles": "C1[C@H]([C@H](OC2=C1C(=CC(=C2[C@@H]3[C@H]([C@H](OC4=CC(=CC(=C34)O)O)C5=CC(=C(C=C5)O)O)O)O)O)C6=CC(=C(C=C6)O)O)O"
+   },
+   {
+    "pubchem_cid": 169853,
+    "smiles": "C1[C@H]([C@H](OC2=C1C(=CC(=C2[C@@H]3[C@H]([C@H](OC4=C(C(=CC(=C34)O)O)[C@@H]5[C@H]([C@H](OC6=CC(=CC(=C56)O)O)C7=CC(=C(C=C7)O)O)O)C8=CC(=C(C=C8)O)O)O)O)O)C9=CC(=C(C=C9)O)O)O"
+   },
+   {
+    "pubchem_cid": 13831068,
+    "smiles": "C1[C@@H]([C@H](OC2=C1C(=CC(=C2[C@H]3[C@@H]([C@H](OC4=CC(=CC(=C34)O)O)C5=CC(=C(C(=C5)O)O)O)O)O)O)C6=CC(=C(C(=C6)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:5",
+   "of": [
+    {
+     "term": "qm_terminal"
+    },
+    {
+     "term": "qm_extension"
+    },
+    {
+     "term": "rda"
+    },
+    {
+     "term": "hrf"
+    }
+   ]
+  }
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): in 28 of 36 hypotheses the extension-unit QM cation is the terminal-unit ion minus H2 or H2O, so the two-of-four count can rest on one parent-daughter channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavan_3_ol_core",
+    "note": "flavan-3-ol monomers and their conjugates give the unit ions without an interflavan bond"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "phenolics_other_flavan_3_ol_terminal_units_pos",
+   "unit_totals": {
+    "conjugate": [
+     1,
+     2
+    ]
+   },
+   "units": {
+    "procyanidin_ext": [
+     0,
+     2
+    ],
+    "prodelphinidin_ext": [
+     0,
+     2
+    ],
+    "propelargonidin_ext": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "phenolics_other.proanthocyanidin.pos",
+ "source": [
+  {
+   "doi": "10.1021/ac061823v",
+   "locator": "Li 2007: rules 1-5 (p. 1743); Table 1 (p. 1741)"
+  },
+  {
+   "doi": "10.1021/ac061823v",
+   "locator": "Li 2007: Table 2 (p. 1742, MS2 of [M+H]+ of dimers 4-10); Fig. 3 (p. 1741); Scheme 2 (p. 1742); Table 3 (p. 1745, trimers 11-15); Fig. 4 (p. 1743)"
+  },
+  {
+   "doi": "10.1021/ac061823v",
+   "locator": "Li 2007: on-line LC/ESI-MS2 on the triple quadrupole (p. 1747; 579 to 291, 427, 301); Fig. 1B inset (p. 1740)"
+  },
+  {
+   "doi": "10.1002/jms.1044",
+   "locator": "Pati 2006: B-type procyanidins (p. 868; 579 to 453, 427, 409, 289, 291; 867 to 579, 577, 289, 291); Fig. 6a-b (p. 868); Fig. 7 (p. 869)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions this work must respect",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision that a class claim needs two or three diagnostic ions jointly (author, 2026-11-15)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:4",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "QM terminal-unit cation [(epi)catechin+H]+ 291 (Li 2007 dimers 4, 7, 9 and trimers 12, 13; Pati 2006)",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "qm_terminal",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "QM extension-unit cation: 289 procyanidin (Li 2007 dimers 8, 10; Pati 2006), 305 prodelphinidin (dimer 5) and 273 propelargonidin unit (dimer 4)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "qm_extension",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "class": "conjugate",
+    "minus": null,
+    "plus": "H"
+   }
+  },
+  {
+   "floor_source": "src:4",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "RDA loss on the upper (extension) unit: 152, 168 and 136 for procyanidin, prodelphinidin and propelargonidin units (Li 2007 Table 2: 579, 595 and 563 to 427)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "rda",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "class": "conjugate",
+    "minus": "C7H4O3",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C6H6O3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "HRF loss of the upper-unit A ring, C6H6O3 126 (Li 2007: 579 to 453, 595 to 469, 563 to 437; trimers 867 to 741, 883 to 757)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "hrf",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

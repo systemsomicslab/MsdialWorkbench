@@ -1,0 +1,915 @@
+{
+ "cases": [
+  {
+   "description": "h* = spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+, precursor at its oracle m/z; one peak per support member: acylium:caffeoyl, acylium:feruloyl, acylium:sinapoyl, acyl_aminopropyl:caffeoyl, acyl_aminopropyl:feruloyl, acyl_aminopropyl:sinapoyl",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:caffeoyl@0",
+       "acylium:feruloyl@1",
+       "acylium:sinapoyl@2",
+       "acyl_aminopropyl:caffeoyl@3",
+       "acyl_aminopropyl:feruloyl@4",
+       "acyl_aminopropyl:sinapoyl@5"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"2f161952a86e63a28deaf308e27f1161cb13e2bf85fd02b97179af565c358534\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":852.354944,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C9H7O3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":163.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.038970,\"term_id\":\"acylium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":2,\"peak_mz\":207.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.065185,\"term_id\":\"acylium\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C12H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":220.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":220.096819,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C14H18NO4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":5,\"peak_mz\":264.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":264.123034,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":5}],\"neutral_formula\":\"C43H53N3O15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"spermidine\",\"score\":6.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c81a34ff53bfd7392705497c1e4e5a3bdab7d278fb5481cfcd64e5797a719960"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ without the peaks of required term acylium; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "drop_acylium",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"9d75ba501b192d4599ad71fa97b7e457874d41d90267b2c8e75772eca527af75\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "43d0ccb9bfdcd1af2fb17e6855deba761465d2c8cb588bccaf0924579f89c63d"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ without the peaks of required term acyl_aminopropyl; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "drop_acyl_aminopropyl",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"1264fbcef31bee9745ee305dd05b7d9f5f5bc9b59f31377c148387de118cd7e8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c225341fe47f03d88f8006c5893f9cb52cb1ad0a35b16714db928bcc73e1a80e"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with acylium:caffeoyl moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:caffeoyl@0",
+       "acylium:feruloyl@1",
+       "acylium:sinapoyl@2",
+       "acyl_aminopropyl:caffeoyl@3",
+       "acyl_aminopropyl:feruloyl@4",
+       "acyl_aminopropyl:sinapoyl@5"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.04396",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"13276b59a0cbd695fca6f76de7db2996ce18f10005a7a6048526ca9e136f4c0b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":852.354944,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":30.606,\"ion_formula\":\"C9H7O3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":163.043960,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.038970,\"term_id\":\"acylium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":2,\"peak_mz\":207.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.065185,\"term_id\":\"acylium\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C12H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":220.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":220.096819,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C14H18NO4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":5,\"peak_mz\":264.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":264.123034,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":5}],\"neutral_formula\":\"C43H53N3O15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"spermidine\",\"score\":6.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "82a67fa46a1f21307fc769a2b54fa8c9723da2539036e946bca93d8d9f3a2118"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with acylium:caffeoyl moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:feruloyl@1",
+       "acylium:sinapoyl@2",
+       "acyl_aminopropyl:caffeoyl@3",
+       "acyl_aminopropyl:feruloyl@4",
+       "acyl_aminopropyl:sinapoyl@5"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.04398",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"88a90635b0ebca7d8b224c095cd01cd73eebae6a7eb9b02889ffa06e5c9fcffc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":852.354944,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":2,\"peak_mz\":207.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.065185,\"term_id\":\"acylium\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C12H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":220.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":220.096819,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C14H18NO4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":5,\"peak_mz\":264.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":264.123034,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":5}],\"neutral_formula\":\"C43H53N3O15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"spermidine\",\"score\":5.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "03b8d4405d2b603039323f6f27f5da04c76a6df156f068c161540df1abebe0f9"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with acylium:caffeoyl moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:caffeoyl@0",
+       "acylium:feruloyl@1",
+       "acylium:sinapoyl@2",
+       "acyl_aminopropyl:caffeoyl@3",
+       "acyl_aminopropyl:feruloyl@4",
+       "acyl_aminopropyl:sinapoyl@5"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03398",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"4d7c334c07e36753228cc323e70ae72ab44dcb42efc1c6e26360ca2e622195b1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":852.354944,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-30.607,\"ion_formula\":\"C9H7O3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":163.033980,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.038970,\"term_id\":\"acylium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":2,\"peak_mz\":207.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.065185,\"term_id\":\"acylium\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C12H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":220.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":220.096819,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C14H18NO4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":5,\"peak_mz\":264.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":264.123034,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":5}],\"neutral_formula\":\"C43H53N3O15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"spermidine\",\"score\":6.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "649f39fa1875f91831bc4e6e923c2bad604f90474248c855f56f53d99ce0cb38"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with acylium:caffeoyl moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:feruloyl@1",
+       "acylium:sinapoyl@2",
+       "acyl_aminopropyl:caffeoyl@3",
+       "acyl_aminopropyl:feruloyl@4",
+       "acyl_aminopropyl:sinapoyl@5"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03396",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"53e22d7238cbaeeab2e231493a5b8fec6ccbfc174b2ed3ab73d80e44b4c73363\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":852.354944,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":2,\"peak_mz\":207.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.065185,\"term_id\":\"acylium\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C12H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":220.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":220.096819,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C14H18NO4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":5,\"peak_mz\":264.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":264.123034,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":5}],\"neutral_formula\":\"C43H53N3O15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"spermidine\",\"score\":5.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "fe6d75f8bb331a0a1ea2b0fbd76511153f8a5a8594c182467329bfafc30e8e34"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:caffeoyl@0",
+       "acylium:feruloyl@1",
+       "acylium:sinapoyl@2",
+       "acyl_aminopropyl:caffeoyl@3",
+       "acyl_aminopropyl:feruloyl@4",
+       "acyl_aminopropyl:sinapoyl@5"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.364934",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.364934"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"52f054a84dac6d3b07a012dca7d043e6d8a86e985c903a3f52a25ab9ce7a52e8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":852.354944,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C9H7O3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":163.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.038970,\"term_id\":\"acylium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":2,\"peak_mz\":207.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.065185,\"term_id\":\"acylium\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C12H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":220.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":220.096819,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C14H18NO4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":5,\"peak_mz\":264.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":264.123034,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":5}],\"neutral_formula\":\"C43H53N3O15\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"spermidine\",\"score\":6.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.364934,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e964f0edda1ceea6104d0872f397f6c91763891c2b9e13076edf10bfdcd3364c"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.364954",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.364954"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"2512dc6172d69b0b3c913b50d15bd35f4a1ac8b6078902f40fd4324b07395b4b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.364954,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4b0c2ee9de2e9aaa93d979bbc14d53f30edbbac1fc15103187fb9ddf094e351f"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:caffeoyl@0",
+       "acylium:feruloyl@1",
+       "acylium:sinapoyl@2",
+       "acyl_aminopropyl:caffeoyl@3",
+       "acyl_aminopropyl:feruloyl@4",
+       "acyl_aminopropyl:sinapoyl@5"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.344954",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.344954"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"b0309164d8450fd51a9cb99adc8450429d22d7cf53da3113f9bef70150f6418b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":852.354944,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C9H7O3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":163.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.038970,\"term_id\":\"acylium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":2,\"peak_mz\":207.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.065185,\"term_id\":\"acylium\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C12H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":220.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":220.096819,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C14H18NO4\",\"kind\":\"product_ion\",\"member_key\":\"sinapoyl\",\"peak_index\":5,\"peak_mz\":264.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":264.123034,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":5}],\"neutral_formula\":\"C43H53N3O15\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"spermidine\",\"score\":6.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.344954,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "52504f6234138aa7023e71f79d97feffb1dd2e476f6dbf570d2d29a4ce076268"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.344934",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.344934"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"d4921dcefb49f6400189127aa0fb79b61243c16ca03b1e62226a0611a6492732\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.344934,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8048a0505a84b760291d36a177d6a3760c84bb8640727180a43024198c7650b4"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"fe8b2fbc68f191c17a382fcd9f5f587606573792d7eab36ee5488beadf558f4a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "653fc407a69e286377b5380fbb6ee7c7d53b8dfbb1bdba983da9958e6ccdf2c1"
+  },
+  {
+   "description": "the union of the positive spectra of spermidine|Hex1,coumaroyl1,feruloyl2|[M+H]+ and spermidine|Hex1,coumaroyl2,sinapoyl1|[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": "spermidine|Hex1,coumaroyl1,feruloyl2|[M+H]+",
+      "fired": true,
+      "matched": [
+       "acylium:coumaroyl@0",
+       "acylium:feruloyl@1",
+       "acyl_aminopropyl:coumaroyl@2",
+       "acyl_aminopropyl:feruloyl@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "spermidine|Hex1,coumaroyl1,feruloyl2|[M+H]+",
+       "spermidine|Hex1,coumaroyl2,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "204.101905",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "806.349465",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "806.349465"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_spermidine_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"2b22113d70721642767a861a123cff943637d7777ffd62e4e5ce0131c4d8e31a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_spermidine_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"spermidine|Hex1,coumaroyl1,feruloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"spermidine|Hex1,coumaroyl1,feruloyl2|[M+H]+\",\"hypothesis_mz\":806.349465,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":0,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"acylium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H9O3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":177.054620,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":177.054620,\"term_id\":\"acylium\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C12H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":2,\"peak_mz\":204.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":204.101905,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C13H16NO3\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":234.112469,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":234.112469,\"term_id\":\"acyl_aminopropyl\",\"unit_id\":3}],\"neutral_formula\":\"C42H51N3O13\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"spermidine\",\"score\":4.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1,\"feruloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"spermidine|Hex1,coumaroyl1,feruloyl2|[M+H]+\",\"spermidine|Hex1,coumaroyl2,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":806.349465,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5bf3132bbe8b99b8d911e0beae47a874b624de884be69b8fc96405ae011bac7d"
+  },
+  {
+   "description": "the positive spectrum of spermidine|Hex1,caffeoyl1,feruloyl1,sinapoyl1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.spermidine.pos"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.spermidine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "163.03897",
+      "500.0"
+     ],
+     [
+      "177.05462",
+      "500.0"
+     ],
+     [
+      "207.065185",
+      "500.0"
+     ],
+     [
+      "220.096819",
+      "500.0"
+     ],
+     [
+      "234.112469",
+      "500.0"
+     ],
+     [
+      "264.123034",
+      "500.0"
+     ],
+     [
+      "852.354944",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "852.354944"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"input_sha256\":\"2f161952a86e63a28deaf308e27f1161cb13e2bf85fd02b97179af565c358534\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_spermidine_amide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.spermidine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":852.354944,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ca7143f54af2ac80665b60a4114602012fc5e92a450f047b7cf38c275819cea1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "84d8a537394d896f5b15ba295a84476475a3d112a1995259229266be1b20db91"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

@@ -1,0 +1,870 @@
+{
+ "cases": [
+  {
+   "description": "h* = epicatechin_catechin|procyanidin_ext1|[M-H]-, precursor at its oracle m/z; one peak per support member: qm_terminal:A, qm_extension:procyanidin_ext, rda:procyanidin_ext, rda_h2o:procyanidin_ext, hrf:C6H6O3",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_terminal:A@1",
+       "qm_extension:procyanidin_ext@0",
+       "rda:procyanidin_ext@3",
+       "rda_h2o:procyanidin_ext@2",
+       "hrf:C6H6O3@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"d06cddd49aa6ee9f2a1e6ca8923d64a9be1f81c9658fe714f6f380b33109522a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":5,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H13O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":289.071762,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.071762,\"term_id\":\"qm_terminal\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":3,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":2,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":4,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"epicatechin_catechin\",\"score\":5.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d7b037599fecb50b574ad5884d01515631f1aa53fd762e41a816de5e299460d9"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with 2 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_terminal:A@1",
+       "qm_extension:procyanidin_ext@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"6ec109294a47adbb4dc15645fcf39cac76d255af8f0922e02875b069c1b450d4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H13O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":289.071762,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.071762,\"term_id\":\"qm_terminal\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"epicatechin_catechin\",\"score\":2.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f2b29324ba6c42ac84f214da6e89fd139dd314998a5f5b250bf7c693ebde532d"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with 1 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"eb7666dc6f77485ca6c91819f5eda503a23781157866e603a91335f83636ce7f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ea619ecd2742507e23fd05060ef011db3185e884ccbe10e00ebde808f6c4a763"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with qm_terminal:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_terminal:A@1",
+       "qm_extension:procyanidin_ext@0",
+       "rda:procyanidin_ext@3",
+       "rda_h2o:procyanidin_ext@2",
+       "hrf:C6H6O3@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.076752",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"3cfc18cae14ae64264c71dd4b46afe59f9fff3b122608e8c2f2d37842ef09c45\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":5,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":17.262,\"ion_formula\":\"C15H13O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":289.076752,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.071762,\"term_id\":\"qm_terminal\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":3,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":2,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":4,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"epicatechin_catechin\",\"score\":5.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3195cf3bfdd5ef35cbc34dd0c1ea21748d016926c4f7a6eb058ffc926dc188a8"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with qm_terminal:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_extension:procyanidin_ext@0",
+       "rda:procyanidin_ext@3",
+       "rda_h2o:procyanidin_ext@2",
+       "hrf:C6H6O3@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.076772",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"b66ba32c2d5810b8d5943f244e20177753a69fca37b358a6c9cc95bf0ea22248\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":3,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":2,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":4,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"epicatechin_catechin\",\"score\":4.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9f2699a6d52f98dffb959fa181c3d55184c7a89823ba44f4314e51885e57a684"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with qm_terminal:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_terminal:A@1",
+       "qm_extension:procyanidin_ext@0",
+       "rda:procyanidin_ext@3",
+       "rda_h2o:procyanidin_ext@2",
+       "hrf:C6H6O3@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.066772",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"0ebd661388b6b7502ec1fc1d0ada2a9dafad268acf4c3f167d1e245747ae9958\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":5,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-17.263,\"ion_formula\":\"C15H13O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":289.066772,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.071762,\"term_id\":\"qm_terminal\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":3,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":2,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":4,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"epicatechin_catechin\",\"score\":5.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "41941d52fdf27ab30902609d8065a6b5a54be37eb1c8f4f65d78c54a7bc205d2"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with qm_terminal:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_extension:procyanidin_ext@0",
+       "rda:procyanidin_ext@3",
+       "rda_h2o:procyanidin_ext@2",
+       "hrf:C6H6O3@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.066752",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"1aa04149d165bcb6e7d0e3c4b9b78ce882d1d1459fae63b44c97d9391c5adcb0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":3,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":2,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":4,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"epicatechin_catechin\",\"score\":4.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "17ad7d21a03f38c47ed91dcd4e1f6461117df789ed3620b13fdfcde6a50b6010"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_terminal:A@1",
+       "qm_extension:procyanidin_ext@0",
+       "rda:procyanidin_ext@3",
+       "rda_h2o:procyanidin_ext@2",
+       "hrf:C6H6O3@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.14514",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.14514"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"907e14f5637914c5baabca8c4d7dc54fe2a1384b40528911a310d0f7a7846af8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":5,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H13O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":289.071762,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.071762,\"term_id\":\"qm_terminal\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":3,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":2,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":4,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"epicatechin_catechin\",\"score\":5.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.145140,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f448761fb016b893567b22cdb3efd2892275e7570c27bdf71375c31927575e3e"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.14516",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.14516"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"a04f3c496abf55f6213c8204e7c903b6ca11c7b2672c82e96e07a6d246bdf149\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.145160,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f1f76d7d085485b4cfd7624141710e7d5d40551b1a5993c942fbd60ae6d99244"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_terminal:A@1",
+       "qm_extension:procyanidin_ext@0",
+       "rda:procyanidin_ext@3",
+       "rda_h2o:procyanidin_ext@2",
+       "hrf:C6H6O3@4"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.12516",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.12516"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"11d350649348e8e4a855c594e4c1ec685767dbacae408bde31f4bc8f4d25f245\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":5,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H13O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":289.071762,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.071762,\"term_id\":\"qm_terminal\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":0,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":3,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":2,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":4,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"epicatechin_catechin\",\"score\":5.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.125160,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8f768097e4c9e3f1336fdd3857a2c3782cf72e6e8347fdd4eb591ccb232dd143"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.12514",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.12514"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"f51acb99ba8412c37482bb59eced532779ba388a83de32a26b5d2f5a654b6a58\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.125140,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6b7a32949cc0c1679b097d334a73623d91ff18da464ef170da48774d8984f825"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"693b64f0acd88a42e1755cdc8596956e89415bef010043b8fc2bced770439c96\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "991d58db36f2ff48908d78c15cdec5325c4f0bea860655fde44190bb3137830b"
+  },
+  {
+   "description": "the union of the positive spectra of epicatechin_catechin|procyanidin_ext1|[M-H]- and epigallocatechin_gallocatechin|propelargonidin_ext1|[M-H]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "qm_terminal:A@2",
+       "qm_extension:procyanidin_ext@1",
+       "rda:procyanidin_ext@6",
+       "rda_h2o:procyanidin_ext@4",
+       "hrf:C6H6O3@8"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "epicatechin_catechin|procyanidin_ext1|[M-H]-",
+       "epigallocatechin_gallocatechin|propelargonidin_ext1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "271.061197",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "305.066677",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "423.072156",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "441.082721",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"proanthocyanidin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"674e41b423b23daa492bdb1c209d86547eebc73f8719d06e8abd639ef1038254\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":10,\"narrowest_motifs\":[\"proanthocyanidin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"epicatechin_catechin|procyanidin_ext1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"hypothesis_mz\":577.135150,\"k_of\":[{\"count\":5,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H13O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":289.071762,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.071762,\"term_id\":\"qm_terminal\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"product_ion\",\"member_key\":\"procyanidin_ext\",\"peak_index\":1,\"peak_mz\":287.056112,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":287.056112,\"term_id\":\"qm_extension\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":6,\"peak_mz\":425.087806,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":425.087806,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H10O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"procyanidin_ext\",\"peak_index\":4,\"peak_mz\":407.077241,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":407.077241,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H6O3\",\"peak_index\":8,\"peak_mz\":451.103456,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":451.103456,\"term_id\":\"hrf\",\"unit_id\":4}],\"neutral_formula\":\"C30H26O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"epicatechin_catechin\",\"score\":5.000000,\"units\":{\"procyanidin_ext\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"epicatechin_catechin|procyanidin_ext1|[M-H]-\",\"epigallocatechin_gallocatechin|propelargonidin_ext1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c3ff61cf99ef01e42cd54618a2486c019585c5fa854803c6beb6e79a75579913"
+  },
+  {
+   "description": "the positive spectrum of epicatechin_catechin|procyanidin_ext1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.proanthocyanidin.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.proanthocyanidin.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "287.056112",
+      "500.0"
+     ],
+     [
+      "289.071762",
+      "500.0"
+     ],
+     [
+      "407.077241",
+      "500.0"
+     ],
+     [
+      "425.087806",
+      "500.0"
+     ],
+     [
+      "451.103456",
+      "500.0"
+     ],
+     [
+      "577.13515",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "577.13515"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"input_sha256\":\"d06cddd49aa6ee9f2a1e6ca8923d64a9be1f81c9658fe714f6f380b33109522a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"proanthocyanidin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.proanthocyanidin.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":577.135150,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ac15e632fbd29df43ad468f9b1eb196e3ba85e25485215ef1cd4189f8775518e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e074c48a7fbd3e91f2c5b4dbec1fd3c67593fb698abedf20f95215e537c217bd"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

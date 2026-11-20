@@ -1,0 +1,215 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_ch5n",
+   "loss_ch5n_ch2o"
+  ],
+  "motif_id": "aporphine",
+  "negative_examples": [
+   {
+    "pubchem_cid": 72301,
+    "smiles": "COC1=C(C2=C(C[C@H]3C4=CC(=C(C=C4CCN3C2)OC)OC)C=C1)OC"
+   },
+   {
+    "pubchem_cid": 439653,
+    "smiles": "CN1CCC2=CC(=C(C=C2[C@@H]1CC3=CC(=C(C=C3)OC)O)O)OC"
+   }
+  ],
+  "non_claims": [
+   "ring positions of the substituents and the C-6a configuration are not resolved",
+   "noraporphines (NH3 loss) and 7-substituted aporphines are outside this rule"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 16754,
+    "smiles": "CN1CCC2=CC(=C(C3=C2[C@@H]1CC4=CC(=C(C=C43)OC)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 10154,
+    "smiles": "CN1CCC2=CC(=C(C3=C2[C@@H]1CC4=CC(=C(C=C43)OC)O)OC)O"
+   },
+   {
+    "pubchem_cid": 10143,
+    "smiles": "CN1CCC2=CC(=C(C3=C2[C@@H]1CC4=C3C(=C(C=C4)OC)O)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_ch5n"
+   },
+   {
+    "any": [
+     {
+      "term": "loss_ch5n_ch4o"
+     },
+     {
+      "term": "loss_ch5n_ch2o"
+     },
+     {
+      "term": "loss_ch5n_ch3"
+     },
+     {
+      "term": "loss_ch5n_ch3o"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): the CH5N+CH3, CH5N+OCH3 and CH5N+CH4O losses are daughters of the CH3NH2-loss product, as the rule's two-step pathway says, so the claim can rest on one channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "tetrahydroprotoberberine",
+    "note": "isomeric with N-methyl aporphines (tetrahydropalmatine and glaucine are both C21H25NO4); separated by RDA ions (doi:10.1016/j.apsb.2014.04.003)"
+   },
+   {
+    "motif_id": "benzyltetrahydroisoquinoline",
+    "note": "1-benzyltetrahydroisoquinolines also lose CH3NH2 and then CH3OH (doi:10.1255/ejms.745)"
+   },
+   {
+    "motif_id": "morphinan",
+    "note": "thebaine-type morphinans lose CH3NH2 and then CH3OH (doi:10.1016/s1044-0305(03)00539-7)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_benzylisoquinoline_aporphines_nmethyl",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_benzylisoquinoline.aporphine.pos",
+ "source": [
+  {
+   "doi": "10.1002/rcm.1343",
+   "locator": "Results and discussion, p. 524 (amine loss); Table 1 (p. 525); Scheme 1 (p. 526)"
+  },
+  {
+   "doi": "10.1002/rcm.1343",
+   "locator": "Results and discussion, rules (p. 525); Table 1; Scheme 2 (p. 526); boldine (p. 527)"
+  },
+  {
+   "doi": "10.1002/rcm.1343",
+   "locator": "Results and discussion, rules (p. 525); Table 1 (dicentrine, bulbocapnine); Schemes 2-3 (pp. 526-527)"
+  },
+  {
+   "doi": "10.1002/rcm.1343",
+   "locator": "Results and discussion, rules (p. 525); Table 1; glaucine and isocorydine (p. 527)"
+  },
+  {
+   "doi": "10.1016/j.apsb.2014.04.003",
+   "locator": "Section 3.1.4; Fig. 8"
+  },
+  {
+   "doi": "10.5478/msl.2013.4.4.79",
+   "locator": "Results, pp. 80-81; Scheme 1-C; Figure 1-I"
+  },
+  {
+   "doi": "10.1002/rcm.8533",
+   "locator": "Sec. 3.2; Table 2; Schemes 2-6; Fig. 5"
+  },
+  {
+   "doi": "10.1038/s41598-019-57406-7",
+   "locator": "Results, type I section (alkaloid 9, isocorydine); Fig. 2a; Summary rule (1)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:8",
+   "formula": "CH5N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "first loss of CH3NH2 from N-methyl aporphines",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch5n",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "C2H9NO",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "CH3NH2 then CH3OH (vicinal OH and OCH3), written as one loss from the precursor",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch5n_ch4o",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "C2H7NO",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "CH3NH2 then CH2O (methylenedioxy), written as one loss from the precursor",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch5n_ch2o",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "C2H8N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "CH3NH2 then CH3 radical (methoxy), written as one loss from the precursor",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch5n_ch3",
+   "term_source": "src:3",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "C2H8NO",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "CH3NH2 then CH3O radical (methoxy), written as one loss from the precursor",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch5n_ch3o",
+   "term_source": "src:3",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18; family alkaloid_benzylisoquinoline)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

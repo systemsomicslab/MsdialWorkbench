@@ -1,0 +1,113 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C10H10N"
+  ],
+  "motif_id": "indole_or_indoline_ring",
+  "negative_examples": [
+   {
+    "pubchem_cid": 10346314,
+    "smiles": "C=C[C@@H]1[C@@H]2C[C@H]3C4=C(CN3C(=O)C2=CO[C@H]1O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C(=O)C6=CC=CC=C6N4"
+   },
+   {
+    "pubchem_cid": 24360,
+    "smiles": "CC[C@@]1(C2=C(COC1=O)C(=O)N3CC4=CC5=CC=CC=C5N=C4C3=C2)O"
+   }
+  ],
+  "non_claims": [
+   "the skeleton type is not resolved",
+   "monoterpenoid origin rests on the precursor composition list, not on this ion"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 8969,
+    "smiles": "COC(=O)[C@H]1[C@H](CC[C@@H]2[C@@H]1C[C@H]3C4=C(CCN3C2)C5=CC=CC=C5N4)O"
+   },
+   {
+    "pubchem_cid": 6100671,
+    "smiles": "CC[C@H]1[C@@H]2C[C@H]3[C@H]4[C@@]5(C[C@@H]([C@H]2[C@H]5O)N3[C@@H]1O)C6=CC=CC=C6N4C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C10H10N"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19) pending the author: every monoterpene indole alkaloid rule is report-only as the P3 proposal says, and this rule also rests on the single ion C10H10N+, which one source says misassigns other metabolites alone.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "cinchona_quinoline_quinuclidine",
+    "note": "Dihydrocinchonidine (C19H24N2O) and dihydroquinine (C20H26N2O2) have the formulas of antirhine and ajmaline; their quinoline-part ions may share formulas with the indole-part ions (not checked against a source)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_monoterpene_indole_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_monoterpene_indole.indole_c10h10n_only.pos",
+ "source": [
+  {
+   "doi": "10.1021/acs.analchem.9b03860",
+   "locator": "Abstract; Introduction; Results; Figure 1e"
+  },
+  {
+   "doi": "10.1021/acs.analchem.9b03860",
+   "locator": "Introduction"
+  },
+  {
+   "doi": "10.1002/rcm.8037",
+   "locator": "Sec. 3.1-3.2; Scheme 3; Table 1"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C10H10N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "C10H10N+ printed with its 15N shift in src:0 (Figure 1e); base peak of the yohimbine, ajmalicine, ajmaline and catharanthine standards in src:2; src:1 states that this ion alone can misassign other metabolites.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C10H10N",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 draft from LLM-extracted candidates, 2026-11-19 review round)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

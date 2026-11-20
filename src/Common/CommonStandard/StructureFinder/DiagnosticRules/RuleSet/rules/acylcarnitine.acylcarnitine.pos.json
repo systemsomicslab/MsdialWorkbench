@@ -1,0 +1,273 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "ion_c4h5o2",
+   "ion_c7h14no2"
+  ],
+  "motif_id": "carnitine",
+  "negative_examples": [
+   {
+    "pubchem_cid": 160784,
+    "smiles": "C[N+](C)(C)CCOC(=O)CCC(=O)O"
+   },
+   {
+    "pubchem_cid": 725,
+    "smiles": "C[N+](C)(C)CCCC(=O)[O-]"
+   },
+   {
+    "pubchem_cid": 247,
+    "smiles": "C[N+](C)(C)CC(=O)[O-]"
+   },
+   {
+    "pubchem_cid": 187,
+    "smiles": "CC(=O)OCC[N+](C)(C)C"
+   }
+  ],
+  "non_claims": [
+   "The claim ions mark the carnitine moiety; the acyl ester is implied by the precursor composition hypothesis only.",
+   "Acyl chain length, branching and double-bond position are unresolved; chain isomers give the same CID spectra (src:5, src:6).",
+   "Hydroxy, dicarboxylic and conjugated acyl chains are outside this composition series and are not claimed by it."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 7045767,
+    "smiles": "CC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C"
+   },
+   {
+    "pubchem_cid": 11953814,
+    "smiles": "CCCCCCCC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C"
+   },
+   {
+    "pubchem_cid": 11953816,
+    "smiles": "CCCCCCCCCCCCCCCC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_c4h5o2"
+   },
+   {
+    "term": "ion_c7h14no2"
+   },
+   {
+    "term": "ion_c3h10n"
+   },
+   {
+    "term": "loss_c3h9n"
+   },
+   {
+    "not": {
+     "any": [
+      {
+       "term": "veto_loss_nh3"
+      },
+      {
+       "term": "veto_loss_ch5n"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19) pending the author: acylcarnitines are lipid-adjacent and already covered by the MS-DIAL CAR lipid rules (design Q3), so this rule is kept but not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "trimethylammonium",
+    "note": "Betaines (src:9) and choline, N-trimethyllysine and their derivatives (src:1) share C3H10N+, and the C3H9N loss is not class-specific (src:7); succinylmonocholine is isomeric with acetylcarnitine."
+   }
+  ],
+  "composition": {
+   "core": "C7H15NO3",
+   "scaffold_list": "acylcarnitine_fatty_acyl",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Fatty acyl chains C2-C26 are enumerated, inside the C0-C26 acyl-chain range of the targeted method built with 49 acylcarnitine standards.",
+    "source": "src:12"
+   },
+   {
+    "note": "At most min(6, floor((n-1)/2)) C=C bonds for a Cn fatty acyl chain.",
+    "source": "src:11"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylcarnitine.acylcarnitine.pos",
+ "source": [
+  {
+   "doi": "10.1016/j.jpha.2023.10.004",
+   "locator": "Section 3.1 (five co-occurring ions [M]+, [M-59.0735]+, 144.1019, 85.0284, 60.0808; 85.0284 the most intense fragment); Figure 2A (C10:0 fragment assignments)"
+  },
+  {
+   "doi": "10.1021/acs.analchem.0c00129",
+   "locator": "Sec. 3.2, 3.3 item (a), 4.1, 4.3 criteria 1-2; Fig. 1 (four-feature acylcarnitine rule with printed C4H5O2+, C3H10N+ and C7H14NO2+)"
+  },
+  {
+   "doi": "10.1021/acs.analchem.0c00129",
+   "locator": "Sec. 4.3, criterion 3 (P-NH3 or P-CH3NH2 marks an aminopropyl head group, not trimethylamine)"
+  },
+  {
+   "doi": "10.64898/2026.03.27.714844",
+   "locator": "Methods, Design of the MassQL query and creation of the acylcarnitines library; Reanalysis of public datasets from GNPS/MassIVE (floors 85.0284 >= 5 %, 60.0808 and 144.1019 >= 1 %)"
+  },
+  {
+   "doi": "10.3389/fbioe.2015.00026",
+   "locator": "Sec. 3.5 (85.0284 with C3H9N-loss filter; ion-trap CID comparison); Sec. 2.3.6 (6 ppm window); Sec. 3.6 and Fig. 5 (energy dependence); Fig. 2"
+  },
+  {
+   "doi": "10.1007/s00216-025-06234-y",
+   "locator": "Results and discussion, Fragmentation of acylcarnitines in CID and EAD (C3H9N loss, 85.0284, C7H14NO2+ 144.1019; no isomer differentiation by CID)"
+  },
+  {
+   "doi": "10.3390/metabo12010049",
+   "locator": "Section 2.1.3; Figure 7 (85.028 and 60.081 in all acylcarnitines; C5 isomers with identical MS/MS)"
+  },
+  {
+   "doi": "10.1021/ac026073d",
+   "locator": "Results and Discussion, Acylcarnitines (pp. 5803-5804); Table 1 (p. 5801); Spiked and Unspiked Pig Plasma (pp. 5804-5805)"
+  },
+  {
+   "doi": "10.1021/bi047773a",
+   "locator": "Results (pp. 5237-5238); Fig. 2A-C"
+  },
+  {
+   "doi": "10.1002/mas.21942",
+   "locator": "Section 3.1; Section 3.2; Table 2; Table 4"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+  },
+  {
+   "doi": "10.1016/j.jpha.2023.10.004",
+   "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C4H5O2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.05,
+   "note": "Formula printed by src:1; the most intense fragment in src:0 and src:8, but not on the ion trap of src:7, where the C3H9N loss is the most intense product; present in about 5 % of NIST17 HCD spectra (src:1).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c4h5o2",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C7H14NO2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Formula printed by src:1 and src:5; usually below 20 % of the base peak (src:1, src:5) and weak on the ion trap (src:7).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c7h14no2",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C3H10N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Formula printed by src:1; shared with betaines (src:9) and with choline and N-trimethyllysine (src:1), so it is support, not a claim ion.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c3h10n",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:10",
+   "formula": "C3H9N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Loss of N(CH3)3 (src:0); not class-specific (src:7), Table 4 of src:9 lists [M-59]+ fragments of omega-trimethylammonio standards, and it disappears at high collision energy (src:1).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_c3h9n",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:10",
+   "formula": "H3N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Loss of NH3 marks an isobaric aminopropyl head group, not trimethylammonium (src:2).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "veto_present",
+   "term_id": "veto_loss_nh3",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:10",
+   "formula": "CH5N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Loss of CH5N marks an isobaric aminopropyl head group, not trimethylammonium (src:2).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "veto_present",
+   "term_id": "veto_loss_ch5n",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:10",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Acylium [M+H-161]+ after loss of carnitine C7H15NO3 (src:7, Table 1) and RCO+ (src:8, m/z 239 for C16:0); reported, never claimed.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "scaffold_ions": "acylium",
+   "term_id": "upg_acylium",
+   "term_source": "src:7",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (LLM draft, WS8-P3 drafting 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,36 @@
+{
+ "entries": [
+  {
+   "class": "isoflavone",
+   "formula": "C15H10O5",
+   "ions": {
+    "rda_03a": {
+     "neg": [
+      "C7H3O3"
+     ],
+     "pos": []
+    },
+    "rda_03b": {
+     "neg": [
+      "C8H5O2"
+     ],
+     "pos": []
+    }
+   },
+   "name": "genistein",
+   "origin": "as_published",
+   "scaffold_id": "genistein",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.5b01559",
+     "locator": "p. 7379, Flavones and Isoflavones; Fig. 5 (p. 7378)"
+    },
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 4 (p. 500); CID of isoflavones (p. 497)"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_isoflavone_neg"
+}

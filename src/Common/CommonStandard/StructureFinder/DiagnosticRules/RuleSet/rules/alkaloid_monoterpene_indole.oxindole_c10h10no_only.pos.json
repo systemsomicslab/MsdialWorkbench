@@ -1,0 +1,108 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C10H10NO"
+  ],
+  "motif_id": "indole_or_indoline_ring",
+  "negative_examples": [
+   {
+    "pubchem_cid": 10346314,
+    "smiles": "C=C[C@@H]1[C@@H]2C[C@H]3C4=C(CN3C(=O)C2=CO[C@H]1O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C(=O)C6=CC=CC=C6N4"
+   }
+  ],
+  "non_claims": [
+   "oxindole versus hydroxy- or methoxyindole is not resolved",
+   "the skeleton type is not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5281408,
+    "smiles": "CC[C@H]1CN2CC[C@]3([C@@H]2C[C@@H]1/C(=C\\OC)/C(=O)OC)C4=CC=CC=C4NC3=O"
+   },
+   {
+    "pubchem_cid": 44568160,
+    "smiles": "CO/C=C(\\[C@H]1C[C@H]2[C@@]3(CCN2C[C@@H]1C=C)C4=CC=CC=C4NC3=O)/C(=O)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C10H10NO"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19) pending the author: every monoterpene indole alkaloid rule is report-only as the P3 proposal says, and this rule also rests on the single ion C10H10NO+, which is also printed for an indole and for ring-A-substituted indolines.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_monoterpene_indole_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos",
+ "source": [
+  {
+   "doi": "10.1248/cpb.c14-00481",
+   "locator": "Table 2 (peaks 17 and 24)"
+  },
+  {
+   "doi": "10.1248/cpb.c14-00481",
+   "locator": "Table 2 (peak 23)"
+  },
+  {
+   "doi": "10.1002/rcm.4389",
+   "locator": "pp. 297-298, Table 1 (compounds 3 and 4, P33)"
+  },
+  {
+   "doi": "10.1021/acs.analchem.9b03860",
+   "locator": "Conclusion"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "C10H10NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "160.08 is the base peak of corynoxeine and rhynchophylline (src:0, two decimals); src:2 prints C10H10NO+ (P33: 160.0771, 160.0760) for ring-A hydroxy-methoxy aspidospermanes; src:1 lists 160.08 (28 %) for the indole mitragynine; src:3 proposes it as a hydroxyindole filter.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C10H10NO",
+   "term_source": "src:2",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 draft from LLM-extracted candidates, 2026-11-19 review round)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

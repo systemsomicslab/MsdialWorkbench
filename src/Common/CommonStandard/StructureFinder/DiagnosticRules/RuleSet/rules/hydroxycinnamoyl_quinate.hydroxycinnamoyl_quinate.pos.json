@@ -1,0 +1,199 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "na_quinate",
+   "na_quinate_h2o",
+   "na_caffeoyl",
+   "na_feruloyl"
+  ],
+  "motif_id": "hydroxycinnamoyl_quinate",
+  "negative_examples": [
+   {
+    "pubchem_cid": 439514,
+    "smiles": "COC1=C(C=C2C(=C1)C=CC(=O)O2)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281792,
+    "smiles": "C1=CC(=C(C=C1C[C@H](C(=O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "acyl position on quinic acid and cis/trans geometry are unresolved",
+   "only mono-caffeoyl and mono-feruloyl quinates are covered by the source"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 1794427,
+    "smiles": "C1[C@H]([C@H]([C@@H](C[C@@]1(C(=O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280633,
+    "smiles": "C1[C@H]([C@@H]([C@@H](C[C@]1(C(=O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 9798666,
+    "smiles": "C1[C@H](C([C@@H](CC1(C(=O)O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O"
+   },
+   {
+    "pubchem_cid": 9799386,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)O[C@@H]2C[C@@](C[C@H]([C@H]2O)O)(C(=O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "na_quinate"
+     },
+     {
+      "term": "na_quinate_h2o"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "na_caffeoyl"
+     },
+     {
+      "term": "na_feruloyl"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "For sodiated mono-acyl quinates the class is claimed when a sodiated quinic acid ion (215 or 197) and the sodiated ion of the hypothesised acyl are both seen; one standards-based QTOF paper supports it.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+Na]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hydroxycinnamoyl_shikimate",
+    "note": "cinnamoyl esters of a related cyclitol acid"
+   }
+  ],
+  "composition": {
+   "core": "C7H12O6",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "caffeoyl": [
+     0,
+     1
+    ],
+    "feruloyl": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "mono-acyl caffeoyl- and feruloylquinic acids measured as sodiated precursors",
+    "source": "src:0"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.pos",
+ "source": [
+  {
+   "doi": "10.5702/massspectrometry.a0181",
+   "locator": "Table 3; Fig. 2"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:1",
+   "formula": "C7H12NaO6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[quinic acid+Na]+ in all six acylquinic acids",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "na_quinate",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:1",
+   "formula": "C7H10NaO5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[quinic acid-H2O+Na]+ in all six acylquinic acids",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "na_quinate_h2o",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:1",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "sodiated caffeoyl ion",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "na_caffeoyl",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "caffeoyl",
+    "plus": "Na"
+   }
+  },
+  {
+   "floor_source": "src:1",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "sodiated feruloyl ion",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "na_feruloyl",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "feruloyl",
+    "plus": "Na"
+   }
+  }
+ ],
+ "transcribed_by": "Claude (In silico run channel), WS8-P3 draft 2026-11-18 from LLM-extracted candidates-20261118",
+ "version": 1,
+ "veto_excludes_motif": false
+}

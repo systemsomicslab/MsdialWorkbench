@@ -1,0 +1,1033 @@
+{
+ "cases": [
+  {
+   "description": "h* = adenine|Pen1,phosphate1|[M-H]-, precursor at its oracle m/z; one peak per support member: po3:O3P, h2po4:H2O4P, sugar_phosphate:Pen, base_anion:A",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@3",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"b1d712630f01755ae4366f8f5c6595c02c47c222888b1c1c1804acc4be4aa629\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.959054,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":3,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":4.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c1066858b4e5bbdb4761c53476f2326d6ba545eb02b8b6557ab651b55f06ec24"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- without the peaks of required term po3; adenine|Pen1,phosphate1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "h2po4:H2O4P@0",
+       "sugar_phosphate:Pen@2",
+       "base_anion:A@1"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "drop_po3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"d588387b0c72ff925a2376622bcad97e62aa48413f475825b0e9c6871321d0a1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":0,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":2,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":3.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a63a5a83eb8097f655b74ebc552215ff5c73607c16522c881ccc742780c8058e"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- without the peaks of required term h2po4; adenine|Pen1,phosphate1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "sugar_phosphate:Pen@2",
+       "base_anion:A@1"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "drop_h2po4",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"6a542aca7c43950b78414d6a4c80b9e85d1f86db762cffc5ff74cb05cf8cb8cc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,false],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.959054,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":2,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":3.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1c17884a8ce2a6ccbb601a3ee7a60a0ec5aa203949d021fe17df475db4971814"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- without the peaks of required term sugar_phosphate; adenine|Pen1,phosphate1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "drop_sugar_phosphate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"a2c86de9a560814562d942909f1e8a6412d7c4ca7c5be9d8d80ab6b5e401781f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[false,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.959054,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":3.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "aad5a34ae07d22020d846ef06d5848a87c0f03ef07e6a115f507586de59390a5"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- without the peaks of required term base_anion; adenine|Pen1,phosphate1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "drop_base_anion",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"3935d7c573405b525677c582d1e763f0a1b1ff5b723d99b35e9bcc8255994ce9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.959054,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":2,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":3.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5ccf1b3913735c3e2088fcfc8f36d1ad1c2fd421347152f5d5414b084a7e4489"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- without the peaks of every support term under any node 0 (pre-order): po3, h2po4",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "drop_any0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"2a2358dae06b60fe44226f1c22071cbe6798526ba58be692f8fb9d9354e58dde\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d5df47e699d0e9fe4ca8335ca4a1e3525439966191be4f8005171b8f420db684"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- without the peaks of every support term under any node 1 (pre-order): sugar_phosphate, base_anion",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "drop_any1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"3c0255f8d5a88350dd80a5a1d9f6bdf31e15fcace2cee8f9da141def5f6990c5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f0f83b9e41fa75bf9433e95294854309db8e987e82e2313c8f28312339afb8e8"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with po3:O3P moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@3",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.964044",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"3b51f58fa891acdd411070d3482f4b0a4710fd1b181be40e65bfdc2f194a6875\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":63.191,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.964044,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":3,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":4.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f558f790cd0e51d51257e8eae96c7bad37070bed84309b75675cc6ee568c5d51"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with po3:O3P moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@3",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.964064",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"d3bff0161ace7a00e1228e9a86b07f66d5bd407413dd6700a0a10cc69b35aa48\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":3,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":3.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6ba98b48d74c0ab3d6df2be9a7ce9a91b5f30d96b9f060857891a2f503a5e86d"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with po3:O3P moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@3",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.954064",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"d1b282e1b18814cb7b47707233be60ab5603cfc2becf7cdced3f962bc2c1138d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-63.204,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.954064,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":3,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":4.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "31bb12154584467189ecb1f8fc861626c4d2b9b5c8173f4d345613e290af15ff"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with po3:O3P moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@3",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.954044",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"e4c20c878759c608a93f0542184f8ba0f47ada659d86db2d0d9abe43daf78c9c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":3,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":3.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1313cf190651b3c285fa36d6c9aa9586d962bcdce74241fdf919918a2af1d964"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@3",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.065798",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.065798"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"68242186e0f865c60b4ec3b6cc2da592e35932349393068b2bcad732b165e348\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.959054,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":3,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"adenine\",\"score\":4.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.065798,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "974fd268c415041bdef828b0b071a1e71e929ab8e74ad921942809614a8d5523"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.065818",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.065818"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"fa27401d9a45e505f71767fb6c2711ec6385a71160ab1241853320071a70d660\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.065818,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "79c3a628bd1a7a93a17f692d62d21f27cf6addb1d0010a4ae1c43eb974777e88"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@3",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.045818",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.045818"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"688e65dad89d5900228f185a4483a5fa34d51ac76eb66b6a8d0e4bdedee94050\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.959054,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":3,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"adenine\",\"score\":4.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.045818,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "34d905b6904eddc613eaa2b9c1d585e8f54356a4185b87418b0e78a0a6b93172"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.045798",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.045798"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"1a858c6f6540df4cb78ea1d2823c030144338bf7ddb2682c4c19deb8265ba497\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.045798,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b2458881d9a24ae26f08cc8471307a616dfe05a526afdab67cdf63671f8c1abf"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"ecddbb1e7b82c801ce6a5b21e7621eb34f7b72bde49796593c65bb293adc16da\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7789b3d3820401fc7eec4e7b1c53c46e919d3d05be013e9b5b80aaee238d6f1a"
+  },
+  {
+   "description": "the union of the positive spectra of adenine|Pen1,phosphate1|[M-H]- and guanine|dPen1,phosphate1|[M-H]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": "adenine|Pen1,phosphate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "po3:O3P@0",
+       "h2po4:H2O4P@1",
+       "sugar_phosphate:Pen@5",
+       "base_anion:A@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "adenine|Pen1,phosphate1|[M-H]-",
+       "guanine|dPen1,phosphate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "150.042134",
+      "500.0"
+     ],
+     [
+      "195.006399",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"nucleotide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"05a1c65250d4c279f0036b52bcb22ed24cf9f46fd5861cd1d5365359c0f3eb8f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"nucleotide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"adenine|Pen1,phosphate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"adenine|Pen1,phosphate1|[M-H]-\",\"hypothesis_mz\":346.055808,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"O3P\",\"kind\":\"product_ion\",\"member_key\":\"O3P\",\"peak_index\":0,\"peak_mz\":78.959054,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":78.959054,\"term_id\":\"po3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H2O4P\",\"kind\":\"product_ion\",\"member_key\":\"H2O4P\",\"peak_index\":1,\"peak_mz\":96.969619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.969619,\"term_id\":\"h2po4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H8O7P\",\"kind\":\"product_ion\",\"member_key\":\"Pen\",\"peak_index\":5,\"peak_mz\":211.001313,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":211.001313,\"term_id\":\"sugar_phosphate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H4N5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":134.047219,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.047219,\"term_id\":\"base_anion\",\"unit_id\":3}],\"neutral_formula\":\"C10H14N5O7P\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"adenine\",\"score\":4.000000,\"units\":{\"Pen\":1,\"phosphate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"adenine|Pen1,phosphate1|[M-H]-\",\"guanine|dPen1,phosphate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "47a2c1dda78895f0c8867653e2a118037b2aede2e40cb6efa5d7911c54a71655"
+  },
+  {
+   "description": "the positive spectrum of adenine|Pen1,phosphate1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg"
+    ],
+    "outcomes": {
+     "nucleoside_nucleotide.nucleoside_monophosphate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "78.959054",
+      "500.0"
+     ],
+     [
+      "96.969619",
+      "500.0"
+     ],
+     [
+      "134.047219",
+      "500.0"
+     ],
+     [
+      "211.001313",
+      "500.0"
+     ],
+     [
+      "346.055808",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "346.055808"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"input_sha256\":\"b1d712630f01755ae4366f8f5c6595c02c47c222888b1c1c1804acc4be4aa629\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"nucleotide\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"nucleoside_nucleotide.nucleoside_monophosphate.neg\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":346.055808,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"343280699c7c154d7fbefa53ca956225ecc51c250bb6add9d4aa84def0f64321\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "84f0c11cc0b5e377fc8c9af2dc710275debd70c872f2be264fa69a57e62575ee"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

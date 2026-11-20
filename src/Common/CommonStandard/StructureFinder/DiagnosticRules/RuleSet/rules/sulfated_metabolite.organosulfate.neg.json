@@ -1,0 +1,244 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_so3",
+   "hso4",
+   "hso3"
+  ],
+  "motif_id": "organosulfate_monoester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 4765,
+    "smiles": "C1=CC(=CC=C1O)S(=O)(=O)O"
+   },
+   {
+    "pubchem_cid": 6675,
+    "smiles": "C[C@H](CCC(=O)NCCS(=O)(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   },
+   {
+    "pubchem_cid": 12793,
+    "smiles": "C1=CC=C(C=C1)OP(=O)(O)O"
+   },
+   {
+    "pubchem_cid": 7533,
+    "smiles": "C1CCC(CC1)NS(=O)(=O)O"
+   }
+  ],
+  "non_claims": [
+   "Sulfation site (aryl, vinyl or alkyl) and position are not resolved.",
+   "The desulfated parent is not claimed: the scaffold list only gates the precursor m/z.",
+   "The number of sulfate groups is not claimed; only mono-sulfate hypotheses are tried."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 74426,
+    "smiles": "C1=CC=C(C=C1)OS(=O)(=O)O"
+   },
+   {
+    "pubchem_cid": 12594,
+    "smiles": "C[C@]12CC[C@H]3[C@H]([C@@H]1CCC2=O)CC=C4[C@@]3(CC[C@@H](C4)OS(=O)(=O)O)C"
+   },
+   {
+    "pubchem_cid": 4615423,
+    "smiles": "CC1=CC=C(C=C1)OS(=O)(=O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:0",
+   "of": [
+    {
+     "term": "loss_so3"
+    },
+    {
+     "term": "hso4"
+    },
+    {
+     "any": [
+      {
+       "term": "so3_radical"
+      },
+      {
+       "term": "hso3"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "loss_reference": "observed",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): the SO3 radical anion is HSO4- minus OH, so HSO4- with the SO3 radical anion is one parent-daughter channel; the SO3 loss with HSO4- would be two ions.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "c_sulfonic_acid",
+    "note": "Lafaye 2004 reports that sulfonic acids such as taurine-conjugated bile acids do not share the sulfate CID pattern (data not shown)."
+   },
+   {
+    "motif_id": "n_sulfamic_acid",
+    "note": "N-sulfates give an N-specific ion in place of the SO3 radical anion in the one pair reported."
+   },
+   {
+    "motif_id": "organophosphate_monoester",
+    "note": "H2PO4- and the HPO3 loss sit 9.5 mDa from HSO4- and the SO3 loss; the p2 product tolerance and the observed-precursor loss reference keep them apart."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "sulfated_metabolite_parents",
+   "unit_totals": {},
+   "units": {
+    "sulfate": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Only mono-sulfate [M-H]- hypotheses are tried: bis-sulfates ionise mainly as [M-2H]2-, a charge state outside the v1 format.",
+    "source": "src:8"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "sulfated_metabolite.organosulfate.neg",
+ "source": [
+  {
+   "doi": "10.3389/fmolb.2022.829511",
+   "locator": "Results and Discussion: Speciation of Sulfates (p. 7) and Profiling the Hydrolytic Activity of Sulfatases in Pooled Human Urine (p. 10); two or more sulfate-derived fragments counted at a 5 % relative abundance threshold"
+  },
+  {
+   "doi": "10.3389/fmolb.2022.829511",
+   "locator": "Table 1 (Materials and Methods, Data Workflow Pipeline and Processing, p. 4); Results and Discussion, Speciation of Sulfates (p. 7)"
+  },
+  {
+   "doi": "10.1002/jms.635",
+   "locator": "Results and Discussion, opening paragraph and Parameters of CID conditions (p. 657); Fig. 2C (p. 659)"
+  },
+  {
+   "doi": "10.1002/jms.635",
+   "locator": "Identification of the ion at m/z 201 (p. 661); Fig. 5 (p. 661); Fig. 6 (p. 662)"
+  },
+  {
+   "doi": "10.1002/jms.635",
+   "locator": "Application to biological fluids (pp. 658-659)"
+  },
+  {
+   "doi": "10.3390/metabo10100415",
+   "locator": "Section 2.2, Table 1 ([M-H-SO3]- product ions; HSO3-); Section 2.1, Figure 2D"
+  },
+  {
+   "doi": "10.1007/s00216-025-06027-3",
+   "locator": "Results and discussion, Sulfated and non-sulfated phenolic compound annotation; Table 1"
+  },
+  {
+   "doi": "10.1021/acs.analchem.6b03671",
+   "locator": "Results, MS Behavior of Steroid Bis-sulfates, Collision-Induced Dissociation (p. 4); 3.5.1 Presence of Endogenous Bis-sulfates (p. 6); Table 1"
+  },
+  {
+   "doi": "10.1021/acs.analchem.6b03671",
+   "locator": "Results, MS Behavior of Steroid Bis-sulfates, Ionization (p. 4); Table 1"
+  },
+  {
+   "doi": "10.1002/rcm.7286",
+   "locator": "Abstract; Results and Discussion (p. 4); Fig. 2 (p. 2); Fig. 3b (p. 3); Experimental, NCE 27 (p. 4)"
+  },
+  {
+   "doi": "10.3389/fpls.2019.00885",
+   "locator": "Materials and Methods, Mass Spectrometry Analysis; Results, MS Method Development; Supplementary Figure S2"
+  },
+  {
+   "doi": "10.3390/molecules29204888",
+   "locator": "Section 2.1 (Figure 2 discussion; SO3 loss in all synthetic sulfates); Section 3.2 (LC-IT-TOF)"
+  },
+  {
+   "doi": "10.1038/s41592-019-0358-2",
+   "locator": "Fig. 2b; Online Methods, Fragment database querying"
+  },
+  {
+   "doi": "10.1073/pnas.1608041113",
+   "locator": "Results and Discussion, Automatic, Unsupervised, Chemical Substructure Discovery (sulfate Mass2Motif)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:0",
+   "formula": "O3S",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.05,
+   "note": "SO3 79.9568 is lost from the observed precursor, so the HPO3 loss of a phosphate (9.5 mDa heavier) falls outside the product tolerance.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_so3",
+   "term_source": "src:5",
+   "than": null
+  },
+  {
+   "floor_source": "src:0",
+   "formula": "HO4S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.05,
+   "note": "HSO4- 96.9601 lies 9.5 mDa from H2PO4- 96.9696, outside the p2 product tolerance of 5 mDa at this m/z.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "hso4",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:0",
+   "formula": "O3S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.05,
+   "note": "SO3 radical anion 79.9574 (SO3 plus one electron).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "so3_radical",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:0",
+   "formula": "HO3S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.05,
+   "note": "HSO3- 80.9652.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "hso3",
+   "term_source": "src:5",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 drafting from the normalised candidates (candidates-20261118), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

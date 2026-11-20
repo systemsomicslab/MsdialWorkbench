@@ -1,0 +1,55 @@
+{
+ "entries": [
+  {
+   "class": "flavone",
+   "formula": "C15H10O5",
+   "ions": {
+    "rda_13b": {
+     "neg": [
+      "C8H5O"
+     ],
+     "pos": []
+    }
+   },
+   "name": "apigenin",
+   "origin": "as_published",
+   "scaffold_id": "apigenin",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.5b01559",
+     "locator": "p. 7379, Flavones and Isoflavones; Fig. 5 (p. 7378)"
+    },
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 1 (p. 710); Degradation of Flavone Aglycones (pp. 710-712)"
+    },
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 2 (p. 497)"
+    }
+   ]
+  },
+  {
+   "class": "flavone",
+   "formula": "C16H12O5",
+   "ions": {
+    "rda_13b": {
+     "neg": [
+      "C8H5O"
+     ],
+     "pos": []
+    }
+   },
+   "name": "genkwanin",
+   "origin": "as_published",
+   "scaffold_id": "genkwanin",
+   "source": [
+    {
+     "doi": "10.1002/jms.118",
+     "locator": "p. 170, MS/MS of isomeric standard compounds; Table 1 (p. 171); Scheme 2 (p. 172)"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_flavone_neg"
+}

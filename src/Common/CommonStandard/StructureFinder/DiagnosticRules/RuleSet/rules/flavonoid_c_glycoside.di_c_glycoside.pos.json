@@ -1,0 +1,280 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "b2x",
+   "bxc",
+   "b2c",
+   "x02h",
+   "x02p",
+   "x02w"
+  ],
+  "motif_id": "flavonoid_c_glycoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5318767,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC=C(C=C5)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5282155,
+    "smiles": "C1=CC(=CC=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The C-glycosylation position (6-C versus 8-C) is not claimed; the published intensity-ratio criteria for it depend on collision energy and instrument",
+   "Sugar identity (hexose versus pentose), unit counts and the aglycone formula come from the chosen hypothesis and are not claimed",
+   "The aglycone skeleton rests on the precondition's flavonoid formula list, which isobaric non-flavonoid aglycones can share (for example aloe-emodin anthrone, C15H12O4, in aloin); anthrone C-glycosides are listed as a competitor",
+   "That both sugars are C-linked is not claimed; the motif is the class with at least one C-glycosyl unit"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 442664,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C(=C(C(=C3O2)[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O)[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 442615,
+    "smiles": "C1=CC(=C(C=C1C2=CC(=O)C3=C(C(=C(C(=C3O2)[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O)[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 442658,
+    "smiles": "C1[C@@H]([C@@H]([C@H]([C@@H](O1)C2=C3C(=C(C(=C2O)[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O)C(=O)C=C(O3)C5=CC=C(C=C5)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "b2x"
+     },
+     {
+      "term": "bxc"
+     },
+     {
+      "term": "b2c"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "x02h"
+     },
+     {
+      "term": "x02p"
+     },
+     {
+      "term": "x02w"
+     }
+    ]
+   },
+   {
+    "not": {
+     "term": "y0"
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Protonated 6,8-di-C-glycosyl flavones give an aglycone ion carrying residues of both C-sugars (+C4H4O2, +C3H2O or +C2) with a 0,2X+ loss of one C-sugar, with or without water, while Y0 stays weak.",
+ "parameters_origin": "tuned_vs20",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "aryl_o_pyranoside",
+    "note": "Flavonoid O-glycosides share compositions with C-glycosides (apigenin 7-O-glucoside and vitexin are both C21H20O10) and lose whole sugars to a strong Y0."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycones",
+   "unit_totals": {
+    "sugar": [
+     2,
+     2
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     2
+    ],
+    "Pen": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_c_glycoside.di_c_glycoside.pos",
+ "source": [
+  {
+   "doi": "10.1021/jf062431s",
+   "locator": "Results; Figure 5; Table 3 (O1, O2)"
+  },
+  {
+   "doi": "10.1002/rcm.3560",
+   "locator": "pp. 1839-1841 (Results: aglycone ion of C-glycosides; di-C-glycoside in lemon juice); Table 4; Fig. 5"
+  },
+  {
+   "doi": "10.1002/mas.20212",
+   "locator": "Sec. IV.D, p. 8 (schaftoside and isoschaftoside, positive ions)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.3390/molecules29132953",
+   "locator": "Sec. 2.2.1-2.2.2, 2.3.1; Fig. 2; Table 2 (isoshaftoside)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:3",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[(0,2X)(0,2X)]+ = [aglycone+H+C4H4O2]+, 6.6 % at 20 eV and 22.7 % at 40 eV for a 6,8-di-C-glucoside (QqQ); Xb+ under in-source CID",
+   "plus": "C4H4O2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "b2x",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:3",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[(0,2X)(0,1X)]+ = [aglycone+H+C3H2O]+, 71 % for an isoschaftoside standard (QTOF) and the 40 eV base peak of a 6,8-di-C-glucoside (QqQ)",
+   "plus": "C3H2O",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "bxc",
+   "term_source": "src:4",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:3",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[(0,1X)(0,1X)]+ = [aglycone+2C+H]+, 42 % for an isoschaftoside standard (QTOF) and 43.8 % at 40 eV for a 6,8-di-C-glucoside (QqQ)",
+   "plus": "C2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "b2c",
+   "term_source": "src:4",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Xa+, 0,2X+ loss of a C-hexose (C4H8O4, 120) from [M+H]+; also 44 % at 20 eV in a QqQ di-C-glucoside table",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "x02h",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": "C2H2O",
+    "name": "Hex",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "0,2X+ loss of a C-pentose (C3H6O3, 90) from [M+H]+, reported for the C-6-pentosyl isomer of hexosyl-pentosyl di-C-glycosides",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "x02p",
+   "term_source": "src:2",
+   "than": null,
+   "unit": {
+    "minus": "C2H2O",
+    "name": "Pen",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "0,2X+ loss of one C-sugar with water: C4H10O5 (138) for Hex, C3H8O4 (108) for Pen; both printed for an isoschaftoside standard",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "x02w",
+   "term_source": "src:4",
+   "than": null,
+   "unit": {
+    "class": "sugar",
+    "minus": "C2H2O",
+    "plus": "H2O"
+   }
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:3",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Y0 [aglycone+H]+, much weaker in C-glycosides than in O-glycosides and not listed for the di-C-glucoside at 20 or 40 eV",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "veto_stronger_than",
+   "term_id": "y0",
+   "term_source": "src:1",
+   "than": [
+    "b2x",
+    "bxc",
+    "b2c",
+    "x02h",
+    "x02p",
+    "x02w"
+   ]
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting subagent), 2026-11-18, from LLM-extracted candidate records",
+ "version": 1,
+ "veto_excludes_motif": false
+}

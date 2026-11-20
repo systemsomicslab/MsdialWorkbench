@@ -1,0 +1,1048 @@
+{
+ "cases": [
+  {
+   "description": "h* = acacetin|Hex1,HexA1,caffeoyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: acid_anion:caffeoyl, loss_acyl:caffeoyl, loss_acyl_hex:caffeoyl",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"bb4a8cc14780f09a38e4cffff95ea08885f3051467fe35ae0e595062629447c5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ba841942a46d070c180df6c4d0d0c504fdec990a8e09ec0e1f17c3dfa28bb016"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with 2 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"4700ec48a75be55125ee08a89893f22eede4ffc7cc1ec609a71244e008822b52\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "929b8f425d5d6bdca3e488896a6784b64415f0ee92908d1de0e728a892623aac"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with 1 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"62351bd4efd381c366a7b81ac4bc3595ea863ba9f2effe9df6b048e0eb65c32b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ddd62bb263feee5f4d4ff53027e90c2d8700ec63bf3726ab0437b838bf04c083"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with acid_anion:caffeoyl moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.039973",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"7514cf42605dfc7d170595c53ea010324453b672c47dfebd4d4fe16eaaf2b1b8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":27.873,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.039973,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b3c59f9d215aa4a9283df5681594d65e923d6e78fa1e32fc0c8e4220325b999d"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with acid_anion:caffeoyl moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.039993",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"b7f4deb3e8fc1f97dc2d938846a76f3dc7f71884d2315ac4c594057676f9cb40\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f72b31d0dc89f74bb3a8fe34e8b1d890a0ff2f738c88444e8a4c58198d3d9ee6"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with acid_anion:caffeoyl moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.029993",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"3e615442ef34713138e77ae1281098256c94138d9d7602df9490c294613b2ef9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-27.870,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.029993,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "fdd44c0f8690e4ca5684469aeb53a7862b1e8c867a6d8297dd0b30c6303b6dd5"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with acid_anion:caffeoyl moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.029973",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"bdc5b95312b49da1e5e06e69fa12283f56d89b1cab181a600251cc09a571c5a6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "dc14ba8a72fced0727211fce09ab79e018f9de3f466ed3e854581ff2e731272f"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with loss_acyl:caffeoyl moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.15231",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_ppm_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"7f3264992e12275f1f43a021b351b0dcd13d9917b4b4457b61c39180c8435d70\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.006201,\"error_ppm\":9.983,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.152310,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "57bdc2632d2ea1b539ff640dd0ef996f2bdffe513bca7ad5fe633c617dcc0c81"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with loss_acyl:caffeoyl moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.15233",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_ppm_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"9eb259c183be474054b23eeeeffff2ff2439609453f46ec8491dbd4dc6dbefb6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "08568d2530161c7784764d8bc0073e3b982f6584c6cd10e14fd6d7ce68f38208"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with loss_acyl:caffeoyl moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.139907",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_ppm_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"7cb41c1517849311ef4990938011038032cc2c13440a3ee176ef264a06900632\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":-0.006202,\"error_ppm\":-9.985,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.139907,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "73f799b48ba779d72c685eec4e5b7f286c0d188a05a8eafdac349b592d4da921"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with loss_acyl:caffeoyl moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.139887",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tolerance_ppm_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"9b0cc64d494fa99c7bf83422cdda1e8078b1976adaebc5406049e4025e929653\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e252e0027829da57c72a865d9d041183534f2c74a28fae0b52ea4a6d2cb9b9cc"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.103276",
+      "500.0"
+     ],
+     [
+      "621.156099",
+      "500.0"
+     ],
+     [
+      "783.187793",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.187793"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"709c7f48a80f0f15efbb3d57be7effd1c5f7fd4e9080538e1cbd1be91be75584\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.156099,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.156099,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.103276,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.103276,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.187793,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "feef734889299ab61662c8cc489a43b18beeceed8d7424d728ea2e89d1b3a20b"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.103296",
+      "500.0"
+     ],
+     [
+      "621.156119",
+      "500.0"
+     ],
+     [
+      "783.187813",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.187813"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"6f701bc31715a4f2cbe143605326277d1b250a1e335690c9462590ccdaba75d9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.187813,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "443964f148d012146ec507652602d022249f1e2b330b53584e59b61278305258"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@2",
+       "loss_acyl_hex:caffeoyl@1"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.083296",
+      "500.0"
+     ],
+     [
+      "621.136119",
+      "500.0"
+     ],
+     [
+      "783.167813",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.167813"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"4decbaf03a21d7a0d55214114491992b9cc6cee2d486882f59949858847cfeee\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":621.136119,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.136119,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":459.083296,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.083296,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.167813,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1c50a6e7d97ab389bfb65609fff55ec61adf8bb4a20a5988a7910c8195f32d0b"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.083276",
+      "500.0"
+     ],
+     [
+      "621.136099",
+      "500.0"
+     ],
+     [
+      "783.167793",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.167793"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"dce95e7b496a91a277d46ea51a84de2a7db0fdeea89a88b40a645e7c56e6907b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.167793,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c1c7275fa27025eed9cda8c4229defd8ccf9dda8eda648e2126d64ca93f68eee"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"4b9df5d4be2a7f6c4691f084ee3f832821252c69d76077cfe27f437b889c2c90\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "698f20a0cfa76fbaffeca2f6f3bdc2a16470dfd703ff660e236771a34227350f"
+  },
+  {
+   "description": "the union of the positive spectra of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- and apigenin|Hex1,HexA1,feruloyl1|[M-H]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@0",
+       "loss_acyl:caffeoyl@5",
+       "loss_acyl_hex:caffeoyl@2"
+      ],
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "apigenin|Hex1,HexA1,feruloyl1|[M-H]-",
+       "baicalein|Hex1,HexA1,feruloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "galangin|Hex1,HexA1,feruloyl1|[M-H]-",
+       "genistein|Hex1,HexA1,feruloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,caffeoyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "445.077635",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "589.119894",
+      "500.0"
+     ],
+     [
+      "607.130459",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"a1d50cb69ab161144701d64b3e46f4ebac9c97a6e7d3eafdfaf1008233098a7b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":783.177803,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H6O3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":5,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C15H16O8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":459.093286,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093286,\"term_id\":\"loss_acyl_hex\",\"unit_id\":2}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":10,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"apigenin|Hex1,HexA1,feruloyl1|[M-H]-\",\"baicalein|Hex1,HexA1,feruloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,caffeoyl1|[M-H]-\",\"calycosin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"galangin|Hex1,HexA1,feruloyl1|[M-H]-\",\"genistein|Hex1,HexA1,feruloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,caffeoyl1|[M-H]-\",\"glycitein|Hex1,HexA1,caffeoyl1|[M-H]-\",\"wogonin|Hex1,HexA1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "44d8c7a8ae226bc409f3a9cb788959ed5770b755fe0db4f94aaf355d40c9a26f"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,caffeoyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 16,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "459.093286",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "783.177803",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "783.177803"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"input_sha256\":\"bb4a8cc14780f09a38e4cffff95ea08885f3051467fe35ae0e595062629447c5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"observed\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":16,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":783.177803,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ddb40477c86bbd16ef40f39e1cd773450d3b803ff3a84b7f4dbfa5d9f65e89ea\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1ccdc53c08bfe0d28cc02f6776213f5db585c826ca3dbd5374ef2a24ed73d222"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

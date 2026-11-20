@@ -1,0 +1,545 @@
+{
+ "cases": [
+  {
+   "description": "h* = acacetin|prenyl1|[M+H]+, precursor at its oracle m/z; one peak per support member: l56:C4H8",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": "acacetin|prenyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "l56:C4H8@0"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|prenyl1|[M+H]+",
+       "biochanin_a|prenyl1|[M+H]+",
+       "calycosin|prenyl1|[M+H]+",
+       "genkwanin|prenyl1|[M+H]+",
+       "glycitein|prenyl1|[M+H]+",
+       "wogonin|prenyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07575",
+      "500.0"
+     ],
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"c_prenyl_aryl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"a43bddef62c1ab1134dd5a40ded94ad5ab6eb1d31819517868f9431c5216fa75\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"c_prenyl_aryl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|prenyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|prenyl1|[M+H]+\",\"hypothesis_mz\":353.138350,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C4H8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C4H8\",\"peak_index\":0,\"peak_mz\":297.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.075750,\"term_id\":\"l56\",\"unit_id\":0}],\"neutral_formula\":\"C21H20O5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":1.000000,\"units\":{\"prenyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|prenyl1|[M+H]+\",\"biochanin_a|prenyl1|[M+H]+\",\"calycosin|prenyl1|[M+H]+\",\"genkwanin|prenyl1|[M+H]+\",\"glycitein|prenyl1|[M+H]+\",\"wogonin|prenyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8965728b674f5386208b3fee64337d7531a5d44058d3f046afea76f51c683b9c"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ without the peaks of required term l56; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "drop_l56",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":null,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"ef5403f094b045aab20415958c7fed0ceb499c8a3274fcd5ae873bc5074ee4d1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":1,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "de74891c12e65d5b5fd406f5496fc880e494073d7c38293a758cced32d622d69"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with l56:C4H8 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": "acacetin|prenyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "l56:C4H8@0"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|prenyl1|[M+H]+",
+       "biochanin_a|prenyl1|[M+H]+",
+       "calycosin|prenyl1|[M+H]+",
+       "genkwanin|prenyl1|[M+H]+",
+       "glycitein|prenyl1|[M+H]+",
+       "wogonin|prenyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.08074",
+      "500.0"
+     ],
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"c_prenyl_aryl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"41b2951939223bb3f7ac6e1a7a2753b345c4c7e13b366b66a33c2dd6cfda2b73\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"c_prenyl_aryl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|prenyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|prenyl1|[M+H]+\",\"hypothesis_mz\":353.138350,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":16.799,\"ion_formula\":\"C4H8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C4H8\",\"peak_index\":0,\"peak_mz\":297.080740,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.075750,\"term_id\":\"l56\",\"unit_id\":0}],\"neutral_formula\":\"C21H20O5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":1.000000,\"units\":{\"prenyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|prenyl1|[M+H]+\",\"biochanin_a|prenyl1|[M+H]+\",\"calycosin|prenyl1|[M+H]+\",\"genkwanin|prenyl1|[M+H]+\",\"glycitein|prenyl1|[M+H]+\",\"wogonin|prenyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cd11bbe9af768184e8940946a3cf85901a7fae1ca5977d58c961ee2c66a14017"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with l56:C4H8 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.08076",
+      "500.0"
+     ],
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"ffdc3838a774eb8e3bb158cb3a55468035c51a664f365d29252f5d33f9514a85\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6f2a82f806f4699f5aef61b6a6138f52107c0e16547108deacd9cb5a4b5799f5"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with l56:C4H8 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": "acacetin|prenyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "l56:C4H8@0"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|prenyl1|[M+H]+",
+       "biochanin_a|prenyl1|[M+H]+",
+       "calycosin|prenyl1|[M+H]+",
+       "genkwanin|prenyl1|[M+H]+",
+       "glycitein|prenyl1|[M+H]+",
+       "wogonin|prenyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07076",
+      "500.0"
+     ],
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"c_prenyl_aryl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"9e0de166db92663a39d1205d038bc82afe845ef53fb3980522d5d87a00154b66\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"c_prenyl_aryl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|prenyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|prenyl1|[M+H]+\",\"hypothesis_mz\":353.138350,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-16.795,\"ion_formula\":\"C4H8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C4H8\",\"peak_index\":0,\"peak_mz\":297.070760,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.075750,\"term_id\":\"l56\",\"unit_id\":0}],\"neutral_formula\":\"C21H20O5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":1.000000,\"units\":{\"prenyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|prenyl1|[M+H]+\",\"biochanin_a|prenyl1|[M+H]+\",\"calycosin|prenyl1|[M+H]+\",\"genkwanin|prenyl1|[M+H]+\",\"glycitein|prenyl1|[M+H]+\",\"wogonin|prenyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8e24fea7eb168109b7012c9a2a97d1df08d9d910ed042f7146d8802645dd353b"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with l56:C4H8 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07074",
+      "500.0"
+     ],
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"a6ed707efeba6e7c26268463fdf71528c6dab9cbb5f876be54634e2ab7f88a94\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3f6070f93ec6bd7093587dfccb2af286c5cb46d1168edd9b98c3093ac7c8c701"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": "acacetin|prenyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "l56:C4H8@0"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|prenyl1|[M+H]+",
+       "biochanin_a|prenyl1|[M+H]+",
+       "calycosin|prenyl1|[M+H]+",
+       "genkwanin|prenyl1|[M+H]+",
+       "glycitein|prenyl1|[M+H]+",
+       "wogonin|prenyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07575",
+      "500.0"
+     ],
+     [
+      "353.14834",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.14834"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"c_prenyl_aryl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"d757f331f64c690de0b1b8cf69fd609c2a16421ea1430aca788fdc3078cc1058\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"c_prenyl_aryl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|prenyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|prenyl1|[M+H]+\",\"hypothesis_mz\":353.138350,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C4H8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C4H8\",\"peak_index\":0,\"peak_mz\":297.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.075750,\"term_id\":\"l56\",\"unit_id\":0}],\"neutral_formula\":\"C21H20O5\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"acacetin\",\"score\":1.000000,\"units\":{\"prenyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|prenyl1|[M+H]+\",\"biochanin_a|prenyl1|[M+H]+\",\"calycosin|prenyl1|[M+H]+\",\"genkwanin|prenyl1|[M+H]+\",\"glycitein|prenyl1|[M+H]+\",\"wogonin|prenyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.148340,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "613cd8831d09f239f3df583d232812e5d2f36bd06e43dc388b7d3e2d3cf5ddab"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07575",
+      "500.0"
+     ],
+     [
+      "353.14836",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.14836"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"fe7597f76d4212dd48a529955ae7020b8bdeb82db550e4b44f91d4101ffbdcc0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.148360,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b6b338ed03818d88b14a9077325aff96283d47a6a62161185cce1577b86c6622"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": "acacetin|prenyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "l56:C4H8@0"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|prenyl1|[M+H]+",
+       "biochanin_a|prenyl1|[M+H]+",
+       "calycosin|prenyl1|[M+H]+",
+       "genkwanin|prenyl1|[M+H]+",
+       "glycitein|prenyl1|[M+H]+",
+       "wogonin|prenyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07575",
+      "500.0"
+     ],
+     [
+      "353.12836",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.12836"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"c_prenyl_aryl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"cdbd7a1522d33fdc1f447c70094a3702cbce7c44f4570c05d092167b3f85b818\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"c_prenyl_aryl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|prenyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|prenyl1|[M+H]+\",\"hypothesis_mz\":353.138350,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C4H8\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C4H8\",\"peak_index\":0,\"peak_mz\":297.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.075750,\"term_id\":\"l56\",\"unit_id\":0}],\"neutral_formula\":\"C21H20O5\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"acacetin\",\"score\":1.000000,\"units\":{\"prenyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|prenyl1|[M+H]+\",\"biochanin_a|prenyl1|[M+H]+\",\"calycosin|prenyl1|[M+H]+\",\"genkwanin|prenyl1|[M+H]+\",\"glycitein|prenyl1|[M+H]+\",\"wogonin|prenyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.128360,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3e7b5bb3d39b90b47c40e8ed240517ff42f193026be409dd907d04576ec1bc5d"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07575",
+      "500.0"
+     ],
+     [
+      "353.12834",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.12834"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"ccfee5761292fbbd658b44d7de67f3d20751a9550ebab2766f36b540e4bc8cb2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.128340,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "38c1b11851d26de9a87d9c10a33c66ebef407b388f47ce656e58d6f7d258c1c5"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "297.07575",
+      "500.0"
+     ],
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"97d70f0b06ca7c81ad9b5937007a5e13ddbb123cee300ac83155fbbbdc1b1702\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1ef540eec2f2ce0358ca6009f550b34d6b801b15db45482be9377edbf817b056"
+  },
+  {
+   "description": "the positive spectrum of acacetin|prenyl1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "prenylated_flavonoid.c_prenyl.pos"
+    ],
+    "outcomes": {
+     "prenylated_flavonoid.c_prenyl.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.07575",
+      "500.0"
+     ],
+     [
+      "353.13835",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.13835"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"input_sha256\":\"a43bddef62c1ab1134dd5a40ded94ad5ab6eb1d31819517868f9431c5216fa75\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"c_prenyl_aryl\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"prenylated_flavonoid.c_prenyl.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.138350,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6036baee3ca1e533e5f8b10c1a91242821adb7855abedfecccd5c3e89f07af6a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5030ae8420f36867c22b011faf51f95263f4828b5ee5ff2aaed409aa5c9c1991"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

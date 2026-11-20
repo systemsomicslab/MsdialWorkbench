@@ -1,0 +1,178 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "C8H12NO_138"
+  ],
+  "motif_id": "pyrrolizidine_retronecine_type",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5281752,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OC/C/2=C/CN(CC[C@H](C2=O)OC1=O)C)(C)O)C"
+   },
+   {
+    "pubchem_cid": 163184402,
+    "smiles": "C/C=C\\1/C[C@H]([C@](C(=O)OC[C@H]2CC[N+]3([C@H]2[C@@H](CC3)OC1=O)[O-])(C)O)C"
+   }
+  ],
+  "non_claims": [
+   "retronecine versus heliotridine (C-7 epimers) is not resolved",
+   "free base versus N-oxide is not resolved by these two ions",
+   "the ester type (monoester, open-chain or macrocyclic diester) and the necic acid are not resolved",
+   "a saturated necine N-oxide is not excluded: platyphylline N-oxide also gave 120 and 138 (Ruan 2012), so a fire together with the platynecine rule is a conflict, not a claim",
+   "the motif also covers crotanecine-type (C-6 oxygenated) necines, which no cited source tested for 120 and 138"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280906,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CCN3[C@H]2[C@@H](CC3)OC1=O)(C)O)C"
+   },
+   {
+    "pubchem_cid": 107938,
+    "smiles": "C[C@@H]([C@@](C(C)C)(C(=O)OCC1=CCN2[C@H]1[C@@H](CC2)O)O)O"
+   },
+   {
+    "pubchem_cid": 906426,
+    "smiles": "C[C@H]([C@@](C(C)C)(C(=O)OCC1=CCN2[C@H]1[C@H](CC2)O)O)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "C8H10N_120"
+   },
+   {
+    "term": "C8H12NO_138"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): C8H10N+ (120) is the H2O daughter of C8H12NO+ (138), so the two claim ions are one parent-daughter channel and one independent claim ion remains.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "pyrrolizidine_otonecine_type",
+    "note": "otonecine-type PAs give 168 and 150 (and 122) instead of 120 and 138 (These 2013, Lin 1998)"
+   },
+   {
+    "motif_id": "pyrrolizidine_platynecine_type",
+    "note": "a synthesized platyphylline N-oxide gave 120/122 and 138/140 ion clusters (Ruan 2012 Fig. 2 E1), so this rule fires on platynecine-type N-oxides; benchmark this negative explicitly"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_pyrrolizidine_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_pyrrolizidine.retronecine_type.pos",
+ "source": [
+  {
+   "doi": "10.1007/s00216-013-7365-4",
+   "locator": "Results, pp. 9378-9379; Fig. 2a, 2c, 2e (p. 9377); Table 1 (p. 9378)"
+  },
+  {
+   "doi": "10.1016/j.foodchem.2014.11.093",
+   "locator": "Sec. 2.3 (p. 1322); Sec. 3.1 (pp. 1322-1323); Fig. 2A-G caption (p. 1323)"
+  },
+  {
+   "doi": "10.1002/jms.2969",
+   "locator": "Introduction (p. 332, ref. 20); Results (pp. 333-334); Fig. 2 A2-D2 (p. 333)"
+  },
+  {
+   "doi": "10.1016/j.foodchem.2015.01.053",
+   "locator": "Sec. 3.3 (pp. 142-144); Table 3 (p. 146)"
+  },
+  {
+   "doi": "10.1002/rcm.7276",
+   "locator": "Table 2 (p. 1736)"
+  },
+  {
+   "doi": "10.1002/pca.2683",
+   "locator": "Results (pp. 367-369); Table 1 (p. 368)"
+  },
+  {
+   "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+   "locator": "Results (p. 1447); Table 1 (p. 1448)"
+  },
+  {
+   "doi": "10.1002/jssc.201400314",
+   "locator": "Sec. 2.2 (p. 2033); Sec. 3.1 (p. 2035); Fig. 2 caption (p. 2035)"
+  },
+  {
+   "doi": "10.1101/2020.08.23.260091",
+   "locator": "Sec. 1.2, 2.1, 2.2, 2.9, 4.4 (bioRxiv preprint; the journal version, doi 10.1016/j.phytochem.2021.112662, is not open access and was not checked)"
+  },
+  {
+   "doi": "10.20450/mjcce.2022.2491",
+   "locator": "Abstract (p. 99); Results and Discussion (p. 102); Tables 1-2"
+  },
+  {
+   "doi": "10.1155/2021/1957863",
+   "locator": "Sec. 3.2, 3.3; Table 1"
+  },
+  {
+   "doi": "10.1007/s11306-026-02492-8",
+   "locator": "Abstract; Results, dereplication of PA derivatives; Table 2"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:12",
+   "formula": "C8H10N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H10N_120",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:12",
+   "formula": "C8H12NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H12NO_138",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

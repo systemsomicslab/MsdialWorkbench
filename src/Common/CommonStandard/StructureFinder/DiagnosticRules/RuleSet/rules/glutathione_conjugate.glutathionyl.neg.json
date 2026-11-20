@@ -1,0 +1,141 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "gsh_C10H14N3O6"
+  ],
+  "motif_id": "glutathione_tripeptide",
+  "negative_examples": [
+   {
+    "pubchem_cid": 123938,
+    "smiles": "C(CC(=O)N[C@@H](CS)C(=O)O)[C@@H](C(=O)O)N"
+   },
+   {
+    "pubchem_cid": 439498,
+    "smiles": "C([C@@H](C(=O)NCC(=O)O)N)S"
+   },
+   {
+    "pubchem_cid": 108218,
+    "smiles": "CC(=O)N[C@@H](CSC(=O)NC)C(=O)O"
+   }
+  ],
+  "non_claims": [
+   "whether and how the cysteine sulfur is substituted (thiol, disulfide, thioether, thioester) is decided by the precursor composition, not by these two ions",
+   "the conjugated xenobiotic and the conjugation site are not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 83998,
+    "smiles": "CC(=O)NC1=CC(=C(C=C1)O)SC[C@@H](C(=O)NCC(=O)O)NC(=O)CC[C@@H](C(=O)O)N"
+   },
+   {
+    "pubchem_cid": 97535,
+    "smiles": "C1=CC(=C(C=C1[N+](=O)[O-])[N+](=O)[O-])SC[C@@H](C(=O)NCC(=O)O)NC(=O)CC[C@@H](C(=O)O)N"
+   },
+   {
+    "pubchem_cid": 65359,
+    "smiles": "C(CC(=O)N[C@@H](CSSC[C@@H](C(=O)NCC(=O)O)NC(=O)CC[C@@H](C(=O)O)N)C(=O)NCC(=O)O)[C@@H](C(=O)O)N"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "gsh_C10H14N3O6"
+   },
+   {
+    "term": "gsh_C10H12N3O5"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): the glutathionyl anion 254 is 272 minus H2O, so the required pair is one parent-daughter channel and one independent claim ion remains.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "gamma_glutamyl_amide",
+    "note": "gamma-glutamyl peptides and gamma-Glu-Cys conjugates lack the cysteinyl-glycine part that the 272 and 254 anions contain"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_glutathione_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "glutathione_conjugate.glutathionyl.neg",
+ "source": [
+  {
+   "doi": "10.1021/tx049741u",
+   "locator": "Abstract (p. 630); Results 1-5 (pp. 633-635); Figure 1 (p. 632); Figure 2D (p. 636)"
+  },
+  {
+   "doi": "10.1021/tx049741u",
+   "locator": "Results 1. GSH (p. 633); Scheme 1 (p. 634); Figure 1 (p. 632)"
+  },
+  {
+   "doi": "10.1002/rcm.3458",
+   "locator": "Abstract (p. 1032); Results (pp. 1034-1037); Figures 2-4 (pp. 1035-1036)"
+  },
+  {
+   "doi": "10.1002/rcm.3458",
+   "locator": "Results, Reduction in false positive results (pp. 1037-1039); Figures 5-7 (pp. 1037-1038)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "C10H14N3O6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "272.0888, deprotonated gamma-Glu-dehydroalanyl-Gly; also src:2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "gsh_C10H14N3O6",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C10H12N3O5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "254.0782, 272 minus water; also src:1; a 272 response without it was a false positive in src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "gsh_C10H12N3O5",
+   "term_source": "src:2",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,126 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_phenol",
+   "loss_methylenecyclohexadienone"
+  ],
+  "motif_id": "stilbenoid_oligomer",
+  "negative_examples": [
+   {
+    "pubchem_cid": 445154,
+    "smiles": "C1=CC(=CC=C1/C=C/C2=CC(=CC(=C2)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The oligomer skeleton (viniferin, pallidol or ampelopsin type) and the linkages are not resolved",
+   "The degree of polymerisation is decided by the precursor composition"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5281728,
+    "smiles": "C1=CC(=CC=C1/C=C/C2=C3[C@H]([C@@H](OC3=CC(=C2)O)C4=CC=C(C=C4)O)C5=CC(=CC(=C5)O)O)O"
+   },
+   {
+    "pubchem_cid": 484757,
+    "smiles": "C1=CC(=CC=C1[C@H]2[C@H]3[C@H]([C@@H](C4=C3C=C(C=C4O)O)C5=CC=C(C=C5)O)C6=C2C(=CC(=C6)O)O)O"
+   },
+   {
+    "pubchem_cid": 44334030,
+    "smiles": "C1=CC(=CC=C1[C@H]2[C@@H](C3=C4[C@H]([C@@H](OC4=CC(=C3)O)C5=CC=C(C=C5)O)C6=C2C(=CC(=C6)O)O)[C@H]7[C@@H](C8=C(C=C(C=C8O)O)[C@H]9[C@@H](OC1=CC(=CC7=C91)O)C1=CC=C(C=C1)O)C1=CC=C(C=C1)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_phenol"
+   },
+   {
+    "term": "loss_methylenecyclohexadienone"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Resveratrol oligomer [M-H]-: phenol (94) and C7H6O (106) losses from the precursor in dimers and trimers (Zhang 2019; Besrukow 2026 with standards; Goufo 2020); among tetramers only vitisin B lists both (Goufo 2020).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "phenolics_other_resveratrol_oligomers",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "phenolics_other.stilbenoid_oligomer.neg",
+ "source": [
+  {
+   "doi": "10.1007/s13659-019-0212-3",
+   "locator": "Zhang 2019: Results, negative-mode MSn of (-)-7,8-cis-epsilon-viniferin (1), suffruticosol A (3) and C (4) (MS2 453 to 359, 347; 679 to 585, 573); Conclusion"
+  },
+  {
+   "doi": "10.1002/rcm.70074",
+   "locator": "Besrukow 2026: Section 3.2 ((E)-ampelopsin A, (E)-epsilon-viniferin); Table 1 rows E0 (469 to 375, 363) and F0 (453 to 347)"
+  },
+  {
+   "doi": "10.3390/antiox9050398",
+   "locator": "Goufo 2020: Table 2 IDs 131, 132, 134, 141, 149, 152 (dimers), 139, 140, 143 (trimers) and 150 (tetramer) list both losses; IDs 116, 130, 142, 144 and other tetramers only the phenol loss"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C6H6O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "phenol loss C6H6O 94 (453 to 359, Zhang 2019; 469 to 375, Besrukow 2026; 679 to 585)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_phenol",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C7H6O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "C7H6O loss 106 (453 to 347; 469 to 363; 679 to 573; Zhang 2019; Besrukow 2026)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_methylenecyclohexadienone",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

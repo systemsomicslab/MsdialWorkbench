@@ -1,0 +1,198 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "C8H14NO3_172"
+  ],
+  "motif_id": "pyrrolizidine_retronecine_n_oxide",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5281743,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CCN3[C@H]2[C@@H](CC3)OC1=O)(CO)O)C"
+   },
+   {
+    "pubchem_cid": 5281744,
+    "smiles": "C/C=C\\1/CC(=C)[C@@](C(=O)OCC2=CCN3[C@H]2[C@@H](CC3)OC1=O)(CO)O"
+   },
+   {
+    "pubchem_cid": 5281720,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CCN3[C@H]2[C@@H]([C@@H](C3)O)OC1=O)(C)O)C"
+   }
+  ],
+  "non_claims": [
+   "diester versus monoester N-oxide is shown only by the branch that fires and is not claimed",
+   "retronecine versus heliotridine (C-7 epimers) is not resolved",
+   "the necic acid is not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5380876,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CC[N+]3([C@H]2[C@@H](CC3)OC1=O)[O-])(C)O)C"
+   },
+   {
+    "pubchem_cid": 340067,
+    "smiles": "C[C@@H]([C@@](C(C)C)(C(=O)OCC1=CC[N+]2([C@H]1[C@@H](CC2)O)[O-])O)O"
+   },
+   {
+    "pubchem_cid": 76972338,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CC[N@@+]3([C@H]2[C@@H](CC3)OC1=O)[O-])(CO)O)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "any": [
+   {
+    "all": [
+     {
+      "term": "C8H8N_118"
+     },
+     {
+      "term": "C8H10NO_136"
+     }
+    ]
+   },
+   {
+    "all": [
+     {
+      "term": "C8H14NO3_172"
+     },
+     {
+      "term": "C8H10NO_136"
+     },
+     {
+      "term": "C8H12NO_138"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): 136 is 172 minus 2 H2O and 118 is 136 minus H2O, so both branches can claim on one parent-daughter channel and only C8H14NO3+ (172) remains a claim ion.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "pyrrolizidine_retronecine_type",
+    "note": "free bases share the precursor windows (retrorsine with senecionine N-oxide); Jahouh 2015 Table 2 lists 118 and 136 for protonated retrorsine at CE 40 eV and These 2013 Table 1 gives cyclic diesters a weak 136, so the 118/136 branch can fire on free macrocyclic diesters"
+   },
+   {
+    "motif_id": "pyrrolizidine_crotanecine_type",
+    "note": "inference, not from a source: the crotanecine core (C8H13NO3) is isomeric with retronecine N-oxide, so diesters such as anacrotine (C18H25NO6, inside the pa_c18h25no6 window) would by analogy give 136 and 118; no cited source tested a crotanecine-type PA"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_pyrrolizidine_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_pyrrolizidine.retronecine_n_oxide.pos",
+ "source": [
+  {
+   "doi": "10.1007/s00216-013-7365-4",
+   "locator": "Results (p. 9379); Fig. 2b, 2d, 2f (p. 9377); Fig. 3 caption (p. 9379); Table 1 (p. 9378)"
+  },
+  {
+   "doi": "10.1002/jms.2969",
+   "locator": "Abstract (p. 331); Results (pp. 333-335); Fig. 2 A1-D1 (p. 333)"
+  },
+  {
+   "doi": "10.1016/j.foodchem.2015.01.053",
+   "locator": "Sec. 3.3 (p. 143); Table 3 (p. 146)"
+  },
+  {
+   "doi": "10.1002/jssc.201400314",
+   "locator": "Table 1 (p. 2036), compounds 1-4, 7, 8"
+  },
+  {
+   "doi": "10.20450/mjcce.2022.2491",
+   "locator": "Abstract (p. 99); p. 107; Tables 1-2"
+  },
+  {
+   "doi": "10.1002/rcm.7276",
+   "locator": "Table 2 (p. 1736); Table 4 (p. 1740)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "formula": "C8H8N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H8N_118",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C8H10NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H10NO_136",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C8H14NO3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "formula not printed; assigned from the accurate masses 172.0959-172.0964 in Avula 2015 Table 3 (calc 172.0968); These 2013 and Ruan 2012 give nominal m/z",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H14NO3_172",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C8H12NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H12NO_138",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

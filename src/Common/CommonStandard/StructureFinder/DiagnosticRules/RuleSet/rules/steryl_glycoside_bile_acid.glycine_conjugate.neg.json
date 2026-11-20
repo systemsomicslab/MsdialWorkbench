@@ -1,0 +1,118 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "glycinate"
+  ],
+  "motif_id": "glycine_conjugate",
+  "negative_examples": [
+   {
+    "pubchem_cid": 6675,
+    "smiles": "C[C@H](CCC(=O)NCCS(=O)(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   },
+   {
+    "pubchem_cid": 221493,
+    "smiles": "C[C@H](CCC(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   }
+  ],
+  "non_claims": [
+   "The steroid core comes from the precursor composition only."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 10140,
+    "smiles": "C[C@H](CCC(=O)NCC(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   },
+   {
+    "pubchem_cid": 115245,
+    "smiles": "C[C@H](CCC(=O)NCC(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC[C@H]4[C@@]3(CC[C@H](C4)O)C)C"
+   },
+   {
+    "pubchem_cid": 12544,
+    "smiles": "C[C@H](CCC(=O)NCC(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "term": "glycinate"
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Only one usable ion is reported, glycinate C2H4NO2- at m/z 74.0248; the CO2 loss seen at higher energy is a generic loss, so the rule stays unmeasured until a second glycine-specific ion is sourced.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "steryl_glycoside_bile_acid_c24_bile_acids",
+   "unit_totals": {},
+   "units": {
+    "Gly": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "steryl_glycoside_bile_acid.glycine_conjugate.neg",
+ "source": [
+  {
+   "doi": "10.1021/acs.analchem.6b00573",
+   "locator": "Results, Fragmentation mechanisms of glycine-conjugated and taurine-conjugated BAs"
+  },
+  {
+   "doi": "10.1016/j.steroids.2011.11.008",
+   "locator": "Sec. 3.2; Figure 2 D1-F1"
+  },
+  {
+   "doi": "10.1021/acs.analchem.1c05648",
+   "locator": "Introduction; Results, Investigation of MS/MS Fragmentation Pattern of Bile Acids; Figure 2; Figure 5a"
+  },
+  {
+   "doi": "10.1194/jlr.r001941-jlr200",
+   "locator": "Direct infusion ESI-MS section; Fig. 3"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "C2H4NO2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "glycinate",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 rule drafting from the normalised candidates (2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

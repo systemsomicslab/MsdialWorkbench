@@ -1,0 +1,1023 @@
+{
+ "cases": [
+  {
+   "description": "h* = boldine||[M+H]+, precursor at its oracle m/z; one peak per support member: loss_ch5n:CH5N, loss_ch5n_ch4o:C2H9NO, loss_ch5n_ch2o:C2H7NO, loss_ch5n_ch3:C2H8N, loss_ch5n_ch3o:C2H8NO",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@4",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch2o:C2H7NO@2",
+       "loss_ch5n_ch3:C2H8N@3",
+       "loss_ch5n_ch3o:C2H8NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"91f06e4434ff12e25ef02ed12344808f2796a01d1abd9ddce0c3879675feec4d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":4,\"peak_mz\":297.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":2,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":3,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":1,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"boldine\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d50b5876ad827c0a7fd58d6973218de8f9c913190b9c82860d528943f2ab588b"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ without the peaks of required term loss_ch5n; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "drop_loss_ch5n",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"0091d3992a9b1831b99b48535b1c94aea6b84809e55e08ce4b3841f00611199f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "21ed75b52fed4698175e066d264ac83d745b8d7effde0d31c47ac1faf119ae97"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ without the peaks of required term loss_ch5n_ch4o; boldine||[M+H]+ still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@3",
+       "loss_ch5n_ch2o:C2H7NO@1",
+       "loss_ch5n_ch3:C2H8N@2",
+       "loss_ch5n_ch3o:C2H8NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "drop_loss_ch5n_ch4o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"3ea7da2d217df4067ad3577eab16bfc6bae3739e646f580324ba1135c64f6641\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":3,\"peak_mz\":297.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":1,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":2,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":0,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"boldine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e0f78d0ef691d279f431e1350d3f75153d29e33a182096dbaeb76376b2152945"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ without the peaks of required term loss_ch5n_ch2o; boldine||[M+H]+ still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@3",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch3:C2H8N@2",
+       "loss_ch5n_ch3o:C2H8NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "drop_loss_ch5n_ch2o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"c923b8f75afa2e01e9a64b4fe9af25074343a7545c2db1294e1a00da9a5b95c3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":3,\"peak_mz\":297.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":2,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":1,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"boldine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "354b3cc54bb8c9dafee3e65aced52400fe39134dda2d3e08912dfea5a7afa5f1"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ without the peaks of required term loss_ch5n_ch3; boldine||[M+H]+ still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@3",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch2o:C2H7NO@2",
+       "loss_ch5n_ch3o:C2H8NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "drop_loss_ch5n_ch3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"e7b2d7f5f85c7744d898a7b5cb27ca7ccdd56f344dc81b46b5b25d0516b0eaf9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,false,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":3,\"peak_mz\":297.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":2,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":1,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"boldine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "52651f2136514655e69b37474025fb1517dc911250b0b7c0b8aa63806d9d99a4"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ without the peaks of required term loss_ch5n_ch3o; boldine||[M+H]+ still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@3",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch2o:C2H7NO@1",
+       "loss_ch5n_ch3:C2H8N@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "drop_loss_ch5n_ch3o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"fd0c07c8ee09f5cf5189220e16e6db8fb0497f406ef07bc1f6b705920c913a5a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":3,\"peak_mz\":297.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":1,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":2,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"boldine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e94c619c989a3919251e55a1f5a11c54e1d3baeb299f9ce3291aef847696cddf"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ without the peaks of every support term under any node 0 (pre-order): loss_ch5n_ch4o, loss_ch5n_ch2o, loss_ch5n_ch3, loss_ch5n_ch3o",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "drop_any0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"67cd45deb78512ed5ca2a83c6bb0332e6d2d645b3c13d2586d2252894e0406e5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1814bdba77305a89f56a1d02f17e905ec0f3dd3d570def640460cb2b50880043"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with loss_ch5n:CH5N moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@4",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch2o:C2H7NO@2",
+       "loss_ch5n_ch3:C2H8N@3",
+       "loss_ch5n_ch3o:C2H8NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.117125",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"20387367d415fe6499c60594da0ee22dbbb454d74f6dd2195a5097f659e8938f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":16.795,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":4,\"peak_mz\":297.117125,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":2,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":3,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":1,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"boldine\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bcef10b6d26e4628f8a3deae91cb7947d3686588a830ebec7adafc9d48b03cce"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with loss_ch5n:CH5N moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.117145",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"eb72d27368e84f3f4ab1e87a66141d11fa45890a0a72141162b22f59af0ec0fd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "37912286a3359d28cce221fa49f16f3ba189255844c87997c6d24186e44e000b"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with loss_ch5n:CH5N moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@4",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch2o:C2H7NO@2",
+       "loss_ch5n_ch3:C2H8N@3",
+       "loss_ch5n_ch3o:C2H8NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.107145",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"32fd6af46e2b79e8c558f5037dbb4861f39ffbb2016705e4b34c08e224874d9f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-16.795,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":4,\"peak_mz\":297.107145,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":2,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":3,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":1,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"boldine\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3a0a9f6492e0d38457e25c5b9d951790efaab882c9f79883a15bc514c46876a6"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with loss_ch5n:CH5N moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.107125",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"a612b8e2a18e460d882f2eaae46736be9f6515b52c7591d64e21b4295d23d225\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9d8fcb76a3c38f473e6c2733ecf366b64fc25c2501c2a978fb5cd025bbdef8d1"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@4",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch2o:C2H7NO@2",
+       "loss_ch5n_ch3:C2H8N@3",
+       "loss_ch5n_ch3o:C2H8NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.164324",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.164324"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"41373a8fda03030df1ddab966ebb3ae05a32b200ae3e7a02d9537646240ae634\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":4,\"peak_mz\":297.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":2,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":3,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":1,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"boldine\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.164324,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cc5501b1353b755a92b2c41a3ae4d23aababeec78702e865541b4eeb4111396d"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.164344",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.164344"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"a4c11706239ccf9b849b98825c31cabaf07e8c8aec7ac6f421ddb0a73f0532d4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.164344,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a660d87cd21dd3947f6323c56da4b16e68f1a6d4f978ba30ff9fe274d61525ab"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": "boldine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_ch5n:CH5N@4",
+       "loss_ch5n_ch4o:C2H9NO@0",
+       "loss_ch5n_ch2o:C2H7NO@2",
+       "loss_ch5n_ch3:C2H8N@3",
+       "loss_ch5n_ch3o:C2H8NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "boldine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.144344",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.144344"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"aporphine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"3d34a7f8c5d9f1ed705ad41c1b622b6bc2fdbb35dca6643c9fa1c5bed4a388e1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"aporphine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"boldine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"boldine||[M+H]+\",\"hypothesis_mz\":328.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":4,\"peak_mz\":297.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":297.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H9NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H9NO\",\"peak_index\":0,\"peak_mz\":265.085920,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":265.085920,\"term_id\":\"loss_ch5n_ch4o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H7NO\",\"peak_index\":2,\"peak_mz\":267.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":267.101570,\"term_id\":\"loss_ch5n_ch2o\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H8N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8N\",\"peak_index\":3,\"peak_mz\":282.088660,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":282.088660,\"term_id\":\"loss_ch5n_ch3\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H8NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H8NO\",\"peak_index\":1,\"peak_mz\":266.093745,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":266.093745,\"term_id\":\"loss_ch5n_ch3o\",\"unit_id\":4}],\"neutral_formula\":\"C19H21NO4\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"boldine\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"boldine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.144344,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "21368b1cf4c543d6aca541225b2f7f75faacd248bb514a330a8674d41ef22721"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.144324",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.144324"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"4e33bc98f5c07f0dce10da54f1eab56907f716c5b0b2b1f5af71d029b4b70406\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.144324,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "11fc73993ad663b9d56db4f82abba7e5d0372416b387dd9a16384bb3f51f20fa"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"9a315bf6fdbfa4328975be892673d3288eaadd3b787a4d62620428a09474f5e0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "536b9e3e5f33d00418e9c1684c5c6fb4b50a89ab223770e65578cd37f942100c"
+  },
+  {
+   "description": "the positive spectrum of boldine||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.aporphine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.aporphine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "265.08592",
+      "500.0"
+     ],
+     [
+      "266.093745",
+      "500.0"
+     ],
+     [
+      "267.10157",
+      "500.0"
+     ],
+     [
+      "282.08866",
+      "500.0"
+     ],
+     [
+      "297.112135",
+      "500.0"
+     ],
+     [
+      "328.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "328.154334"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"input_sha256\":\"91f06e4434ff12e25ef02ed12344808f2796a01d1abd9ddce0c3879675feec4d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"aporphine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.aporphine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":328.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"b3f82226d816e71acd79e94be9b35734d78e14b73e090024ed85f5f7a4ab28b7\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b863f5e722b444b7844701900cc82e89fc19dd2b786c466f32866b8c841dad26"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

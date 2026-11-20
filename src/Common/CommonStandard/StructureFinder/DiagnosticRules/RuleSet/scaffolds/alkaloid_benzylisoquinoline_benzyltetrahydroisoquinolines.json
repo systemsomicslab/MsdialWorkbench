@@ -1,0 +1,257 @@
+{
+ "entries": [
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C16H17NO4",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C7H7O2"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C9H10NO2"
+     ]
+    }
+   },
+   "name": "norlaudanosoline",
+   "origin": "as_published",
+   "scaffold_id": "norlaudanosoline",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Results, pp. 329-331; Table 1 (p. 328); Scheme 1 (p. 329)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 18519 (norlaudanosoline), compound record"
+    }
+   ]
+  },
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C17H19NO4",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C7H7O2"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C10H12NO2"
+     ]
+    }
+   },
+   "name": "laudanosoline (6-O-methylnorlaudanosoline shares the formula and ions b, e)",
+   "origin": "as_published",
+   "scaffold_id": "laudanosoline",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Results, pp. 329-331; Table 1 (p. 328); Scheme 1 (p. 329)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 92716 (laudanosoline), compound record"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 182440 (6-O-methylnorlaudanosoline), compound record"
+    }
+   ]
+  },
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C18H21NO4",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C8H9O2"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C10H12NO2"
+     ]
+    }
+   },
+   "name": "norreticuline",
+   "origin": "as_published",
+   "scaffold_id": "norreticuline",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Results, pp. 329-331; Table 1 (p. 328); Scheme 1 (p. 329)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 443766 (norreticuline), compound record"
+    }
+   ]
+  },
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C18H21NO4",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C7H7O2"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C11H14NO2"
+     ]
+    }
+   },
+   "name": "N-methyl-3'-hydroxycoclaurine",
+   "origin": "as_published",
+   "scaffold_id": "n_methyl_3_hydroxycoclaurine",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Results, pp. 329-331; Table 1 (p. 328); Scheme 1 (p. 329)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 5117623 (N-methyl-3'-hydroxycoclaurine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C19H23NO4",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C8H9O2"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C11H14NO2"
+     ]
+    }
+   },
+   "name": "reticuline",
+   "origin": "as_published",
+   "scaffold_id": "reticuline",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Results, pp. 329-331; Table 1 (p. 328); Scheme 1 (p. 329); Figs. 1-2 (p. 327)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 439653 (reticuline), compound record"
+    }
+   ]
+  },
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C16H17NO3",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C7H7O"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C9H10NO2"
+     ]
+    }
+   },
+   "name": "norcoclaurine",
+   "origin": "as_published",
+   "scaffold_id": "norcoclaurine",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Table 1 (p. 328; coclaurine type: b at 2-5 %, e dominant); Results, p. 331"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 114840 (norcoclaurine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C17H19NO3",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C7H7O"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C10H12NO2"
+     ]
+    }
+   },
+   "name": "coclaurine",
+   "origin": "as_published",
+   "scaffold_id": "coclaurine",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Table 1 (p. 328; coclaurine type: b at 2-5 %, e dominant); Results, p. 331"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 160487 (coclaurine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "benzyltetrahydroisoquinoline",
+   "formula": "C18H21NO3",
+   "ions": {
+    "benzyl_e": {
+     "neg": [],
+     "pos": [
+      "C7H7O"
+     ]
+    },
+    "isoquinoline_b": {
+     "neg": [],
+     "pos": [
+      "C11H14NO2"
+     ]
+    }
+   },
+   "name": "N-methylcoclaurine",
+   "origin": "as_published",
+   "scaffold_id": "n_methylcoclaurine",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Table 1 (p. 328; coclaurine type: b at 2-5 %, e dominant); Results, p. 331"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 440584 (N-methylcoclaurine), compound record"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_benzylisoquinoline_benzyltetrahydroisoquinolines"
+}

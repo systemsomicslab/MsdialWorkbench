@@ -1,0 +1,71 @@
+{
+ "entries": [
+  {
+   "class": "diamine",
+   "formula": "C4H12N2",
+   "ions": {},
+   "name": "putrescine (butane-1,4-diamine)",
+   "origin": "as_published",
+   "scaffold_id": "putrescine",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2023.136402",
+     "locator": "Sec. 3.3; Fig. 2a-b"
+    },
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.2; Figure 3A; Tables 1-2"
+    },
+    {
+     "doi": "10.1021/acs.jnatprod.3c00047",
+     "locator": "Results; Fig. 5a"
+    }
+   ]
+  },
+  {
+   "class": "guanidinoamine",
+   "formula": "C5H14N4",
+   "ions": {},
+   "name": "agmatine (4-guanidinobutylamine)",
+   "origin": "as_published",
+   "scaffold_id": "agmatine",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2023.136402",
+     "locator": "Sec. 3.5; Fig. S27"
+    },
+    {
+     "doi": "10.1021/acs.jafc.5c04844",
+     "locator": "Section 3.1, Figure 1"
+    }
+   ]
+  },
+  {
+   "class": "triamine",
+   "formula": "C7H19N3",
+   "ions": {},
+   "name": "spermidine",
+   "origin": "as_published",
+   "scaffold_id": "spermidine",
+   "source": [
+    {
+     "doi": "10.1002/hlca.19960790809",
+     "locator": "Results; Schemes 1, 2, 5; Figs 1, 2, 4"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2023.136402",
+     "locator": "Sec. 3.4; Fig. 3a; Fig. 4"
+    },
+    {
+     "doi": "10.1007/s00216-010-4129-2",
+     "locator": "Results, fragmentation; Fig. 3; Table 1"
+    },
+    {
+     "doi": "10.1021/acs.jnatprod.3c00047",
+     "locator": "Results; Scheme 3; Table 1"
+    }
+   ]
+  }
+ ],
+ "list_id": "hydroxycinnamic_acid_amide_polyamines"
+}

@@ -1,0 +1,1164 @@
+{
+ "cases": [
+  {
+   "description": "h* = genipin|Hex1,coumaroyl1|[M+HCOO]-, precursor at its oracle m/z; one peak per support member: y0:A, y0_h2o:A, rda:A, rda_h2o:A, meoxopropanoate_101:C4H5O3",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@4",
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"59b75960f8ba8bd21692fa6351a181f232782a4aabddf6a7ce3fb66f51a0cb2a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":4,\"peak_mz\":225.076848,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":5.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c4b97c70bb4b72d79ee0933e752dfefc5c4986f4d2434f8e12d30c0584b5b9d4"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- without the peaks of required term y0; genipin|Hex1,coumaroyl1|[M+HCOO]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"902c3011af49b74a929cb4952b0e97eadefa1b8de3358623579530e195ce145e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "67c12390c51951b3f8104d160de0bf57d517695f3d8a8e60401c883fb23078ae"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- without the peaks of required term y0_h2o; genipin|Hex1,coumaroyl1|[M+HCOO]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "drop_y0_h2o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"5b3f119964081d20fa4a448ad9f96dcc5a8bcc4bfe02e524b2967cb055415274\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,false],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":225.076848,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d33a7a7f8780fbe4c0bdfd6c18aec68d7279ce1285a51b3fbf61e121c6f32857"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- without the peaks of required term rda; genipin|Hex1,coumaroyl1|[M+HCOO]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@3",
+       "y0_h2o:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "drop_rda",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"8c6e9fe4d9b8bc9600159d126faad92f1308ea0a919a49815c30069f98a1a963\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[false,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":225.076848,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "32788a858387184f46a939a907867a72dbf0208fc84c98d90e48164d004e7545"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- without the peaks of required term rda_h2o; genipin|Hex1,coumaroyl1|[M+HCOO]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@3",
+       "y0_h2o:A@2",
+       "rda:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "drop_rda_h2o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"183c0eacf2541cbcb54097e57528599cfc681bfaf4a1d27c6ae67baa49eae3f3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":225.076848,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e23f5120e0c30a81f94d30f65fbf73a3e0b8de224a05051a28951b74201b404b"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- without the peaks of required term meoxopropanoate_101; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "drop_meoxopropanoate_101",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"e8a9bc31a2aa9fd37722bc8d7b05d2ec0af89a2d5282b165c4adf502ef4bde3d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "70ddbfd5980cb39ff7da0dcedddb35713207f92850be7319b669c0a7716f2803"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- without the peaks of every support term under any node 0 (pre-order): y0, y0_h2o",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "drop_any0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"06a5c3cba82143e7aa5ce4c585e338be529969f777abb9729a58225330166540\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3ab2b71f865917a09f0110967d9b92a7e88950f3d3e9c56ea3813a5bf399c7d0"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- without the peaks of every support term under any node 1 (pre-order): rda, rda_h2o",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "drop_any1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"fe5e87d54b001365e7b3a25bc324f294af1d403f4a859723ae01b90c52232a0e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "82bd11a90508d62d9eb899fa6b8c3887512e0804c501717df2f697880a7f8652"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with y0:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@4",
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.081838",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"8a1235a13407564e76f346ef2b65ef03c05606d85d6929821a08cf95e07388ff\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":22.172,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":4,\"peak_mz\":225.081838,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":5.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "930bffb3071cb3c855420d87dad0e3ff010f40f06a79fc51919aa645bcce8bbb"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with y0:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.081858",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"aaf240458368e78d7088ab95b7d49cb9c6edfa0c148b460c4edaab835aec17e8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1f2f8285343a98564e159672594eb2c79c76a3c1813fd564ca2fcdd84df96947"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with y0:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@4",
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.071858",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"f8883b37abc2f4a5ee7ce23068c7927953e5c4890fba09c88ec245e38dfb5f89\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-22.168,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":4,\"peak_mz\":225.071858,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":5.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6bc135501ec70a6345cfa87a3b32c35d9c57eecd46874e3d87d930668523439e"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with y0:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.071838",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"0dce62445a1c75e2b2a8f0ecea4f2d6ed63d4c0333216e12e9416fb5d5945300\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8e52846d6482d4a71701f0f989cb574e3c9a5035acd075fb03f4159e0bc7fb07"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@4",
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.18192",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.18192"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"47b86971d7464d3c508381e2bdc7abd9ab50c05fe91f79c23cd89e12cc155f05\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":4,\"peak_mz\":225.076848,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"genipin\",\"score\":5.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.181920,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5dcea736a9a5b8bb6c851fd0da58de8b16ef7e965baab17c64ed02c13ff81816"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.18194",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.18194"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"387d00b43b80aa54ac559c7906b587f1fa88fae0f4d022d8ce9c71ed126c9c69\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.181940,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4ed3a6037a10f70c3efdc1a8a4c4719b514d14e45441c73eebf271c852182d23"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+HCOO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@4",
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.16194",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.16194"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"9e4260b472bf5148feaf86beb5a32c56ca9a53958d2dcef584d4791abf5fe846\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+HCOO]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+HCOO]-\",\"hypothesis_mz\":579.171930,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":4,\"peak_mz\":225.076848,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"genipin\",\"score\":5.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.161940,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "322d37a19dc850524a40846d0dc40d0d58445ce5aa5aaef0a1236f2edce8a433"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.16192",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.16192"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"259bf618cb84259d51053f44b3b3630e7103bda36fd7d4e7b7dce9e8565ecb20\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.161920,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "785fe23eb2ab757688f0f423c703ff343714d5f10b0a71ab31ce1ed7754506e9"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"7141971682868767b2e1a4db1677f769186d4e9d7b58a3028846a2d3e2bc0074\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6bbf0ee0b03663caefa2492b584a6ac4401a1d52375744011a30c06fbcaa8df1"
+  },
+  {
+   "description": "the union of the positive spectra of genipin|Hex1,sinapoyl1|[M-H]- and genipin|Hex1,coumaroyl1|[M+CH3COO]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": "genipin|Hex1,coumaroyl1|[M+CH3COO]-",
+      "fired": true,
+      "matched": [
+       "y0:A@4",
+       "y0_h2o:A@3",
+       "rda:A@2",
+       "rda_h2o:A@1",
+       "meoxopropanoate_101:C4H5O3@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "genipin|Hex1,coumaroyl1|[M+CH3COO]-",
+       "genipin|Hex1,sinapoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "593.18758",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "593.18758"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"ed0de21919ecc3268f183cb5ea9ad1375ceb0a306b2b9f9a906725c1ce24562d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"iridoid_c4_methoxycarbonyl_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M+CH3COO]-\",\"adduct_source\":\"common\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"genipin|Hex1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"genipin|Hex1,coumaroyl1|[M+CH3COO]-\",\"hypothesis_mz\":593.187580,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":4,\"peak_mz\":225.076848,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":225.076848,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"y0_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":123.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.045153,\"term_id\":\"rda\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":105.034589,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":105.034589,\"term_id\":\"rda_h2o\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C4H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O3\",\"peak_index\":0,\"peak_mz\":101.024418,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":101.024418,\"term_id\":\"meoxopropanoate_101\",\"unit_id\":4}],\"neutral_formula\":\"C26H30O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"genipin\",\"score\":5.000000,\"units\":{\"Hex\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"genipin|Hex1,coumaroyl1|[M+CH3COO]-\",\"genipin|Hex1,sinapoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":593.187580,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a164a8e652852be68fe336ecfe250fb29f64a57826b37d1fe879259b07c2e3f6"
+  },
+  {
+   "description": "the positive spectrum of genipin|Hex1,coumaroyl1|[M+HCOO]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "iridoid.c4_methoxycarbonyl_glycoside.neg"
+    ],
+    "outcomes": {
+     "iridoid.c4_methoxycarbonyl_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "101.024418",
+      "500.0"
+     ],
+     [
+      "105.034589",
+      "500.0"
+     ],
+     [
+      "123.045153",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "225.076848",
+      "500.0"
+     ],
+     [
+      "579.17193",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.17193"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"input_sha256\":\"59b75960f8ba8bd21692fa6351a181f232782a4aabddf6a7ce3fb66f51a0cb2a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"iridoid_c4_methoxycarbonyl_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"iridoid.c4_methoxycarbonyl_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.171930,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d7c8d0047aa273a258e1b442a9254305120fc89adf3598f30f94164127f3a1e5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "56a567d905bba100cf7e0f612619f11ea7773788b32095d42dbd7d948366d84b"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

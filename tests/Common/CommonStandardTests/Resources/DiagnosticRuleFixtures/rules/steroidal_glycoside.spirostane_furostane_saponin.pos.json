@@ -1,0 +1,790 @@
+{
+ "cases": [
+  {
+   "description": "h* = dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+, precursor at its oracle m/z; one peak per support member: y0:A, skel:C19H29O2, skel_h2o:C19H27O",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "skel:C19H29O2@1",
+       "skel_h2o:C19H27O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"spirostane_furostane_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"1595ceae7f7a0a49807cdb6e383c5aff9a271a1a74aeadc2550ea4f012f26734\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"spirostane_furostane_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_spirostane_type|Hex1,Pen1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\",\"hypothesis_mz\":727.426318,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H45O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":433.331236,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":433.331236,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C19H29O2\",\"kind\":\"product_ion\",\"member_key\":\"C19H29O2\",\"peak_index\":1,\"peak_mz\":289.216206,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":289.216206,\"term_id\":\"skel\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C19H27O\",\"kind\":\"product_ion\",\"member_key\":\"C19H27O\",\"peak_index\":0,\"peak_mz\":271.205641,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":271.205641,\"term_id\":\"skel_h2o\",\"unit_id\":2}],\"neutral_formula\":\"C38H62O13\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_spirostane_type\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9676857fac02dc180b25d35142065d1d44f57de4ebc5d0ea0d9f3c810121465a"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ without the peaks of required term y0; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"7714d4ee72b4c9979bb11ac765ee5ea4e7fe833807b88af78bfc82aa5a501062\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "53f5ad0efb1073436d34ff82d6ea1f42bebbe47334e3862ba380a1306759f75f"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ without the peaks of required term skel; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "drop_skel",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"b599cee2787c71b116d29458d09272674b390eff1f8bafa7838001bdcd304cb1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "87e47cfa8689d791277c3bc1aa6c121a0cc2359cf8b9a04981848b78e203554e"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ without the peaks of required term skel_h2o; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "drop_skel_h2o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"650553bacb11de4d6f0aae09e6aafa2b5e46e5aa3afaf3dfbcfd46b469c29cc4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0d06e028813efb299f4b930be40266f4cc538e1ceb23db16fab575f5f7396f2d"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with y0:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "skel:C19H29O2@1",
+       "skel_h2o:C19H27O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.336226",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"spirostane_furostane_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"abdc33ba8a6764cc401cf8791c2e444eb6085bdba55dfdb5ef85616da47a1c5b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"spirostane_furostane_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_spirostane_type|Hex1,Pen1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\",\"hypothesis_mz\":727.426318,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":11.516,\"ion_formula\":\"C27H45O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":433.336226,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":433.331236,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C19H29O2\",\"kind\":\"product_ion\",\"member_key\":\"C19H29O2\",\"peak_index\":1,\"peak_mz\":289.216206,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":289.216206,\"term_id\":\"skel\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C19H27O\",\"kind\":\"product_ion\",\"member_key\":\"C19H27O\",\"peak_index\":0,\"peak_mz\":271.205641,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":271.205641,\"term_id\":\"skel_h2o\",\"unit_id\":2}],\"neutral_formula\":\"C38H62O13\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_spirostane_type\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5e9e6133c4fd2fd0355c6678949c9a9823c357009bf6521dddc4100f12097234"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with y0:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.336246",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"479103ad85d563cc01d0a2ab52df9aa9ea159485016fda0efeb890e095b4f0a9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b18c7a57786316514c534987dfc8b549d503d2b2e30380ee0a9e3facdedf7a13"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with y0:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "skel:C19H29O2@1",
+       "skel_h2o:C19H27O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.326246",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"spirostane_furostane_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"660ef217050d217ca29fe0be3c90dfccfbf9de798f164f17d634de6f084c2dc1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"spirostane_furostane_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_spirostane_type|Hex1,Pen1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\",\"hypothesis_mz\":727.426318,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-11.515,\"ion_formula\":\"C27H45O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":433.326246,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":433.331236,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C19H29O2\",\"kind\":\"product_ion\",\"member_key\":\"C19H29O2\",\"peak_index\":1,\"peak_mz\":289.216206,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":289.216206,\"term_id\":\"skel\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C19H27O\",\"kind\":\"product_ion\",\"member_key\":\"C19H27O\",\"peak_index\":0,\"peak_mz\":271.205641,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":271.205641,\"term_id\":\"skel_h2o\",\"unit_id\":2}],\"neutral_formula\":\"C38H62O13\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_spirostane_type\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a802eff561b5fd3f3b40190160032ee09a77f1be015d5da3aacc2db536deef1f"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with y0:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.326226",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"aef678714678f3fc9c5db40f87b44e9b9c47520463d812ecadbf462cb06e4ded\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "67d26188cee97f15394d3e65b3f387717b13906a53ff05ee1b2dfecbb193fc2c"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "skel:C19H29O2@1",
+       "skel_h2o:C19H27O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.436308",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.436308"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"spirostane_furostane_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"9138ccaec3a9c6851430077531624e8a4416e6f1489a0b40b01391b89fc6823e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"spirostane_furostane_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_spirostane_type|Hex1,Pen1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\",\"hypothesis_mz\":727.426318,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H45O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":433.331236,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":433.331236,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C19H29O2\",\"kind\":\"product_ion\",\"member_key\":\"C19H29O2\",\"peak_index\":1,\"peak_mz\":289.216206,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":289.216206,\"term_id\":\"skel\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C19H27O\",\"kind\":\"product_ion\",\"member_key\":\"C19H27O\",\"peak_index\":0,\"peak_mz\":271.205641,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":271.205641,\"term_id\":\"skel_h2o\",\"unit_id\":2}],\"neutral_formula\":\"C38H62O13\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"dihydroxy_spirostane_type\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.436308,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e7a8f2c65dcacec7d2c32c5cc3986166f5be87dc9a2679a4f955270ed83670dc"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.436328",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.436328"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"bb9b129543807e1a5d00dfbe188d171da6b3662be2fa9dc9eab09bcdb631994a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.436328,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cbc360b7e962c7d948e719fff1c7ce4d24f16b6797aca739c8a4fdc4e49c8139"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "skel:C19H29O2@1",
+       "skel_h2o:C19H27O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.416328",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.416328"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"spirostane_furostane_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"5b3a46f3c44573927e037ce1f638ca99e9886d06b07262ad3fde476d12d63a5f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"spirostane_furostane_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_spirostane_type|Hex1,Pen1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\",\"hypothesis_mz\":727.426318,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H45O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":433.331236,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":433.331236,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C19H29O2\",\"kind\":\"product_ion\",\"member_key\":\"C19H29O2\",\"peak_index\":1,\"peak_mz\":289.216206,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":289.216206,\"term_id\":\"skel\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C19H27O\",\"kind\":\"product_ion\",\"member_key\":\"C19H27O\",\"peak_index\":0,\"peak_mz\":271.205641,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":271.205641,\"term_id\":\"skel_h2o\",\"unit_id\":2}],\"neutral_formula\":\"C38H62O13\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"dihydroxy_spirostane_type\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.416328,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "06a74009d0aa86d3d140658ca3b893c2cece1ae002d50930b18affe053e105a5"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.416308",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.416308"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"0d75ee4854c6a4a76bde7a3a829268c86b2a54df864b3145ac747d284fda9ea1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.416308,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c3c1579e6c104e10b74e40d1ba0216f6f3feac3b40ee6f5ad59c0756c80eb992"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"e0f02ae962707b6d2fec82652ac23615bcdcba905699816f47975689e6e9c5ab\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "62e2b89b1870af664c88c46fe569676aec9157099c1add119583e0aaf68eaebe"
+  },
+  {
+   "description": "the union of the positive spectra of dihydroxy_spirostane_type|Hex1,dHex1,Pen1|[M+H]+ and tigogenin_type|Hex2,Pen1|[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": "dihydroxy_spirostane_type|Hex1,dHex1,Pen1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@5",
+       "skel:C19H29O2@3",
+       "skel_h2o:C19H27O@1"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_spirostane_type|Hex1,dHex1,Pen1|[M+H]+",
+       "tigogenin_type|Hex2,Pen1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "255.210727",
+      "500.0"
+     ],
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "273.221292",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "417.336321",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "873.484227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "873.484227"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"spirostane_furostane_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"577bf394d9df3732f1e0cbf6d4ddc538b935378cbcc9d23b97a0d960b5f9c29e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"spirostane_furostane_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_spirostane_type|Hex1,dHex1,Pen1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_spirostane_type|Hex1,dHex1,Pen1|[M+H]+\",\"hypothesis_mz\":873.484227,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H45O4\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":5,\"peak_mz\":433.331236,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":433.331236,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C19H29O2\",\"kind\":\"product_ion\",\"member_key\":\"C19H29O2\",\"peak_index\":3,\"peak_mz\":289.216206,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":289.216206,\"term_id\":\"skel\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C19H27O\",\"kind\":\"product_ion\",\"member_key\":\"C19H27O\",\"peak_index\":1,\"peak_mz\":271.205641,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":271.205641,\"term_id\":\"skel_h2o\",\"unit_id\":2}],\"neutral_formula\":\"C44H72O17\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_spirostane_type\",\"score\":3.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"dHex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_spirostane_type|Hex1,dHex1,Pen1|[M+H]+\",\"tigogenin_type|Hex2,Pen1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":873.484227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "de254da6fcab424b77192f4bd2de253bf305a4832d75160e8dca6847f1ee0279"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_spirostane_type|Hex1,Pen1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.spirostane_furostane_saponin.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.spirostane_furostane_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "271.205641",
+      "500.0"
+     ],
+     [
+      "289.216206",
+      "500.0"
+     ],
+     [
+      "433.331236",
+      "500.0"
+     ],
+     [
+      "727.426318",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "727.426318"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"input_sha256\":\"1595ceae7f7a0a49807cdb6e383c5aff9a271a1a74aeadc2550ea4f012f26734\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"spirostane_furostane_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.spirostane_furostane_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":727.426318,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"820b5df064319b5940cc82193be5ead2fe961ed08f00e4b16e45f7b8fe62f485\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7753e9a852f49903e841aeafbb125ee45f7e4c09078464730df50fd0f72dc2e1"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

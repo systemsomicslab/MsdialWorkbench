@@ -1,0 +1,139 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "b03",
+   "a03"
+  ],
+  "motif_id": "isoflavone_core",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280443,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C=C(C=C3O2)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281616,
+    "smiles": "C1=CC=C(C=C1)C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Hydroxyl and methoxyl positions beyond the hypothesis scaffold are not resolved",
+   "Free aglycone versus an in-source aglycone ion of a conjugate is not decided by this rule",
+   "Precursors at the other common negative adducts tried under adduct_ambiguous ([M+HCOO]-, [M+CH3COO]-, [M+Cl]-) are not described by the cited [M-H]- fragmentation"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280961,
+    "smiles": "C1=CC(=CC=C1C2=COC3=CC(=CC(=C3C2=O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281708,
+    "smiles": "C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "b03"
+   },
+   {
+    "term": "a03"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured pending the author: one paper and one compound (Lei 2015, genistein; 0,3A- at nominal m/z) support it, and apigenin's weak 0,3 ions have the same formulas, so no term separates the same-precursor flavone.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavone_c3_nonoxy",
+    "note": "apigenin shares C15H10O5 with genistein and its 0,3B- and 0,3A- have the same formulas (by calculation); Lei 2015 p. 7379 report little 0,3 cleavage for apigenin, whose RDA ions dominate"
+   },
+   {
+    "motif_id": "flavonol_core",
+    "note": "galangin shares C15H10O5 with genistein"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycone_isoflavone_neg",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_aglycone.isoflavone.neg",
+ "source": [
+  {
+   "doi": "10.1021/acs.analchem.5b01559",
+   "locator": "p. 7379, Flavones and Isoflavones; Fig. 5 (p. 7378)"
+  },
+  {
+   "doi": "10.1255/ejms.1206",
+   "locator": "Table 4 (p. 500); CID of isoflavones (p. 497)"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "p. 6, Flavonoid aglycone, Negative ion mode"
+  },
+  {
+   "doi": "10.1016/s1044-0305(01)00226-4",
+   "locator": "Table 1 (p. 710); Degradation of Flavone Aglycones (pp. 710-712)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "0,3B- (base peak in Lei 2015; 20 % for genistein in Yang 2012); Cuyckens 2004 call it characteristic of isoflavones",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_03b",
+   "term_id": "b03",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "0,3A- printed at nominal 135 (moderate) for genistein by Lei 2015 only; C7H3O3- is the A ring with C-4, by calculation",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_03a",
+   "term_id": "a03",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

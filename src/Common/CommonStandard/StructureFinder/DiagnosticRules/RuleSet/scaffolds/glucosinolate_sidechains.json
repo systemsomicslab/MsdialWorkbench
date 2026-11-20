@@ -1,0 +1,515 @@
+{
+ "entries": [
+  {
+   "class": "alkenyl",
+   "formula": "C3H5",
+   "ions": {},
+   "name": "2-propenyl (sinigrin)",
+   "origin": "as_published",
+   "scaffold_id": "sinigrin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5690, Results and Fig. 3C-D; p. 5691, Table 1"
+    },
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 282, Table 1"
+    }
+   ]
+  },
+  {
+   "class": "alkenyl",
+   "formula": "C4H7",
+   "ions": {},
+   "name": "3-butenyl (gluconapin)",
+   "origin": "as_published",
+   "scaffold_id": "gluconapin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Table 2"
+    },
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5689, Results; p. 5690, Fig. 3A-B"
+    },
+    {
+     "doi": "10.3390/metabo16040274",
+     "locator": "Sec. 2"
+    }
+   ]
+  },
+  {
+   "class": "hydroxyalkenyl",
+   "formula": "C4H7O",
+   "ions": {},
+   "name": "2-hydroxy-3-butenyl (progoitrin, epiprogoitrin)",
+   "origin": "as_published",
+   "scaffold_id": "progoitrin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 312, Results"
+    },
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5690, Results; p. 5691, Fig. 4"
+    },
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Table 2; p. 2833, Results"
+    }
+   ]
+  },
+  {
+   "class": "hydroxyalkenyl",
+   "formula": "C5H9O",
+   "ions": {},
+   "name": "2-hydroxy-4-pentenyl (gluconapoleiferin)",
+   "origin": "as_published",
+   "scaffold_id": "gluconapoleiferin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkenyl",
+   "formula": "C5H9OS",
+   "ions": {},
+   "name": "4-methylsulfinyl-3-butenyl (glucoraphenin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoraphenin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Table 2; p. 2832, Fig. 3C; p. 2833, Results"
+    },
+    {
+     "doi": "10.3390/metabo16040274",
+     "locator": "Sec. 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C4H9OS",
+   "ions": {},
+   "name": "3-methylsulfinylpropyl (glucoiberin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoiberin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 282, Table 1"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C5H11OS",
+   "ions": {},
+   "name": "4-methylsulfinylbutyl (glucoraphanin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoraphanin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5691, Results and Fig. 5; p. 5692, Table 2"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C6H13OS",
+   "ions": {},
+   "name": "5-methylsulfinylpentyl (glucoalyssin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoalyssin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C7H15OS",
+   "ions": {},
+   "name": "6-methylsulfinylhexyl (glucohesperin)",
+   "origin": "as_published",
+   "scaffold_id": "glucohesperin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C8H17OS",
+   "ions": {},
+   "name": "7-methylsulfinylheptyl (glucoibarin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoibarin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C9H19OS",
+   "ions": {},
+   "name": "8-methylsulfinyloctyl (glucohirsutin)",
+   "origin": "as_published",
+   "scaffold_id": "glucohirsutin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Section 2.4; Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylthioalkyl",
+   "formula": "C5H11S",
+   "ions": {},
+   "name": "4-methylthiobutyl (glucoerucin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoerucin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Results and Table 2; p. 2831, Fig. 2C; p. 2833, Results"
+    },
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 282, Table 1"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    }
+   ]
+  },
+  {
+   "class": "methylthioalkyl",
+   "formula": "C8H17S",
+   "ions": {},
+   "name": "7-methylthioheptyl",
+   "origin": "as_published",
+   "scaffold_id": "methylthioheptyl_7",
+   "source": [
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylthioalkyl",
+   "formula": "C9H19S",
+   "ions": {},
+   "name": "8-methylthiooctyl",
+   "origin": "as_published",
+   "scaffold_id": "methylthiooctyl_8",
+   "source": [
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfonylalkyl",
+   "formula": "C4H9O2S",
+   "ions": {},
+   "name": "3-methylsulfonylpropyl (glucocheirolin)",
+   "origin": "as_published",
+   "scaffold_id": "glucocheirolin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Results and Table 2; p. 2831, Fig. 2B"
+    },
+    {
+     "doi": "10.1021/acs.jafc.6b01277",
+     "locator": "p. 4409, Results, Typical Fragmentation"
+    }
+   ]
+  },
+  {
+   "class": "mercaptoalkyl",
+   "formula": "C4H9S",
+   "ions": {},
+   "name": "4-mercaptobutyl",
+   "origin": "as_published",
+   "scaffold_id": "mercaptobutyl_4",
+   "source": [
+    {
+     "doi": "10.1021/acs.jafc.6b01277",
+     "locator": "p. 4414, Applying GLS-Finder to Different Kinds of Samples (named as the reference compound)"
+    },
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4 (4-mercaptobutyl-GLS)"
+    }
+   ]
+  },
+  {
+   "class": "glucosyldisulfanylalkyl",
+   "formula": "C10H19O5S2",
+   "ions": {},
+   "name": "4-(beta-D-glucopyranosyldisulfanyl)butyl",
+   "origin": "as_published",
+   "scaffold_id": "glucopyranosyldisulfanylbutyl_4",
+   "source": [
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5692, Results, Fig. 6 and Table 3"
+    },
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Results and Table 4"
+    }
+   ]
+  },
+  {
+   "class": "arylalkyl",
+   "formula": "C7H7",
+   "ions": {},
+   "name": "benzyl (glucotropaeolin)",
+   "origin": "as_published",
+   "scaffold_id": "glucotropaeolin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 282, Table 1"
+    },
+    {
+     "doi": "10.3390/metabo16040274",
+     "locator": "Sec. 2"
+    },
+    {
+     "doi": "10.1021/acs.jafc.6b01277",
+     "locator": "p. 4409, Results, Typical Fragmentation"
+    }
+   ]
+  },
+  {
+   "class": "arylalkyl",
+   "formula": "C7H7O",
+   "ions": {},
+   "name": "4-hydroxybenzyl (sinalbin)",
+   "origin": "as_published",
+   "scaffold_id": "sinalbin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2 (internal standard row)"
+    }
+   ]
+  },
+  {
+   "class": "arylalkyl",
+   "formula": "C8H9",
+   "ions": {},
+   "name": "2-phenylethyl (gluconasturtiin)",
+   "origin": "as_published",
+   "scaffold_id": "gluconasturtiin",
+   "source": [
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 282, Table 1"
+    },
+    {
+     "doi": "10.3390/metabo16040274",
+     "locator": "Sec. 2"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C6H5",
+   "ions": {},
+   "name": "phenyl (synthetic)",
+   "origin": "as_published",
+   "scaffold_id": "phenyl",
+   "source": [
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 275, Results and Fig. 3; p. 282, Table 1"
+    }
+   ]
+  },
+  {
+   "class": "indolylmethyl",
+   "formula": "C9H8N",
+   "ions": {},
+   "name": "indol-3-ylmethyl (glucobrassicin)",
+   "origin": "as_published",
+   "scaffold_id": "glucobrassicin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    },
+    {
+     "doi": "10.3390/metabo16040274",
+     "locator": "Sec. 2"
+    },
+    {
+     "doi": "10.1021/acs.jafc.6b01277",
+     "locator": "p. 4409, Results, Typical Fragmentation"
+    }
+   ]
+  },
+  {
+   "class": "indolylmethyl",
+   "formula": "C9H8NO",
+   "ions": {},
+   "name": "4-hydroxyindol-3-ylmethyl (4-hydroxyglucobrassicin)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxyglucobrassicin_4",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 311, Table 2; p. 312, Results"
+    },
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    }
+   ]
+  },
+  {
+   "class": "indolylmethyl",
+   "formula": "C10H10NO",
+   "ions": {},
+   "name": "4-methoxyindol-3-ylmethyl (4-methoxyglucobrassicin)",
+   "origin": "as_published",
+   "scaffold_id": "methoxyglucobrassicin_4",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Section 2.4; Table 4"
+    },
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4; pp. 2385-2386, Results (seed extracts)"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 525, Results and Fig. 5; p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "n_methoxyindolylmethyl",
+   "formula": "C10H10NO",
+   "ions": {},
+   "name": "1-methoxyindol-3-ylmethyl (neoglucobrassicin)",
+   "origin": "as_published",
+   "scaffold_id": "neoglucobrassicin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Section 2.4; Table 4"
+    },
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Table 2; p. 2832, Fig. 3A; p. 2833, Results"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 525, Results and Fig. 5; p. 524, Table 2"
+    }
+   ]
+  }
+ ],
+ "list_id": "glucosinolate_sidechains"
+}

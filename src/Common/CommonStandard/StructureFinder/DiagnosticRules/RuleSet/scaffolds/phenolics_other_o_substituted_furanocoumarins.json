@@ -1,0 +1,115 @@
+{
+ "entries": [
+  {
+   "class": "furanocoumarin",
+   "formula": "C16H14O4",
+   "ions": {},
+   "name": "imperatorin (8-O-prenyl)",
+   "origin": "as_published",
+   "scaffold_id": "imperatorin",
+   "source": [
+    {
+     "doi": "10.1002/pca.2496",
+     "locator": "Li 2014: Table 1 no. 24 (p. 236; 271 to 203; MS3 175, 159)"
+    },
+    {
+     "doi": "10.1002/1097-0231(20001215)14:23<2260::aid-rcm161>3.0.co;2-b",
+     "locator": "Concannon 2000: Table 1 compound 10 (p. 2261)"
+    },
+    {
+     "doi": "10.1002/rcm.4991",
+     "locator": "Smyth 2011: Imperatorin (p. 1312); Table 1 (p. 1313)"
+    }
+   ]
+  },
+  {
+   "class": "furanocoumarin",
+   "formula": "C16H14O4",
+   "ions": {},
+   "name": "isoimperatorin (5-O-prenyl)",
+   "origin": "as_published",
+   "scaffold_id": "isoimperatorin",
+   "source": [
+    {
+     "doi": "10.1002/pca.2496",
+     "locator": "Li 2014: Table 1 no. 29 (p. 236; reference compound; 271 to 203; MS3 159, 175)"
+    },
+    {
+     "doi": "10.1002/1097-0231(20001215)14:23<2260::aid-rcm161>3.0.co;2-b",
+     "locator": "Concannon 2000: Table 1 compound 9 (p. 2261)"
+    }
+   ]
+  },
+  {
+   "class": "furanocoumarin",
+   "formula": "C21H22O4",
+   "ions": {},
+   "name": "bergamottin (5-O-geranyl)",
+   "origin": "as_published",
+   "scaffold_id": "bergamottin",
+   "source": [
+    {
+     "doi": "10.1002/pca.2496",
+     "locator": "Li 2014: Table 1 no. 41 (p. 237; 339 to 203; MS3 159, 175)"
+    }
+   ]
+  },
+  {
+   "class": "furanocoumarin",
+   "formula": "C16H14O5",
+   "ions": {},
+   "name": "oxypeucedanin (5-O-epoxyprenyl)",
+   "origin": "as_published",
+   "scaffold_id": "oxypeucedanin",
+   "source": [
+    {
+     "doi": "10.1002/pca.2496",
+     "locator": "Li 2014: Group I (p. 234); Table 1 no. 19 (pp. 235-236; 287 to 203; MS3 159, 175)"
+    }
+   ]
+  },
+  {
+   "class": "furanocoumarin",
+   "formula": "C16H16O6",
+   "ions": {},
+   "name": "oxypeucedanin hydrate (5-O-dihydroxyprenyl)",
+   "origin": "as_published",
+   "scaffold_id": "oxypeucedanin_hydrate",
+   "source": [
+    {
+     "doi": "10.1002/pca.2496",
+     "locator": "Li 2014: Table 1 no. 8 (p. 235; reference compound; 305 to 203; MS3 159, 175)"
+    }
+   ]
+  },
+  {
+   "class": "furanocoumarin",
+   "formula": "C21H22O5",
+   "ions": {},
+   "name": "epoxybergamottin",
+   "origin": "as_published",
+   "scaffold_id": "epoxybergamottin",
+   "source": [
+    {
+     "doi": "10.1016/j.fochx.2025.102233",
+     "locator": "Gong 2025: Section 3.1; Figure 1C (215.03, 203.04)"
+    }
+   ]
+  },
+  {
+   "class": "furanocoumarin",
+   "formula": "C21H24O6",
+   "ions": {},
+   "name": "6',7'-dihydroxybergamottin",
+   "origin": "as_published",
+   "scaffold_id": "dihydroxybergamottin",
+   "source": [
+    {
+     "doi": "10.1016/j.fochx.2025.102233",
+     "locator": "Gong 2025: Section 3.1; Figure 1C (215.03, 203.04)"
+    }
+   ]
+  }
+ ],
+ "list_id": "phenolics_other_o_substituted_furanocoumarins"
+}

@@ -1,0 +1,568 @@
+{
+ "cases": [
+  {
+   "description": "h* = ajmalicine||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_C10H10NO:C10H10NO",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": "ajmalicine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H10NO:C10H10NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "ajmalicine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"indole_or_indoline_ring\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"4d3961f65137069a74f4a12af28823ff72b55161e8b8b027b5cf154ae6271972\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"indole_or_indoline_ring\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"ajmalicine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"ajmalicine||[M+H]+\",\"hypothesis_mz\":353.185969,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C10H10NO\",\"peak_index\":0,\"peak_mz\":160.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.075690,\"term_id\":\"ion_C10H10NO\",\"unit_id\":0}],\"neutral_formula\":\"C21H24N2O3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"ajmalicine\",\"score\":1.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"ajmalicine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e50c261cec18b02436a2b9ecfdb7c981f12983158ff0fe3233477e6f61d4a90a"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ without the peaks of required term ion_C10H10NO; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "drop_ion_C10H10NO",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":null,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"fed43d4a3cb959cb12b3b4748c6f58ac90913531bc286615eaa350c179879f30\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":1,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "da41bcf01f57abec7508b4b9c845e6a332865d4cc2ee6fce8f75013af7be6ce1"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with ion_C10H10NO:C10H10NO moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": "ajmalicine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H10NO:C10H10NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "ajmalicine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.08068",
+      "500.0"
+     ],
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"indole_or_indoline_ring\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"b6788de3b3bff9b0171c4f7009c15a447eea8d5131b1a109795d22ab6574d1ec\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"indole_or_indoline_ring\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"ajmalicine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"ajmalicine||[M+H]+\",\"hypothesis_mz\":353.185969,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":31.173,\"ion_formula\":\"C10H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C10H10NO\",\"peak_index\":0,\"peak_mz\":160.080680,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.075690,\"term_id\":\"ion_C10H10NO\",\"unit_id\":0}],\"neutral_formula\":\"C21H24N2O3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"ajmalicine\",\"score\":1.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"ajmalicine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "143dbf9beb27b0cc7b14a01172a887e425eccd3a188b5bef7e5c2654301e55e2"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with ion_C10H10NO:C10H10NO moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.0807",
+      "500.0"
+     ],
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"3f7033b95de30a654b4c3d68814e697da773167fc2c9b8f367830b355c6cf360\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "25083c3cafe440f0cea538479bcf647a398a49ff2857dd424fcd450dbdd0dc30"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with ion_C10H10NO:C10H10NO moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": "ajmalicine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H10NO:C10H10NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "ajmalicine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.0707",
+      "500.0"
+     ],
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"indole_or_indoline_ring\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"5168091fa0f35ea324e2be1834072ba6eb2e2025ec1926acf1c5ba6a017953c9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"indole_or_indoline_ring\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"ajmalicine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"ajmalicine||[M+H]+\",\"hypothesis_mz\":353.185969,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-31.172,\"ion_formula\":\"C10H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C10H10NO\",\"peak_index\":0,\"peak_mz\":160.070700,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.075690,\"term_id\":\"ion_C10H10NO\",\"unit_id\":0}],\"neutral_formula\":\"C21H24N2O3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"ajmalicine\",\"score\":1.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"ajmalicine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "94e896c17aa751e136815becf7b0d7a66246534598681ca0fcb5b26255c7e377"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with ion_C10H10NO:C10H10NO moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07068",
+      "500.0"
+     ],
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"a95c6d8e1526fd371e3001701657283e81c86bb02e645640aaf960deee4091d8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f7608004b7b3df761d1d6e5ece0e99eb38ef2b5d092e2472a3110538511a14c2"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": "ajmalicine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H10NO:C10H10NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "ajmalicine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "353.195959",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.195959"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"indole_or_indoline_ring\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"63eebcbc0a6fca359cb36e75c75791d2e10c787b89a1a6ef096e375d02bfb0c7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"indole_or_indoline_ring\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"ajmalicine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"ajmalicine||[M+H]+\",\"hypothesis_mz\":353.185969,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C10H10NO\",\"peak_index\":0,\"peak_mz\":160.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.075690,\"term_id\":\"ion_C10H10NO\",\"unit_id\":0}],\"neutral_formula\":\"C21H24N2O3\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"ajmalicine\",\"score\":1.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"ajmalicine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.195959,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3cb6673dd5d5e14fc6cf949093a7268ff058ce101f4a2ec46a7f6fcf8634ba13"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "353.195979",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.195979"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"50bfd9c718e7757539dcde494256d7f8848ab868a5a455bf832d75511865b171\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.195979,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4def17810f42d2ee19264a145a47eef62d2317b3eb058cc0177cd05b0fcaa9d8"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": "ajmalicine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H10NO:C10H10NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "ajmalicine||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "353.175979",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.175979"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"indole_or_indoline_ring\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"5a1947ca743750d00860357355fb38d7f9a010406829bbafd992fb1a09f08003\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"indole_or_indoline_ring\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"ajmalicine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"ajmalicine||[M+H]+\",\"hypothesis_mz\":353.185969,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C10H10NO\",\"peak_index\":0,\"peak_mz\":160.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.075690,\"term_id\":\"ion_C10H10NO\",\"unit_id\":0}],\"neutral_formula\":\"C21H24N2O3\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"ajmalicine\",\"score\":1.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"ajmalicine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.175979,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "62497b96325838e928396ebd993ba3d68707ffa01a919dc1e805fc24ef23a7f7"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "353.175959",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.175959"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"ba969493ac45895a0ff0bccbfeb6024dbc660bbe5d9fb6b55f712988f222cd18\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.175959,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4b4a8f3154ca91aff70eba44f5105285ff4440174fd10f30adf04ae8ef5f62f2"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"a127b77627eff7ddfc4f9b29d993a2dc68f6c3cac0e672f9fc756fbc3799933d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c4fbb9767feef043545760cc1b339f83fafb4ec6f4ba24007fe64365165e99e4"
+  },
+  {
+   "description": "the union of the positive spectra of aspidolimidine||[M+H]+ and rhynchophylline||[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": "aspidolimidine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H10NO:C10H10NO@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "aspidolimidine||[M+H]+",
+       "rhynchophylline||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "385.212183",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "385.212183"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"indole_or_indoline_ring\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"3832924ab206914602baf22c7ca838b1231e96590b5385a4fd60cb3618ce74dd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"indole_or_indoline_ring\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"aspidolimidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"aspidolimidine||[M+H]+\",\"hypothesis_mz\":385.212183,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C10H10NO\",\"peak_index\":0,\"peak_mz\":160.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":160.075690,\"term_id\":\"ion_C10H10NO\",\"unit_id\":0}],\"neutral_formula\":\"C22H28N2O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"aspidolimidine\",\"score\":1.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"aspidolimidine||[M+H]+\",\"rhynchophylline||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":385.212183,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c8ee9065996a585478a12bb1043d43efe9755214a657d2b873a6d633ce6b18a9"
+  },
+  {
+   "description": "the positive spectrum of ajmalicine||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "160.07569",
+      "500.0"
+     ],
+     [
+      "353.185969",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "353.185969"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"input_sha256\":\"4d3961f65137069a74f4a12af28823ff72b55161e8b8b027b5cf154ae6271972\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"indole_or_indoline_ring\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.oxindole_c10h10no_only.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":353.185969,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"8914799482529e96d9f775f46d779622dc2a05fa5864a30e51c0d4400db66236\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "20fe7eb2dd259e058fe915de2975331a0f1c014b6612fd9daa99092eac70d2c4"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

@@ -1,0 +1,887 @@
+{
+ "cases": [
+  {
+   "description": "h* = core|Hex1,caffeoyl1,feruloyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: cyclodopa_anion:C9H8NO4, acyl_indoline_caffeoyl:caffeoyl, acyl_indoline_feruloyl:feruloyl",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_caffeoyl:caffeoyl@1",
+       "acyl_indoline_feruloyl:feruloyl@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"27c67125f7aa2fda0db9d8636d271cde2e7c72e0eef6742f098cd16ab196ea03\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":694.177743,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.045882,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C19H16NO7\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":370.093226,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":370.093226,\"term_id\":\"acyl_indoline_feruloyl\",\"unit_id\":2}],\"neutral_formula\":\"C34H33NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0bb3baac5011311347ca8569a558d21a175675aa77a7b746cd58cf5e93e3d7d8"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- without the peaks of required term cyclodopa_anion; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "drop_cyclodopa_anion",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"3e603ef7eacc9a925e32f2b21debb9dbdf9390c7de6dc9affb50eaddceaa5998\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bf7f923c126996cabbda1d82dea85d21f0f2d9b32ca50f2116ae49b494f4ef07"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,coumaroyl1,caffeoyl1|[M-H]- (h* core|Hex1,caffeoyl1,feruloyl1|[M-H]- has no peak of the term) without the peaks of required term acyl_indoline_coumaroyl; core|Hex1,coumaroyl1,caffeoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,coumaroyl1,caffeoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_caffeoyl:caffeoyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,coumaroyl1,caffeoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "664.167179",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "664.167179"
+   },
+   "name": "drop_acyl_indoline_coumaroyl",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"244efa67c829704664ef6a1a3c4c8ab7954c421744537b49ef8fe3684138d119\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,coumaroyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,coumaroyl1,caffeoyl1|[M-H]-\",\"hypothesis_mz\":664.167179,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.045882,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":2}],\"neutral_formula\":\"C33H31NO14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,coumaroyl1,caffeoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":664.167179,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7ea7fef9eb2bd72efcd0693dafd6239442df249914e58917eab118562b59ec29"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- without the peaks of required term acyl_indoline_caffeoyl; core|Hex1,caffeoyl1,feruloyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_feruloyl:feruloyl@1"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "drop_acyl_indoline_caffeoyl",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"50c7398ae4e019e9303ba84c063259b4ea7b78caf5d1e53cb3a7cbdc74b1043f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":694.177743,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.045882,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C19H16NO7\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":370.093226,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":370.093226,\"term_id\":\"acyl_indoline_feruloyl\",\"unit_id\":2}],\"neutral_formula\":\"C34H33NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "14ce926d9d7a9bdc4ff1f101045b0ed9c0cbf842e09c238e6479a6d2654717b1"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- without the peaks of required term acyl_indoline_feruloyl; core|Hex1,caffeoyl1,feruloyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_caffeoyl:caffeoyl@1"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "drop_acyl_indoline_feruloyl",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"10b53ed7b253063dcb1eda33cd41f41f8730abd5c96b987f9ccda21c94cf940b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":694.177743,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.045882,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":1}],\"neutral_formula\":\"C34H33NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2e76f59dd64d2f0c5939132fa074d067554cb8e00921d887a44a82585262e494"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- without the peaks of every support term under any node 0 (pre-order): acyl_indoline_coumaroyl, acyl_indoline_caffeoyl, acyl_indoline_feruloyl",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "drop_any0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"c57dc58575c9ada0d461ce6eb1f804a575d1c4eeee2872eebf832a9985bd2791\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9d13aa762a1560f7f9710cba763cc346a34dea9934adc58ad5a9d558f32640c7"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with cyclodopa_anion:C9H8NO4 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_caffeoyl:caffeoyl@1",
+       "acyl_indoline_feruloyl:feruloyl@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.050872",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"83424007d2d03e38d23e2e0fd999cb541dd30b29fb14f96131508d7c62d77064\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":694.177743,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":25.717,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.050872,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C19H16NO7\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":370.093226,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":370.093226,\"term_id\":\"acyl_indoline_feruloyl\",\"unit_id\":2}],\"neutral_formula\":\"C34H33NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ad811801f088036887ea5886866938b882fc2735ec3b76050698bb26ec788fd0"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with cyclodopa_anion:C9H8NO4 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.050892",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"48fc838045031a59150b0c16ce7ce598989c3decbf6659da2da4584be87d6679\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1eb162ec37d27b6f7495f33868c1c24823a6183d8a4dbc45c000db8230b70339"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with cyclodopa_anion:C9H8NO4 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_caffeoyl:caffeoyl@1",
+       "acyl_indoline_feruloyl:feruloyl@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.040892",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"ed7c79df738632d34a3f02fc2f7e742b4a95fdd2bbbef232dba9f0ecf3e0e74c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":694.177743,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-25.714,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.040892,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C19H16NO7\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":370.093226,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":370.093226,\"term_id\":\"acyl_indoline_feruloyl\",\"unit_id\":2}],\"neutral_formula\":\"C34H33NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "240766da6856081b8874deb1e309733e09561d3beec18c2d7a7a8b7904134361"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with cyclodopa_anion:C9H8NO4 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.040872",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"9705a870cea7f663599ff09f35616a40dfc3f4dc70bc66c28cf6bafe81c5d6e4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f149a929de1cc57b7a0b5e45cbde21f9b1d48c4a188c9a50092d90403b4e0b3b"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_caffeoyl:caffeoyl@1",
+       "acyl_indoline_feruloyl:feruloyl@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.187733",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.187733"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"660b9603de0c6117ff7f374301e5793fd22e446ead33b2a53994a0bfcec011cd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":694.177743,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.045882,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C19H16NO7\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":370.093226,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":370.093226,\"term_id\":\"acyl_indoline_feruloyl\",\"unit_id\":2}],\"neutral_formula\":\"C34H33NO15\",\"precursor_error_da\":0.009990,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.187733,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0b44a7e613094680200c3bc32b778c61ebbca3becb1261d796c4eb17df6e6405"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.187753",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.187753"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"0a6f78dea923393b6be6a8f7c422500504e9ae7b4e60af2d89e07d9be945a617\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.187753,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ae7a09427c80dc0985c3ded82686b5944901624a956111592b57b70235c58bbb"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_caffeoyl:caffeoyl@1",
+       "acyl_indoline_feruloyl:feruloyl@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.167753",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.167753"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"216a1e122eeacc329fc9a592b0951cc23c7c015ce03e4572977f6870064dd9c1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":694.177743,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.045882,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C19H16NO7\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":370.093226,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":370.093226,\"term_id\":\"acyl_indoline_feruloyl\",\"unit_id\":2}],\"neutral_formula\":\"C34H33NO15\",\"precursor_error_da\":-0.009990,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.167753,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "de93be6c90e9cc7f615987fc7a27f6bc1abd7817ad80b5c29239cc7eb09b8593"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.167733",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.167733"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"3aaef38e3059009da9288e7ea093337d4cbe50f573f40eca3cb01fa53aa83956\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.167733,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ffabc4b241b6d79213ab2404f1fb603d118b976202e8d324d676b34fde63d046"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"084292e6ed6a69b9c603923331d7f3397bfaacac31fd3f9afaf7197ba2c8c474\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a999a72884907ef632c49c1727908aa3d76d0468fdf73721c85de4dceacf09d9"
+  },
+  {
+   "description": "the union of the positive spectra of core|Hex1,caffeoyl1,sinapoyl1|[M-H]- and core|Hex1,coumaroyl1,feruloyl1|[M+HCOO]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": "core|Hex1,coumaroyl1,caffeoyl1|[M+CH3COO]-",
+      "fired": true,
+      "matched": [
+       "cyclodopa_anion:C9H8NO4@0",
+       "acyl_indoline_coumaroyl:coumaroyl@1",
+       "acyl_indoline_caffeoyl:caffeoyl@2"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,coumaroyl1,caffeoyl1|[M+CH3COO]-",
+       "core|Hex1,coumaroyl1,feruloyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "340.082661",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "724.188308",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "724.188308"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"672ad2ff306899b8df9202027a750f981bb4d8636be9e269c595b290bd98cf02\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_n_acyl_cyclodopa\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true]},\"chosen\":{\"adduct\":\"[M+CH3COO]-\",\"adduct_source\":\"common\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|Hex1,coumaroyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,coumaroyl1,caffeoyl1|[M+CH3COO]-\",\"hypothesis_mz\":724.188308,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H8NO4\",\"kind\":\"product_ion\",\"member_key\":\"C9H8NO4\",\"peak_index\":0,\"peak_mz\":194.045882,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":194.045882,\"term_id\":\"cyclodopa_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C18H14NO6\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":340.082661,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":340.082661,\"term_id\":\"acyl_indoline_coumaroyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C18H14NO7\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":356.077576,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":356.077576,\"term_id\":\"acyl_indoline_caffeoyl\",\"unit_id\":2}],\"neutral_formula\":\"C33H31NO14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":3,\"n_hypotheses\":3,\"n_hypotheses_fired\":3,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,coumaroyl1,caffeoyl1|[M+CH3COO]-\",\"core|Hex1,coumaroyl1,feruloyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":724.188308,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "994bf784c13aaffb6d98a60b488cbdfd7dee57784c1d4386fd3952068595c488"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1,feruloyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.oleracein.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.oleracein.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "194.045882",
+      "500.0"
+     ],
+     [
+      "356.077576",
+      "500.0"
+     ],
+     [
+      "370.093226",
+      "500.0"
+     ],
+     [
+      "694.177743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "694.177743"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"input_sha256\":\"27c67125f7aa2fda0db9d8636d271cde2e7c72e0eef6742f098cd16ab196ea03\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_n_acyl_cyclodopa\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.oleracein.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":694.177743,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"adedc0a789ae234c31a4c197b09ef928f78bf5c1a153f10a8730e617d256c1d5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ea2a3a88647f5b656538e120b979c3479d03744b88e34dabb48f8436689447c0"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

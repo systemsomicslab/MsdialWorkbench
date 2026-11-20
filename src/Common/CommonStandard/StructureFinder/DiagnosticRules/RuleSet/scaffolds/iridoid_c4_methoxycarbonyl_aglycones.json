@@ -1,0 +1,125 @@
+{
+ "entries": [
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C11H14O5",
+   "ions": {},
+   "name": "genipin (aglycone of geniposide, genipin gentiobioside and its 6''-acyl esters)",
+   "origin": "as_published",
+   "scaffold_id": "genipin",
+   "source": [
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "pp. 1798-1800, Fragmentation of geniposide, genipin gentiobioside and 6''-O-trans-sinapoyl genipin gentiobioside; Figure 3a-b; Table 1 (p. 1799)"
+    },
+    {
+     "doi": "10.1002/rcm.3189",
+     "locator": "p. 3046, geniposide; Fig. 4 (p. 3043); Scheme 2 (p. 3044); Table 1 peaks 4-5 (p. 3049)"
+    },
+    {
+     "doi": "10.1039/d1np00014d",
+     "locator": "p.13, Fig. 5"
+    }
+   ]
+  },
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C11H14O6",
+   "ions": {},
+   "name": "scandoside methyl ester type (incl. deacetylasperulosidic acid methyl ester, gardenoside, galioside)",
+   "origin": "as_published",
+   "scaffold_id": "scandoside_methyl_ester_aglycone",
+   "source": [
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1800, Fragmentation of scandoside methyl ester and shanzhiside methyl ester; Figure 4b (p. 1801)"
+    },
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1803, Identification of peaks 5, 11 and 12; Figure 6"
+    },
+    {
+     "doi": "10.1002/rcm.3189",
+     "locator": "pp. 3044-3046; Fig. 3 (p. 3041); Scheme 1 (p. 3042); Table 1 (p. 3049)"
+    }
+   ]
+  },
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C11H16O6",
+   "ions": {},
+   "name": "shanzhiside methyl ester type",
+   "origin": "as_published",
+   "scaffold_id": "shanzhiside_methyl_ester_aglycone",
+   "source": [
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1800, Fragmentation of scandoside methyl ester and shanzhiside methyl ester; Figure 4c (p. 1801)"
+    },
+    {
+     "doi": "10.1002/rcm.3189",
+     "locator": "pp. 3046-3047; Fig. 5 (p. 3045); Scheme 3 (p. 3046)"
+    }
+   ]
+  },
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C11H16O5",
+   "ions": {},
+   "name": "loganetin (loganin aglycone)",
+   "origin": "as_published",
+   "scaffold_id": "loganetin",
+   "source": [
+    {
+     "doi": "10.1039/d1np00014d",
+     "locator": "p.13, Fig. 5"
+    },
+    {
+     "doi": "10.1038/s41592-019-0358-2",
+     "locator": "p. 297, Fig. 2b"
+    }
+   ]
+  },
+  {
+   "class": "secoiridoid",
+   "formula": "C19H22O8",
+   "ions": {},
+   "name": "oleuropein aglycone formula (oleuropein, oleuroside; also 10-hydroxyligustroside)",
+   "origin": "as_published",
+   "scaffold_id": "oleuropein_aglycone",
+   "source": [
+    {
+     "doi": "10.3390/foods10092050",
+     "locator": "Section 3.2.1; Scheme 1; Figures 3A, S1"
+    },
+    {
+     "doi": "10.3390/foods10092050",
+     "locator": "Sections 3.2.1-3.2.3; Schemes 1-2; Figures 3-4; Table 1"
+    },
+    {
+     "doi": "10.1002/jssc.202200323",
+     "locator": "p. 3452, Table 1, compound 3 (10-hydroxy-ligustroside, reference standard)"
+    }
+   ]
+  },
+  {
+   "class": "secoiridoid",
+   "formula": "C19H22O7",
+   "ions": {},
+   "name": "ligstroside aglycone (ligstroside and its C8=C10 isomers)",
+   "origin": "as_published",
+   "scaffold_id": "ligstroside_aglycone",
+   "source": [
+    {
+     "doi": "10.3390/foods10092050",
+     "locator": "Section 3.2.2; Scheme 1 (values in parentheses); Figure 3B"
+    },
+    {
+     "doi": "10.3390/foods10092050",
+     "locator": "Sections 3.2.1-3.2.3; Table 1"
+    }
+   ]
+  }
+ ],
+ "list_id": "iridoid_c4_methoxycarbonyl_aglycones"
+}

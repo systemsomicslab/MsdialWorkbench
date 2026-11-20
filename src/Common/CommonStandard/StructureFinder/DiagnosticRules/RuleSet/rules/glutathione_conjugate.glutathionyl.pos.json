@@ -1,0 +1,188 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_C10H17N3O6S",
+   "loss_C10H15N3O6",
+   "loss_C5H7NO3",
+   "loss_C5H9NO4"
+  ],
+  "motif_id": "glutathione_tripeptide",
+  "negative_examples": [
+   {
+    "pubchem_cid": 151023,
+    "smiles": "CC(C)C[C@@H](C(=O)O)NC(=O)CC[C@@H](C(=O)O)N"
+   },
+   {
+    "pubchem_cid": 123938,
+    "smiles": "C(CC(=O)N[C@@H](CS)C(=O)O)[C@@H](C(=O)O)N"
+   }
+  ],
+  "non_claims": [
+   "the conjugate type (aromatic, aliphatic or benzylic thioether, thioester) is not resolved",
+   "the conjugated xenobiotic is decided by the precursor composition, not by these losses"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 83998,
+    "smiles": "CC(=O)NC1=CC(=C(C=C1)O)SC[C@@H](C(=O)NCC(=O)O)NC(=O)CC[C@@H](C(=O)O)N"
+   },
+   {
+    "pubchem_cid": 97535,
+    "smiles": "C1=CC(=C(C=C1[N+](=O)[O-])[N+](=O)[O-])SC[C@@H](C(=O)NCC(=O)O)NC(=O)CC[C@@H](C(=O)O)N"
+   },
+   {
+    "pubchem_cid": 440018,
+    "smiles": "C[C@H](C(=O)SC[C@@H](C(=O)NCC(=O)O)NC(=O)CC[C@@H](C(=O)O)N)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "loss_C10H17N3O6S"
+     },
+     {
+      "term": "loss_C10H15N3O6"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "loss_C5H7NO3"
+     },
+     {
+      "term": "loss_C5H9NO4"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Dieckhaus 2005 standards: the aromatic thioether lost 273 and 129, the aliphatic thioether 307, 147 and 129, and the thioester 147 and 129 with a printed m/z 278 (585 minus 307); the benzylic thioether lost only 307 and falls outside the logic.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "gamma_glutamyl_amide",
+    "note": "gamma-glutamyl peptides also lose pyroglutamic acid (129); the rule also needs a loss of GSH (307) or of gamma-Glu-dehydroalanyl-Gly (273)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_glutathione_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "glutathione_conjugate.glutathionyl.pos",
+ "source": [
+  {
+   "doi": "10.1021/tx049741u",
+   "locator": "Results 3. TMP-GSH (pp. 634-635)"
+  },
+  {
+   "doi": "10.1021/tx049741u",
+   "locator": "Results 4. D-SG (p. 635)"
+  },
+  {
+   "doi": "10.1021/tx049741u",
+   "locator": "Results 2. DACA-GSH (p. 634)"
+  },
+  {
+   "doi": "10.1021/tx049741u",
+   "locator": "Results 5. 4-HNE-GSH (p. 635)"
+  },
+  {
+   "doi": "10.1002/rcm.3458",
+   "locator": "Introduction (pp. 1032-1033)"
+  },
+  {
+   "doi": "10.1021/ac502818e",
+   "locator": "Table 1 (compilation of published neutral losses, glutathione conjugates row)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "formula": "C10H17N3O6S",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "307.0838, intact GSH; also src:1 (D-SG product ion 278, 585 minus 307), src:3, src:4, src:5",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_C10H17N3O6S",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C10H15N3O6",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "273.0961, gamma-Glu-dehydroalanyl-Gly",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_C10H15N3O6",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C5H7NO3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "129.0426, pyroglutamic acid; also src:1, src:3, src:4",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_C5H7NO3",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C5H9NO4",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "147.0532, glutamic acid (src:4 names it pyroglutamic acid plus water, same formula); also src:3, src:4",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_C5H9NO4",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

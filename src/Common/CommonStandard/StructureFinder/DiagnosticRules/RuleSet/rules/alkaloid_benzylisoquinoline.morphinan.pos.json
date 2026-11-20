@@ -1,0 +1,163 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "ion_c3h8n",
+   "loss_c3h7n",
+   "loss_c3h9n"
+  ],
+  "motif_id": "morphinan",
+  "negative_examples": [
+   {
+    "pubchem_cid": 439653,
+    "smiles": "CN1CCC2=CC(=C(C=C2[C@@H]1CC3=CC(=C(C=C3)OC)O)O)OC"
+   }
+  ],
+  "non_claims": [
+   "the 4,5-epoxy bridge, ring-C unsaturation and substituents are not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5288826,
+    "smiles": "CN1CC[C@]23[C@@H]4[C@H]1CC5=C2C(=C(C=C5)O)O[C@H]3[C@H](C=C4)O"
+   },
+   {
+    "pubchem_cid": 5284371,
+    "smiles": "CN1CC[C@]23[C@@H]4[C@H]1CC5=C2C(=C(C=C5)OC)O[C@H]3[C@H](C=C4)O"
+   },
+   {
+    "pubchem_cid": 5324289,
+    "smiles": "CN1CC[C@]23[C@@H]4C(=CC=C2[C@H]1CC5=C3C(=C(C=C5)OC)O4)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_c3h8n"
+   },
+   {
+    "any": [
+     {
+      "term": "loss_c3h7n"
+     },
+     {
+      "term": "loss_c3h9n"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Morphinans cleave the piperidine ring, giving the m/z 58 iminium ion with the loss of C3H7N (ion a) or C3H9N (a-2H, beam-type only); m/z 58 is absent from ion-trap MS2, and salutaridine and salutaridinol, which lack ion a in triple-quadrupole spectra, are not in the precursor list.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "benzyltetrahydroisoquinoline",
+    "note": "coclaurine and N-methylcoclaurine share the morphine and codeine formulas; N-methyl tetrahydroisoquinoline units of dimers give m/z 58 (doi:10.1255/ejms.660)"
+   },
+   {
+    "motif_id": "aporphine",
+    "note": "N-methyl aporphines lose CH3NH2 first, as thebaine does (doi:10.1002/rcm.1343)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_benzylisoquinoline_morphinans",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_benzylisoquinoline.morphinan.pos",
+ "source": [
+  {
+   "doi": "10.1016/s1044-0305(03)00539-7",
+   "locator": "Results, pp. 1265-1266 (ion a in all morphinans, p. 1266); Tables 1-3 (pp. 1264-1267); Schemes 1-3"
+  },
+  {
+   "doi": "10.1016/s1044-0305(03)00539-7",
+   "locator": "Tables 1-3, ion f in the triple-quadrupole rows (pp. 1264-1267); thebaine and oripavine (p. 1267)"
+  },
+  {
+   "doi": "10.1016/s1044-0305(03)00539-7",
+   "locator": "Results, morphine and codeine, pp. 1265-1266 ((a-2H) only in triple-quadrupole MS/MS, p. 1266); Tables 1-2"
+  },
+  {
+   "doi": "10.1038/s41598-019-57406-7",
+   "locator": "Results, type II section (alkaloids 27 and 28); Fig. 6b"
+  },
+  {
+   "doi": "10.5478/msl.2013.4.4.79",
+   "locator": "Results, p. 82; Scheme 3-C (the text cites Scheme 3-B); Figure 2-IV"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "formula": "C3H8N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "piperidine-ring ion f, m/z 58; listed in the triple-quadrupole rows only, never in ion-trap MS2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c3h8n",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C3H7N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "ion a: loss of CH2=CH-NH-CH3 by piperidine-ring cleavage",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_c3h7n",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C3H9N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "ion (a-2H), triple-quadrupole spectra only; Qing 2020 reads the same ions as loss of CH3NH2 and C2H4",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_c3h9n",
+   "term_source": "src:2",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18; family alkaloid_benzylisoquinoline)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

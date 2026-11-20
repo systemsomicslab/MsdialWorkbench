@@ -1,0 +1,751 @@
+{
+ "cases": [
+  {
+   "description": "h* = cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+, precursor at its oracle m/z; one peak per support member: y0:A, b02:C7H5O3",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"anthocyanin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"09468b0b935fbd8a33dbf6d342518c261b8593f1b362772b1314df5dcab9a783\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"anthocyanin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"hypothesis_mz\":785.192355,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":287.055014,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"cyanidin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"acetyl\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":1.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2cbde9c1561aafdc4576004e689af2c255260e26f4961daa33fc6182b424f923"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ without the peaks of required term y0; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"e7d1ee4b802852772d4f927c85a13f4601d9cc15ae54853835fce19f499c2d60\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6279b504e69481515bffa2fdabddaee32dfd44793c6e0dfa353536e275c74bc5"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ without the peaks of required term b02; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "drop_b02",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"ccefa167966c7f0911bb6d0d215192b95d1b98620cf2b2927cebf25b6a545f23\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5c86b38165fbf7399b8cec3156d1c32a4395e868c7fb2ab29e7f1337bf3a3d28"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ plus veto a13:C7H5O4 at intensity 1000",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+      "fired": false,
+      "matched": [
+       "y0:A@2",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "153.018235",
+      "1000.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "veto_a13",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":1000.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"70542b2292f9aedf43efae77722d31e1ac4a2f32ceaa91b4bd92f66880169896\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1\",\"failure\":\"veto\",\"fired\":false,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"hypothesis_mz\":785.192355,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":287.055014,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"cyanidin\",\"score\":1.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"acetyl\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":true,\"i_a\":1.000000,\"i_b_max\":0.500000,\"peak_index\":1,\"peak_mz\":153.018235,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":true,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d8dd809d87a3b0be8c6477ebfd2d7a03795b5ad76a7125cb753145d076e37475"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with y0:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.060004",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"anthocyanin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"2966ae740ed7d2cb4d39af3191d998c20b0066b53d9d7c903ecb041500ecceef\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"anthocyanin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"hypothesis_mz\":785.192355,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":17.383,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":287.060004,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"cyanidin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"acetyl\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":1.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "70454d81e308d5bc22a2e16ef04a756963ff10a8457307d9b7f6b7f71575c5bf"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with y0:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.060024",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"99aa9d7f6aeb5e4575fac8b1f4455f9877eb90d58e9142f40e60c6b6aa3fd45f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b072dc53661a369df2da042f7a097197a620b25813b3745a691b02f37dc4e7ea"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with y0:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.050024",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"anthocyanin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"152379b843df063776009ebcbc0e6183520fc9ca727e8a55a7e9887cde7a4bea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"anthocyanin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"hypothesis_mz\":785.192355,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-17.384,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":287.050024,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"cyanidin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"acetyl\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":1.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "21a7a85cb13faae7b3e90c5020be351bb78dce11c9c4daeef26f9f78b542c733"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with y0:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.050004",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"050e61a053abe23beb15af6202d0a051eb8693af701676c8e3102e1dc6174549\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1e2efd89b3969c6ed64facccdc0b06ae7bcb533a5e731ad761406a6e9b227c27"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 15,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+       "cyanidin|dHex1,coumaroyl1,sinapoyl1|[M+H]+",
+       "cyanidin|dHex1,feruloyl2|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.202345",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.202345"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"anthocyanin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"13981e65f37a7040db22d3eaa3fda7d284743b60928230b6ca58d344481e0450\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"anthocyanin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"hypothesis_mz\":785.192355,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":287.055014,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"cyanidin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"acetyl\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":1.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":2,\"n_hypotheses\":15,\"n_hypotheses_fired\":3,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"cyanidin|dHex1,coumaroyl1,sinapoyl1|[M+H]+\",\"cyanidin|dHex1,feruloyl2|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.202345,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9db912f164ae06796116a4bc58588f94c855254e1d7612a1303372fe802cc66e"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|dHex1,coumaroyl1,sinapoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 13,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "cyanidin|dHex1,coumaroyl1,sinapoyl1|[M+H]+",
+       "cyanidin|dHex1,feruloyl2|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.202365",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.202365"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"anthocyanin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"17afbb0cf6eb7cf84de05484d8bf7ba9b903e16e533f569bb66d57ed7bdea6a9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"anthocyanin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|dHex1,coumaroyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|dHex1,coumaroyl1,sinapoyl1|[M+H]+\",\"hypothesis_mz\":785.207611,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":287.055014,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C41H36O16\",\"precursor_error_da\":-0.005246,\"scaffold_id\":\"cyanidin\",\"score\":2.000000,\"units\":{\"coumaroyl\":1,\"dHex\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":1.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":13,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"cyanidin|dHex1,coumaroyl1,sinapoyl1|[M+H]+\",\"cyanidin|dHex1,feruloyl2|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.202365,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e7dd89ab71c7c519871cca33302640e67b3ec8601b17f611f0636752635ffbc8"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.182365",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.182365"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"anthocyanin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"7236cf1b1f64fc1d641ee1e5fce2ce3b64e580108701a2494636aa369f052f3e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"anthocyanin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"hypothesis_mz\":785.192355,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":287.055014,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"cyanidin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"acetyl\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":1.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.182365,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "97acac110b3cd0a39ce4e6b81a2117387b449e0ab5393cb94e7829f8794a8a82"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.182345",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.182345"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"2f0fe436778488193abb915a27f2cb358804a6db6d901c08ba8942999c7fb119\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.182345,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d0e5027e4ded35131b9b4992aa7e4c072b2db2342cc635a1f6553be43dcf65a2"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"f82821fd9a49521345ee2850f22f31fe2e7875c1e598c607eae7c8a196950314\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9fa741c359ad4beea1348ccca93762b29c6c5bb39ff7e81be55fafcc36a07cc9"
+  },
+  {
+   "description": "the union of the positive spectra of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ and malvidin|Hex1,malonyl1,sinapoyl1|[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "b02:C7H5O3@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+",
+       "malvidin|Hex1,malonyl1,sinapoyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "181.049535",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "331.081229",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"anthocyanin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"642d7155f9ec4cbbbb0c73e739bc6c316f7a19e22b6572e41a45d2c387ab10ac\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"anthocyanin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"hypothesis_mz\":785.192355,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C15H11O6\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":287.055014,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":287.055014,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H5O3\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O3\",\"peak_index\":0,\"peak_mz\":137.023320,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":137.023320,\"term_id\":\"b02\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O19\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"cyanidin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"Pen\":1,\"acetyl\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":1.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"a13\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+\",\"malvidin|Hex1,malonyl1,sinapoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d952ee37512758ca60b75e77d7930066ea4572db5cce9af4b5c66b5815a3cd8b"
+  },
+  {
+   "description": "the positive spectrum of cyanidin|Hex1,Pen1,acetyl1,caffeoyl1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "anthocyanin.anthocyanin.pos"
+    ],
+    "outcomes": {
+     "anthocyanin.anthocyanin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "287.055014",
+      "500.0"
+     ],
+     [
+      "785.192355",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "785.192355"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"input_sha256\":\"09468b0b935fbd8a33dbf6d342518c261b8593f1b362772b1314df5dcab9a783\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"anthocyanin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"anthocyanin.anthocyanin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":785.192355,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"d16f6f1134857c27e060ec46f569c084bda460ad693078dfb14cb402923505c1\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e69143461d513267b67b5f485d40c804b902c59b67df5112e9a4c3a6fee6ef8c"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

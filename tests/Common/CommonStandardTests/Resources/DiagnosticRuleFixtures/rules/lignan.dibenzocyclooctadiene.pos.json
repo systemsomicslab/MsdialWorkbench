@@ -1,0 +1,616 @@
+{
+ "cases": [
+  {
+   "description": "h* = deoxyschisandrin||[M+H]+, precursor at its oracle m/z; one peak per support member: loss_c5h10:C5H10, loss_c6h13o:C6H13O",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": "deoxyschisandrin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_c5h10:C5H10@1",
+       "loss_c6h13o:C6H13O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deoxyschisandrin||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"44dd57adfb4a260679147d320b23d34d23a6be3800b7d82cbdc6095e18bb11b5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deoxyschisandrin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deoxyschisandrin||[M+H]+\",\"hypothesis_mz\":417.227165,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H10\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C5H10\",\"peak_index\":1,\"peak_mz\":347.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":347.148914,\"term_id\":\"loss_c5h10\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H13O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H13O\",\"peak_index\":0,\"peak_mz\":316.130525,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":316.130525,\"term_id\":\"loss_c6h13o\",\"unit_id\":1}],\"neutral_formula\":\"C24H32O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"deoxyschisandrin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"deoxyschisandrin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3f424c84f2280bfbbd1e4722c587ee16b7f848c3f7e643055a1d7f076311adce"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ without the peaks of required term loss_c5h10; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "drop_loss_c5h10",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"cce593c25c6bbe2c4ac81fa6ce56d5504976fe3fcd8a0e86d557f3fd20d76c98\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5ae62669a5486234b421f32e7fd37e249e97261d3fc3eb0af83c9b7000a78253"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ without the peaks of required term loss_c6h13o; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "drop_loss_c6h13o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"b81e7206b42f8849c0d95269eeff0c43ef69c21ecddcf18bc469174446ea8d23\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5af91762d3ed87e99dae5981e81105ad7f7fd72e0179cb24edb9881c4bb54317"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with loss_c5h10:C5H10 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": "deoxyschisandrin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_c5h10:C5H10@1",
+       "loss_c6h13o:C6H13O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deoxyschisandrin||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.153904",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"d6051af90fe64334eb242d40c158564f6602f82080692b0514983b4e711cad76\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deoxyschisandrin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deoxyschisandrin||[M+H]+\",\"hypothesis_mz\":417.227165,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":14.373,\"ion_formula\":\"C5H10\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C5H10\",\"peak_index\":1,\"peak_mz\":347.153904,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":347.148914,\"term_id\":\"loss_c5h10\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H13O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H13O\",\"peak_index\":0,\"peak_mz\":316.130525,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":316.130525,\"term_id\":\"loss_c6h13o\",\"unit_id\":1}],\"neutral_formula\":\"C24H32O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"deoxyschisandrin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"deoxyschisandrin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e0439b7097f395990ddcf9d49459a8bfc59feedc862100aa5b436a38ba9628df"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with loss_c5h10:C5H10 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.153924",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"896d6697c0ab665c4935a7be6a96fb26d96125feea873ce58316e66b2bc683ca\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5238d0dd03246e89b62b4f75947787fa95cbc525be0cb7685665501f756ebcd4"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with loss_c5h10:C5H10 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": "deoxyschisandrin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_c5h10:C5H10@1",
+       "loss_c6h13o:C6H13O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deoxyschisandrin||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.143924",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"3c08ee2ac4c7cb5282d3ff9067992580989fe7920cd1c1d3ae23d2cc8521687c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deoxyschisandrin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deoxyschisandrin||[M+H]+\",\"hypothesis_mz\":417.227165,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-14.376,\"ion_formula\":\"C5H10\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C5H10\",\"peak_index\":1,\"peak_mz\":347.143924,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":347.148914,\"term_id\":\"loss_c5h10\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H13O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H13O\",\"peak_index\":0,\"peak_mz\":316.130525,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":316.130525,\"term_id\":\"loss_c6h13o\",\"unit_id\":1}],\"neutral_formula\":\"C24H32O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"deoxyschisandrin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"deoxyschisandrin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5008b7a73a1e3e2a6f7b1f50f7debf22849965fb91996f929be44eba72e485c9"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with loss_c5h10:C5H10 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.143904",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"fd4f6166a10b385428d1dbb1b48b04cf7d2c086b95b861eb3ad066f9427883b9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a43c277d36d9fd48904cd6ef4060fa092c1044964670c91f03a88f5664dc2d2c"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": "deoxyschisandrin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_c5h10:C5H10@1",
+       "loss_c6h13o:C6H13O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deoxyschisandrin||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.237155",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.237155"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"23bc61ae14ef255015887fdc126ee2ab75c7ae8a4ef0c18d031ce12aabe40164\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deoxyschisandrin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deoxyschisandrin||[M+H]+\",\"hypothesis_mz\":417.227165,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H10\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C5H10\",\"peak_index\":1,\"peak_mz\":347.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":347.148914,\"term_id\":\"loss_c5h10\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H13O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H13O\",\"peak_index\":0,\"peak_mz\":316.130525,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":316.130525,\"term_id\":\"loss_c6h13o\",\"unit_id\":1}],\"neutral_formula\":\"C24H32O6\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"deoxyschisandrin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"deoxyschisandrin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.237155,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3491878f9e35ae5c63bf8381166c05ce2306388bf9b9d4c744f9ef7ce6627360"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.237175",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.237175"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"63eb7558a2f763eb7c918cf7778cb907056f5848fc059ccb89e4c9c5cc6c57bc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.237175,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f5a95ee280e4b455752fb94c81f5467d9e23ec4877402046843db7457f3580b7"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": "deoxyschisandrin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_c5h10:C5H10@1",
+       "loss_c6h13o:C6H13O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deoxyschisandrin||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.217175",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.217175"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"d7b5cb2c7b2e8fed4110e6d81f4026dc220677724bb5b9e4b07b1a2d07598a2a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_lignan\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deoxyschisandrin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deoxyschisandrin||[M+H]+\",\"hypothesis_mz\":417.227165,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C5H10\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C5H10\",\"peak_index\":1,\"peak_mz\":347.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":347.148914,\"term_id\":\"loss_c5h10\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H13O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H13O\",\"peak_index\":0,\"peak_mz\":316.130525,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":316.130525,\"term_id\":\"loss_c6h13o\",\"unit_id\":1}],\"neutral_formula\":\"C24H32O6\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"deoxyschisandrin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"deoxyschisandrin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.217175,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "eeec24996e25c04671c6cb19707f0b3cb16411ab12b27d9b87165a5c8e981586"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.217155",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.217155"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"2c8728af21f148af0b73a6f6cacc80a9969dc596d8827c99c983b72c86d18d6f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.217155,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "dee49e0e4610d17e8430cfab7aec748d8fcbcff137162a834a374810a4529010"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"05f412f54b5424672ea6d91da4e9097d4f41d13fd56379fc0a2ee65fb6bd4bc1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "28ac141989a5ed7a3bc9555a29ba6ceb32ec24d396da1e5d1111e8f5d5c092d0"
+  },
+  {
+   "description": "the positive spectrum of deoxyschisandrin||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "316.130525",
+      "500.0"
+     ],
+     [
+      "347.148914",
+      "500.0"
+     ],
+     [
+      "417.227165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "417.227165"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"input_sha256\":\"44dd57adfb4a260679147d320b23d34d23a6be3800b7d82cbdc6095e18bb11b5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_lignan\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":417.227165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2de844f9786b02aac1df70a15f94840e472dd0df91ed90470bf49f518cbaf79e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c72c7e8533b237ef475f1e4d857a0b10b5d05b0faea2231e0851d2dfc38b5824"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

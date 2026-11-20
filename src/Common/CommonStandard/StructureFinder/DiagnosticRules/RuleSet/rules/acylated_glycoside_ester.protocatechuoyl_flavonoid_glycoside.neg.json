@@ -1,0 +1,201 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "acid_anion",
+   "acylhexose_ion",
+   "loss_acyl",
+   "loss_acyl_hex"
+  ],
+  "motif_id": "hydroxybenzoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5281643,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O[C@H]4[C@@H]([C@H]([C@H]([C@H](O4)CO)O)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the sugar that carries the acyl group and the acyl position are not resolved",
+   "the aglycone and the acyl identity come from the hypothesis and are reported, not claimed"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 163184122,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C=C(C=C3O2)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)COC(=O)C5=CC(=C(C=C5)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 162859605,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)OC(=O)C5=CC(=C(C=C5)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:2",
+   "of": [
+    {
+     "term": "acid_anion"
+    },
+    {
+     "term": "acylhexose_ion"
+    },
+    {
+     "term": "loss_acyl"
+    },
+    {
+     "term": "loss_acyl_hex"
+    }
+   ]
+  }
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured: the protocatechuoyl unit exists only as a request, and all four ions come from one tentatively identified quercetagetin protocatechuoylhexoside in one triple-quadrupole study (src:0).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycones",
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     3
+    ],
+    "HexA": [
+     0,
+     1
+    ],
+    "Pen": [
+     0,
+     1
+    ],
+    "dHex": [
+     0,
+     2
+    ],
+    "protocatechuoyl": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.protocatechuoyl_flavonoid_glycoside.neg",
+ "source": [
+  {
+   "doi": "10.1002/rcm.1697",
+   "locator": "Results and Discussion, Acylated flavonoid-O-glycosides; Tables 1-2; Fig. 3b, 3d"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions; P3 proposal, Author input 2026-11-15, Q6 principle 1",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision: a class claim needs two or three diagnostic ions jointly (author, 2026-11-15)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:1",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "protocatechuate C7H5O4- 153 (src:0)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "acid_anion",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "protocatechuoyl",
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:1",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[protocatechuoylhexose-H-H2O]- at nominal m/z 297 (src:0, which labels it [acylhexose-H]-)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "acylhexose_ion",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "protocatechuoyl",
+    "plus": "C6H9O5"
+   }
+  },
+  {
+   "floor_source": "src:1",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of the protocatechuoyl residue, 136 (src:0)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_acyl",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "protocatechuoyl",
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:1",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of the protocatechuoylhexose as one unit, 298 (src:0)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_acyl_hex",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "protocatechuoyl",
+    "plus": "C6H10O5"
+   }
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18; split from hydroxybenzoyl_flavonoid_glycoside.neg at the review fix, 2026-11-19) from the LLM-extracted candidate records of candidates-20261118; terms source-checked 2026-11-18, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

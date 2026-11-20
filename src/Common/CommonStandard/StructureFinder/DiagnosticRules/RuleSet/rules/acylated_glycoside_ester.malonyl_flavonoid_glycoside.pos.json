@@ -1,0 +1,180 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "y0",
+   "loss_malonyl"
+  ],
+  "motif_id": "malonyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 107971,
+    "smiles": "C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281377,
+    "smiles": "C1=CC(=CC=C1C2=COC3=CC(=CC(=C3C2=O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 156155,
+    "smiles": "CC(=O)OC[C@@H]1[C@H]([C@@H]([C@H]([C@@H](O1)OC2=CC3=C(C=C2)C(=O)C(=CO3)C4=CC=C(C=C4)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the malonyl position and the sugar that carries it are not resolved",
+   "the aglycone comes from the hypothesis and is reported, not claimed",
+   "unit counts (hexoses, pentose, malonyl groups) are not claimed"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 9913968,
+    "smiles": "C1=CC(=CC=C1C2=COC3=C(C2=O)C=CC(=C3)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)COC(=O)CC(=O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 15934091,
+    "smiles": "C1=CC(=CC=C1C2=COC3=CC(=CC(=C3C2=O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)COC(=O)CC(=O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 23724663,
+    "smiles": "COC1=CC=C(C=C1)C2=COC3=C(C2=O)C=CC(=C3)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)COC(=O)CC(=O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5282159,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)COC(=O)CC(=O)O)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "y0"
+   },
+   {
+    "term": "loss_malonyl"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Two ions jointly: the protonated aglycone of a flavonoid glycoside hypothesis carrying malonyl, and the loss of the malonyl residue (86.0004 Da), which the sources report as weak or absent in many spectra.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycones",
+   "unit_totals": {
+    "acyl": [
+     1,
+     2
+    ],
+    "sugar": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     2
+    ],
+    "Pen": [
+     0,
+     1
+    ],
+    "malonyl": [
+     1,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.malonyl_flavonoid_glycoside.pos",
+ "source": [
+  {
+   "doi": "10.1007/s13361-015-1240-9",
+   "locator": "Methods and Materials, Mass Spectrometry; Results and Discussion, Collision Energy Optimization Experiment for the Three Different Neutral Loss Masses; Figure 1"
+  },
+  {
+   "doi": "10.1007/s13361-015-1240-9",
+   "locator": "Results and Discussion, Elaboration of the Compounds Giving Precursor Ions at m/z 503, 531, 533 and 547"
+  },
+  {
+   "doi": "10.1016/j.chroma.2024.465548",
+   "locator": "Sec. 3.2.1; Sec. 3.2.2; Fig. 2"
+  },
+  {
+   "doi": "10.3390/molecules24213929",
+   "locator": "Sec. 2.2.1-2.2.3; Table 2"
+  },
+  {
+   "doi": "10.3390/molecules24213929",
+   "locator": "Sec. 2.2.2; Table 2; Fig. 4B"
+  },
+  {
+   "doi": "10.1002/jms.1344",
+   "locator": "Results and Discussion, Malonylated flavonoid glycosides from L. angustifolius leaves; Table 2; Fig. 3"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "Acylated glycosyl flavonoids; Table 1"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:7",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[aglycone+H]+ after loss of malonylhexose (248.0532), the most prominent product ion; also src:1, src:3, src:5",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "y0",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "formula": "C3H2O3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of the malonyl residue C3H2O3 86.0004 from [M+H]+ (neutral-loss map in src:0; 519 to 433 in src:5; listed in src:6); weak, in 19 of 48 compounds in src:2; src:4 shows it only after water losses",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_malonyl",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18) from the LLM-extracted candidate records of candidates-20261118; source-checked 2026-11-18, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

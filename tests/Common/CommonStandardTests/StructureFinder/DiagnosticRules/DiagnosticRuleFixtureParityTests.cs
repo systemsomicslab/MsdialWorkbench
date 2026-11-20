@@ -63,10 +63,12 @@ public class DiagnosticRuleFixtureParityTests
         Assert.AreEqual(EngineFixtures.ManifestFormat, ((JsonString)manifest["format"]).Value);
         Assert.AreEqual(1L, ((JsonInteger)manifest["format_version"]).Value);
         Assert.AreEqual(DiagnosticRuleEvaluator.EngineSemantics, ((JsonString)manifest["engine_semantics"]).Value);
+        // The engine entries; ShippedRuleFixtureTests checks the shipped-set entries and the rule-set pin.
         var files = (JsonObject)manifest["files"];
-        CollectionAssert.AreEqual(new[] { EngineFixtures.LoaderErrorsFile, EngineFixtures.SemanticsFile }, files.Keys.ToArray());
+        CollectionAssert.AreEqual(new[] { EngineFixtures.LoaderErrorsFile, EngineFixtures.SemanticsFile },
+                                  files.Keys.Where(k => k.StartsWith("engine/", StringComparison.Ordinal)).ToArray());
         var source = Encoding.ASCII.GetString(BytesOrInconclusive(EngineFixtures.SourceFile));
-        foreach (var m in files.Members) {
+        foreach (var m in files.Members.Where(m => m.Key.StartsWith("engine/", StringComparison.Ordinal))) {
             var bytes = BytesOrInconclusive(m.Key);
             var pin = (JsonObject)m.Value;
             var sha = ((JsonString)pin["sha256"]).Value;
@@ -168,9 +170,14 @@ public class DiagnosticRuleFixtureParityTests
         Assert.AreEqual(invariant, actual);
     }
 
+    /// <summary>The semantics cases that sit on a ratio comparison on purpose, built from exactly representable
+    /// intensities (design 7.2): their ratio violations are expected, every other margin still holds.</summary>
+    private static readonly string[] DeliberateRatioEqualities = { "ordering_equal", "veto_stronger_than_equal" };
+
     [TestMethod]
     public void TheSemanticsInputsKeepTheirMargins() {
         var failures = new List<string>();
+        var equalities = new HashSet<string>(StringComparer.Ordinal);
         foreach (var c in Cases(EngineFixtures.SemanticsFile)) {
             var peaks = (JsonArray)((JsonObject)c["input"])["peaks"];
             foreach (var p in peaks.Cast<JsonArray>().SelectMany(x => x).Cast<JsonString>()) {
@@ -179,10 +186,16 @@ public class DiagnosticRuleFixtureParityTests
                 Assert.IsTrue(dot > 0 && p.Value.Length - dot - 1 <= 6, Name(c) + " " + p.Value);
             }
             foreach (var v in EngineFixtures.AuditMargins(c)) {
+                if (DeliberateRatioEqualities.Contains(Name(c)) && v.Contains(" ratio: ")) {
+                    equalities.Add(Name(c));
+                    continue;
+                }
                 failures.Add(Name(c) + ": " + v);
             }
         }
         Assert.AreEqual(0, failures.Count, string.Join("\n", failures));
+        // The audit sees each deliberate equality, so it would flag one that is not deliberate.
+        CollectionAssert.AreEquivalent(DeliberateRatioEqualities, equalities.ToList());
     }
 
     [TestMethod]
