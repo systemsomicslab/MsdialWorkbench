@@ -13613,7 +13613,7 @@ AdductIon adduct)
             if (maxExtAcylDoubleBond > totalDoubleBond) maxExtAcylDoubleBond = totalDoubleBond;
             var sphOxidized = 2;
             var acylOxidized = totalOxidized - sphOxidized;
-
+            if (acylOxidized < 0) return null;
             if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M+FA-H]-" || adduct.AdductIonName == "[M+Hac-H]-" ||
@@ -13661,8 +13661,8 @@ AdductIon adduct)
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
                                     if (acylCarbon <= 0 || acylDouble < 0) continue;
 
-                                    var extAcylLoss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + H2O; //[M-FA]-
-                                    var extAcylLoss2 = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass;      //[M-FA-H2O]-
+                                    var extAcylLoss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.ProtonMass + H2O; //[M-FA]-
+                                    var extAcylLoss2 = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.ProtonMass;      //[M-FA-H2O]-
                                     var extAcylHexloss = extAcylLoss - Sugar162;         // 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
                                     var sphLoss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2));  //[M-Sph+C2H6NO]-
@@ -13678,9 +13678,16 @@ AdductIon adduct)
 
                                     var foundCount = 0;
                                     var averageIntensity = 0.0;
-                                    LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+                                    LipidMsmsCharacterizationUtility.countFragmentExistence(
+                                        spectrum, query, ms2Tolerance,
+                                        out foundCount, out averageIntensity);
+                                    var isSphLossFound =
+                                        LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(
+                                            spectrum, ms2Tolerance, sphLoss, 1.0)
+                                        || LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(
+                                            spectrum, ms2Tolerance, sphLoss2, 1.0);
 
-                                    if (foundCount >= 4)
+                                    if (foundCount >= 4 && isSphLossFound)
                                     {
                                         var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
                                         acylCarbon, acylDouble, extCarbon, extDouble, averageIntensity, acylOxidized);
@@ -13738,7 +13745,7 @@ AdductIon adduct)
 
                                     var exAcylQuery = new List<SpectrumPeak>() {
                                         new SpectrumPeak() { Mass = exAcylSugarIon, Intensity = 1 },
-                                        new SpectrumPeak() { Mass = exAcylSugarLossIon, Intensity = 1 }
+                                        //new SpectrumPeak() { Mass = exAcylSugarLossIon, Intensity = 1 } // same as ceramideIon_1WaterLoss
                                     };
 
                                     var ceramideQuery = new List<SpectrumPeak>() {
@@ -13808,6 +13815,7 @@ AdductIon adduct)
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             var sphOxidized = 2;
             var acylOxidized = totalOxidized - sphOxidized;
+            if (acylOxidized < 0) return null;
             var hydrogenString = "d";
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
