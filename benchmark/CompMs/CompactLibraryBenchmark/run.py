@@ -32,6 +32,8 @@ def main():
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--records', default=30000, type=int)
     parser.add_argument('--pairs', default=3, type=int)
+    parser.add_argument('--compact-baseline', action='store_true',
+                        help='Compare compact write encoding against the PR1 compact-memory baseline')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -56,18 +58,21 @@ def main():
                 # Retain reports and logs, not repeated large intermediate archives.
                 stem.with_suffix('.bin').unlink()
         selected = [row for row in rows if row['mode'] == mode]
-        for field in ('inputSha256', 'archiveSha256', 'archiveBytes', 'eiResultSha256', 'lcResultSha256'):
+        fields = ['inputSha256', 'decodedContentSha256', 'eiResultSha256', 'lcResultSha256']
+        if not args.compact_baseline:
+            fields += ['archiveSha256', 'archiveBytes']
+        for field in fields:
             if len({row[field] for row in selected}) != 1:
                 raise RuntimeError(f'{mode}: {field} differs between runs or versions')
         for row in selected:
-            expected = args.records if row['version'] == 'candidate' else 0
+            expected = args.records if args.compact_baseline or row['version'] == 'candidate' else 0
             for field in ('compactAfterImport', 'compactAfterScoring', 'compactAfterSave', 'compactAfterLoad'):
                 if row[field] != expected:
                     raise RuntimeError(f'{mode}: unexpected expansion in {field}: {row[field]}')
     (args.output / 'results.json').write_text(json.dumps(rows, indent=2) + '\n')
     for mode in ('integer', 'fractional'):
         print(mode)
-        for metric in ('retainedManagedBytes', 'loadedRetainedManagedBytes', 'importMs', 'saveMs', 'loadMs',
+        for metric in ('archiveBytes', 'retainedManagedBytes', 'loadedRetainedManagedBytes', 'importMs', 'saveMs', 'loadMs',
                        'eiPassMs', 'lcPassMs', 'processPeakWorkingSetBytes'):
             values = []
             for version in ('baseline', 'candidate'):

@@ -80,3 +80,18 @@ No private data or multi-gigabyte stress input is needed. Leave enough memory fo
 the baseline process (about 0.6 GiB peak working set in the recorded run). Timing
 is sensitive to memory pressure, background load and filesystem caching; three
 pairs are a local observation, not a statistical guarantee.
+
+## Compare compact writing with compact memory storage
+
+For the compact-save split, use upstream `master` after #895 (`4579a8de`) as
+the baseline and this change as the candidate. Build the harness from this
+branch once against the baseline assemblies and copy it as above. Add
+`--compact-baseline` to the runner command. Both versions must keep all eligible
+spectra compact. Archive bytes may differ between versions; decoded reference
+content and full EI/LC result hashes must match. Each version must still pass
+its own byte-identical save/load round trip. Decoded-content hashing runs after
+the load measurement and does not retain expanded spectra. Archive size is the
+compressed library stream, not the entire project or its ZIP container. Record
+machine-specific results outside the repository and include them in the PR
+description. This harness does not measure the historical 1.7 reader, cold disk
+I/O, GUI startup, or multi-gigabyte chunking.

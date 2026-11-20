@@ -147,16 +147,50 @@ public sealed class CompactLibraryTests
         using var saved = new MemoryStream();
         database.Save(saved);
         Assert.IsTrue(database.Database[0].IsSpectrumCompact, "Saving must not pin all mutable peak lists.");
-        CollectionAssert.AreEqual(legacy.ToArray(), saved.ToArray(), "Saved bytes must use the unchanged library format.");
+        Assert.IsTrue(saved.Length < legacy.Length, "Plain spectra should use the compact writer encoding.");
         saved.Position = 0;
-        var oldReader = LargeListMessagePack.Deserialize<MoleculeMsReference>(saved);
-        Assert.AreEqual(references.Count, oldReader.Count);
+        var standardReader = LargeListMessagePack.Deserialize<MoleculeMsReference>(saved);
+        Assert.AreEqual(references.Count, standardReader.Count);
         for (var i = 0; i < references.Count; i++) {
-            CollectionAssert.AreEqual(MessagePackSerializer.Serialize(references[i]), MessagePackSerializer.Serialize(oldReader[i]));
+            CollectionAssert.AreEqual(MessagePackSerializer.Serialize(references[i]), MessagePackSerializer.Serialize(standardReader[i]));
         }
-        Assert.AreEqual("Keep annotation", oldReader[1].Spectrum[0].Comment);
-        Assert.AreEqual(SpectrumComment.reference, oldReader[1].Spectrum[0].SpectrumComment);
-        Assert.AreEqual(plain.Spectrum[0].Mass, oldReader[0].Spectrum[0].Mass);
+        Assert.AreEqual("Keep annotation", standardReader[1].Spectrum[0].Comment);
+        Assert.AreEqual(SpectrumComment.reference, standardReader[1].Spectrum[0].SpectrumComment);
+        Assert.AreEqual(plain.Spectrum[0].Mass, standardReader[0].Spectrum[0].Mass);
+    }
+
+    [TestMethod]
+    public void CompactSaveShrinksPlainSpectraAndRemainsReadableByStandardResolver() {
+        var references = Enumerable.Range(0, 32).Select(index => new MoleculeMsReference {
+            ScanID = index,
+            Name = $"Library record {index}",
+            Spectrum = Enumerable.Range(0, 128).Select(peak => new SpectrumPeak(50 + peak, 1000 - peak)).ToList(),
+        }).ToList();
+        using var expected = new MemoryStream();
+        LargeListMessagePack.Serialize(expected, references);
+        var database = new MoleculeDataBase(references, "Test", DataBaseSource.Msp, SourceType.MspDB, "local.msp");
+        foreach (var reference in references) { Assert.IsTrue(reference.TryCompactSpectrum()); }
+
+        using var compact = new MemoryStream();
+        database.Save(compact);
+
+        Assert.IsTrue(compact.Length < expected.Length,
+            $"Expected smaller plain spectra, baseline {expected.Length} bytes and compact {compact.Length} bytes.");
+        Assert.IsTrue(references.All(reference => reference.IsSpectrumCompact), "Saving must not expand retained spectra.");
+        compact.Position = 0;
+        var standardReader = LargeListMessagePack.Deserialize<MoleculeMsReference>(compact);
+        expected.Position = 0;
+        var original = LargeListMessagePack.Deserialize<MoleculeMsReference>(expected);
+        Assert.AreEqual(original.Count, standardReader.Count);
+        for (var i = 0; i < original.Count; i++) {
+            Assert.AreEqual(original[i].ScanID, standardReader[i].ScanID);
+            Assert.AreEqual(original[i].Name, standardReader[i].Name);
+            Assert.AreEqual(original[i].Spectrum.Count, standardReader[i].Spectrum.Count);
+            for (var peak = 0; peak < original[i].Spectrum.Count; peak++) {
+                Assert.AreEqual(BitConverter.DoubleToInt64Bits(original[i].Spectrum[peak].Mass), BitConverter.DoubleToInt64Bits(standardReader[i].Spectrum[peak].Mass));
+                Assert.AreEqual(BitConverter.DoubleToInt64Bits(original[i].Spectrum[peak].Intensity), BitConverter.DoubleToInt64Bits(standardReader[i].Spectrum[peak].Intensity));
+            }
+        }
     }
 
     [TestMethod]

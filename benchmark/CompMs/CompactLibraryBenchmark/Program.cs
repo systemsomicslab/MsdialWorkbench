@@ -108,6 +108,17 @@ internal static class Program {
         using (var stream = File.Create(roundTrip)) { database.Save(stream); }
         if (HashFile(archive) != HashFile(roundTrip)) { throw new Exception("Serialized contents changed after load/save."); }
         File.Delete(roundTrip);
+        // Compare decoded content across write formats without retaining expanded spectra.
+        var copy = typeof(MoleculeMsReference).GetMethod("CreateSerializationCopy");
+        using (var hash = SHA256.Create()) {
+            foreach (var reference in database.Database) {
+                var record = copy == null ? reference : (MoleculeMsReference)copy.Invoke(reference, null);
+                var bytes = MessagePackSerializer.Serialize(record);
+                hash.TransformBlock(bytes, 0, bytes.Length, bytes, 0);
+            }
+            hash.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+            result["decodedContentSha256"] = BitConverter.ToString(hash.Hash).Replace("-", "").ToLowerInvariant();
+        }
         GC.KeepAlive(database);
     }
 
