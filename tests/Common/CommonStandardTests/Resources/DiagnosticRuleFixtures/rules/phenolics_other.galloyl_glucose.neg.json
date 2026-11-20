@@ -1,0 +1,673 @@
+{
+ "cases": [
+  {
+   "description": "h* = core|galloyl2|[M-H]-, precursor at its oracle m/z; one peak per support member: loss_gallic_acid:C7H6O5, loss_galloyl:C7H4O4, gallate:C7H5O5",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_gallic_acid:C7H6O5@1",
+       "loss_galloyl:C7H4O4@2",
+       "gallate:C7H5O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"62b430807e48585acfb05ed704841404740c066b7769b6b36843152ac3a264f3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H6O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O5\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"loss_gallic_acid\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":2,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O5\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"gallate\",\"unit_id\":2}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "abec74f4203d86cc430aed2c1e7d6609ad9a6c4f4f2953ecc14708fa6c364dac"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with 2 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_gallic_acid:C7H6O5@0",
+       "loss_galloyl:C7H4O4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"a4b81ee9d23e5f264910fd391ea2054741fc7b0b7e23550fc71c8a4ae5f1730d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H6O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O5\",\"peak_index\":0,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"loss_gallic_acid\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":1,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "83eb50b07b299024fcac59188b5bb372ffd3defc8be07e7a4485873e12f22c7a"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with 1 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"97f9f6119926b7c734a3f7dfbb2c537b624ef4ad41720b6a06af00e1cb7c8355\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cfec32d8cf2d258de6db768363fd00166ad6566f11db5e42703e763417743f94"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with loss_gallic_acid:C7H6O5 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_gallic_acid:C7H6O5@1",
+       "loss_galloyl:C7H4O4@2",
+       "gallate:C7H5O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.061496",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"3bf7a3c2faccfe3a4272ea92d08f0a226e685a36cd803cbea1006dbbc64f4306\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":15.940,\"ion_formula\":\"C7H6O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O5\",\"peak_index\":1,\"peak_mz\":313.061496,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"loss_gallic_acid\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":2,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O5\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"gallate\",\"unit_id\":2}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "caa6a4cae626b5b7bc7ba0efb01a7d788b3f7520edd3309c4ed14aa8eb2ae134"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with loss_gallic_acid:C7H6O5 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_galloyl:C7H4O4@2",
+       "gallate:C7H5O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.061516",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"96cae8c5f75e4783ff5b066ed2b35955ef7be103975f06da7f1554871afdb200\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":2,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O5\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"gallate\",\"unit_id\":2}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d028e2792802ce47e9b92be9942f7843ce56b9d40eda509b8d8c2c90c4244e8d"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with loss_gallic_acid:C7H6O5 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_gallic_acid:C7H6O5@1",
+       "loss_galloyl:C7H4O4@2",
+       "gallate:C7H5O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.051516",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"972ee1ff57300ca46c78262ffdbc8c89221f9e92614177eddb509d9f2486e094\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-15.940,\"ion_formula\":\"C7H6O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O5\",\"peak_index\":1,\"peak_mz\":313.051516,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"loss_gallic_acid\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":2,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O5\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"gallate\",\"unit_id\":2}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ecc9d1d2da14495c72a028b4c8cd1f00bbcdb2d4d0590d33dbe122e19fdc3e6d"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with loss_gallic_acid:C7H6O5 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_galloyl:C7H4O4@2",
+       "gallate:C7H5O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.051496",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"b307a2094aba45cbd7e58f0584c9f3f34579da3ec019db243db3ee4fb2d4ffca\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":2,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O5\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"gallate\",\"unit_id\":2}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "aa2359c8e81fc89751e2f56999378ffa4d7030af6bd1a7abca82ba057fc3877f"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_gallic_acid:C7H6O5@1",
+       "loss_galloyl:C7H4O4@2",
+       "gallate:C7H5O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.088019",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.088019"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"ce6708437be9f0043e69cf5eff19f2eadb2ce7974b3d1d96fcc653a523c3ff0b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H6O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O5\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"loss_gallic_acid\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":2,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O5\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"gallate\",\"unit_id\":2}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":0.009990,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.088019,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "74ea77d74ea3866563bbe45c4ee691a630001ff55530a2dc9faf8daac6fd3955"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.088039",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.088039"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"d6503ab3e3ef2f0c4c1d895353339773866f594ab112438f0e07fda45062e5d8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.088039,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b88a0371890559d01e28db42d31083c49953347c61de95f55189ed452a09d188"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": "core|galloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_gallic_acid:C7H6O5@1",
+       "loss_galloyl:C7H4O4@2",
+       "gallate:C7H5O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|galloyl2|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.068039",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.068039"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"galloyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"c3b361e1d6bb0a70bd4b0a72a92964d6391d8dacae0a9d8f3a0fc8a1840fc147\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"galloyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|galloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|galloyl2|[M-H]-\",\"hypothesis_mz\":483.078029,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H6O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H6O5\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"loss_gallic_acid\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C7H4O4\",\"peak_index\":2,\"peak_mz\":331.067071,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":331.067071,\"term_id\":\"loss_galloyl\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O5\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"gallate\",\"unit_id\":2}],\"neutral_formula\":\"C20H20O14\",\"precursor_error_da\":-0.009990,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"galloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|galloyl2|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.068039,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "454b788f16a8b6aa256989b5e9daef7bf5b777c7c9d678f358cb2f52c17b2bac"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.068019",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.068019"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"553d7171d7bbd820c87837e28ca6182ed39bfc0f6c5928fabddb14bb0ba15d3a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.068019,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6b09b2927ff26b55c5e5f1c6e048dfdae5e64747b9923cd509cae0e21967b98a"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"4cb1e8383dd154f094ecee5279155409a5cdfdb1ba95576f99a61bfd6fe9ac3b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e05b778c8f07268e7301e2fd99a6018c9fe21e47b4448ca3365e25c988ce8bf4"
+  },
+  {
+   "description": "the positive spectrum of core|galloyl2|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.galloyl_glucose.neg"
+    ],
+    "outcomes": {
+     "phenolics_other.galloyl_glucose.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "331.067071",
+      "500.0"
+     ],
+     [
+      "483.078029",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "483.078029"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"input_sha256\":\"62b430807e48585acfb05ed704841404740c066b7769b6b36843152ac3a264f3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"galloyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.galloyl_glucose.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":483.078029,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"de460ce7cb15149fd7abaca6b79ebfd8ad4fa1b90a1f657c2211fca84bd14d90\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "32c39c145bc0c073d2ab3312a0d95bd4aa93f3ab8bbd4cfd03749368f38c9919"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

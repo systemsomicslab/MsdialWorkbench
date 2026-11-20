@@ -1,0 +1,605 @@
+{
+ "cases": [
+  {
+   "description": "h* = deserpidine||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_C10H11O4:C10H11O4, loss_C10H12O5:C10H12O5",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": "deserpidine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H11O4:C10H11O4@0",
+       "loss_C10H12O5:C10H12O5@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deserpidine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"f39467aba3d507c852248ddc7a849d9020475ecc405cd9cb9955b6bf4465246b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deserpidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deserpidine||[M+H]+\",\"hypothesis_mz\":579.270092,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H11O4\",\"kind\":\"product_ion\",\"member_key\":\"C10H11O4\",\"peak_index\":0,\"peak_mz\":195.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":195.065185,\"term_id\":\"ion_C10H11O4\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H12O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C10H12O5\",\"peak_index\":1,\"peak_mz\":367.201619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":367.201619,\"term_id\":\"loss_C10H12O5\",\"unit_id\":1}],\"neutral_formula\":\"C32H38N2O8\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"deserpidine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"deserpidine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5d26fac3e8830041eba0116dceb6400b31efa3d9fbca1815b3b1c7b7c52cc0dc"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ without the peaks of required term ion_C10H11O4",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "drop_ion_C10H11O4",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"3fb2d371830113ab5294ad66db54e7adc35009f1fdace9e5af7a8d44233e4189\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "17974b0df5a094c78dcb3214e9d2706077db5a1e0476e6b00f2435ea0215f043"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ without the peaks of required term loss_C10H12O5",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "drop_loss_C10H12O5",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"f00af82656d724d3e5bfd11edcc20f9482eac8a5de87e5ebe8de64dd4e97f015\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bdfe6cc3bdbde635abd6cfeb59e8eaf8ede364682ab76d7ae44d63d2bdff4002"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with ion_C10H11O4:C10H11O4 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": "deserpidine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H11O4:C10H11O4@0",
+       "loss_C10H12O5:C10H12O5@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deserpidine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.070175",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"4a54f278f251a1f600baa38f1d51a0a30afb98fd5d6893da0cdca938b76d91d3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deserpidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deserpidine||[M+H]+\",\"hypothesis_mz\":579.270092,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":25.582,\"ion_formula\":\"C10H11O4\",\"kind\":\"product_ion\",\"member_key\":\"C10H11O4\",\"peak_index\":0,\"peak_mz\":195.070175,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":195.065185,\"term_id\":\"ion_C10H11O4\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H12O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C10H12O5\",\"peak_index\":1,\"peak_mz\":367.201619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":367.201619,\"term_id\":\"loss_C10H12O5\",\"unit_id\":1}],\"neutral_formula\":\"C32H38N2O8\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"deserpidine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"deserpidine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1339522c6d79f58eb490bad8dac7aa47edb2bbc37ca700d65f66c349edf4dee7"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with ion_C10H11O4:C10H11O4 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.070195",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"9536b0d8d2e173611dc682a434cf8539e342307b69376becd42ea970ee6cb0d8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b68d1c3da8bf771f41e9d49fa5dccfdd6845e90f619b92bbff9e38126ad89196"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with ion_C10H11O4:C10H11O4 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": "deserpidine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H11O4:C10H11O4@0",
+       "loss_C10H12O5:C10H12O5@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deserpidine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.060195",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"de40da7f8bf4d6c5266a57cd2a479cdfac04f22e3783d4ec54811a9e961a6e41\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deserpidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deserpidine||[M+H]+\",\"hypothesis_mz\":579.270092,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-25.580,\"ion_formula\":\"C10H11O4\",\"kind\":\"product_ion\",\"member_key\":\"C10H11O4\",\"peak_index\":0,\"peak_mz\":195.060195,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":195.065185,\"term_id\":\"ion_C10H11O4\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H12O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C10H12O5\",\"peak_index\":1,\"peak_mz\":367.201619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":367.201619,\"term_id\":\"loss_C10H12O5\",\"unit_id\":1}],\"neutral_formula\":\"C32H38N2O8\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"deserpidine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"deserpidine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2e6c163eda88d71f66b5132aa2e887e587e4230dc81cbab64a4e588a6dc160e0"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with ion_C10H11O4:C10H11O4 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.060175",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"df7d27708a4d998f4ff97e986b1a3bbb5fb206e0139a604c6773ea4f9cc773e5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a2f9d0ebeb672f2188d1e587b5408cdaed04b5f2843ca84cd1af7ecf597eff95"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": "deserpidine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H11O4:C10H11O4@0",
+       "loss_C10H12O5:C10H12O5@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deserpidine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.280082",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.280082"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"19ffbed8b9568b0130f81be2b01f38058b61d3925172136deff9a19e163e2a09\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deserpidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deserpidine||[M+H]+\",\"hypothesis_mz\":579.270092,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H11O4\",\"kind\":\"product_ion\",\"member_key\":\"C10H11O4\",\"peak_index\":0,\"peak_mz\":195.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":195.065185,\"term_id\":\"ion_C10H11O4\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H12O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C10H12O5\",\"peak_index\":1,\"peak_mz\":367.201619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":367.201619,\"term_id\":\"loss_C10H12O5\",\"unit_id\":1}],\"neutral_formula\":\"C32H38N2O8\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"deserpidine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"deserpidine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.280082,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3de5a5d7bcd08f9eb02462c3e456a422aaefb36d3397ad05bb8a978d5b488fe8"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.280102",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.280102"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"6928f4064597b856d4b578560c98a2c033284269d4e9110ae15d463a5880ff8e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.280102,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d1d49a006c62fd6005ada4756a834dfa569a04b757d1ce0bf3dfb00a31420430"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": "deserpidine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C10H11O4:C10H11O4@0",
+       "loss_C10H12O5:C10H12O5@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "deserpidine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.260102",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.260102"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"6909078faad4c83cbc9f7c6f9b2977a649ff2d636bb382009b721cbe607d09bc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"monocyclic_aryl_acyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"deserpidine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"deserpidine||[M+H]+\",\"hypothesis_mz\":579.270092,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H11O4\",\"kind\":\"product_ion\",\"member_key\":\"C10H11O4\",\"peak_index\":0,\"peak_mz\":195.065185,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":195.065185,\"term_id\":\"ion_C10H11O4\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H12O5\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C10H12O5\",\"peak_index\":1,\"peak_mz\":367.201619,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":367.201619,\"term_id\":\"loss_C10H12O5\",\"unit_id\":1}],\"neutral_formula\":\"C32H38N2O8\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"deserpidine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"deserpidine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.260102,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ad0a09c6fd4becce3e94d0837582be89305f3250d49a16b49e8ef33d2c7c1a20"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.260082",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.260082"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"c1429f316847c99947f2282a690b95d6d20a7542c442caa092655e1cbeb46405\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.260082,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "70092ca20d7fe3cf016f8dd7a0f953204b70b5edc82c57677deb6064ef8a9ac2"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"a6c351f207c3d74d81f0ef85204fada60adc4436e3c12a2558dcd904c98eadca\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d1ca0ba5fb2dad5b0f46b147ec622753c0f3716f3081ae42728b7aab01103b63"
+  },
+  {
+   "description": "the positive spectrum of deserpidine||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos"
+    ],
+    "outcomes": {
+     "alkaloid_monoterpene_indole.aryl_acyl_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "195.065185",
+      "500.0"
+     ],
+     [
+      "367.201619",
+      "500.0"
+     ],
+     [
+      "579.270092",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "579.270092"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"input_sha256\":\"f39467aba3d507c852248ddc7a849d9020475ecc405cd9cb9955b6bf4465246b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"monocyclic_aryl_acyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_monoterpene_indole.aryl_acyl_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":579.270092,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"197f0c4bc8fa9a2971b74132d9541eeb77c566094a6d710a23697bf45a2a1c3c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a1a8575a5ce653a59261b41c632bc4be6e0a9726234274ab8f5a4b26133da2a9"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

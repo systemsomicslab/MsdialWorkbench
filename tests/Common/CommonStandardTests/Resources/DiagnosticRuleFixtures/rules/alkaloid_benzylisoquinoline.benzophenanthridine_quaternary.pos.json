@@ -1,0 +1,718 @@
+{
+ "cases": [
+  {
+   "description": "h* = chelerythrine||[M]+, precursor at its oracle m/z; one peak per support member: loss_c2h4o:C2H4O, loss_ch3:CH3, loss_ch4:CH4",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": "chelerythrine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "chelerythrine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzophenanthridine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"c54c961062a9906565e7dae6b5fa1dbfc73605cc68d24e3e93190f382b6ef8ea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"benzophenanthridine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"chelerythrine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"chelerythrine||[M]+\",\"hypothesis_mz\":348.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":304.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":304.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":333.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":333.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":332.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":332.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C21H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"chelerythrine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"chelerythrine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "da5b894b1b8204efcac74c9689501c82a2a3ec9a03177b6f78839515793d79de"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ without the peaks of required term loss_c2h4o",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "drop_loss_c2h4o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"39f4714b53d89e6bd4a506301039ecace00c984f03eaa0a728a9ebd793dbe7af\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b15e80afab94ba27dadfaa38ad5f852a8b2fe429236a6ada712d849322c37bae"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ without the peaks of required term loss_ch3",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": "chelerythrine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "chelerythrine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "drop_loss_ch3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzophenanthridine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"996cd9b504e72a8ee29120db480d05ccda704b058bfae3e722bf5e8c363b71b4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"benzophenanthridine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"chelerythrine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"chelerythrine||[M]+\",\"hypothesis_mz\":348.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":304.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":304.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":332.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":332.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C21H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"chelerythrine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"chelerythrine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e345e03da6528696b09b533c426d6ffb34f7fcdb4bbb1bb25c9f8f5b03cf7293"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ without the peaks of required term loss_ch4",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": "chelerythrine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "chelerythrine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "drop_loss_ch4",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzophenanthridine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"20c6e5371ece81eb58a3bc2fddc14c4c247e48b548ac04d83a32c7cb3c6c11d8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"benzophenanthridine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"chelerythrine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"chelerythrine||[M]+\",\"hypothesis_mz\":348.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":304.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":304.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":1,\"peak_mz\":333.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":333.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1}],\"neutral_formula\":\"C21H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"chelerythrine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"chelerythrine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c341fa6f36978939702ac66e7d7f9a2034f3f55e8b4b80b9a27c2a4bef5a2ec3"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with loss_c2h4o:C2H4O moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": "chelerythrine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "chelerythrine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.101809",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzophenanthridine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"3d7a7aa52a8c1c2a9df20dad9c3154d713656834b0163efce973f7db021f7d1c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"benzophenanthridine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"chelerythrine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"chelerythrine||[M]+\",\"hypothesis_mz\":348.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":16.408,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":304.101809,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":304.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":333.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":333.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":332.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":332.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C21H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"chelerythrine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"chelerythrine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "53ec15fdbf4e3b0ceef11bd7661e246b814eafe6d58cc897479b0c575011b5d9"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with loss_c2h4o:C2H4O moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.101829",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"1015c8fb263411fb0a369e40fd57c02edc5dbd4f9053897133c41b1f74b09443\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "725a3b4a4386207a4d1df7a1dad902fd1d697b23f53389cf629d7f94d11f19b7"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with loss_c2h4o:C2H4O moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": "chelerythrine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "chelerythrine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.091829",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzophenanthridine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"3658d229c3ce51da0139332bdaeeca351661028b4465eaf9d1c34f43b3fe6074\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"benzophenanthridine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"chelerythrine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"chelerythrine||[M]+\",\"hypothesis_mz\":348.123034,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-16.410,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":304.091829,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":304.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":333.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":333.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":332.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":332.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C21H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"chelerythrine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"chelerythrine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7e9397f36a8ac1d7dc01239fdf02471b17c6d3f6a932948b08ae7dd72ad0497e"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with loss_c2h4o:C2H4O moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.091809",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"a2646bb6c3e3ebfd9d4ef35b6bae1a9e2b309e9d2424d2140f96e553abdd297b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "708792c33695d46f0a11b5a5e1138c1c7bf458cb5378ac8c07bb1ec99cac89ba"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": "chelerythrine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "chelerythrine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.133024",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.133024"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzophenanthridine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"ad52057100815a268088df8ef8b205ccc8f88280498ff0e2453aac1469012ac9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"benzophenanthridine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"chelerythrine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"chelerythrine||[M]+\",\"hypothesis_mz\":348.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":304.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":304.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":333.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":333.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":332.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":332.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C21H18NO4\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"chelerythrine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"chelerythrine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.133024,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e5b555b14bfd0380d320bc2294a524a6b4e44ae00baf4935bdf33a43aa660fcd"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.133044",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.133044"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"9c336ac16144ef224c2362df87344cf50a98e2a3ecf9f32999fe9fa732dc27ba\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.133044,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "eb3c5f911f4569adb58bbc26ccf953d0c9e8b2327458094d6cca938b55704e2b"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": "chelerythrine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "chelerythrine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.113044",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.113044"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzophenanthridine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"e6531f52a5cc3e60fa5675e26f8a8e8181cf53da26584fe398d6e6efc07d81f3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"benzophenanthridine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"chelerythrine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"chelerythrine||[M]+\",\"hypothesis_mz\":348.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":304.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":304.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":333.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":333.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":332.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":332.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C21H18NO4\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"chelerythrine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"chelerythrine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.113044,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d55eeacb7e291fe6b8d8e6c8a115e4aeb392220d8c89039be21b0a1ce4f2bb3c"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.113024",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.113024"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"b0c7f31a5665deadfa61589acb4051424bf546a77b5fbe8fad9be39f91c10357\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.113024,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "064cce713ad2e44d5f9fd19337c6460825729a7207129bef05ed86e554d91a04"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"84342278b4f5973bc995135eccf804219de5e16a782bed63cb803c146d767938\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bc41a574cc8f5e1b7e25fc37412e2e224a2bb9dc60f2e7a72fabe82fa59fa825"
+  },
+  {
+   "description": "the positive spectrum of chelerythrine||[M]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "304.096819",
+      "500.0"
+     ],
+     [
+      "332.091734",
+      "500.0"
+     ],
+     [
+      "333.099559",
+      "500.0"
+     ],
+     [
+      "348.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "348.123034"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"input_sha256\":\"c54c961062a9906565e7dae6b5fa1dbfc73605cc68d24e3e93190f382b6ef8ea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzophenanthridine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":348.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"57b77ae153bfa22c5c15522c02b706f07be0f523b1753ca81d860f12b33b8943\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "dd920fc81e87ffa6f30216b91ef884c69904d509acc3c040c44b4b237606106a"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

@@ -1,0 +1,660 @@
+{
+ "cases": [
+  {
+   "description": "h* = hydroxytropine_6|acetyl1,atropoyl1|[M+H]+, precursor at its oracle m/z; one peak per support member: ion_C8H14NO2:C8H14NO2, ion_C8H12NO:C8H12NO",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C8H14NO2:C8H14NO2@1",
+       "ion_C8H12NO:C8H12NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tropane_6_7_dioxygenated\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"4b7e76f29b833e4b7bdeef825895370294fa3f41396eee8a643c54eff21f2591\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tropane_6_7_dioxygenated\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"hydroxytropine_6|acetyl1,atropoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\",\"hypothesis_mz\":330.169984,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C8H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO2\",\"peak_index\":1,\"peak_mz\":156.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":156.101905,\"term_id\":\"ion_C8H14NO2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":0,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"ion_C8H12NO\",\"unit_id\":1}],\"neutral_formula\":\"C19H23NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"hydroxytropine_6\",\"score\":2.000000,\"units\":{\"acetyl\":1,\"atropoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b8b5ffb0e3a3fa9facd0d312de87ab9b610618174e5b821f3e5a7db09efd50cd"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ without the peaks of required term ion_C8H14NO2",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "drop_ion_C8H14NO2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"c8a699d20ab17a3fd0aba70529acd3c0b2366de485b13ea50bd7dd57f8d4f69d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e35aa5a3758f4157f12981d80d4bd2b24301368ccfacd5fde4958e56e3781409"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ without the peaks of required term ion_C8H12NO",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "drop_ion_C8H12NO",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"33d1c8cb7bd5ae6664af9f3f6f7a2ec27171dc0dacddb6da01dea12dcee936a6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e96ab7df2b35d7ee67cbf228f5a26360de84f61b9232ae836ef2a8b1569759be"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with ion_C8H14NO2:C8H14NO2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C8H14NO2:C8H14NO2@1",
+       "ion_C8H12NO:C8H12NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.106895",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tropane_6_7_dioxygenated\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"d47bb451866bbd91c5d345d7a65db233aaa8b6f42b34bed3bed3a1c68297f756\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tropane_6_7_dioxygenated\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"hydroxytropine_6|acetyl1,atropoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\",\"hypothesis_mz\":330.169984,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":31.968,\"ion_formula\":\"C8H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO2\",\"peak_index\":1,\"peak_mz\":156.106895,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":156.101905,\"term_id\":\"ion_C8H14NO2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":0,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"ion_C8H12NO\",\"unit_id\":1}],\"neutral_formula\":\"C19H23NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"hydroxytropine_6\",\"score\":2.000000,\"units\":{\"acetyl\":1,\"atropoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "15a0cfa89ac5952969c6559bf05d1ffb0f734b72c92cabe4263503ea457978df"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with ion_C8H14NO2:C8H14NO2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.106915",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"d550926656583af59b06176e14c7a5590da25eadc340c007539cfa686660a2d5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "22f2804187350f49bb0925b72f6624e4b4e48487751ec1143b9c60a3a6ddce88"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with ion_C8H14NO2:C8H14NO2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C8H14NO2:C8H14NO2@1",
+       "ion_C8H12NO:C8H12NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.096915",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tropane_6_7_dioxygenated\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"ae27b41b3c37d7cb1de08a982f2d9b4352019c707850bdcc864d803f09a60c9e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tropane_6_7_dioxygenated\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"hydroxytropine_6|acetyl1,atropoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\",\"hypothesis_mz\":330.169984,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-31.964,\"ion_formula\":\"C8H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO2\",\"peak_index\":1,\"peak_mz\":156.096915,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":156.101905,\"term_id\":\"ion_C8H14NO2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":0,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"ion_C8H12NO\",\"unit_id\":1}],\"neutral_formula\":\"C19H23NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"hydroxytropine_6\",\"score\":2.000000,\"units\":{\"acetyl\":1,\"atropoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "25d68e687a6f3c9a262f3af91ed1e96a49c05482d47eab1a2df153d320a4bbd0"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with ion_C8H14NO2:C8H14NO2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.096895",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"e05af0a4afa83f11edd0358f31e3d4aa3fb400d3e4e29ec1f06176b1da876edd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "48b1129f6e029244b61964ac4afc8324060499c0576e9c87351fc12a2210c54a"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C8H14NO2:C8H14NO2@1",
+       "ion_C8H12NO:C8H12NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.179974",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.179974"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tropane_6_7_dioxygenated\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"4a1605ced0dd024be7be5d557fdd6eb892a2d07e61a4a828c897808ddde209ca\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tropane_6_7_dioxygenated\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"hydroxytropine_6|acetyl1,atropoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\",\"hypothesis_mz\":330.169984,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C8H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO2\",\"peak_index\":1,\"peak_mz\":156.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":156.101905,\"term_id\":\"ion_C8H14NO2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":0,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"ion_C8H12NO\",\"unit_id\":1}],\"neutral_formula\":\"C19H23NO4\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"hydroxytropine_6\",\"score\":2.000000,\"units\":{\"acetyl\":1,\"atropoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.179974,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "230a01995520fe5d8aace49293754f49ca7e9e8a0e9e0f5950fff6a118278bc5"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.179994",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.179994"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"e78925579bf5b119d7abfb41a0e3c16655bb06a9a7ab5c6ddd20314349745d0c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.179994,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3352ecc9f970b6520d687231766c5de851929ff593b57b98964715a07609af13"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C8H14NO2:C8H14NO2@1",
+       "ion_C8H12NO:C8H12NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "hydroxytropine_6|acetyl1,atropoyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.159994",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.159994"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tropane_6_7_dioxygenated\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"a6b15a9487c951f6c445ef3357a1b2440e3bf58a151867ca4c43732f835d4581\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tropane_6_7_dioxygenated\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"hydroxytropine_6|acetyl1,atropoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\",\"hypothesis_mz\":330.169984,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C8H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO2\",\"peak_index\":1,\"peak_mz\":156.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":156.101905,\"term_id\":\"ion_C8H14NO2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":0,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"ion_C8H12NO\",\"unit_id\":1}],\"neutral_formula\":\"C19H23NO4\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"hydroxytropine_6\",\"score\":2.000000,\"units\":{\"acetyl\":1,\"atropoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"hydroxytropine_6|acetyl1,atropoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.159994,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "11289356bc93cac8960223156d02e1fa67d99651e217edefa69417f58785462c"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.159974",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.159974"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"dfee8371004f9a4b1a9b324a70b84c0f9d8b6b0091205e90d5181ff05b514da1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.159974,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7d6a39477481d4d73ac222ff979cb217dcee5f10b49682307570d9cd9bd4ba98"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"f952f7b4df14158fc46b244c4955b3c5f7eb498ef36629809673cf9417125c02\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "da0ced3b8b5e320e77c5d8e345104599451f8444fa548f1c3c8edc3729daf6e5"
+  },
+  {
+   "description": "the union of the positive spectra of hydroxytropine_6|acetyl1,benzoyl1|[M+H]+ and hydroxytropine_6|acetyl1,tigloyl1|[M+Na]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": "hydroxytropine_6|acetyl1,benzoyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_C8H14NO2:C8H14NO2@1",
+       "ion_C8H12NO:C8H12NO@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "hydroxytropine_6|acetyl1,benzoyl1|[M+H]+",
+       "hydroxytropine_6|acetyl1,tigloyl1|[M+Na]+",
+       "nortropine|acetyl1,mandeloyl1|[M+H]+",
+       "scopine|tropoyl1|[M+H]+",
+       "tropanetriol_3_6_7|atropoyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "304.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "304.154334"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tropane_6_7_dioxygenated\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"8d70d9b730c96fb64012ee1733b8289678603cb07214f0d9fa8e8af32026bb64\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tropane_6_7_dioxygenated\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"hydroxytropine_6|acetyl1,benzoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"hydroxytropine_6|acetyl1,benzoyl1|[M+H]+\",\"hypothesis_mz\":304.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C8H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO2\",\"peak_index\":1,\"peak_mz\":156.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":156.101905,\"term_id\":\"ion_C8H14NO2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":0,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"ion_C8H12NO\",\"unit_id\":1}],\"neutral_formula\":\"C17H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"hydroxytropine_6\",\"score\":2.000000,\"units\":{\"acetyl\":1,\"benzoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":2,\"n_hypotheses\":5,\"n_hypotheses_fired\":5,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"hydroxytropine_6|acetyl1,benzoyl1|[M+H]+\",\"hydroxytropine_6|acetyl1,tigloyl1|[M+Na]+\",\"nortropine|acetyl1,mandeloyl1|[M+H]+\",\"scopine|tropoyl1|[M+H]+\",\"tropanetriol_3_6_7|atropoyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":304.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9acccecf30009391b79dc40553b7da060591a0861a6679c9182b10aec40b6005"
+  },
+  {
+   "description": "the positive spectrum of hydroxytropine_6|acetyl1,atropoyl1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_tropane.scopine_type.pos"
+    ],
+    "outcomes": {
+     "alkaloid_tropane.scopine_type.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "156.101905",
+      "500.0"
+     ],
+     [
+      "330.169984",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "330.169984"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"input_sha256\":\"4b7e76f29b833e4b7bdeef825895370294fa3f41396eee8a643c54eff21f2591\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tropane_6_7_dioxygenated\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_tropane.scopine_type.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":330.169984,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1fc1b77e951ad733601c3eff868cb198d02f510ec690bb1297e9007f3b9d7342\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1830dc62b06cfad13e3936d8059163464e8e59979145bbfc8fd8598fa371e3d9"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

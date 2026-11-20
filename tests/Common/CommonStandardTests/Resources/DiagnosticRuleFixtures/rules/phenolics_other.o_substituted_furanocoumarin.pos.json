@@ -1,0 +1,1033 @@
+{
+ "cases": [
+  {
+   "description": "h* = bergamottin||[M+H]+, precursor at its oracle m/z; one peak per support member: hydroxypsoralen:C11H7O4, ion_175:C10H7O3, ion_159:C10H7O2, ion_147:C9H7O2, ion_131:C9H7O",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@4",
+       "ion_175:C10H7O3@3",
+       "ion_159:C10H7O2@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"3b6c073ba753cc2dea21e261a8a0b83959e0661857555cca62ecb283cafca7cb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":4,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":3,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":2,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bergamottin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cc6a62f8ded7058d87322a85b41f7e8e9d9a70b6442c63488a6e418eeeaea0fd"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ without the peaks of required term hydroxypsoralen",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "drop_hydroxypsoralen",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"95af9b6810f2487084aeed2f3a82867797785b86e5b2659566a6d0fce14c1c58\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "791aab30b5dc4a192cc2951de204fb76c75e58c4a65a2bd0027d3c82368d1c68"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ without the peaks of required term ion_175",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@3",
+       "ion_159:C10H7O2@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "drop_ion_175",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"8e3d6629c3748d78e27b69372f2a25b4a2d564398da2ea7e11d6eea22f243afe\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":3,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":2,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bergamottin\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4b2f791bc586822a8713f63ab2337de3f8cb292f794964b9375f9155607d8f99"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ without the peaks of required term ion_159",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@3",
+       "ion_175:C10H7O3@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "drop_ion_159",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"3deb69c6c63ce83b9727e289bcaa5cab05a9c760b83b61d498589dbad7e10860\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":3,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":2,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bergamottin\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2737fe652f1dc589d76323709b7852a6c24e497ba87e208f32f9705b42a7dbf4"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ without the peaks of required term ion_147",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@3",
+       "ion_175:C10H7O3@2",
+       "ion_159:C10H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "drop_ion_147",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"c6ff30644bc4c4b980f682da54e8ff12d75a11a2b96a4a3c12275debe615be03\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,false,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":3,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":2,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":1,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bergamottin\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "10a27fb29103acc9437cc203099e6698ccd55d16258982c27287e414b4d2bec7"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ without the peaks of required term ion_131",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@3",
+       "ion_175:C10H7O3@2",
+       "ion_159:C10H7O2@1",
+       "ion_147:C9H7O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "drop_ion_131",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"3ae0647c6a1e6469676cc5cd9afbd3e3f281d9c67199d2bb34bb01b61dfc962e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":3,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":2,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":1,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":0,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bergamottin\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9b9d1c800108b88541c3f50f7bc0c20da12ea54d17f2a3e43eef8d27feeea310"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with hydroxypsoralen:C11H7O4 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@4",
+       "ion_175:C10H7O3@3",
+       "ion_159:C10H7O2@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.038875",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"1a35c5cf0ebe68b73ab623a51c100cbf4ef3c8698f3f35307b0f1066dfd1c80e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":24.579,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":4,\"peak_mz\":203.038875,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":3,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":2,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bergamottin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ba6ab3a5ddf08bbe57a5b99312c15ec3b1e47591f9f8b2a83667b2e121bf4392"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with hydroxypsoralen:C11H7O4 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.038895",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"88a0300b8a3f8cfd5561763bb3a0fa91ff2f627b87d9580e9997223221a3a8ab\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "73dbe9e6387fbf7d4fab9254105eddde6f7cd85477f3ee146a9ac3ccc4d6d13c"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with hydroxypsoralen:C11H7O4 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@4",
+       "ion_175:C10H7O3@3",
+       "ion_159:C10H7O2@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.028895",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"767bca97a54c6f27bfba65a6b37180271902e4f1776f14eeb935c1c07cc273e0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-24.576,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":4,\"peak_mz\":203.028895,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":3,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":2,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bergamottin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "374a7db7812fce06306183111c9410f7ace021948ff6df7684ad17e6f80e53ff"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with hydroxypsoralen:C11H7O4 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.028875",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"778accd2d6ca3652d8ed50f6189f24ed13505370e52dbdc6020c736b46e1ce74\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9fb8469da3d4772507cbf6bff8a2980653fa15c5fa2f8d585baa4d983ef304d6"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@4",
+       "ion_175:C10H7O3@3",
+       "ion_159:C10H7O2@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.169075",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.169075"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"21b4f3359e31b098817477e85280b7acdcfc99c369bfaed1e2d9d8c2bbd0463c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":4,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":3,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":2,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"bergamottin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.169075,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b9f89c04b3789ae8e2807e43874c1da497b664b409d115b8c102a80d0269da24"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.169095",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.169095"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"d327ab3d806ba11d7dd1e6e56a2cfd58046f241b8937d69a691bb53eeb1b3f1c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.169095,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f2b1f3a26285d6b548293873fcbe2554c136a12aebd07182b8225398ccbcf09c"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "bergamottin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@4",
+       "ion_175:C10H7O3@3",
+       "ion_159:C10H7O2@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bergamottin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.149095",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.149095"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"5a57bc5c735460a0dd941384f3ce60457940ee934e251a19307be54702b0ae28\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"bergamottin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bergamottin||[M+H]+\",\"hypothesis_mz\":339.159085,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":4,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":3,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":2,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C21H22O4\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"bergamottin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"bergamottin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.149095,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8c27a98b4a3614f040911e573f5dcae3da4b7f1cb313957504307961c219d1b8"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.149075",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.149075"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"4d985d6740efc1afc44639b5875c321afd42fbd4d426ef91a91ae7db647dd5c7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.149075,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "eb3123d5fbe7e6076e184c3a008e2adc3329aa243e435c6d2766710a8489ef2d"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"3aa4b675ba1ab3fef07f0bdf7f5f440cc117b98622e478656211441782bc463c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bac410fd60227bb577bcd96f7887a2931faa56e8e5f51772370268dd518dea5e"
+  },
+  {
+   "description": "the union of the positive spectra of imperatorin||[M+H]+ and isoimperatorin||[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": "imperatorin||[M+H]+",
+      "fired": true,
+      "matched": [
+       "hydroxypsoralen:C11H7O4@4",
+       "ion_175:C10H7O3@3",
+       "ion_159:C10H7O2@2",
+       "ion_147:C9H7O2@1",
+       "ion_131:C9H7O@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "imperatorin||[M+H]+",
+       "isoimperatorin||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "271.096485",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "271.096485"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"furanocoumarin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"3537f450cca99bac35869f88e8e4c4b99d5c126d213a82b1f268b53036272d8a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"furanocoumarin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true,true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true,true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"imperatorin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"imperatorin||[M+H]+\",\"hypothesis_mz\":271.096485,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H7O4\",\"kind\":\"product_ion\",\"member_key\":\"C11H7O4\",\"peak_index\":4,\"peak_mz\":203.033885,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.033885,\"term_id\":\"hydroxypsoralen\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C10H7O3\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O3\",\"peak_index\":3,\"peak_mz\":175.038970,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":175.038970,\"term_id\":\"ion_175\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C10H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H7O2\",\"peak_index\":2,\"peak_mz\":159.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":159.044055,\"term_id\":\"ion_159\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C9H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O2\",\"peak_index\":1,\"peak_mz\":147.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":147.044055,\"term_id\":\"ion_147\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C9H7O\",\"kind\":\"product_ion\",\"member_key\":\"C9H7O\",\"peak_index\":0,\"peak_mz\":131.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":131.049141,\"term_id\":\"ion_131\",\"unit_id\":4}],\"neutral_formula\":\"C16H14O4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"imperatorin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"imperatorin||[M+H]+\",\"isoimperatorin||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":271.096485,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e716ddeb79b5f2b94271411c72d25440320134495edd1c6cf761b640cf44cf34"
+  },
+  {
+   "description": "the positive spectrum of bergamottin||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "phenolics_other.o_substituted_furanocoumarin.pos"
+    ],
+    "outcomes": {
+     "phenolics_other.o_substituted_furanocoumarin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "131.049141",
+      "500.0"
+     ],
+     [
+      "147.044055",
+      "500.0"
+     ],
+     [
+      "159.044055",
+      "500.0"
+     ],
+     [
+      "175.03897",
+      "500.0"
+     ],
+     [
+      "203.033885",
+      "500.0"
+     ],
+     [
+      "339.159085",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "339.159085"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"input_sha256\":\"3b6c073ba753cc2dea21e261a8a0b83959e0661857555cca62ecb283cafca7cb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"furanocoumarin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"phenolics_other.o_substituted_furanocoumarin.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":339.159085,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"7f7e3554809071705e521a369b5d519a11ac368fcaecd82f9aa303d4973aba56\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2a463d5d0c6ca7a12484c0afab6709c5df989c2884dc59e68a66aa422729fcb2"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

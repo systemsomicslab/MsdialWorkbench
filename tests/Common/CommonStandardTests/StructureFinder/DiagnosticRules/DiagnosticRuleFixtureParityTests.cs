@@ -63,10 +63,12 @@ public class DiagnosticRuleFixtureParityTests
         Assert.AreEqual(EngineFixtures.ManifestFormat, ((JsonString)manifest["format"]).Value);
         Assert.AreEqual(1L, ((JsonInteger)manifest["format_version"]).Value);
         Assert.AreEqual(DiagnosticRuleEvaluator.EngineSemantics, ((JsonString)manifest["engine_semantics"]).Value);
+        // The engine entries; ShippedRuleFixtureTests checks the shipped-set entries and the rule-set pin.
         var files = (JsonObject)manifest["files"];
-        CollectionAssert.AreEqual(new[] { EngineFixtures.LoaderErrorsFile, EngineFixtures.SemanticsFile }, files.Keys.ToArray());
+        CollectionAssert.AreEqual(new[] { EngineFixtures.LoaderErrorsFile, EngineFixtures.SemanticsFile },
+                                  files.Keys.Where(k => k.StartsWith("engine/", StringComparison.Ordinal)).ToArray());
         var source = Encoding.ASCII.GetString(BytesOrInconclusive(EngineFixtures.SourceFile));
-        foreach (var m in files.Members) {
+        foreach (var m in files.Members.Where(m => m.Key.StartsWith("engine/", StringComparison.Ordinal))) {
             var bytes = BytesOrInconclusive(m.Key);
             var pin = (JsonObject)m.Value;
             var sha = ((JsonString)pin["sha256"]).Value;

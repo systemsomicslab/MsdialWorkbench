@@ -1,0 +1,901 @@
+{
+ "cases": [
+  {
+   "description": "h* = coclaurine||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_b:C10H12NO2, ion_e:C7H7O, loss_ch5n:CH5N, loss_nh3:H3N",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "coclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C10H12NO2@1",
+       "ion_e:C7H7O@0",
+       "loss_ch5n:CH5N@2",
+       "loss_nh3:H3N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "coclaurine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"65c7ed437f9c960b55df6f2310652900d40fc8671b54baac88f6978c282558de\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"coclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"coclaurine||[M+H]+\",\"hypothesis_mz\":286.143770,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H12NO2\",\"kind\":\"product_ion\",\"member_key\":\"C10H12NO2\",\"peak_index\":1,\"peak_mz\":178.086255,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":178.086255,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H7O\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O\",\"peak_index\":0,\"peak_mz\":107.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":107.049141,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":2,\"peak_mz\":255.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":255.101570,\"term_id\":\"loss_ch5n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H3N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H3N\",\"peak_index\":3,\"peak_mz\":269.117220,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":269.117220,\"term_id\":\"loss_nh3\",\"unit_id\":3}],\"neutral_formula\":\"C17H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"coclaurine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"coclaurine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ec9f027b455f2e2211a53e4ff4487a986e1b8f43aefce6bad19e95773eb41427"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ without the peaks of required term ion_b",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "drop_ion_b",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"844a85de4ec166387c8d5d999391e53fc8175129074b7a2a67250b515e2de80f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b963a2d6c42df203e56c252b38d764dc952a85aad33146ec3dd89d364930472e"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ without the peaks of required term ion_e",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "drop_ion_e",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"4d7bae65f7bb7eef243ab700677e25961ec21b309c07f03f1d1133588579be1c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "660b3d542b893004132b943491d3dc87e2bab3267581f050fd677f2737b337a5"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ without the peaks of required term loss_ch5n",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "coclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C10H12NO2@1",
+       "ion_e:C7H7O@0",
+       "loss_nh3:H3N@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "coclaurine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "drop_loss_ch5n",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"f52b6486df3580686b7d7db3e9365296cedaeb7cb664caafc314b508e7820000\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[false,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"coclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"coclaurine||[M+H]+\",\"hypothesis_mz\":286.143770,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H12NO2\",\"kind\":\"product_ion\",\"member_key\":\"C10H12NO2\",\"peak_index\":1,\"peak_mz\":178.086255,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":178.086255,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H7O\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O\",\"peak_index\":0,\"peak_mz\":107.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":107.049141,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H3N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H3N\",\"peak_index\":2,\"peak_mz\":269.117220,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":269.117220,\"term_id\":\"loss_nh3\",\"unit_id\":3}],\"neutral_formula\":\"C17H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"coclaurine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"coclaurine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cd37868cd039e6a068589b8fcd733932704b8d5cecf2f210e15f61b12402558b"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ without the peaks of required term loss_nh3",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "coclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C10H12NO2@1",
+       "ion_e:C7H7O@0",
+       "loss_ch5n:CH5N@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "coclaurine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "drop_loss_nh3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"890aa6cfa8a39c54535358464d688767be3399827ebe5a9bdf4f2ec203af7fea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"coclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"coclaurine||[M+H]+\",\"hypothesis_mz\":286.143770,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H12NO2\",\"kind\":\"product_ion\",\"member_key\":\"C10H12NO2\",\"peak_index\":1,\"peak_mz\":178.086255,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":178.086255,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H7O\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O\",\"peak_index\":0,\"peak_mz\":107.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":107.049141,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":2,\"peak_mz\":255.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":255.101570,\"term_id\":\"loss_ch5n\",\"unit_id\":2}],\"neutral_formula\":\"C17H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"coclaurine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"coclaurine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "300ea6429421dd1fd3c8887c267af1d5ea2913e6b85e90a61ebc131421a3584d"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with ion_b:C10H12NO2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "coclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C10H12NO2@1",
+       "ion_e:C7H7O@0",
+       "loss_ch5n:CH5N@2",
+       "loss_nh3:H3N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "coclaurine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.091245",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"56e90503be60a83ab51e1406857ba065cf6e1740448f5a15dc59ab96b14a0ace\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"coclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"coclaurine||[M+H]+\",\"hypothesis_mz\":286.143770,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":28.022,\"ion_formula\":\"C10H12NO2\",\"kind\":\"product_ion\",\"member_key\":\"C10H12NO2\",\"peak_index\":1,\"peak_mz\":178.091245,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":178.086255,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H7O\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O\",\"peak_index\":0,\"peak_mz\":107.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":107.049141,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":2,\"peak_mz\":255.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":255.101570,\"term_id\":\"loss_ch5n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H3N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H3N\",\"peak_index\":3,\"peak_mz\":269.117220,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":269.117220,\"term_id\":\"loss_nh3\",\"unit_id\":3}],\"neutral_formula\":\"C17H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"coclaurine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"coclaurine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d39148970518b088ccf48b06a0ad894949a76fb07911b045af5c5457d14975e2"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with ion_b:C10H12NO2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.091265",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"92c8798abf5a52932aeb49129d47f4fd53ef2af4cea3a28c425ce06fc4580912\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d96d058d6ecb06aeb9a2968cb245fdd24fbdfe598a3e7de46da0188fbfc1a3c7"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with ion_b:C10H12NO2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "coclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C10H12NO2@1",
+       "ion_e:C7H7O@0",
+       "loss_ch5n:CH5N@2",
+       "loss_nh3:H3N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "coclaurine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.081265",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"8f1abaa6b5fd2b9e1ea2304566cb5f7ea50218d12e8c50dcce3561a9a1568402\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"coclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"coclaurine||[M+H]+\",\"hypothesis_mz\":286.143770,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-28.018,\"ion_formula\":\"C10H12NO2\",\"kind\":\"product_ion\",\"member_key\":\"C10H12NO2\",\"peak_index\":1,\"peak_mz\":178.081265,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":178.086255,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H7O\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O\",\"peak_index\":0,\"peak_mz\":107.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":107.049141,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":2,\"peak_mz\":255.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":255.101570,\"term_id\":\"loss_ch5n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H3N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H3N\",\"peak_index\":3,\"peak_mz\":269.117220,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":269.117220,\"term_id\":\"loss_nh3\",\"unit_id\":3}],\"neutral_formula\":\"C17H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"coclaurine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"coclaurine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "765a7227651f39448a94b47bdb313756f1cfed3c7cb727b97f1da8040f18f4b1"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with ion_b:C10H12NO2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.081245",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"586d36b4c7319e7aee44b002318b0c5b10aab6573373873c47c46f8e1076e63b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "15f5ddd19f04a4cd55de6ad26c5369da63cb648f402717cf62d9795aa4216711"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "coclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C10H12NO2@1",
+       "ion_e:C7H7O@0",
+       "loss_ch5n:CH5N@2",
+       "loss_nh3:H3N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "coclaurine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.15376",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.15376"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"ea2263388a5bc66620150330ae85b832bf9e90822fd9524f23bd94408e5d6303\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"coclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"coclaurine||[M+H]+\",\"hypothesis_mz\":286.143770,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H12NO2\",\"kind\":\"product_ion\",\"member_key\":\"C10H12NO2\",\"peak_index\":1,\"peak_mz\":178.086255,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":178.086255,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H7O\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O\",\"peak_index\":0,\"peak_mz\":107.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":107.049141,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":2,\"peak_mz\":255.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":255.101570,\"term_id\":\"loss_ch5n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H3N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H3N\",\"peak_index\":3,\"peak_mz\":269.117220,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":269.117220,\"term_id\":\"loss_nh3\",\"unit_id\":3}],\"neutral_formula\":\"C17H19NO3\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"coclaurine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"coclaurine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.153760,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b680c502da7a641b9d58c9b961cdded9e3184b23fb009227f15ed5d39c74d606"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.15378",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.15378"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"49c44ba68d68b5f871f2a8284a75dcf093a7927c95b80f9f65a8e824f3a10038\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.153780,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bfec1735fe92fa274e70c62cb792322012fe4a8a47e9fe7aa9d217c575234d3a"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "coclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C10H12NO2@1",
+       "ion_e:C7H7O@0",
+       "loss_ch5n:CH5N@2",
+       "loss_nh3:H3N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "coclaurine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.13378",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.13378"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"d80ecd5c186613e0fc6d36f5a394075df4801de5c670800c88253f360c1d9987\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"coclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"coclaurine||[M+H]+\",\"hypothesis_mz\":286.143770,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H12NO2\",\"kind\":\"product_ion\",\"member_key\":\"C10H12NO2\",\"peak_index\":1,\"peak_mz\":178.086255,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":178.086255,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C7H7O\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O\",\"peak_index\":0,\"peak_mz\":107.049141,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":107.049141,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":2,\"peak_mz\":255.101570,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":255.101570,\"term_id\":\"loss_ch5n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"H3N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H3N\",\"peak_index\":3,\"peak_mz\":269.117220,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":269.117220,\"term_id\":\"loss_nh3\",\"unit_id\":3}],\"neutral_formula\":\"C17H19NO3\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"coclaurine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"coclaurine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.133780,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d3cb7990bc438cf146511b64197d98d41a005c9cb2bd89793c6ab548591bc7f0"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.13376",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.13376"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"1d1c1506f8cb449d332e4cb78b2d32b7656fd6fbaf7f6ce0b0c188e823ae38e3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.133760,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "48791b4cf29e0c917367d569bc561b9ea3903617959dd62f75d36bb1a4bc3094"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"b88846db62ce7703f3c55c749721b154e79f49db5f4c16f3abf08f0d1dc3697a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b633f72a1a35c8d58976dbf217e1ef4ff7f7a161f9a6be86392e439ad10ab968"
+  },
+  {
+   "description": "the union of the positive spectra of n_methyl_3_hydroxycoclaurine||[M+H]+ and norreticuline||[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": "n_methyl_3_hydroxycoclaurine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_b:C11H14NO2@3",
+       "ion_e:C7H7O2@0",
+       "loss_ch5n:CH5N@4",
+       "loss_nh3:H3N@5"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "n_methyl_3_hydroxycoclaurine||[M+H]+",
+       "norreticuline||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "123.044055",
+      "500.0"
+     ],
+     [
+      "137.059706",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "285.112135",
+      "500.0"
+     ],
+     [
+      "299.127785",
+      "500.0"
+     ],
+     [
+      "316.154334",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.154334"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"benzyltetrahydroisoquinoline\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"8c3dc151382f4f844540776d6259683ad6a58caa10e1c0a63226a91143538261\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"benzyltetrahydroisoquinoline\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/2\"}],\"composition_id\":\"n_methyl_3_hydroxycoclaurine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"n_methyl_3_hydroxycoclaurine||[M+H]+\",\"hypothesis_mz\":316.154334,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C11H14NO2\",\"peak_index\":3,\"peak_mz\":192.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":192.101905,\"term_id\":\"ion_b\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C7H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C7H7O2\",\"peak_index\":0,\"peak_mz\":123.044055,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":123.044055,\"term_id\":\"ion_e\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH5N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH5N\",\"peak_index\":4,\"peak_mz\":285.112135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.112135,\"term_id\":\"loss_ch5n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"H3N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H3N\",\"peak_index\":5,\"peak_mz\":299.127785,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":299.127785,\"term_id\":\"loss_nh3\",\"unit_id\":3}],\"neutral_formula\":\"C18H21NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"n_methyl_3_hydroxycoclaurine\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"n_methyl_3_hydroxycoclaurine||[M+H]+\",\"norreticuline||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.154334,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "49c874c682415a8f79db318a6afa49a68bd0af393ac7b0759fa3468734f00951"
+  },
+  {
+   "description": "the positive spectrum of coclaurine||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "107.049141",
+      "500.0"
+     ],
+     [
+      "178.086255",
+      "500.0"
+     ],
+     [
+      "255.10157",
+      "500.0"
+     ],
+     [
+      "269.11722",
+      "500.0"
+     ],
+     [
+      "286.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "286.14377"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"input_sha256\":\"65c7ed437f9c960b55df6f2310652900d40fc8671b54baac88f6978c282558de\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"benzyltetrahydroisoquinoline\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":286.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5f1622d99a4e57e92d909eed4e4444dfc517d43ce6e77e9fe9d6d947663cd260\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2adeb33e3203e4f95ecdba117d733c206173d5d32c471f465842767bfad3a6c4"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

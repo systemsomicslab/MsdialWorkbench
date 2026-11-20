@@ -1,0 +1,878 @@
+{
+ "cases": [
+  {
+   "description": "h* = glucoalyssin||[M-H]-, precursor at its oracle m/z; one peak per support member: loss_ch3soh_64:CH4OS, hso4_97:HO4S, glc_sulfate_259:C6H11O9S, thioglc_sulfate_275:C6H11O8S2, thioglc_195:C6H11O5S",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": "glucoalyssin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3soh_64:CH4OS@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glucoalyssin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"652ed66294cff216b653b0c39f6530add96575822bf66d07706d271983418a00\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glucoalyssin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glucoalyssin||[M-H]-\",\"hypothesis_mz\":450.056783,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH4OS\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4OS\",\"peak_index\":4,\"peak_mz\":386.058497,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":386.058497,\"term_id\":\"loss_ch3soh_64\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C13H25NO10S3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"glucoalyssin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glucoalyssin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "19a7678c6534d0f818f8e65530a564e9161349bc86a1f56704aa3baaf3599156"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- without the peaks of required term loss_ch3soh_64",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "drop_loss_ch3soh_64",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"0c5bf5b232310bfb9f676da3ad748a185fd56b1a94e415072a4bb05105f5882c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "63192c0331a7b65320641c45b9761c7db36e6cb3933fd8ab12e0a66aea509c86"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- without the peaks of required term hso4_97",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "drop_hso4_97",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"2cffcc4fc4e542cf8115f3c73a62df896140c153b66c66806132c264c98b1862\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9eb85fb9922d7881de279dc0f3d095ffd6449ae9ec5765db097521b849b88d64"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with 1 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": "glucoalyssin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3soh_64:CH4OS@2",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glucoalyssin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"28a432d820089508b711ac07b380af0fcb229d6c072648bfdb143837b48d10e8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glucoalyssin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glucoalyssin||[M-H]-\",\"hypothesis_mz\":450.056783,\"k_of\":[{\"count\":1,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH4OS\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4OS\",\"peak_index\":2,\"peak_mz\":386.058497,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":386.058497,\"term_id\":\"loss_ch3soh_64\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":1,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2}],\"neutral_formula\":\"C13H25NO10S3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"glucoalyssin\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glucoalyssin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "70df0a42e41d471d8cf2f900831a92e44f26156c38a7fe753fed1764cacb01df"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with 0 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"be86ac7fd3c817a8bbdf221e7f98ee37cacc7345f90ea69988146295b8a34242\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4d8d18b68b2e93bd653fd5c6dea75ad42eb78a8812ee8a1ad4269997b31667cc"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with loss_ch3soh_64:CH4OS moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": "glucoalyssin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3soh_64:CH4OS@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glucoalyssin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.063487",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"8e2232084a563fac277af01be1c5c1d8a366f9ccc64b2d359385edd22f2d75ce\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glucoalyssin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glucoalyssin||[M-H]-\",\"hypothesis_mz\":450.056783,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":12.925,\"ion_formula\":\"CH4OS\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4OS\",\"peak_index\":4,\"peak_mz\":386.063487,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":386.058497,\"term_id\":\"loss_ch3soh_64\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C13H25NO10S3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"glucoalyssin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glucoalyssin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6bc83e0fbb77d4c17a4d980e488b405f9e220e32682ad5c19137fdc3e4a0eedf"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with loss_ch3soh_64:CH4OS moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.063507",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"7648c933a587415a4e95ae56287ee5cbc7162081f1014f8cf112e95425dd04b7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e00c6e7639f7467a310dee4549bdf7f2a5acdf42e1c0ed58b3529deca66f6918"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with loss_ch3soh_64:CH4OS moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": "glucoalyssin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3soh_64:CH4OS@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glucoalyssin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.053507",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"e23c1ce0e37973c6dc9f230ee9256c60893c92a6ab36a01c35d6290c25017806\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glucoalyssin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glucoalyssin||[M-H]-\",\"hypothesis_mz\":450.056783,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-12.926,\"ion_formula\":\"CH4OS\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4OS\",\"peak_index\":4,\"peak_mz\":386.053507,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":386.058497,\"term_id\":\"loss_ch3soh_64\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C13H25NO10S3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"glucoalyssin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glucoalyssin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "16f43f3148eb467a340f6664e28f605a35497b1450d0daa806a53d077acaf278"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with loss_ch3soh_64:CH4OS moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.053487",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"af479984de991f4ba60464de66d02d155c31fd8ba1efb2be441218d3ed9a198f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "06009b229a33fe661080655c4c0f460c0b2686878c8a87c2786c7125fad9b6d6"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": "glucoalyssin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3soh_64:CH4OS@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glucoalyssin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.066773",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.066773"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"f70e95ade9ef1f99182910dad5b9c44228fa675ba56c145cb64e78c3a9b8d27a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glucoalyssin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glucoalyssin||[M-H]-\",\"hypothesis_mz\":450.056783,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH4OS\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4OS\",\"peak_index\":4,\"peak_mz\":386.058497,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":386.058497,\"term_id\":\"loss_ch3soh_64\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C13H25NO10S3\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"glucoalyssin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glucoalyssin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.066773,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7a03b8ff4fbee09db4c436b44198411fc62f46056afc403997781f41094b0b8d"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.066793",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.066793"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"03ac3cd0134b9e14979572de2eae8d441721a0c7bd8bbef1a4f0d011c1b62689\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.066793,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f3c13d687461273cab2b748df687d3288b03560b41a797d8f46679f087d6f45e"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": "glucoalyssin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_ch3soh_64:CH4OS@4",
+       "hso4_97:HO4S@0",
+       "glc_sulfate_259:C6H11O9S@2",
+       "thioglc_sulfate_275:C6H11O8S2@3",
+       "thioglc_195:C6H11O5S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glucoalyssin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.046793",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.046793"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"1f0ecc25736c94f949997a162105f8eb2829edf7da4f9f7f5c37c432c31c1fe0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"glucosinolate_methylsulfinylalkyl\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glucoalyssin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glucoalyssin||[M-H]-\",\"hypothesis_mz\":450.056783,\"k_of\":[{\"count\":3,\"k\":1,\"pointer\":\"/logic/all/2\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"CH4OS\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4OS\",\"peak_index\":4,\"peak_mz\":386.058497,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":386.058497,\"term_id\":\"loss_ch3soh_64\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":96.960104,\"term_id\":\"hso4_97\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C6H11O9S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O9S\",\"peak_index\":2,\"peak_mz\":259.012927,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":259.012927,\"term_id\":\"glc_sulfate_259\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C6H11O8S2\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O8S2\",\"peak_index\":3,\"peak_mz\":274.990083,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":274.990083,\"term_id\":\"thioglc_sulfate_275\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H11O5S\",\"kind\":\"product_ion\",\"member_key\":\"C6H11O5S\",\"peak_index\":1,\"peak_mz\":195.033268,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":195.033268,\"term_id\":\"thioglc_195\",\"unit_id\":4}],\"neutral_formula\":\"C13H25NO10S3\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"glucoalyssin\",\"score\":5.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glucoalyssin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.046793,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c96defd59512bea7495f778d7afbe673ce4537f48232da6125bb323a37503552"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.046773",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.046773"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"2ad3ad2b6b04e284ae0a21ca9225011e6e21ba41293ed7df771e11bd5835d4f7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.046773,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "23cde25d0f80bbd699eb0626724f7861dc993dfba266f8a3cfeeb7f563d25a31"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"08ba365808f5904305695fe26230c6e0a49745657693da5600cd9a77153dea8d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "31e37690122fed5e95a656261b02b8171d1101fded8bdfaa4b6ad543ee7e6a2a"
+  },
+  {
+   "description": "the positive spectrum of glucoalyssin||[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "glucosinolate.methylsulfinylalkyl.neg"
+    ],
+    "outcomes": {
+     "glucosinolate.methylsulfinylalkyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "195.033268",
+      "500.0"
+     ],
+     [
+      "259.012927",
+      "500.0"
+     ],
+     [
+      "274.990083",
+      "500.0"
+     ],
+     [
+      "386.058497",
+      "500.0"
+     ],
+     [
+      "450.056783",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "450.056783"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"input_sha256\":\"652ed66294cff216b653b0c39f6530add96575822bf66d07706d271983418a00\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glucosinolate_methylsulfinylalkyl\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glucosinolate.methylsulfinylalkyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":450.056783,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"6f586856ad7c81583d3d8e130df547e21380e74d72912f909e6c43f9df0da0d8\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7547f7444fda168b24c486e36e3da44c511b45a00eb36d8f6fc2bc301b248f30"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

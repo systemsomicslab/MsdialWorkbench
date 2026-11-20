@@ -1,0 +1,605 @@
+{
+ "cases": [
+  {
+   "description": "h* = tetrahydropalmatine||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_rda_a:C11H14NO2, ion_rda_d:C10H13O2",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": "tetrahydropalmatine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_rda_a:C11H14NO2@1",
+       "ion_rda_d:C10H13O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "tetrahydropalmatine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tetrahydroprotoberberine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"ce1fa10b7ef3d446e373910bf84cfbdc7284946dcc616c66f6afe5d8f36b5df5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tetrahydroprotoberberine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"tetrahydropalmatine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"tetrahydropalmatine||[M+H]+\",\"hypothesis_mz\":356.185634,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C11H14NO2\",\"peak_index\":1,\"peak_mz\":192.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":192.101905,\"term_id\":\"ion_rda_a\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H13O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H13O2\",\"peak_index\":0,\"peak_mz\":165.091006,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":165.091006,\"term_id\":\"ion_rda_d\",\"unit_id\":1}],\"neutral_formula\":\"C21H25NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"tetrahydropalmatine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"tetrahydropalmatine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "090c13ff93a6d97c0f0970358ab44e5ab3a8052263ad92bd4c36fb32dea3a60c"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ without the peaks of required term ion_rda_a",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "drop_ion_rda_a",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"385bab1fee4daa5e3dd7674737f165b5a0c12b699dddc1ee0c47c8411745658c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4932385ea4cce946ebbac469faebd32b090490447752a2a92325146292953b16"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ without the peaks of required term ion_rda_d",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "drop_ion_rda_d",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"dbd4301fe29cf58934e98dbc845ced6d09bfe50923d306f1e7bfef8955493a83\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8096922326a145cbd7785c553be35dd0764c4e74c80b3a322973f5806a4716fe"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with ion_rda_a:C11H14NO2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": "tetrahydropalmatine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_rda_a:C11H14NO2@1",
+       "ion_rda_d:C10H13O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "tetrahydropalmatine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.106895",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tetrahydroprotoberberine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"007c90a7d4f82076ca1e088432f95a7a0358bca1c5e393254ec0bf1ca26ed5e7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tetrahydroprotoberberine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"tetrahydropalmatine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"tetrahydropalmatine||[M+H]+\",\"hypothesis_mz\":356.185634,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":25.977,\"ion_formula\":\"C11H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C11H14NO2\",\"peak_index\":1,\"peak_mz\":192.106895,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":192.101905,\"term_id\":\"ion_rda_a\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H13O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H13O2\",\"peak_index\":0,\"peak_mz\":165.091006,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":165.091006,\"term_id\":\"ion_rda_d\",\"unit_id\":1}],\"neutral_formula\":\"C21H25NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"tetrahydropalmatine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"tetrahydropalmatine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7a41894d224e9c5c0423c1cf324859ae8cccbc827ed80badc7be285af5f58d7b"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with ion_rda_a:C11H14NO2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.106915",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"6ba8c220e3c0d7f562b983da5753bfbf172bd7d7eb8b0fb8b7f8e95f7b15f106\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e2ebd49792a4d6ceb59815fd21838ac450110f2c5a6528ce3361f8e2329c50a8"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with ion_rda_a:C11H14NO2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": "tetrahydropalmatine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_rda_a:C11H14NO2@1",
+       "ion_rda_d:C10H13O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "tetrahydropalmatine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.096915",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tetrahydroprotoberberine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"ff2f6ec1efa48dbb62a556045530ee2c7c72820e6e9bf0c11c417f2d010a7fac\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tetrahydroprotoberberine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"tetrahydropalmatine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"tetrahydropalmatine||[M+H]+\",\"hypothesis_mz\":356.185634,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-25.974,\"ion_formula\":\"C11H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C11H14NO2\",\"peak_index\":1,\"peak_mz\":192.096915,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":192.101905,\"term_id\":\"ion_rda_a\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H13O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H13O2\",\"peak_index\":0,\"peak_mz\":165.091006,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":165.091006,\"term_id\":\"ion_rda_d\",\"unit_id\":1}],\"neutral_formula\":\"C21H25NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"tetrahydropalmatine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"tetrahydropalmatine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "27ce4570b97156820dc6a0fcc4c80681e7532fdc560a9d58a9b6566181ec2117"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with ion_rda_a:C11H14NO2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.096895",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"b4a6555e43366d578ddc466839b55f5b35b4082f5bfcd2b65a6993a7f491c0d7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "71efc4245e8ea7818d8eb59ed125e6e6cb0d9e19e7c44bf38058290edd680484"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": "tetrahydropalmatine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_rda_a:C11H14NO2@1",
+       "ion_rda_d:C10H13O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "tetrahydropalmatine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.195624",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.195624"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tetrahydroprotoberberine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"c7ee6454e2b622b8cc6034f0e2d741b063876c7777a667836a0516604fe24b75\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tetrahydroprotoberberine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"tetrahydropalmatine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"tetrahydropalmatine||[M+H]+\",\"hypothesis_mz\":356.185634,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C11H14NO2\",\"peak_index\":1,\"peak_mz\":192.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":192.101905,\"term_id\":\"ion_rda_a\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H13O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H13O2\",\"peak_index\":0,\"peak_mz\":165.091006,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":165.091006,\"term_id\":\"ion_rda_d\",\"unit_id\":1}],\"neutral_formula\":\"C21H25NO4\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"tetrahydropalmatine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"tetrahydropalmatine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.195624,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1f6f5cda1b823ec51f5da5061221d36c116e21e04df29da832dee46fb2e44a8b"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.195644",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.195644"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"e18c66c1cb69b08a85f760c841e44a5d9fdba5ab459c87c4493238897d4c7d75\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.195644,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "016c795a6faf5734799c9341a0bbd6b88234e26e0009147f0b901afb3b4df520"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": "tetrahydropalmatine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_rda_a:C11H14NO2@1",
+       "ion_rda_d:C10H13O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "tetrahydropalmatine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.175644",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.175644"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"tetrahydroprotoberberine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"b2a6f94e9c2c2dd889a0e72e2dcdb9ee8e35a75873b36ee45837a20179bc8a40\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"tetrahydroprotoberberine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"tetrahydropalmatine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"tetrahydropalmatine||[M+H]+\",\"hypothesis_mz\":356.185634,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C11H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C11H14NO2\",\"peak_index\":1,\"peak_mz\":192.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":192.101905,\"term_id\":\"ion_rda_a\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C10H13O2\",\"kind\":\"product_ion\",\"member_key\":\"C10H13O2\",\"peak_index\":0,\"peak_mz\":165.091006,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":165.091006,\"term_id\":\"ion_rda_d\",\"unit_id\":1}],\"neutral_formula\":\"C21H25NO4\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"tetrahydropalmatine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"tetrahydropalmatine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.175644,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3ff3e16f72c4b2a4329d06d4bd2c81dc730f3c78125608f271d810340b328506"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.175624",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.175624"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"1bb1e7607907b9e3c8bbce2a91f01ee496f47a34d920c575cda5a918fa5f79d6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.175624,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e0f059a9530134a93fb889916b4f001bd43061295f0db30e967f10fdf08e6f66"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"b9343c977f9d57434e44620cf42d25d4cc761ffc8c52c30eaa0c564180112a8f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c34a7eb7250df809e6ee8123f11529a7151a538cc03135a9c80050371a1a54b6"
+  },
+  {
+   "description": "the positive spectrum of tetrahydropalmatine||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "165.091006",
+      "500.0"
+     ],
+     [
+      "192.101905",
+      "500.0"
+     ],
+     [
+      "356.185634",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "356.185634"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"input_sha256\":\"ce1fa10b7ef3d446e373910bf84cfbdc7284946dcc616c66f6afe5d8f36b5df5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"tetrahydroprotoberberine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":356.185634,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"2000e917e0b3fdc28b123909825d99839cd34138083e9034c9aaacb14f86a981\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e8108a842f3f3377ef1e8e2f12f1507edb17a168b9766d457af881efc1c0761d"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

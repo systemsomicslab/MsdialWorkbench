@@ -1,0 +1,718 @@
+{
+ "cases": [
+  {
+   "description": "h* = berberine||[M]+, precursor at its oracle m/z; one peak per support member: loss_c2h4o:C2H4O, loss_ch3:CH3, loss_ch4:CH4",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": "berberine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "berberine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protoberberine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"5b79200cb6d356c5f86c7e60737fa59fd3666c3dc90549f3239010fb8e6995c4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protoberberine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"berberine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"berberine||[M]+\",\"hypothesis_mz\":336.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":292.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":292.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":321.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":321.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":320.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":320.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C20H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"berberine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"berberine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "523286d6243841b97df3cd729165f6ea46dba96866b6ce1df42fc38402475ead"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ without the peaks of required term loss_c2h4o",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "drop_loss_c2h4o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"4a4ba549bf2f660518d4a780a08cd1478bc5cdf5c0811e2ad507a9ab92e8ef46\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "17f703547bacfb8379244744c7ad915afdcd4e1f9d2ef45f379397d933bb3509"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ without the peaks of required term loss_ch3",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": "berberine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "berberine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "drop_loss_ch3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protoberberine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"68d96eb12afbc31d9d0df9b5977adf520ba07a0f43b20e355bfbdb2419543a65\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"protoberberine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"berberine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"berberine||[M]+\",\"hypothesis_mz\":336.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":292.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":292.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":320.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":320.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C20H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"berberine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"berberine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "168c3e06b21504228be4e857da83524a8235c0ba7a10724f3e0a9ac357e4e233"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ without the peaks of required term loss_ch4",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": "berberine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "berberine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "drop_loss_ch4",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protoberberine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"1a3d6055b9698b365d9c15986d2769a44104b2f58c19adecc6a6042e18da4eee\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"protoberberine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"berberine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"berberine||[M]+\",\"hypothesis_mz\":336.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":292.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":292.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":1,\"peak_mz\":321.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":321.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1}],\"neutral_formula\":\"C20H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"berberine\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"berberine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1c78bcff7baf29b6dfc94405b3f6377fc7e3f554fbda121ffee1653a01ecf880"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with loss_c2h4o:C2H4O moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": "berberine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "berberine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.101809",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protoberberine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"8b2ffb15159f721d2cd1a7b8e0da96a74c63c058909a781447996f828a7087de\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protoberberine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"berberine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"berberine||[M]+\",\"hypothesis_mz\":336.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":17.082,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":292.101809,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":292.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":321.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":321.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":320.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":320.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C20H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"berberine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"berberine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "06b5549f7da01aa425bbb8684711f7c48952bf69d33a418bbfb50315735473a0"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with loss_c2h4o:C2H4O moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.101829",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"09a2c8b17c4d544497243d3d77f96eadafed24a33887555e7690da0e41091afc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a3f35733eefc23ad84d8a283b050b71a263411f2de5129de7daa9ad52b38028f"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with loss_c2h4o:C2H4O moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": "berberine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "berberine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.091829",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protoberberine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"8c73c37884cd37e526315e9f7ffb4358381d7e762febb78ee9d6f9a12bb0920a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protoberberine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"berberine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"berberine||[M]+\",\"hypothesis_mz\":336.123034,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-17.084,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":292.091829,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":292.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":321.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":321.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":320.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":320.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C20H18NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"berberine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"berberine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0a35702f7606b50fa930997f78abe5235308ca379109e076e57d9dae9028d5df"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with loss_c2h4o:C2H4O moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.091809",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"4078230db93981ed520484cd2f6e43ff5d3ab71d302df814bd48c4f555febbe9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "768cd48c2f1a35ff8d58ff21887ac6cd6e25202935252ce76a34838d37610338"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": "berberine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "berberine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.133024",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.133024"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protoberberine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"a1a7d2b64305fd31b7ae5687349f738021230dfa7613903d15746e6515fef132\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protoberberine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"berberine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"berberine||[M]+\",\"hypothesis_mz\":336.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":292.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":292.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":321.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":321.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":320.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":320.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C20H18NO4\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"berberine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"berberine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.133024,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "df651a43e3c1a9412fe3b64b08ffd03006aa0fc931b6953286fb4dde9d19e5df"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.133044",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.133044"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"06e59214e78837172ce3a0cd3837f2cd732d45e4027b0ce6f05ea4bb507eb4e3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.133044,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4b98606dd2f19dbc67ca62058333e4025b237f51eec06dc150ec43c9ba30faee"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": "berberine||[M]+",
+      "fired": true,
+      "matched": [
+       "loss_c2h4o:C2H4O@0",
+       "loss_ch3:CH3@2",
+       "loss_ch4:CH4@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "berberine||[M]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.113044",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.113044"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protoberberine_quaternary\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"37efbc926ddadeb7352f98f06d112ce83d817b740a5d9519f610021e8e7f29bb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protoberberine_quaternary\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,true]},\"chosen\":{\"adduct\":\"[M]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"berberine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"berberine||[M]+\",\"hypothesis_mz\":336.123034,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C2H4O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C2H4O\",\"peak_index\":0,\"peak_mz\":292.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":292.096819,\"term_id\":\"loss_c2h4o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH3\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH3\",\"peak_index\":2,\"peak_mz\":321.099559,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":321.099559,\"term_id\":\"loss_ch3\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"CH4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"CH4\",\"peak_index\":1,\"peak_mz\":320.091734,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":320.091734,\"term_id\":\"loss_ch4\",\"unit_id\":2}],\"neutral_formula\":\"C20H18NO4\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"berberine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"berberine||[M]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.113044,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bf127438ecc00324860fd89e9aea9738dbfcef0e4cf57ab7f4d63e15a3f79c14"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.113024",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.113024"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"8d43029f04655acdcb1b8278bf447a029584c4579a38876bdec438638643fa70\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.113024,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "49d358d419511bb82a2b43003e57941a679ef894cda09aa813abe770bf32a0e5"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"aa65088346a9521729a0f9283a5939e2c8e692c3e55776c072eaa3f9d5a52189\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1403e6c70e5f485d9dc858bcb184d2dd44bc1bc6e6be852e8865e0811ce1e0f5"
+  },
+  {
+   "description": "the positive spectrum of berberine||[M]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "292.096819",
+      "500.0"
+     ],
+     [
+      "320.091734",
+      "500.0"
+     ],
+     [
+      "321.099559",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.123034"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"input_sha256\":\"5b79200cb6d356c5f86c7e60737fa59fd3666c3dc90549f3239010fb8e6995c4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protoberberine_quaternary\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protoberberine_quaternary.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.123034,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"ab91f4dd205804ce8e7f11897789f232b62a9c2d44c1a0eefcf0cd5d40f1209e\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "12ac2977242bcc3ec04674816ff70db5e964896809641533d4b4818833fbdfc0"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

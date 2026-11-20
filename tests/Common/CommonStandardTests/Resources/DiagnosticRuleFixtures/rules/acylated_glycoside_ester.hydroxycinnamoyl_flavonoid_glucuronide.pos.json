@@ -1,0 +1,686 @@
+{
+ "cases": [
+  {
+   "description": "h* = acacetin|Hex1,HexA1,coumaroyl1|[M+H]+, precursor at its oracle m/z; one peak per support member: y0:A, acyl_hexa_coumaroyl:coumaroyl",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@0",
+       "acyl_hexa_coumaroyl:coumaroyl@1"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "calycosin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "glycitein|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "wogonin|Hex1,HexA1,coumaroyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"9d705782b6bbd9df8484341103f056f4b3b8d814a08c912249c3f644164097cb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"acacetin|Hex1,HexA1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"hypothesis_mz\":769.197440,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C15H15O8\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":323.076143,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":323.076143,\"term_id\":\"acyl_hexa_coumaroyl\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O18\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+\",\"calycosin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"glycitein|Hex1,HexA1,coumaroyl1|[M+H]+\",\"wogonin|Hex1,HexA1,coumaroyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0a352845c21159a8d2026918e191150f90c18a4d728e83b5e1b93a0f4b9dbeca"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ without the peaks of required term y0",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"f062720f754c70b9133f844969c392f896e5efefe549054a8a3440987d46f4fe\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "046da14a8be70b23e711d627777a81f70f8948b3e28c102952822b6af7dcd08b"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ without the peaks of required term acyl_hexa_coumaroyl",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "drop_acyl_hexa_coumaroyl",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"64fb826db30983bea077bcb53e06475b8b9a29c94343063596bd9a0521f63892\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3a611579eabce10a8fcd464981a82ee8ab1fa8e0ee716b02a94ce917073f2876"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with y0:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@0",
+       "acyl_hexa_coumaroyl:coumaroyl@1"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "calycosin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "glycitein|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "wogonin|Hex1,HexA1,coumaroyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.08074",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"628b9d94e96f38c4cc36a91327e0730e062dc6d4864f5cc9de277cd277ee3fcc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"acacetin|Hex1,HexA1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"hypothesis_mz\":769.197440,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":17.506,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":285.080740,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C15H15O8\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":323.076143,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":323.076143,\"term_id\":\"acyl_hexa_coumaroyl\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O18\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+\",\"calycosin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"glycitein|Hex1,HexA1,coumaroyl1|[M+H]+\",\"wogonin|Hex1,HexA1,coumaroyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1d5402175389dfbec7ed978bc9ceca5a43a98e702d9a91ea5dda56c97ed0ecfc"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with y0:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.08076",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"0da59b7ce99c3b8c50057ad987c4e1beb04e9fa84b960e62fd80a514c637b8f4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "125dd8f4dd367329770abb6e3cdc5e298242ca44e017025a7630f70c6be80cb2"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with y0:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@0",
+       "acyl_hexa_coumaroyl:coumaroyl@1"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "calycosin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "glycitein|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "wogonin|Hex1,HexA1,coumaroyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07076",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"aa4601bfb2e0ec431120c11d7e37af14a3ff9ed3a7858f0dd16df1d88805062e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"acacetin|Hex1,HexA1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"hypothesis_mz\":769.197440,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-17.502,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":285.070760,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C15H15O8\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":323.076143,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":323.076143,\"term_id\":\"acyl_hexa_coumaroyl\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O18\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+\",\"calycosin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"glycitein|Hex1,HexA1,coumaroyl1|[M+H]+\",\"wogonin|Hex1,HexA1,coumaroyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d5e3b553900473cd80464c6159d201c600d24f7d8fde1c75d3c41b3b39d5968a"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with y0:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07074",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"61492fc03df0b2f7e6d05099497121cde285ad1b14eb3ac2a6fbdf19b6cdfb9a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6cf79f733112845d10191923f70bb82f3dda800609c752f33393aa4661e3cd73"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@0",
+       "acyl_hexa_coumaroyl:coumaroyl@1"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "calycosin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "glycitein|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "wogonin|Hex1,HexA1,coumaroyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.20743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.20743"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"9636dbbaba54e7258376b0855c7a04caa470d350eeddee8ad5016d62df5350c4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"acacetin|Hex1,HexA1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"hypothesis_mz\":769.197440,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C15H15O8\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":323.076143,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":323.076143,\"term_id\":\"acyl_hexa_coumaroyl\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O18\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+\",\"calycosin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"glycitein|Hex1,HexA1,coumaroyl1|[M+H]+\",\"wogonin|Hex1,HexA1,coumaroyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.207430,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "205b5394ce61b0ecd29290e391a5f0c8663f94f29d22221a8bf836304f6c6c10"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.20745",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.20745"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"b70fc4a44dda62eddbdb559dd8087551703ac46695b9036f3486f7e646f868f1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.207450,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "203979a2f8d9240d8d2feccb2addba123f5bfccc797029faf5f80be2dd8038ba"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@0",
+       "acyl_hexa_coumaroyl:coumaroyl@1"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "calycosin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "glycitein|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "wogonin|Hex1,HexA1,coumaroyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.18745",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.18745"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"db1719b47932239a20072e59569b07f3d5b1c8a199e401151e1ce77cfb827e63\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"acacetin|Hex1,HexA1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"hypothesis_mz\":769.197440,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C15H15O8\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":323.076143,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":323.076143,\"term_id\":\"acyl_hexa_coumaroyl\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O18\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+\",\"calycosin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"glycitein|Hex1,HexA1,coumaroyl1|[M+H]+\",\"wogonin|Hex1,HexA1,coumaroyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.187450,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5a179516ad03c420caa9669f71b6f685f4a534c93295d08008ee8a9cd1b414a9"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.18743",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.18743"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"819d4629a983a3e58985245b9a21c0e709f2d538be2140c4f60bc24d84a6faa4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.187430,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "841534b67be5b79e2ab64bae50c5d611288d73fefc862436483aa89db5e626aa"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"d181baf6c7849fd102aa1f5d17c3b2bface3b599fe04062e98632f10aa53cd9a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6746c0fc10e9617a15f830a98803f82612d5bdde591ce407fc1a63740e9479bc"
+  },
+  {
+   "description": "the union of the positive spectra of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ and biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@0",
+       "acyl_hexa_coumaroyl:coumaroyl@1"
+      ],
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "calycosin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "glycitein|Hex1,HexA1,coumaroyl1|[M+H]+",
+       "wogonin|Hex1,HexA1,coumaroyl1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"9d705782b6bbd9df8484341103f056f4b3b8d814a08c912249c3f644164097cb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"acacetin|Hex1,HexA1,coumaroyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"hypothesis_mz\":769.197440,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C15H15O8\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":323.076143,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":323.076143,\"term_id\":\"acyl_hexa_coumaroyl\",\"unit_id\":1}],\"neutral_formula\":\"C37H36O18\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"coumaroyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"biochanin_a|Hex1,HexA1,coumaroyl1|[M+H]+\",\"calycosin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"genkwanin|Hex1,HexA1,coumaroyl1|[M+H]+\",\"glycitein|Hex1,HexA1,coumaroyl1|[M+H]+\",\"wogonin|Hex1,HexA1,coumaroyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0a352845c21159a8d2026918e191150f90c18a4d728e83b5e1b93a0f4b9dbeca"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,coumaroyl1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 8,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "323.076143",
+      "500.0"
+     ],
+     [
+      "769.19744",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "769.19744"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"input_sha256\":\"9d705782b6bbd9df8484341103f056f4b3b8d814a08c912249c3f644164097cb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/1\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":8,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":769.197440,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"e0862487b14525542dff07e1e8cd54a279361e2c0901812b78a54b66c06398b5\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "eb1d3a91e75d1dc6604139e6fe96f40fccb1a9a60792fc4828e7e80170d5dfea"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

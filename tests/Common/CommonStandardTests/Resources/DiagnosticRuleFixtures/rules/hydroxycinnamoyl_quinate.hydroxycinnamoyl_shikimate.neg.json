@@ -1,0 +1,723 @@
+{
+ "cases": [
+  {
+   "description": "h* = core|caffeoyl1,feruloyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: acid_anion:caffeoyl, acid_anion:feruloyl, acid_anion_co2:caffeoyl, acid_anion_co2:feruloyl",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@2",
+       "acid_anion:feruloyl@3",
+       "acid_anion_co2:caffeoyl@0",
+       "acid_anion_co2:feruloyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"855d07af0e99816967f18c9829b8ccc1688f3de4093024c9081e08c7d6483bcf\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":511.124586,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"acid_anion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"acid_anion_co2\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"acid_anion_co2\",\"unit_id\":3}],\"neutral_formula\":\"C26H24O11\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6f109b9c735d577948731d5da1910f2bc765931c473a4573b27f96b734b6a328"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- without the peaks of required term acid_anion",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "drop_acid_anion",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"d7ab562ffecae8ab0bce5e14db540c48b1ae12588f0e4ecd353417d333c1b635\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "67b6720c102ab92dd3f9071ffce03457f5aea6d8bc2ca2a940a28ca99a6c4f3e"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- without the peaks of required term acid_anion_co2",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "drop_acid_anion_co2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"9f8dc8d57f5ddf48772b6e446e99a70fe84171238c3f1aa1749287062789e5f2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "32967e0469f4f865a2065c2cead3ee208e19a3d1df3bf10ef249ae82c2b9f9bd"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with acid_anion:caffeoyl moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@2",
+       "acid_anion:feruloyl@3",
+       "acid_anion_co2:caffeoyl@0",
+       "acid_anion_co2:feruloyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.039973",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"e6cccc199dd688ddd301b95f1f02d0694110a50fdaa631a4d02b350caa283f5f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":511.124586,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":27.873,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.039973,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"acid_anion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"acid_anion_co2\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"acid_anion_co2\",\"unit_id\":3}],\"neutral_formula\":\"C26H24O11\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9c4af779d029b998037dabd725d3dcf984fc182f703d0d1fda189bfa3c36f355"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with acid_anion:caffeoyl moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:feruloyl@3",
+       "acid_anion_co2:caffeoyl@0",
+       "acid_anion_co2:feruloyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.039993",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"bec7837775c57d6ec7fe4d913e105d879f122dbc82f68a7028e26a641334aac5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":511.124586,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"acid_anion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"acid_anion_co2\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"acid_anion_co2\",\"unit_id\":3}],\"neutral_formula\":\"C26H24O11\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "fb15146dc942ff8e42177fb9ed7db8dee8e07c058ebab8a072658aac04f00d3e"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with acid_anion:caffeoyl moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@2",
+       "acid_anion:feruloyl@3",
+       "acid_anion_co2:caffeoyl@0",
+       "acid_anion_co2:feruloyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.029993",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"ab561a1b22cebe583cf3ee1f1557e8a9f870a21064b814aff6d9647c3744a370\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":511.124586,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-27.870,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.029993,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"acid_anion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"acid_anion_co2\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"acid_anion_co2\",\"unit_id\":3}],\"neutral_formula\":\"C26H24O11\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "88abf03a75bd19ae530c70fd6c31d2913c798350f94e792f33701f52f037a8da"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with acid_anion:caffeoyl moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:feruloyl@3",
+       "acid_anion_co2:caffeoyl@0",
+       "acid_anion_co2:feruloyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.029973",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"b138423dde8a216d39bb1f327fd44e055f909652b4637bec7358cd372d482c5a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":511.124586,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"acid_anion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"acid_anion_co2\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"acid_anion_co2\",\"unit_id\":3}],\"neutral_formula\":\"C26H24O11\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":3.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "68b876f5df1ee0d106939f4534e8f3225ea368115a511b15c29430f5f5e1fc84"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@2",
+       "acid_anion:feruloyl@3",
+       "acid_anion_co2:caffeoyl@0",
+       "acid_anion_co2:feruloyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.134576",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.134576"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"dd67170128393018f5e05f7008e1fa7c6995f890d70dcf7fdfd85b5db9d26835\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":511.124586,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"acid_anion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"acid_anion_co2\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"acid_anion_co2\",\"unit_id\":3}],\"neutral_formula\":\"C26H24O11\",\"precursor_error_da\":0.009990,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.134576,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "dd3bc17a83a4f4597a014911212e5a88b4d982e7295f8b77a938ae51f131f72f"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.134596",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.134596"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"cd3d14093d72d7a32221a371d64b6520bc329dffa230fb57b13d122f6f73c7a9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.134596,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0a87c992c877f3be23fe5d60384b29ab884efa954d0578f4abf4910dc33208b2"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:caffeoyl@2",
+       "acid_anion:feruloyl@3",
+       "acid_anion_co2:caffeoyl@0",
+       "acid_anion_co2:feruloyl@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.114596",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.114596"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"8f09514b4425a44c3f4c9308ebf63211a3f229598a1e01ac7db6800d18ab0fde\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_shikimate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":511.124586,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"acid_anion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"acid_anion_co2\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"acid_anion_co2\",\"unit_id\":3}],\"neutral_formula\":\"C26H24O11\",\"precursor_error_da\":-0.009990,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.114596,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3c0026ab15afdfe6c6f6f558ed683e95f2d483ba9e0563da0b901f84f013453a"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.114576",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.114576"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"cb283ca4695afc6527356832629c95bbc8d845bfbfb9b815b2ac5f4b0b2179e6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.114576,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "66a5ceb68526458805383f462bed657134bd5c6a53819747edced50c308ee50d"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"284e02e0d235e3eff5015814165118addcf662f8e84e0e5e8b8aa9f8ca187c0a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0ad7e4b0360cdee07b5e12f21f07cfe7a2ad80af8bc044caf2be83c47a1a0711"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "511.124586",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "511.124586"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"input_sha256\":\"855d07af0e99816967f18c9829b8ccc1688f3de4093024c9081e08c7d6483bcf\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_shikimate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_shikimate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":511.124586,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"71b6ae73a0d69eddd9c9b95dfb2f15f7e9e97ab5e3ebcac5e03bb588d109ed51\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3bfb12c99f7649287c60fa8bbeffb8046b612a4db433558b0f773fca4c165d5e"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

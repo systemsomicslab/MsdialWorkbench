@@ -17,12 +17,16 @@ namespace CompMs.Common.StructureFinder.DiagnosticRules.Tests;
 /// storage form, and the privacy rules for committed rule files.
 /// </summary>
 [TestClass]
+[DeploymentItem(@"Resources\DiagnosticRuleFixtures", @"Resources\DiagnosticRuleFixtures")]
 public class EmbeddedRuleSetTests
 {
-    /// <summary>The shipped set's version and rule-set sha256, as ruleset-history.tsv pins them. A change to any
-    /// hashed file needs a new version, a new history row and this pair updated.</summary>
-    private const string Version = "0.1.0";
-    private const string Sha256 = "a8e02e0aaab56793f39228abe933c5ed957e27fa33b097fb5c492a0259fde5f1";
+    /// <summary>The shipped set's version and rule-set sha256 as the fixture manifest pins them, which must also be
+    /// the ruleset-history.tsv row. A change to any hashed file needs a new version, a new history row and one
+    /// fixture record run (MSDIAL_DIAGNOSTIC_FIXTURES_WRITE), which rewrites the manifest: it is the one pin in the
+    /// tests.</summary>
+    private static string Version => ShippedRuleFixtures.PinnedRuleSet().Version;
+
+    private static string Sha256 => ShippedRuleFixtures.PinnedRuleSet().Sha256;
 
     /// <summary>The shipped set's size: rules, scaffold lists, motifs and nesting rows.</summary>
     private const int RuleCount = 106;
@@ -125,7 +129,7 @@ public class EmbeddedRuleSetTests
     /// <summary>The first kind of private content in a rule-set file, or null. Every check runs on the raw text and,
     /// for a JSON file, on each decoded key and string. The UNC check runs on decoded strings only, because the raw
     /// JSON spells one backslash (a SMILES stereo bond such as <c>C(=C\OC)</c>) as two.</summary>
-    private static string? PrivateContent(string path, byte[] bytes) {
+    internal static string? PrivateContent(string path, byte[] bytes) {
         var raw = Encoding.ASCII.GetString(bytes);
         var isJson = path.EndsWith(".json", StringComparison.Ordinal);
         var decoded = isJson ? DecodedStrings(StrictJsonReader.Read(bytes)).ToList() : new List<string> { raw };
@@ -136,7 +140,7 @@ public class EmbeddedRuleSetTests
             if (DrivePath.IsMatch(text)) {
                 return "a drive path";
             }
-            if (Email.IsMatch(text)) {
+            if (text.IndexOf('@') >= 0 && Email.IsMatch(text)) {
                 return "an e-mail address";
             }
             if (text.IndexOf("local-vs21", StringComparison.OrdinalIgnoreCase) >= 0) {
@@ -146,7 +150,7 @@ public class EmbeddedRuleSetTests
         return decoded.Any(t => UncPath.IsMatch(t)) ? "a UNC path" : null;
     }
 
-    private static IEnumerable<string> DecodedStrings(JsonValue value) {
+    internal static IEnumerable<string> DecodedStrings(JsonValue value) {
         switch (value) {
             case JsonString s:
                 yield return s.Value;

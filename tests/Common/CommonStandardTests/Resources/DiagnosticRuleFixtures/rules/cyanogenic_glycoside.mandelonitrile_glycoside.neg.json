@@ -1,0 +1,510 @@
+{
+ "cases": [
+  {
+   "description": "h* = amygdalin|galloyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: loss_C8H7NO:C8H7NO",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": "amygdalin|galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_C8H7NO:C8H7NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "amygdalin|galloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.109329",
+      "500.0"
+     ],
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"mandelonitrile_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"91a6550b6f48b37301ac35c1d27ddfaec5f23a4b5eda55e698702f96c8a530ed\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"mandelonitrile_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"amygdalin|galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"amygdalin|galloyl1|[M-H]-\",\"hypothesis_mz\":608.162093,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C8H7NO\",\"peak_index\":0,\"peak_mz\":475.109329,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":475.109329,\"term_id\":\"loss_C8H7NO\",\"unit_id\":0}],\"neutral_formula\":\"C27H31NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"amygdalin\",\"score\":1.000000,\"units\":{\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"amygdalin|galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e284c669668be79e8993d4c04b7ef9af4dd5f3e31eed8962edf2496249c600ba"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- without the peaks of required term loss_C8H7NO",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "drop_loss_C8H7NO",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":null,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"0b62b5fc8814e6ffedf7ad57b7ee75e345ac9334f5ee61b95d9bbbc3d132bf10\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":1,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "72ee4e754d03ebf0851023d97ce97595bfffdc8cfeee12ad6ee4630be287b465"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with loss_C8H7NO:C8H7NO moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": "amygdalin|galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_C8H7NO:C8H7NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "amygdalin|galloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.114319",
+      "500.0"
+     ],
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"mandelonitrile_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"cd51b5310febe14ba6a2ee7395a0fa1444db3dd34eab4410218085694f9a9638\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"mandelonitrile_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"amygdalin|galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"amygdalin|galloyl1|[M-H]-\",\"hypothesis_mz\":608.162093,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":10.502,\"ion_formula\":\"C8H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C8H7NO\",\"peak_index\":0,\"peak_mz\":475.114319,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":475.109329,\"term_id\":\"loss_C8H7NO\",\"unit_id\":0}],\"neutral_formula\":\"C27H31NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"amygdalin\",\"score\":1.000000,\"units\":{\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"amygdalin|galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a7ff7c9d0f84d57795b064b501c942ea10e5968b0462ebf655f37eecd4cfc815"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with loss_C8H7NO:C8H7NO moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.114339",
+      "500.0"
+     ],
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"d510f4bc2b003a258de19f661b2472291d44113cbde96041628d1de769a2ba6c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "083058dc303e8b51b715241052763fdf27838c133289e9a6e4885b4311ce4a8c"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with loss_C8H7NO:C8H7NO moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": "amygdalin|galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_C8H7NO:C8H7NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "amygdalin|galloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.104339",
+      "500.0"
+     ],
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"mandelonitrile_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"b2461689270e133d90dfc421c7a5ccb046c42d42fbdefcfbf2e66c999b1d1020\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"mandelonitrile_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"amygdalin|galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"amygdalin|galloyl1|[M-H]-\",\"hypothesis_mz\":608.162093,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-10.504,\"ion_formula\":\"C8H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C8H7NO\",\"peak_index\":0,\"peak_mz\":475.104339,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":475.109329,\"term_id\":\"loss_C8H7NO\",\"unit_id\":0}],\"neutral_formula\":\"C27H31NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"amygdalin\",\"score\":1.000000,\"units\":{\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"amygdalin|galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "abda584dab4008b050c9c3f6cebcb6e0ded33b7395a6c098d37b368c5d303c82"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with loss_C8H7NO:C8H7NO moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.104319",
+      "500.0"
+     ],
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"a6e4d464b6afe10adf0efb6adede46d23b5cf5a44324424413a20eb5b12b01d6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "97977d4103933e7d77af5ef692ca788b9d2ef8fd93b279ff1d8f9e6a3b4c447b"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": "amygdalin|galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_C8H7NO:C8H7NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "amygdalin|galloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.109329",
+      "500.0"
+     ],
+     [
+      "608.172083",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.172083"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"mandelonitrile_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"e2d4ea8bb668f4a8dd2ec1778466533e63d972c2a11c6502e2caa799922b5c77\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"mandelonitrile_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"amygdalin|galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"amygdalin|galloyl1|[M-H]-\",\"hypothesis_mz\":608.162093,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C8H7NO\",\"peak_index\":0,\"peak_mz\":475.109329,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":475.109329,\"term_id\":\"loss_C8H7NO\",\"unit_id\":0}],\"neutral_formula\":\"C27H31NO15\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"amygdalin\",\"score\":1.000000,\"units\":{\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"amygdalin|galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.172083,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "898b43d986366e34b26ad8fbcd1d89f55efad943d5490ff656c3e9e4ed4e8974"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.109329",
+      "500.0"
+     ],
+     [
+      "608.172103",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.172103"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"8ab60a0089f8dbd4e701c2ca76ea16d7a30f87c20261093bcd31d8168d1935d9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.172103,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9ae822ae3767c5e0a51ec6d2208151f97c8ca48701f65be1048e0043912c0e0e"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": "amygdalin|galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_C8H7NO:C8H7NO@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "amygdalin|galloyl1|[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.109329",
+      "500.0"
+     ],
+     [
+      "608.152103",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.152103"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"mandelonitrile_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"1f2f29828a027cc4f357f27209dfd42cb33a18496c8b1cc02021bee88020bf1f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"mandelonitrile_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"amygdalin|galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"amygdalin|galloyl1|[M-H]-\",\"hypothesis_mz\":608.162093,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C8H7NO\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C8H7NO\",\"peak_index\":0,\"peak_mz\":475.109329,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":475.109329,\"term_id\":\"loss_C8H7NO\",\"unit_id\":0}],\"neutral_formula\":\"C27H31NO15\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"amygdalin\",\"score\":1.000000,\"units\":{\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"amygdalin|galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.152103,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3faa7b9945c9893b5ca0548d0ef3263ea90515fe84e954dd266967f1c17be180"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.109329",
+      "500.0"
+     ],
+     [
+      "608.152083",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.152083"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"29eff932baa2a6885fea21ed8415cc3fa63ba04db57b707548e42da2555b5708\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.152083,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b24cfe5994120a412d19f3604abb472c40c598ec92e75dddaa5d4eb820f562c5"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "475.109329",
+      "500.0"
+     ],
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"d1d8d689c5f4e959e05fdab41e17839ad56ff373c844add6e90edfc47f26575f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d29204d0ab1ebc13ef98d5df3f84972bc938ae2f8bb500244cd0b8aa3d6c33ad"
+  },
+  {
+   "description": "the positive spectrum of amygdalin|galloyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg"
+    ],
+    "outcomes": {
+     "cyanogenic_glycoside.mandelonitrile_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "475.109329",
+      "500.0"
+     ],
+     [
+      "608.162093",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "608.162093"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"input_sha256\":\"91a6550b6f48b37301ac35c1d27ddfaec5f23a4b5eda55e698702f96c8a530ed\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"mandelonitrile_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"cyanogenic_glycoside.mandelonitrile_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":608.162093,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"089b93420c69ae2b1773202930bf0bb50370281986be8a013f3f595285cbd244\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "460cac8a2c15049f71f92e47a406015e5958d58c434d2625c5deca80313f37e9"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

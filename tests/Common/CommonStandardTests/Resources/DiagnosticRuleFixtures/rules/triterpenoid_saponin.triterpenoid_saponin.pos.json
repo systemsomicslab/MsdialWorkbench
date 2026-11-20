@@ -1,0 +1,853 @@
+{
+ "cases": [
+  {
+   "description": "h* = bayogenin|Hex1,HexA1|[M+H]+, precursor at its oracle m/z; one peak per support member: y0:C30H45O3, y0:C30H47O4, y_series:Hex1, y_series:HexA1",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H45O3@0",
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2",
+       "y_series:HexA1@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"e26c6afcba70202bce7cae9d807dfba7df25bc859de5d3a147ff847de6d73d3c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C30H45O3\",\"kind\":\"product_ion\",\"member_key\":\"C30H45O3\",\"peak_index\":0,\"peak_mz\":453.336321,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":453.336321,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C36H57O11\",\"kind\":\"ion_series\",\"member_key\":\"HexA1\",\"peak_index\":3,\"peak_mz\":665.389539,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":665.389539,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bayogenin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6dc3d59731995b06493f5884edf3483938b14b1c0d002dcfeabefeb101c98925"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ without the peaks of required term y0",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"fd2015f87c32928ce49d99d71c744267844d909f70e41e7c66ca7181511a1046\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "39adeb5218cfc38e6bdbd4cc9947ae74c706c8e8432ab828b470eed1a8820086"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with 1 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H45O3@0",
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"32e0c58c557954835c49566d90e1b650fa27b1656839f51442b58a0b7bc3b3b0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":1,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C30H45O3\",\"kind\":\"product_ion\",\"member_key\":\"C30H45O3\",\"peak_index\":0,\"peak_mz\":453.336321,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":453.336321,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bayogenin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d250a1ef14fd3669da1bab961952787f826a8c3f4e02489386293dd6f4c6e93c"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with 0 of the k = 1 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"8ceeb7910794e8f5ef97b00b7c499b0d156e8f9ff647b4e3286c93eb1ebbd383\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "97c52772256ffeff33259cf44775c80baa565b5d7ba0b210a239e76bcacc8cd3"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with y0:C30H45O3 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H45O3@0",
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2",
+       "y_series:HexA1@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.341311",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"082a82288243c5b41ff41bc18bba2918827a154f7f8c4c3babc93a8288b3677c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":11.007,\"ion_formula\":\"C30H45O3\",\"kind\":\"product_ion\",\"member_key\":\"C30H45O3\",\"peak_index\":0,\"peak_mz\":453.341311,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":453.336321,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C36H57O11\",\"kind\":\"ion_series\",\"member_key\":\"HexA1\",\"peak_index\":3,\"peak_mz\":665.389539,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":665.389539,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bayogenin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3b30b736ef7a4414117a538588f584cd8ff9e81eabd513fa35f59b2ed8db5185"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with y0:C30H45O3 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2",
+       "y_series:HexA1@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.341331",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"0687d0c420b808d4506f1dbf200b74ddbf2ad91c98a021b56239f2299adaa3a6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C36H57O11\",\"kind\":\"ion_series\",\"member_key\":\"HexA1\",\"peak_index\":3,\"peak_mz\":665.389539,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":665.389539,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bayogenin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "aa31cd38273d8650feff3f403c48eefce1f301e81dbcb48fd6fb63ea327a792f"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with y0:C30H45O3 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H45O3@0",
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2",
+       "y_series:HexA1@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.331331",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"eaa2aa1590e80a641ed46e3fd3fa2a049c22328fce48d6d921d5420434cc194e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-11.008,\"ion_formula\":\"C30H45O3\",\"kind\":\"product_ion\",\"member_key\":\"C30H45O3\",\"peak_index\":0,\"peak_mz\":453.331331,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":453.336321,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C36H57O11\",\"kind\":\"ion_series\",\"member_key\":\"HexA1\",\"peak_index\":3,\"peak_mz\":665.389539,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":665.389539,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bayogenin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "df68fe7cd692a2a5443fe8ccad6dc421c61e3945e9786429e9871b24bf5cb737"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with y0:C30H45O3 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2",
+       "y_series:HexA1@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.331311",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"1cfd1df516397b993778d42a15ee5666471ca6369b8e4fe8c40c9abea6904fe5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C36H57O11\",\"kind\":\"ion_series\",\"member_key\":\"HexA1\",\"peak_index\":3,\"peak_mz\":665.389539,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":665.389539,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bayogenin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7f9141076feec443cbdd8cbbff2940448a738e71aad8707ecfeee5988a271a54"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H45O3@0",
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2",
+       "y_series:HexA1@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.452352",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.452352"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"71ed61deedaf951ea5e8d181ebf4a2dbd563149ca44d036f2422ca4f459a2589\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C30H45O3\",\"kind\":\"product_ion\",\"member_key\":\"C30H45O3\",\"peak_index\":0,\"peak_mz\":453.336321,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":453.336321,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C36H57O11\",\"kind\":\"ion_series\",\"member_key\":\"HexA1\",\"peak_index\":3,\"peak_mz\":665.389539,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":665.389539,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"bayogenin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.452352,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d2312cb94561ad23f7dbcba5136bdd86e630b59d08ad8c9025d33286692f4503"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.452372",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.452372"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"1e324c84dafbe6c4da72e4f6d747cb10e1e986629ba4da9452890e8eacf3b032\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.452372,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1ca32e1cdd26a562448ac34c6af755ed77659f275d63f4cdc84bd3e844528cda"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H45O3@0",
+       "y0:C30H47O4@1",
+       "y_series:Hex1@2",
+       "y_series:HexA1@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,HexA1|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.432372",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.432372"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"7ad0a432f022eb2cd2dd7ca03163e79b06a14c76a930b738d94142a7e34225e9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":827.442362,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C30H45O3\",\"kind\":\"product_ion\",\"member_key\":\"C30H45O3\",\"peak_index\":0,\"peak_mz\":453.336321,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":453.336321,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":1,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":2,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C36H57O11\",\"kind\":\"ion_series\",\"member_key\":\"HexA1\",\"peak_index\":3,\"peak_mz\":665.389539,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":665.389539,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H66O16\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"bayogenin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.432372,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d513229d0781eb4e470eb46daa00a560ebb91c9607633e1ffb006dc09ae414ed"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.432352",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.432352"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"65de6d4daf5db10c71c4760ec97b89747f103d662e8c8e6592d56de22b94c670\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.432352,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1733bb134c0e7e3b3e620993e039ffef41fcc37b45d9501b7b90785c81efb23d"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"e9fcb45526c413bc42b8a854efbf523b485df3660dbedfa7011ffc9002417b5a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5428e4f27794aca6dd336a02371c74ace852de49dcb766251d3323d1ca012549"
+  },
+  {
+   "description": "the union of the positive spectra of bayogenin|Hex1,dHex1|[M+H]+ and hederagenin|Hex2|[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": "bayogenin|Hex1,dHex1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:C30H45O3@1",
+       "y0:C30H47O4@3",
+       "y_series:dHex1@5",
+       "y_series:Hex1@6"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "bayogenin|Hex1,dHex1|[M+H]+",
+       "hederagenin|Hex2|[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "437.341407",
+      "500.0"
+     ],
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "455.351971",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "473.362536",
+      "500.0"
+     ],
+     [
+      "635.415359",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "797.468183",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "797.468183"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"triterpenoid_saponin\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"d00865063b25aa102d8e3904b55c03180212c7b4dc4dcb7b8aeda3715ef3ba45\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":8,\"narrowest_motifs\":[\"triterpenoid_saponin\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"bayogenin|Hex1,dHex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"bayogenin|Hex1,dHex1|[M+H]+\",\"hypothesis_mz\":797.468183,\"k_of\":[{\"count\":2,\"k\":1,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C30H45O3\",\"kind\":\"product_ion\",\"member_key\":\"C30H45O3\",\"peak_index\":1,\"peak_mz\":453.336321,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":453.336321,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C30H47O4\",\"kind\":\"product_ion\",\"member_key\":\"C30H47O4\",\"peak_index\":3,\"peak_mz\":471.346886,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":471.346886,\"term_id\":\"y0\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C36H59O9\",\"kind\":\"ion_series\",\"member_key\":\"dHex1\",\"peak_index\":5,\"peak_mz\":635.415359,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":635.415359,\"term_id\":\"y_series\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C36H59O10\",\"kind\":\"ion_series\",\"member_key\":\"Hex1\",\"peak_index\":6,\"peak_mz\":651.410274,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":651.410274,\"term_id\":\"y_series\",\"unit_id\":3}],\"neutral_formula\":\"C42H68O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"bayogenin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"dHex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"bayogenin|Hex1,dHex1|[M+H]+\",\"hederagenin|Hex2|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":797.468183,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f4aaa0f4d18242b4ea8b0e024302fb3a5f0e9a68ed7aea0eb8457cf8310f840e"
+  },
+  {
+   "description": "the positive spectrum of bayogenin|Hex1,HexA1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "triterpenoid_saponin.triterpenoid_saponin.pos"
+    ],
+    "outcomes": {
+     "triterpenoid_saponin.triterpenoid_saponin.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "453.336321",
+      "500.0"
+     ],
+     [
+      "471.346886",
+      "500.0"
+     ],
+     [
+      "651.410274",
+      "500.0"
+     ],
+     [
+      "665.389539",
+      "500.0"
+     ],
+     [
+      "827.442362",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "827.442362"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"input_sha256\":\"e26c6afcba70202bce7cae9d807dfba7df25bc859de5d3a147ff847de6d73d3c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"triterpenoid_saponin\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"triterpenoid_saponin.triterpenoid_saponin.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":827.442362,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"752ddf86de2b54d28f8ea1baa9f7c83932a23b35e1ae9bdcb517535779464fcd\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "40d60f8841c42e605931e0cac35a59350624d79893915e5898f600b9a30d2f66"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

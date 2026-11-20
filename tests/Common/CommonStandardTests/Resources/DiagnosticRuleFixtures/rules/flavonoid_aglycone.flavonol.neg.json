@@ -1,0 +1,605 @@
+{
+ "cases": [
+  {
+   "description": "h* = fisetin||[M-H]-, precursor at its oracle m/z; one peak per support member: a12:C8H3O4, b12:C7H5O2",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": "fisetin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a12:C8H3O4@1",
+       "b12:C7H5O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "fisetin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonol_core\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"988b182a8e7c2b214485abb95bf83a640040766cd184c130d2f30f696ea10c81\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonol_core\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"fisetin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"fisetin||[M-H]-\",\"hypothesis_mz\":285.040462,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C8H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C8H3O4\",\"peak_index\":1,\"peak_mz\":163.003683,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.003683,\"term_id\":\"a12\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C7H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O2\",\"peak_index\":0,\"peak_mz\":121.029503,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":121.029503,\"term_id\":\"b12\",\"unit_id\":1}],\"neutral_formula\":\"C15H10O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"fisetin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"fisetin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "45d1603fbd5b7657111730b59e75470b46f0ef1275ac3ee5378ddf2f8cc27c72"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- without the peaks of required term a12",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "drop_a12",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"ad9137a0e489ead26f2cbc7bcefc7da7d4d0ec4472084e921e6b47283cc6b8fe\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c06ea2866646536bc418d214130c736269ab916513ea098dd18c4ded0d871e05"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- without the peaks of required term b12",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "drop_b12",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"828a7be0ecbd66338f66ec640370dcc7ae961bf02f843c83393ef3125612d8a7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "99f8efd56e1461e484bf89cb858878ef330a40e7a4144bc1cac0b53d71e9ce2f"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with a12:C8H3O4 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": "fisetin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a12:C8H3O4@1",
+       "b12:C7H5O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "fisetin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.008673",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonol_core\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"2a996f6af2c123eb194ed6ad583179162dea591970229e7641acceee0efbae69\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonol_core\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"fisetin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"fisetin||[M-H]-\",\"hypothesis_mz\":285.040462,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":30.615,\"ion_formula\":\"C8H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C8H3O4\",\"peak_index\":1,\"peak_mz\":163.008673,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.003683,\"term_id\":\"a12\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C7H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O2\",\"peak_index\":0,\"peak_mz\":121.029503,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":121.029503,\"term_id\":\"b12\",\"unit_id\":1}],\"neutral_formula\":\"C15H10O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"fisetin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"fisetin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "dd924937f7509715c1efd71a8425bd3597e39d06ef3b333a4887138cba40c25a"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with a12:C8H3O4 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.008693",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"6a23530fe323d0390668db05e2205159c47d4329e09cf7206e3575182ee79c0a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ee25786f388d110bec2897518a84f336e5c6fc4cfbc4f1dceadc80d9265e4c58"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with a12:C8H3O4 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": "fisetin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a12:C8H3O4@1",
+       "b12:C7H5O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "fisetin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "162.998693",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonol_core\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"61ee3f6d87826d20caab52d4b87865de4d6445651d1802f34c2194f23663a895\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonol_core\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"fisetin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"fisetin||[M-H]-\",\"hypothesis_mz\":285.040462,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-30.610,\"ion_formula\":\"C8H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C8H3O4\",\"peak_index\":1,\"peak_mz\":162.998693,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.003683,\"term_id\":\"a12\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C7H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O2\",\"peak_index\":0,\"peak_mz\":121.029503,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":121.029503,\"term_id\":\"b12\",\"unit_id\":1}],\"neutral_formula\":\"C15H10O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"fisetin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"fisetin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4d768f1561d748bfcb58d2e2e2546ab03ed3b348db1c048acf79bbf20b804d72"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with a12:C8H3O4 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "162.998673",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"ca6c6251d34da92a4c897e0864b7f2225a8e448a2f163ab9b5da1ee25a0e835d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7334a652bfa7fdede5762b637c0a788cdbab5d83f071e3fbafd4bb74c207b47c"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": "fisetin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a12:C8H3O4@1",
+       "b12:C7H5O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "fisetin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.050452",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.050452"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonol_core\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"aa230c31489c0afb546911f22e79536a43e576bebe5fa5dcaa33b6d6d0bcf9c6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonol_core\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"fisetin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"fisetin||[M-H]-\",\"hypothesis_mz\":285.040462,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C8H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C8H3O4\",\"peak_index\":1,\"peak_mz\":163.003683,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.003683,\"term_id\":\"a12\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C7H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O2\",\"peak_index\":0,\"peak_mz\":121.029503,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":121.029503,\"term_id\":\"b12\",\"unit_id\":1}],\"neutral_formula\":\"C15H10O6\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"fisetin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"fisetin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.050452,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7ea926e6cea6fa984dd0b8dd4f36339ea3f7ec8e5b7b124bab7fdcc454101a5b"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.050472",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.050472"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"fd50c4d877dbe0a20824f2ff62593f088e9b08625dad4402a30bfd441ddb9ba5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.050472,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5e565a8699e00bed277d81ee14cca32d2fa944e15e1a1ea11e512c1366e914d9"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": "fisetin||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a12:C8H3O4@1",
+       "b12:C7H5O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "fisetin||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.030472",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.030472"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonol_core\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"15d9449ac9238ae442c87fd1d1983828659a1ad1ba8dc64e60cbefc047f88451\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonol_core\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"fisetin|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"fisetin||[M-H]-\",\"hypothesis_mz\":285.040462,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C8H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C8H3O4\",\"peak_index\":1,\"peak_mz\":163.003683,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.003683,\"term_id\":\"a12\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C7H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O2\",\"peak_index\":0,\"peak_mz\":121.029503,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":121.029503,\"term_id\":\"b12\",\"unit_id\":1}],\"neutral_formula\":\"C15H10O6\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"fisetin\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"fisetin||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.030472,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f1f58bc9b204df841b627771c8b6bdddba61fd4bbb7e2b581c08983127548750"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.030452",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.030452"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"df81a23a60044f8caf5a52943785d6a074f09c9a16ddd5c7aa400224ab764ba9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.030452,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f33d49bc0fdf5b7c9f22dc51df3a7ac32313702be81c5fef4c803d25e4251525"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"2e86d58edfd660efc2c51ec3898cae9c4d675a6ddf9b73294e2fecc1f4354c1f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2b4cf5a47f31d8e8a86f0ce2aafbc20e30a9745f35d3654bf4fb5a9f0d88fead"
+  },
+  {
+   "description": "the positive spectrum of fisetin||[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavonol.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavonol.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "121.029503",
+      "500.0"
+     ],
+     [
+      "163.003683",
+      "500.0"
+     ],
+     [
+      "285.040462",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "285.040462"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"input_sha256\":\"988b182a8e7c2b214485abb95bf83a640040766cd184c130d2f30f696ea10c81\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonol_core\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavonol.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":285.040462,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fc29348804ca4ddfb6581ef0c4b8a22ca8899d7bb6124ed6bda587a8453d12fc\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1ea3d30890f8114c3b51a64c3336a1ba3b307f31cb2c13aadc4789bd9efa5af7"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

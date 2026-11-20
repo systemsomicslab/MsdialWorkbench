@@ -1,0 +1,605 @@
+{
+ "cases": [
+  {
+   "description": "h* = glutathione_disulfide||[M-H]-, precursor at its oracle m/z; one peak per support member: gsh_C10H14N3O6:C10H14N3O6, gsh_C10H12N3O5:C10H12N3O5",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": "glutathione_disulfide||[M-H]-",
+      "fired": true,
+      "matched": [
+       "gsh_C10H14N3O6:C10H14N3O6@1",
+       "gsh_C10H12N3O5:C10H12N3O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glutathione_disulfide||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glutathione_tripeptide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"9a387eb1502409dedabe4609d4ac44416279f9dc095a1ae127c705305a99b89c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"glutathione_tripeptide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glutathione_disulfide|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glutathione_disulfide||[M-H]-\",\"hypothesis_mz\":611.144686,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H14N3O6\",\"kind\":\"product_ion\",\"member_key\":\"C10H14N3O6\",\"peak_index\":1,\"peak_mz\":272.088809,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":272.088809,\"term_id\":\"gsh_C10H14N3O6\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C10H12N3O5\",\"kind\":\"product_ion\",\"member_key\":\"C10H12N3O5\",\"peak_index\":0,\"peak_mz\":254.078244,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":254.078244,\"term_id\":\"gsh_C10H12N3O5\",\"unit_id\":1}],\"neutral_formula\":\"C20H32N6O12S2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"glutathione_disulfide\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glutathione_disulfide||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "356b61a6ef74cbc45b720f29ed756488655a7e8d4e4f4e2bed30171f9341b1e1"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- without the peaks of required term gsh_C10H14N3O6",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "drop_gsh_C10H14N3O6",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"233ceb3a1636d9bf480f729e9f680f7c340e38093b01dcd3ebb8f9214285852e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "62bc6184dccf83b8a632cdef7ec23357cfc06a76ea1497be90fac46ca3e83b31"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- without the peaks of required term gsh_C10H12N3O5",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "drop_gsh_C10H12N3O5",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"5f4e2446488d89c96943e1b6585da48b1321e24997592488aaf3847132b54e01\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f5f754f37d6d2482efdb58ce1c21cb5e995f6ac4426f675a51be3b33bf69b53c"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with gsh_C10H14N3O6:C10H14N3O6 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": "glutathione_disulfide||[M-H]-",
+      "fired": true,
+      "matched": [
+       "gsh_C10H14N3O6:C10H14N3O6@1",
+       "gsh_C10H12N3O5:C10H12N3O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glutathione_disulfide||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.093799",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glutathione_tripeptide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"d747020900fc87cfa47c1a81c3627e9d8f90b8cc9f23875ebb16096f739c6add\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"glutathione_tripeptide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glutathione_disulfide|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glutathione_disulfide||[M-H]-\",\"hypothesis_mz\":611.144686,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":18.339,\"ion_formula\":\"C10H14N3O6\",\"kind\":\"product_ion\",\"member_key\":\"C10H14N3O6\",\"peak_index\":1,\"peak_mz\":272.093799,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":272.088809,\"term_id\":\"gsh_C10H14N3O6\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C10H12N3O5\",\"kind\":\"product_ion\",\"member_key\":\"C10H12N3O5\",\"peak_index\":0,\"peak_mz\":254.078244,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":254.078244,\"term_id\":\"gsh_C10H12N3O5\",\"unit_id\":1}],\"neutral_formula\":\"C20H32N6O12S2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"glutathione_disulfide\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glutathione_disulfide||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ca82508cdabec0a8b7b93332979aa67e3052e26325442b412d1c720bbd9e509c"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with gsh_C10H14N3O6:C10H14N3O6 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.093819",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"6465877412e331258a8f4481fba356050e4a338857fc4f67d5e85593fe57c4b0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "333f958fbb43f523936632eb6e637cae5c767736df17c08c856012fcaabc8e3f"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with gsh_C10H14N3O6:C10H14N3O6 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": "glutathione_disulfide||[M-H]-",
+      "fired": true,
+      "matched": [
+       "gsh_C10H14N3O6:C10H14N3O6@1",
+       "gsh_C10H12N3O5:C10H12N3O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glutathione_disulfide||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.083819",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glutathione_tripeptide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"9510dc40ff164045d4347851c94b8d535b6a7643cbd6609819a6998553289a5e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"glutathione_tripeptide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glutathione_disulfide|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glutathione_disulfide||[M-H]-\",\"hypothesis_mz\":611.144686,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-18.340,\"ion_formula\":\"C10H14N3O6\",\"kind\":\"product_ion\",\"member_key\":\"C10H14N3O6\",\"peak_index\":1,\"peak_mz\":272.083819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":272.088809,\"term_id\":\"gsh_C10H14N3O6\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C10H12N3O5\",\"kind\":\"product_ion\",\"member_key\":\"C10H12N3O5\",\"peak_index\":0,\"peak_mz\":254.078244,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":254.078244,\"term_id\":\"gsh_C10H12N3O5\",\"unit_id\":1}],\"neutral_formula\":\"C20H32N6O12S2\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"glutathione_disulfide\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glutathione_disulfide||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8426bb2cce089bf4a35dc72a03678b2fc218fb8bccebba95e702782da191c53b"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with gsh_C10H14N3O6:C10H14N3O6 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.083799",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"29aa514ebf37c470b337995fc7c24d1f94104fed46b33a7ed0874808f6210bc3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a655d39da5feacd6fc42d643026da7a67024dd48ea3d1378356f66ce8460ce26"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": "glutathione_disulfide||[M-H]-",
+      "fired": true,
+      "matched": [
+       "gsh_C10H14N3O6:C10H14N3O6@1",
+       "gsh_C10H12N3O5:C10H12N3O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glutathione_disulfide||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.154676",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.154676"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glutathione_tripeptide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"cfa170946e5ebf9010a59795fb7966556d360a0f397fc1571403bf3797bf99ff\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"glutathione_tripeptide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glutathione_disulfide|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glutathione_disulfide||[M-H]-\",\"hypothesis_mz\":611.144686,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H14N3O6\",\"kind\":\"product_ion\",\"member_key\":\"C10H14N3O6\",\"peak_index\":1,\"peak_mz\":272.088809,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":272.088809,\"term_id\":\"gsh_C10H14N3O6\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C10H12N3O5\",\"kind\":\"product_ion\",\"member_key\":\"C10H12N3O5\",\"peak_index\":0,\"peak_mz\":254.078244,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":254.078244,\"term_id\":\"gsh_C10H12N3O5\",\"unit_id\":1}],\"neutral_formula\":\"C20H32N6O12S2\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"glutathione_disulfide\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glutathione_disulfide||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.154676,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a0a0b9a3456b0c36a8b59f16a95d7be24074236b376b5427d6894175bc9a8ae1"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.154696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.154696"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"ad16b2143339032eadf98de739610d45e273fd696d64bad2201d81a077ef13c9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.154696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ac6b7239022ca6c76b5de1b792c14333c7830d303f6bca3a0355a6ff39630b58"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": "glutathione_disulfide||[M-H]-",
+      "fired": true,
+      "matched": [
+       "gsh_C10H14N3O6:C10H14N3O6@1",
+       "gsh_C10H12N3O5:C10H12N3O5@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "glutathione_disulfide||[M-H]-"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.134696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.134696"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glutathione_tripeptide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"305f26b55db025c1a7110f3fac26b44c2d62f9d2820046894670d3354e04f903\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"glutathione_tripeptide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"glutathione_disulfide|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"glutathione_disulfide||[M-H]-\",\"hypothesis_mz\":611.144686,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H14N3O6\",\"kind\":\"product_ion\",\"member_key\":\"C10H14N3O6\",\"peak_index\":1,\"peak_mz\":272.088809,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":272.088809,\"term_id\":\"gsh_C10H14N3O6\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C10H12N3O5\",\"kind\":\"product_ion\",\"member_key\":\"C10H12N3O5\",\"peak_index\":0,\"peak_mz\":254.078244,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":254.078244,\"term_id\":\"gsh_C10H12N3O5\",\"unit_id\":1}],\"neutral_formula\":\"C20H32N6O12S2\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"glutathione_disulfide\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"glutathione_disulfide||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.134696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "fd4488296bc77537bb1e598a14828f0f3d969f84e5cf75abe73c9c6445687ec9"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.134676",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.134676"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"34a7b106e1195e96f72bb7c924fe9b1a5b49bf094cee59be510e5f1bf1a0f4d2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.134676,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "19b2ee1a18c971177bb88114501a8fdad831cb03dadccae1e2a9ffeb23d9ffa4"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"6e5eb9ffae7725a20595d90acfbd570ae6a626f358ddd6422227516b373cb049\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6183ca2e18913d8741b3636f51fdd5cc2858cbdd0160140171f6331ca96c41b0"
+  },
+  {
+   "description": "the positive spectrum of glutathione_disulfide||[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "glutathione_conjugate.glutathionyl.neg"
+    ],
+    "outcomes": {
+     "glutathione_conjugate.glutathionyl.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "254.078244",
+      "500.0"
+     ],
+     [
+      "272.088809",
+      "500.0"
+     ],
+     [
+      "611.144686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "611.144686"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"input_sha256\":\"9a387eb1502409dedabe4609d4ac44416279f9dc095a1ae127c705305a99b89c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glutathione_tripeptide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"glutathione_conjugate.glutathionyl.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":611.144686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"99544d1543dbe9a783697ee37b445461a7c63f9016eb3da7e801a2bf95e1fa0c\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ab7ee826b3c335cb9b09e953e8d114bf30d0dc1628adf74bbe8b6d79c29215df"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

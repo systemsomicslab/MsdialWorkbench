@@ -1,0 +1,708 @@
+{
+ "cases": [
+  {
+   "description": "h* = protopine||[M+H]+, precursor at its oracle m/z; one peak per support member: loss_h2o:H2O, ion_rda_a:C11H12NO3, ion_rda_b:C9H9O2",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": "protopine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_h2o:H2O@2",
+       "ion_rda_a:C11H12NO3@1",
+       "ion_rda_b:C9H9O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "protopine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protopine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"7ee9ceb3d0ff77d1162ca69715007471788402b80acd928f35623993753ad5b3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protopine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"protopine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"protopine||[M+H]+\",\"hypothesis_mz\":354.133599,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"H2O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H2O\",\"peak_index\":2,\"peak_mz\":336.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":336.123034,\"term_id\":\"loss_h2o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C11H12NO3\",\"kind\":\"product_ion\",\"member_key\":\"C11H12NO3\",\"peak_index\":1,\"peak_mz\":206.081169,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":206.081169,\"term_id\":\"ion_rda_a\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H9O2\",\"peak_index\":0,\"peak_mz\":149.059706,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.059706,\"term_id\":\"ion_rda_b\",\"unit_id\":2}],\"neutral_formula\":\"C20H19NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"protopine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"protopine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "036d4c6208699c582c945471e7bd8c30dd1e47ac747ebe45b415bb7594ec05dc"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ without the peaks of required term loss_h2o",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "drop_loss_h2o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"231d542d277fe55ee53f4ccd85a88285cf758eb141d8c03efd0e063cc86216a1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6f06281321e4e650ebdc42381b2a86552cad551e00b022b28a97243877c3e2b0"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ without the peaks of required term ion_rda_a",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "drop_ion_rda_a",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"2e4a03ccabf81f4566db695f558565679d87e0dc9755f26e4449bc37fb0a411a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f62f2077f5d95443254ee58a1cc79dbb9cf61128e3e435b8961a0e3bad98639b"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ without the peaks of required term ion_rda_b",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "drop_ion_rda_b",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"c4221cf2e93b61f83c03a57223da50f8e7295cb8844f968c5695be910fe34240\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3967f2d004df513c2bd84eca1a26ea57b733e3c4bc1328b1336b8f8704529ef2"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with loss_h2o:H2O moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": "protopine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_h2o:H2O@2",
+       "ion_rda_a:C11H12NO3@1",
+       "ion_rda_b:C9H9O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "protopine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.128024",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protopine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"226aef46f8158aaf423e8f647af05596d4edc46aa7fde4abee2b5779acc79f3c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protopine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"protopine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"protopine||[M+H]+\",\"hypothesis_mz\":354.133599,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":14.846,\"ion_formula\":\"H2O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H2O\",\"peak_index\":2,\"peak_mz\":336.128024,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":336.123034,\"term_id\":\"loss_h2o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C11H12NO3\",\"kind\":\"product_ion\",\"member_key\":\"C11H12NO3\",\"peak_index\":1,\"peak_mz\":206.081169,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":206.081169,\"term_id\":\"ion_rda_a\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H9O2\",\"peak_index\":0,\"peak_mz\":149.059706,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.059706,\"term_id\":\"ion_rda_b\",\"unit_id\":2}],\"neutral_formula\":\"C20H19NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"protopine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"protopine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9cf5e9e9d3833227fe242a9dec9db64263acce556b78e912ae896173cce6cde7"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with loss_h2o:H2O moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.128044",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"b40f950482ef2d235bd86b5777332fee0e448de2c7b81d45435256f4040feedd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c67276a90d93f141f1ac723623c5c073097b51ab9992eec6b638d37f5a85b7eb"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with loss_h2o:H2O moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": "protopine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_h2o:H2O@2",
+       "ion_rda_a:C11H12NO3@1",
+       "ion_rda_b:C9H9O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "protopine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.118044",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protopine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"fc8b20909692113e311086f0b85698b265cb773cf4233f28d0572559718c676b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protopine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"protopine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"protopine||[M+H]+\",\"hypothesis_mz\":354.133599,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-14.846,\"ion_formula\":\"H2O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H2O\",\"peak_index\":2,\"peak_mz\":336.118044,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":336.123034,\"term_id\":\"loss_h2o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C11H12NO3\",\"kind\":\"product_ion\",\"member_key\":\"C11H12NO3\",\"peak_index\":1,\"peak_mz\":206.081169,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":206.081169,\"term_id\":\"ion_rda_a\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H9O2\",\"peak_index\":0,\"peak_mz\":149.059706,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.059706,\"term_id\":\"ion_rda_b\",\"unit_id\":2}],\"neutral_formula\":\"C20H19NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"protopine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"protopine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "68a75a480f9e20d307e9d1305b87c9046f76eb8347c674d0580591a5416ba467"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with loss_h2o:H2O moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.118024",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"198c3460c3655bc2999d6ad3fb2b217e6e0a318c291f7e723151af7bce2bf33b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "78980de9da3e69f01dd804676ba5d9efdb421ccff39f4259885a1229aeffd640"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": "protopine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_h2o:H2O@2",
+       "ion_rda_a:C11H12NO3@1",
+       "ion_rda_b:C9H9O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "protopine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.143589",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.143589"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protopine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"fe60c2d6169c80fde183602f9a86afad362a0005f2b0da76be0080a91f1c1401\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protopine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"protopine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"protopine||[M+H]+\",\"hypothesis_mz\":354.133599,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"H2O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H2O\",\"peak_index\":2,\"peak_mz\":336.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":336.123034,\"term_id\":\"loss_h2o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C11H12NO3\",\"kind\":\"product_ion\",\"member_key\":\"C11H12NO3\",\"peak_index\":1,\"peak_mz\":206.081169,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":206.081169,\"term_id\":\"ion_rda_a\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H9O2\",\"peak_index\":0,\"peak_mz\":149.059706,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.059706,\"term_id\":\"ion_rda_b\",\"unit_id\":2}],\"neutral_formula\":\"C20H19NO5\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"protopine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"protopine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.143589,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cc7ca98ba770f01223828fc55b5bc063b06aa29d4a287e05f7465f038308379c"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.143609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.143609"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"e45eb2f6d3e69dde893a3a2315cfff3a1649c5861dae95e39f17c56e623bef11\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.143609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "504a0f2c09d0f5eeef525ad9d6989a1e998df54f31aeca121bafe174ab50f223"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": "protopine||[M+H]+",
+      "fired": true,
+      "matched": [
+       "loss_h2o:H2O@2",
+       "ion_rda_a:C11H12NO3@1",
+       "ion_rda_b:C9H9O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "protopine||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.123609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.123609"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"protopine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"3b715b4ec81df426526d154f429332a12cb2792b7a69c7103919b9dde8717231\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"protopine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"protopine|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"protopine||[M+H]+\",\"hypothesis_mz\":354.133599,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"H2O\",\"kind\":\"loss_from_precursor\",\"member_key\":\"H2O\",\"peak_index\":2,\"peak_mz\":336.123034,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":336.123034,\"term_id\":\"loss_h2o\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C11H12NO3\",\"kind\":\"product_ion\",\"member_key\":\"C11H12NO3\",\"peak_index\":1,\"peak_mz\":206.081169,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":206.081169,\"term_id\":\"ion_rda_a\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"C9H9O2\",\"peak_index\":0,\"peak_mz\":149.059706,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.059706,\"term_id\":\"ion_rda_b\",\"unit_id\":2}],\"neutral_formula\":\"C20H19NO5\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"protopine\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"protopine||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.123609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c01bf557331978cc9be0650e883b50027297cf802ba9757f0bca048b88ad1e2e"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.123589",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.123589"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"3a060101b71956a7e6ddc35810c5ca9d5a412533596ab1fae59e4acfbfdd8e44\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.123589,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6184c274f26bbf90583e901e0596babd3055e74ab28901f39504b45baa240508"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"3decaa7eb83f129a57f5683cbea4858edf763194b5a8e8163bf95708b7c372bc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "30ce5d8d056a5d5773f153d6938ffd3301444543ba55e419a9da1dd8f81a8e6f"
+  },
+  {
+   "description": "the positive spectrum of protopine||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_benzylisoquinoline.protopine.pos"
+    ],
+    "outcomes": {
+     "alkaloid_benzylisoquinoline.protopine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "149.059706",
+      "500.0"
+     ],
+     [
+      "206.081169",
+      "500.0"
+     ],
+     [
+      "336.123034",
+      "500.0"
+     ],
+     [
+      "354.133599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "354.133599"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"input_sha256\":\"7ee9ceb3d0ff77d1162ca69715007471788402b80acd928f35623993753ad5b3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"protopine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_benzylisoquinoline.protopine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":354.133599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9d1745857283c69b52d44f142c4d018176152e1611ee44f5d0600923f42557ec\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e388384357ddd3cceb1c5754082c31b45aeed39c89bec5454931ef936e1e6862"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}

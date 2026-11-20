@@ -1,0 +1,911 @@
+{
+ "cases": [
+  {
+   "description": "h* = pa_c13h19no3||[M+H]+, precursor at its oracle m/z; one peak per support member: C8H8N_118:C8H8N, C8H10NO_136:C8H10NO, C8H14NO3_172:C8H14NO3, C8H12NO_138:C8H12NO",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"84eb0922783050a577f85fe1febf4008abd7b7577162868267cf6f1543c9c0f1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.065125,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b2a73fc9d183db23c0429af232d562e65ccedcf20318bcefdeb00a0b04808051"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ without the peaks of required term C8H8N_118",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H10NO_136:C8H10NO@0",
+       "C8H14NO3_172:C8H14NO3@2",
+       "C8H12NO_138:C8H12NO@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "drop_C8H8N_118",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"1547d968f82550d9007464b8ddc8df38e447498af1838b6c2c55953ef760df41\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[false,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":0,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":2,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":1,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "181f27dcc6fc929eeaa36e01ed3b46b3e60b15ac1dce9dda53e4f4695011f98b"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ without the peaks of required term C8H10NO_136",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "drop_C8H10NO_136",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"768c73783bfda2710c98f2f79e3378503c6703cd5f3f07826749270c848f73d0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "086c9194d6893a0247033cb857981392847ad4534d1e27fc1e66307c0915ba52"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ without the peaks of required term C8H14NO3_172",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "drop_C8H14NO3_172",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"db639e5aee08e194742611ff75e5f7a9bafaec4b0d4b8d80da60a719cdad7cd6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.065125,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "904c1893a5e58a8b98dbb00b1a441f3b6322b527116e939db3b1d1c847bef51b"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ without the peaks of required term C8H12NO_138",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "drop_C8H12NO_138",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"df7af478c4ef19332b2c5fede41982981a8e3a8ba399dfae2fc84355e386b2a2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.065125,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":2,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "877afae63065e36cd3e6a1325a8a7169111b0f0a8f04774b301a0d4286117323"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with C8H8N_118:C8H8N moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.070115",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"05203f4a07f96e2e8802ff1d1d949d3c57ddf12c8202e0ecd65fbf519315887f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":42.263,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.070115,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3d1a3f07123e427bca46efbb5d0f7c1c51f66c61a9efc6ffd225afa0569b901c"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with C8H8N_118:C8H8N moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.070135",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"d5e01a906f3061c7bc768ec18f2ce59f73af90a9d36c133f1ddabf2959849858\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[false,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "11f93f1574925ba3986adcd37aa5f171fdaed24fba0e1c0a24500798b0a4b925"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with C8H8N_118:C8H8N moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.060135",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"265113a63d23b6930bf45211eca339a6a1c7472a9951b4b4470533492376fb70\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-42.267,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.060135,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "62454318a73e206146976d912f50ef76b8384153c8ea635d4e3392253c7a9ddc"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with C8H8N_118:C8H8N moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.060115",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"ae57ffe4b1d8691913dbc80776f25c20e2f801d3c6c2d438aa40889343b76167\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[false,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"pa_c13h19no3\",\"score\":3.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b45d6df644de1b818d97e4f5f9c32ee2479d9cbd3df1b2b4959aa43429653601"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.153759",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.153759"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"eb0d1a7c91c36d4c4db051fa7d09f9aefb853dc10ff18aa528b8ec7f9a2a5b60\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.065125,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"pa_c13h19no3\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.153759,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4719751a86e7ab0199e2ce909a2c2cba1d47ce30abdf27ea681fafa2af311f34"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.153779",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.153779"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"9d8e9e79f47105180b152479315ffc7965b98475fc390c1a8f3560cec9a5c8bb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.153779,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "273b6cd55b80d7ee6664394532ec5e15de9d7d6553e59653ef33756778af9161"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c13h19no3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c13h19no3||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.13378",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.13378"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"eb2361cdcf22f990dd600d4e3bf55665c24fa690a934d8de9e82b95e87ec9945\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c13h19no3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c13h19no3||[M+H]+\",\"hypothesis_mz\":238.143769,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.065125,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C13H19NO3\",\"precursor_error_da\":-0.009989,\"scaffold_id\":\"pa_c13h19no3\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c13h19no3||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.133780,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "056f30b09edcf90f4b061bab2bbc622b4ddcff92792a69e5b87ca8c40dab7618"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.13376",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.13376"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"e8fde6dfd3a5459c233291318be739c981a65e323c0b935da6e62fb27bea5670\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.133760,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ce715b6572cf707071737ff3e53d62d17775013b4818c14eb22d7751d59eb88e"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"ae9288c4b2f93b7137eb009fd159b9a5aaf572ed2697edb0b8820b8adcfd2afe\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b198ee517106882d692dbbb94a62e2276f249f4d1d2f6ac05527a232f6999e17"
+  },
+  {
+   "description": "the union of the positive spectra of pa_c18h25no5||[M+H]+ and pa_c16h27no5||[M+Na]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": "pa_c16h27no5||[M+Na]+",
+      "fired": true,
+      "matched": [
+       "C8H8N_118:C8H8N@0",
+       "C8H10NO_136:C8H10NO@1",
+       "C8H14NO3_172:C8H14NO3@3",
+       "C8H12NO_138:C8H12NO@2"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "pa_c16h27no5||[M+Na]+",
+       "pa_c18h25no5||[M+H]+"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "336.180549",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "336.180549"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"ca1df6fb240d99a1eb08c94e047c3055c4ec161ec1f1fbe60b8ddc994de5d01b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"pyrrolizidine_retronecine_n_oxide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[true,true]},\"chosen\":{\"adduct\":\"[M+Na]+\",\"adduct_source\":\"common\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic\"}],\"composition_id\":\"pa_c16h27no5|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"pa_c16h27no5||[M+Na]+\",\"hypothesis_mz\":336.178143,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H8N\",\"kind\":\"product_ion\",\"member_key\":\"C8H8N\",\"peak_index\":0,\"peak_mz\":118.065125,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":118.065125,\"term_id\":\"C8H8N_118\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H10NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H10NO\",\"peak_index\":1,\"peak_mz\":136.075690,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":136.075690,\"term_id\":\"C8H10NO_136\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C8H14NO3\",\"kind\":\"product_ion\",\"member_key\":\"C8H14NO3\",\"peak_index\":3,\"peak_mz\":172.096819,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":172.096819,\"term_id\":\"C8H14NO3_172\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H12NO\",\"kind\":\"product_ion\",\"member_key\":\"C8H12NO\",\"peak_index\":2,\"peak_mz\":138.091340,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":138.091340,\"term_id\":\"C8H12NO_138\",\"unit_id\":3}],\"neutral_formula\":\"C16H27NO5\",\"precursor_error_da\":0.002406,\"scaffold_id\":\"pa_c16h27no5\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"pa_c16h27no5||[M+Na]+\",\"pa_c18h25no5||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":336.180549,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e44cda5b971047526b1e8eabc4e2ce227cd27966eccfff89023d148f190b952c"
+  },
+  {
+   "description": "the positive spectrum of pa_c13h19no3||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos"
+    ],
+    "outcomes": {
+     "alkaloid_pyrrolizidine.retronecine_n_oxide.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "118.065125",
+      "500.0"
+     ],
+     [
+      "136.07569",
+      "500.0"
+     ],
+     [
+      "138.09134",
+      "500.0"
+     ],
+     [
+      "172.096819",
+      "500.0"
+     ],
+     [
+      "238.14377",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "238.14377"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.1.0&ruleset_sha256=decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"input_sha256\":\"84eb0922783050a577f85fe1febf4008abd7b7577162868267cf6f1543c9c0f1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"pyrrolizidine_retronecine_n_oxide\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"alkaloid_pyrrolizidine.retronecine_n_oxide.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":238.143770,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"decb7bf071703108a7d7b8efcca76c5e82b0f0332d0164862df2e3ad7260088a\",\"source\":\"inline\",\"version\":\"0.1.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bb712e16036e5dfde62a2da4ee33e86adc21b072cf0ba4cc197632b9f4316a9a"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.1.0"
+}
