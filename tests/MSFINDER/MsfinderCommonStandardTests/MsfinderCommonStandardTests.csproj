@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <None Update="Resources\Ini\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Resources\Export\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- The engine's IL scanner and per-rule fixture spectra, shared with CommonStandardTests (design 6.1 items 3 and 5). -->

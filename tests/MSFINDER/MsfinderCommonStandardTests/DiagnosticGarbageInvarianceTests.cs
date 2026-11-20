@@ -33,14 +33,37 @@ public class DiagnosticGarbageInvarianceTests
     [TestCleanup]
     public void Cleanup() => DeleteDirectory(_dir);
 
-    private DiagnosticQueryEvaluation Evaluate(string name, string text) => Runtime.Evaluate(WriteAndRead(_dir, name, text), false);
+    /// <summary>The query each evaluation was made from, for the result-TSV comparison (reference keys).</summary>
+    private readonly Dictionary<DiagnosticQueryEvaluation, RawData> _raws = new Dictionary<DiagnosticQueryEvaluation, RawData>();
 
-    private static void AssertSame(FixtureSpectrum f, DiagnosticQueryEvaluation clean, DiagnosticQueryEvaluation garbage, string what) {
+    private DiagnosticQueryEvaluation Track(RawData raw, DiagnosticQueryEvaluation evaluation) {
+        _raws[evaluation] = raw;
+        return evaluation;
+    }
+
+    private DiagnosticQueryEvaluation Evaluate(string name, string text) {
+        var raw = WriteAndRead(_dir, name, text);
+        return Track(raw, Runtime.Evaluate(raw, false));
+    }
+
+    private static readonly int DroppedColumn = Array.IndexOf(DiagnosticRuleExport.ResultColumns, "Peaks dropped by adapter");
+
+    /// <summary>The result-TSV lines of an evaluation without the File name and Title columns (R12), and without
+    /// "Peaks dropped by adapter" when <paramref name="withoutDropped"/>.</summary>
+    private List<string> RowsWithoutName(DiagnosticQueryEvaluation e, bool withoutDropped) =>
+        DiagnosticRuleExport.ResultRows("x", _raws[e], e, Runtime.RuleSet)
+            .Select(l => string.Join("\t", l.Split('\t').Where((cell, i) => i >= 2 && !(withoutDropped && i == DroppedColumn)))).ToList();
+
+    /// <param name="phantomPeaks">The garbage adds MassBank annotation lines at m/z values outside the peak list, which
+    /// the reader turns into zero-intensity peaks that the adapter drops (R11): the reader's peak list really differs,
+    /// so "Peaks dropped by adapter" is compared only in the other cases.</param>
+    private void AssertSame(FixtureSpectrum f, DiagnosticQueryEvaluation clean, DiagnosticQueryEvaluation garbage, string what, bool phantomPeaks = false) {
         var a = Signature(clean);
         var b = Signature(garbage);
         Assert.AreEqual(a.Status, b.Status, f.Label + " " + what + ": status");
         Assert.AreEqual(a.InputSha256, b.InputSha256, f.Label + " " + what + ": input_sha256");
         Assert.AreEqual(a.Canonical, b.Canonical, f.Label + " " + what + ": canonical result");
+        Assert.AreEqual(string.Join("\n", RowsWithoutName(clean, phantomPeaks)), string.Join("\n", RowsWithoutName(garbage, phantomPeaks)), f.Label + " " + what + ": result TSV rows");
     }
 
     [TestMethod]
@@ -77,7 +100,7 @@ public class DiagnosticGarbageInvarianceTests
             }
             var clean = Evaluate("q" + i + ".txt", MassBank(f, null, cleanAnnotations));
             var garbage = Evaluate("g" + i + ".txt", MassBank(f, rng, garbageAnnotations));
-            AssertSame(f, clean, garbage, "(a')");
+            AssertSame(f, clean, garbage, "(a')", phantomPeaks: true);
         }
     }
 
@@ -106,7 +129,7 @@ public class DiagnosticGarbageInvarianceTests
                 foreach (var peak in raw.Ms2Spectrum.PeakList) {
                     assigned += Garble(peak, rng, new[] { nameof(Peak.Mz), nameof(Peak.Intensity) });
                 }
-                AssertSame(f, clean, Runtime.Evaluate(raw, false), "(b) seed " + i);
+                AssertSame(f, clean, Track(raw, Runtime.Evaluate(raw, false)), "(b) seed " + i);
             }
         }
         Assert.IsTrue(assigned > 200 * 2 * 20, assigned + " garbage assignments");
