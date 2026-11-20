@@ -283,6 +283,20 @@ public class DiagnosticExportTests
         Assert.AreEqual(1, Directory.GetFiles(late).Length);
     }
 
+    /// <summary>A run file that appears after the pre-check is kept, and Finish reports it instead of throwing.</summary>
+    [TestMethod]
+    public void FinishReportsARunFileThatAppearedLate() {
+        var late = Path.Combine(_dir, "late-run");
+        Directory.CreateDirectory(late);
+        var started = DiagnosticRuleRun.Start(Runtime, late, Stamp, LegacyDate, FixedEnvironment(), out var startError);
+        Assert.IsNotNull(started, startError);
+        Assert.IsTrue(started!.OpenWriters(out var openError), openError);
+        var run = Path.Combine(late, started.Names.Run);
+        File.WriteAllText(run, "keep");
+        Assert.AreEqual("Diagnostic rules: " + DiagnosticRuleExport.OutputExists + ":" + started.Names.Run, started.Finish());
+        Assert.AreEqual("keep", File.ReadAllText(run));
+    }
+
     [TestMethod]
     public void StampIsInvariant() {
         var time = new DateTime(2026, 11, 8, 7, 5, 3);

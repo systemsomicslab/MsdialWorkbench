@@ -248,6 +248,8 @@ namespace Rfx.Riken.OsakaUniv
                 this.mainWindowVM.MspDB = this.mainWindowVM.MspDB.OrderBy(n => n.PrecursorMz).ToList();
 
             if (this.copyParam.IsTmsMeoxDerivative) this.copyParam.IsSiCheck = true;
+            // The INI errors describe lines that the save below drops (it writes the settings only), so they end here too.
+            this.copyParam.DiagnosticRules.Errors.Clear();
             this.mainWindowVM.DataStorageBean.AnalysisParameter = this.copyParam;
             RefreshUtility.RawDataFileRefresh(this.mainWindowVM, this.mainWindowVM.SelectedRawFileId);
             MsFinderIniParcer.Write(this.copyParam);
@@ -512,8 +514,9 @@ namespace Rfx.Riken.OsakaUniv
         {
             get { return this.copyParam.DiagnosticRules.RankingWeight; }
             set {
-                if (!(value >= 0.0) || double.IsInfinity(value)) return;
-                this.copyParam.DiagnosticRules.RankingWeight = value; OnPropertyChanged("DiagnosticRuleRankingWeight");
+                // Same rule as the INI reader (design 5.1): at most six decimals, so the ranked weight is the saved one.
+                if (!global::Riken.Metabolomics.MsfinderCommon.DiagnosticRules.DiagnosticRuleIni.TryAcceptWeight(value, out var weight)) return;
+                this.copyParam.DiagnosticRules.RankingWeight = weight; OnPropertyChanged("DiagnosticRuleRankingWeight");
             }
         }
 

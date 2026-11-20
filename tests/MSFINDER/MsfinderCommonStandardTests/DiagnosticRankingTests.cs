@@ -136,9 +136,11 @@ public class DiagnosticRankingTests
     }
 
     /// <summary>
-    /// With the shipped set (every rule author_reviewed:false) a fired rule is claim-ineligible (not_reviewed, and
-    /// tolerance_differs for an msfinder rule under another tolerance), so under Reviewed nothing moves; under
-    /// Measured the rule's own positive example is lifted. Real evaluation and the real NCDK matcher.
+    /// With the shipped set (every rule author_reviewed:false, review null) a fired rule is claim-ineligible
+    /// (not_reviewed), so under Reviewed nothing moves; under Measured the rule's own positive example is lifted.
+    /// Real evaluation and the real NCDK matcher. tolerance_differs needs a review block, which no shipped rule
+    /// has; the engine fixtures (engine/semantics.json) cover it, and the ranker reads only ClaimEligible, whose
+    /// false value <see cref="ScopeDecidesWhichOutcomesCount"/> covers for any reason.
     /// </summary>
     [TestMethod]
     public void RealOutcomeMovesNothingUnderReviewedAndLiftsUnderMeasured() {

@@ -118,6 +118,37 @@ namespace Riken.Metabolomics.MsfinderCommon.Tests
         }
 
         [DataTestMethod]
+        [DataRow(0.1234567)]
+        [DataRow(1e-7)]
+        [DataRow(-0.5)]
+        [DataRow(double.NaN)]
+        [DataRow(double.PositiveInfinity)]
+        public void GuiWeightOutsideTheIniRuleIsRefused(double value) {
+            Assert.IsFalse(DiagnosticRuleIni.TryAcceptWeight(value, out _));
+        }
+
+        [DataTestMethod]
+        [DataRow(0.0)]
+        [DataRow(0.123457)]
+        [DataRow(2.000001)]
+        [DataRow(1e6)]
+        public void GuiWeightAcceptedIsTheWeightTheIniReadsBack(double value) {
+            Assert.IsTrue(DiagnosticRuleIni.TryAcceptWeight(value, out var weight));
+            var written = new MsfinderDiagnosticRuleSettings { Evaluation = true, RankingWeight = weight };
+            var writer = new StringWriter();
+            DiagnosticRuleIni.Write(writer, written);
+            var read = ReadLines(writer.ToString().Split('\n').Select(l => l.TrimEnd('\r')).Where(l => l.StartsWith("DiagnosticRule", StringComparison.Ordinal)).ToArray());
+            Assert.AreEqual(0, read.Errors.Count, string.Join("; ", read.Errors));
+            Assert.AreEqual(BitConverter.DoubleToInt64Bits(value), BitConverter.DoubleToInt64Bits(read.RankingWeight));
+        }
+
+        [TestMethod]
+        public void GuiNegativeZeroWeightIsAcceptedAsPositiveZero() {
+            Assert.IsTrue(DiagnosticRuleIni.TryAcceptWeight(-0.0, out var weight));
+            Assert.AreEqual(BitConverter.DoubleToInt64Bits(0.0), BitConverter.DoubleToInt64Bits(weight));
+        }
+
+        [DataTestMethod]
         [DataRow("True", true)]
         [DataRow("TRUE", true)]
         [DataRow("true", true)]

@@ -103,9 +103,19 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         public static bool TryReadWeight(string value, out double weight) {
             weight = 0.0;
             if (!DecimalText.TryParse(value, out double w)) return false;
-            if (double.IsNaN(w) || double.IsInfinity(w) || !(w >= 0.0)) return false;
-            if (!DecimalText.TryParse(ExactDecimal.Format(w, RankingWeightDecimals), out double back) || back != w) return false;
-            weight = w == 0.0 ? 0.0 : w;
+            return TryAcceptWeight(w, out weight);
+        }
+
+        /// <summary>
+        /// The numeric half of <see cref="TryReadWeight"/>, for a weight that arrives as a number (the GUI
+        /// parameter window): finite, at least 0, and equal to its own six-decimal text, so the weight that
+        /// ranks is the weight the INI, the context table and the run manifest record. -0 is accepted as 0.
+        /// </summary>
+        public static bool TryAcceptWeight(double value, out double weight) {
+            weight = 0.0;
+            if (double.IsNaN(value) || double.IsInfinity(value) || !(value >= 0.0)) return false;
+            if (!DecimalText.TryParse(ExactDecimal.Format(value, RankingWeightDecimals), out double back) || back != value) return false;
+            weight = value == 0.0 ? 0.0 : value;
             return true;
         }
 

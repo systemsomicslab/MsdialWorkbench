@@ -60,7 +60,7 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         public int EligibleConflicts { get; private set; }
         /// <summary>The rules refused when the evaluator was built (constant over the run).</summary>
         public int Refused { get; internal set; }
-        /// <summary>Skipped queries by status, in ordinal status order.</summary>
+        /// <summary>Skipped queries by their result-TSV Outcome (<c>skipped:&lt;reason&gt;</c>), in ordinal order.</summary>
         public SortedDictionary<string, int> SkippedByReason { get; } = new SortedDictionary<string, int>(StringComparer.Ordinal);
 
         public void Add(DiagnosticQueryEvaluation evaluation) {
@@ -90,8 +90,10 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             }
             else {
                 Skipped++;
-                SkippedByReason.TryGetValue(status, out var n);
-                SkippedByReason[status] = n + 1;
+                // Keyed by the result TSV's Outcome text, so a consumer can join the counts to that column.
+                var key = DiagnosticRuleExport.NoOutcomeName(status);
+                SkippedByReason.TryGetValue(key, out var n);
+                SkippedByReason[key] = n + 1;
             }
         }
     }
@@ -885,11 +887,18 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                 writer = Create(path);
                 return true;
             }
-            catch (IOException e) {
-                error = File.Exists(path) ? DiagnosticRuleExport.OutputExists + ":" + name : "error:output_io:" + e.GetType().Name + ":" + name;
+            catch (Exception e) when (IsOutputFailure(e)) {
+                error = OutputError(e, path, name);
                 return false;
             }
         }
+
+        /// <summary>A file-system failure to create an output file (an existing file, a read-only or missing folder),
+        /// reported as an error line instead of escaping into MS-FINDER.</summary>
+        private static bool IsOutputFailure(Exception e) => e is IOException || e is UnauthorizedAccessException;
+
+        private static string OutputError(Exception e, string path, string name) =>
+            File.Exists(path) ? DiagnosticRuleExport.OutputExists + ":" + name : "error:output_io:" + e.GetType().Name + ":" + name;
 
         /// <summary>Opens the result, evidence and context files (CreateNew) and writes the headers. On failure
         /// nothing stays open, the files this call created are removed, and the error names the file.</summary>
@@ -1024,17 +1033,27 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         }
 
         /// <summary>Closes the row files, writes the timing file and the run manifest (CreateNew), and returns the
-        /// console summary line.</summary>
+        /// console summary line. A file that cannot be created (one that appeared after <c>Start</c>
+        /// checked, or a read-only folder) is never overwritten: the line is then <c>Diagnostic rules: error:...</c>
+        /// naming the file, and the manifest is not written.</summary>
         public string Finish() {
             Dispose();
-            if (WritesTiming) {
-                using (var timing = Create(Path.Combine(_folder, Names.Timing))) {
-                    DiagnosticTimingLog.Write(timing, _timingRows);
+            string name = null;
+            try {
+                if (WritesTiming) {
+                    name = Names.Timing;
+                    using (var timing = Create(Path.Combine(_folder, name))) {
+                        DiagnosticTimingLog.Write(timing, _timingRows);
+                    }
+                }
+                name = Names.Run;
+                using (var run = Create(Path.Combine(_folder, name))) {
+                    run.Write(DiagnosticRuleExport.RunManifest(this));
+                    run.Write(DiagnosticRuleExport.NewLine);
                 }
             }
-            using (var run = Create(Path.Combine(_folder, Names.Run))) {
-                run.Write(DiagnosticRuleExport.RunManifest(this));
-                run.Write(DiagnosticRuleExport.NewLine);
+            catch (Exception e) when (IsOutputFailure(e)) {
+                return "Diagnostic rules: " + OutputError(e, Path.Combine(_folder, name), name);
             }
             return DiagnosticRuleExport.SummaryLine(Runtime.RuleSet.Identity, Counts);
         }

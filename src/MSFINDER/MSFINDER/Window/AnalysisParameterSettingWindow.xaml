@@ -5,6 +5,7 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv;assembly=CommonMVVM"
         xmlns:common="clr-namespace:Rfx.Riken.OsakaUniv;assembly=Common"
+        xmlns:msfinder="clr-namespace:Rfx.Riken.OsakaUniv"
         Loaded="Window_Loaded"
         Title="Analysis parameter setting" Height="575" Width="560">
     <i:Interaction.Behaviors>
@@ -721,6 +722,7 @@
                                     <Binding Path="DiagnosticRuleRankingWeight" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
                                         <Binding.ValidationRules>
                                             <local:PositiveDoubleNumericValidation />
+                                            <msfinder:DiagnosticRuleWeightValidation />
                                         </Binding.ValidationRules>
                                     </Binding>
                                 </TextBox.Text>
