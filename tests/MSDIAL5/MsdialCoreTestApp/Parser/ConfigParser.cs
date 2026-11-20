@@ -591,7 +591,8 @@ namespace CompMs.App.MsdialConsole.Parser
                         keys.Read(method, value, () => Either(ReadCommonParameter(param, method, value),
                             () => Either(ExcludedMassListLine(param, method, value),
                                 () => Either(ReadGcmsSpecificParameter(param, method, value),
-                                    () => AutomaticRtCorrectionLineOutsideLcms(method)))));
+                                    () => Either(GcmsAlignmentExportLine(param, method, value),
+                                        () => AutomaticRtCorrectionLineOutsideLcms(method))))));
                     }
                 }
             }
@@ -998,6 +999,32 @@ namespace CompMs.App.MsdialConsole.Parser
                         : MethodKeyOutcome.UnusableValue;
                 default:
                     return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private const string GcmsExportFolderKey = "Export folder path";
+
+        /// <summary>
+        /// The alignment matrices GcmsProcess writes beside the .mdalign, under the keys the GUI writes into a
+        /// parameter text, so that a GUI GC-MS parameter file asks the Console for the same matrices. "Export folder
+        /// path" names the folder they go to; blank, they go to the output folder.
+        /// </summary>
+        /// <remarks>
+        /// GC-MS only. The LC-MS Console honours the same flags but has never read these keys, so an LC-MS method file
+        /// that sets them still gets the defaults (a height matrix and its QA table) and lists them as unrecognised; reading
+        /// them there would change what existing LC-MS runs write, and is left to a change of its own. The GC-MS Console
+        /// does not normalize, and writes no spectra, GNPS or networking files, so those keys stay unrecognised here.
+        /// </remarks>
+        internal static MethodKeyOutcome GcmsAlignmentExportLine(ParameterBase param, string method, string value) {
+            switch (method.Trim().ToLowerInvariant()) {
+                case "export folder path": return Assign(value.Trim(), v => param.ExportFolderPath = v);
+                case "height matrix export": return TrueOrFalse(value.Trim(), v => param.IsHeightMatrixExport = v);
+                case "peak area matrix export": return TrueOrFalse(value.Trim(), v => param.IsPeakAreaMatrixExport = v);
+                case "peak id matrix export": return TrueOrFalse(value.Trim(), v => param.IsPeakIdMatrixExport = v);
+                case "retention time matrix export": return TrueOrFalse(value.Trim(), v => param.IsRetentionTimeMatrixExport = v);
+                case "mass matrix export": return TrueOrFalse(value.Trim(), v => param.IsMassMatrixExport = v);
+                case "sn matrix export": return TrueOrFalse(value.Trim(), v => param.IsSnMatrixExport = v);
+                default: return MethodKeyOutcome.UnknownKey;
             }
         }
 
@@ -1523,6 +1550,7 @@ namespace CompMs.App.MsdialConsole.Parser
         private static void ResolveGcmsFilePaths(MsdialGcmsParameter param, string methodFilePath) {
             ResolveFilePaths(param, methodFilePath);
             param.RiDictionaryFilePath = ResolvePathFromMethodFile(param.RiDictionaryFilePath, methodFilePath, "RI dictionary file path");
+            param.ExportFolderPath = ResolvePathFromMethodFile(param.ExportFolderPath, methodFilePath, GcmsExportFolderKey);
         }
 
         private static string ResolvePathFromMethodFile(string? path, string methodFilePath, string key) {

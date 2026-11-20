@@ -289,6 +289,8 @@ public sealed class GcmsProcess
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
             spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
 
+            ExportAlignmentMatrices(storage.MsdialGcmsParameter, outputFolder, alignmentFile.FileName, result.AlignmentSpotProperties, decResults, files, accessor, stats);
+
             var mztabm_filename = alignmentFile.FileName + ".mzTab";
             var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
             var spots = result.AlignmentSpotProperties; // TODO: cancellation
@@ -318,6 +320,48 @@ public sealed class GcmsProcess
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// The alignment matrices the method file asks for (see ConfigParser.GcmsAlignmentExportLine), one file per
+    /// value, laid out as the .mdalign: the spot metadata, then one column per file, then the class averages and
+    /// standard deviations. They go to "Export folder path", or to the output folder when that is blank.
+    /// </summary>
+    /// <returns>The files written, in the order written.</returns>
+    internal static List<string> ExportAlignmentMatrices(
+        ParameterBase parameter,
+        string outputFolder,
+        string alignmentName,
+        IReadOnlyList<AlignmentSpotProperty> spots,
+        IReadOnlyList<MSDecResult> decResults,
+        IReadOnlyList<AnalysisFileBean> files,
+        IMetadataAccessor accessor,
+        IReadOnlyList<StatsValue> stats) {
+        var requested = new List<(bool Requested, string ExportType, string Label, string Suffix)> {
+            (parameter.IsHeightMatrixExport, "Height", "Height", "_Height.txt"),
+            (parameter.IsPeakAreaMatrixExport, "Area", "Area", "_Area.txt"),
+            (parameter.IsPeakIdMatrixExport, "ID", "Peak ID", "_PeakID.txt"),
+            (parameter.IsRetentionTimeMatrixExport, "RT", "RT", "_RT.txt"),
+            (parameter.IsMassMatrixExport, "MZ", "Mass", "_MZ.txt"),
+            (parameter.IsSnMatrixExport, "SN", "S/N", "_SN.txt"),
+        };
+        var written = new List<string>();
+        if (!requested.Any(item => item.Requested)) {
+            return written;
+        }
+        var folder = string.IsNullOrWhiteSpace(parameter.ExportFolderPath) ? outputFolder : parameter.ExportFolderPath;
+        Directory.CreateDirectory(folder);
+        foreach (var (_, exportType, label, suffix) in requested.Where(item => item.Requested)) {
+            var path = Path.Combine(folder, alignmentName + suffix);
+            using (var matrixStream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.Read)) {
+                new AlignmentCSVExporter("\t").Export(
+                    matrixStream, spots, decResults, files, new MulticlassFileMetaAccessor(0), accessor,
+                    new LegacyQuantValueAccessor(exportType, parameter), stats);
+            }
+            Console.WriteLine($"{label} matrix: {path}");
+            written.Add(path);
+        }
+        return written;
     }
 
     private static List<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialGcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
