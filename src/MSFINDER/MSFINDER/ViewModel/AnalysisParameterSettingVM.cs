@@ -153,6 +153,7 @@ namespace Rfx.Riken.OsakaUniv
                 IsUseRtForFilteringCandidates = param.IsUseRtForFilteringCandidates,
                 FormulaPredictionTimeOut = param.FormulaPredictionTimeOut,
                 StructurePredictionTimeOut = param.StructurePredictionTimeOut,
+                DiagnosticRules = param.DiagnosticRules != null ? param.DiagnosticRules.Clone() : new MsfinderDiagnosticRuleSettings(),
 
 
             };
@@ -499,6 +500,21 @@ namespace Rfx.Riken.OsakaUniv
         {
             get { return this.copyParam.IsUseEiFragmentDB; }
             set { this.copyParam.IsUseEiFragmentDB = value; OnPropertyChanged("IsUseEiFragmentDB"); }
+        }
+
+        public bool DiagnosticRuleEvaluation
+        {
+            get { return this.copyParam.DiagnosticRules.Evaluation; }
+            set { this.copyParam.DiagnosticRules.Evaluation = value; OnPropertyChanged("DiagnosticRuleEvaluation"); }
+        }
+
+        public double DiagnosticRuleRankingWeight
+        {
+            get { return this.copyParam.DiagnosticRules.RankingWeight; }
+            set {
+                if (!(value >= 0.0) || double.IsInfinity(value)) return;
+                this.copyParam.DiagnosticRules.RankingWeight = value; OnPropertyChanged("DiagnosticRuleRankingWeight");
+            }
         }
 
         public bool IsMinesAllTime

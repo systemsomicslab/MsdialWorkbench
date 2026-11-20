@@ -1,4 +1,5 @@
 ﻿using Accord;
+using Riken.Metabolomics.MsfinderCommon.DiagnosticRules;
 using Riken.Metabolomics.StructureFinder.Parser;
 using Riken.Metabolomics.StructureFinder.Result;
 using System;
@@ -232,6 +233,7 @@ namespace Rfx.Riken.OsakaUniv
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
             var error = string.Empty;
+            if (!tryStartDiagnosticRuleRun(mainWindowVM, exportFolderPath, dt, dateString, out var diagnosticRun)) return;
 
             using (var sw = new StreamWriter(formulaFile, false, Encoding.ASCII))
             {
@@ -254,17 +256,24 @@ namespace Rfx.Riken.OsakaUniv
 
             using (var sw = new StreamWriter(structureFile, false, Encoding.ASCII))
             {
+                if (diagnosticRun != null && diagnosticRun.RankingOn) sw.WriteLine(DiagnosticRuleExport.GuiStructureHeader); else
                 writeStructureResultHeader(sw, exportNumber);
 
                 foreach (var rawfile in files)
                 {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
+                    var diagnosticQuery = diagnosticRun != null ? diagnosticRun.Evaluate(rawfile, rawData) : null;
+                    if (diagnosticQuery != null && diagnosticQuery.Failed) {
+                        abortDiagnosticRuleRun(diagnosticRun, diagnosticQuery);
+                        return;
+                    }
                     var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
                     if (error != string.Empty) {
                         Console.WriteLine(error);
                     }
 
                     var sfdResults = new List<FragmenterResult>();
+                    DiagnosticRanking diagnosticRanking = null;
 
                     if (formulaResults.Count > 0) {
                         formulaResults = formulaResults.OrderByDescending(n => n.TotalScore).ToList();
@@ -279,10 +288,14 @@ namespace Rfx.Riken.OsakaUniv
                         if (sfdResults.Count > 0) {
                             sfdResults = sfdResults.OrderByDescending(n => n.TotalScore).ToList();
                         }
+                        if (diagnosticQuery != null) diagnosticRanking = diagnosticRun.Rank(diagnosticQuery, formulaResults, sfdResults);
                     }
+                    if (diagnosticRanking != null) DiagnosticRuleExport.WriteGuiStructureRows(sw, rawData, diagnosticRanking, diagnosticRun.Runtime.RuleSet.Identity, exportNumber); else
                     writeStructureResult(sw, rawData, sfdResults, exportNumber);
+                    if (diagnosticQuery != null) diagnosticRun.Complete(diagnosticQuery);
                 }
             }
+            if (diagnosticRun != null) Console.WriteLine(diagnosticRun.Finish());
         }
 
         public static void BatchExportForEachFile(MainWindow mainWindow, MainWindowVM mainWindowVM, string exportFolderPath, int exportNumber)
@@ -292,11 +305,17 @@ namespace Rfx.Riken.OsakaUniv
             var files = mainWindowVM.AnalysisFiles;
             var param = mainWindowVM.DataStorageBean.AnalysisParameter;
             var error = string.Empty;
+            if (!tryStartDiagnosticRuleRun(mainWindowVM, exportFolderPath, dt, dateString, out var diagnosticRun)) return;
 
             foreach (var rawfile in files) {
                 var formulaFile = Path.Combine(exportFolderPath, "Formula result-" + rawfile.RawDataFileName + "-" + dateString + ".txt");
                 var structureFile = Path.Combine(exportFolderPath, "Structure result-" + rawfile.RawDataFileName + "-" + dateString + ".txt");
                 var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
+                var diagnosticQuery = diagnosticRun != null ? diagnosticRun.Evaluate(rawfile, rawData) : null;
+                if (diagnosticQuery != null && diagnosticQuery.Failed) {
+                    abortDiagnosticRuleRun(diagnosticRun, diagnosticQuery);
+                    return;
+                }
 
                 var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
                 if (error != string.Empty) {
@@ -314,9 +333,60 @@ namespace Rfx.Riken.OsakaUniv
                     sfdResultMerge(sfdResults, sfdResult, formulaString);
                 }
                 sfdResults = sfdResults.OrderByDescending(n => n.TotalScore).ToList();
+                var diagnosticRanking = diagnosticQuery != null ? diagnosticRun.Rank(diagnosticQuery, formulaResults, sfdResults) : null;
 
                 writeFormulaResult(formulaFile, rawData, formulaResults);
+                if (diagnosticRanking != null) writeDiagnosticStructureResult(structureFile, rawData, diagnosticRanking, diagnosticRun); else
                 writeStructureResult(structureFile, rawData, sfdResults);
+                if (diagnosticQuery != null) diagnosticRun.Complete(diagnosticQuery);
+            }
+            if (diagnosticRun != null) Console.WriteLine(diagnosticRun.Finish());
+        }
+
+        /// <summary>
+        /// Starts the diagnostic-rule part of a GUI batch export when evaluation is on (design 5.3, 5.5): one set of
+        /// rule result, evidence, context and run files for the export, whatever the weight; no timing file (OQ09).
+        /// Returns false, after a message, when the rule set cannot be loaded or a new file exists; the export then
+        /// writes nothing. With evaluation off it returns true and <paramref name="diagnosticRun"/> is null.
+        /// </summary>
+        private static bool tryStartDiagnosticRuleRun(MainWindowVM mainWindowVM, string exportFolderPath, DateTime dt, long dateString, out DiagnosticRuleRun diagnosticRun)
+        {
+            diagnosticRun = null;
+            var param = mainWindowVM.DataStorageBean.AnalysisParameter;
+            if (param.DiagnosticRules == null || !param.DiagnosticRules.Evaluation) return true;
+
+            var error = string.Empty;
+            var runtime = mainWindowVM.GetDiagnosticRuleRuntime();
+            if (runtime == null) {
+                error = mainWindowVM.DiagnosticRuleRuntimeError;
+            }
+            else {
+                var environment = new DiagnosticRunEnvironment { IsTmsMeoxDerivative = param.IsTmsMeoxDerivative };
+                diagnosticRun = DiagnosticRuleRun.Start(runtime, exportFolderPath, DiagnosticRuleExport.Stamp(dt), dateString, environment, out error);
+                if (diagnosticRun != null) {
+                    diagnosticRun.WritesTiming = false;
+                    if (!diagnosticRun.OpenWriters(out error)) diagnosticRun = null;
+                }
+            }
+            if (diagnosticRun != null) return true;
+            MessageBox.Show("Diagnostic-ion rules are on, but the export cannot write their files, so nothing was exported.\r\n" + error,
+                "Diagnostic-ion rules", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        /// <summary>Stops a GUI export after a Strict evaluation failure (OQ08): closes the rule files and says why.</summary>
+        private static void abortDiagnosticRuleRun(DiagnosticRuleRun diagnosticRun, DiagnosticRuleQuery diagnosticQuery)
+        {
+            MessageBox.Show(diagnosticRun.Abort(diagnosticQuery), "Diagnostic-ion rules", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        /// <summary>The per-file structure result in rule-adjusted order with the appended columns (w &gt; 0).</summary>
+        private static void writeDiagnosticStructureResult(string output, RawData rawData, DiagnosticRanking ranking, DiagnosticRuleRun diagnosticRun)
+        {
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                writeRawdataMetadataField(sw, rawData);
+                sw.WriteLine(DiagnosticRuleExport.EachFileStructureHeader);
+                DiagnosticRuleExport.WriteEachFileStructureRows(sw, ranking, diagnosticRun.Runtime.RuleSet.Identity);
             }
         }
 

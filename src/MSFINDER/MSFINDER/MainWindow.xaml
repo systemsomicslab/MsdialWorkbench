@@ -471,6 +471,9 @@
 
                         <DataGridTextColumn Header="Score (max=10)" Width="*" Binding="{Binding Path=TotalScore, StringFormat=0.00, Mode=OneWay}" IsReadOnly="True" />
 
+                        <DataGridTextColumn x:Name="DataGridColumn_DiagnosticRuleTerm" Header="Rule term" Width="0.6*" Binding="{Binding Path=RuleTerm, Mode=OneWay}" IsReadOnly="True" Visibility="Collapsed" />
+                        <DataGridTextColumn x:Name="DataGridColumn_DiagnosticMatchedMotifs" Header="Matched motifs" Width="*" Binding="{Binding Path=MatchedMotifs, Mode=OneWay}" IsReadOnly="True" Visibility="Collapsed" />
+
                         <!--<DataGridTemplateColumn SortMemberPath="TotalScore" Width="*" Header="Total score" IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -563,6 +566,55 @@
                             </StackPanel>
                         </Grid>
                         
+                    </TabItem>
+                    <TabItem Header="Diagnostic rules" Name="TabItem_DiagnosticRules" Visibility="{Binding Path=DiagnosticRulesTabVisibility}">
+                        <Grid DataContext="{Binding Path=DiagnosticRuleEvidenceVM}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBox Grid.Row="0" Text="{Binding Path=Header, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" />
+                            <TextBlock Grid.Row="1" Text="{Binding Path=Banners, Mode=OneWay}" Visibility="{Binding Path=BannersVisibility}" Background="LightYellow" TextWrapping="Wrap" Padding="4,2" />
+                            <DataGrid Grid.Row="2" ItemsSource="{Binding Path=Outcomes}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HeadersVisibility="Column" SelectionUnit="FullRow">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Outcome" Width="*" Binding="{Binding Path=Outcome, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Rule" Width="1.5*" Binding="{Binding Path=RuleId, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Motif" Width="1.5*" Binding="{Binding Path=MotifId, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Eligible" Width="*" Binding="{Binding Path=ClaimEligible, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Hypothesis" Width="*" Binding="{Binding Path=HypothesisId, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Adduct" Width="*" Binding="{Binding Path=Adduct, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Neutral formula" Width="*" Binding="{Binding Path=NeutralFormula, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Hypothesis m/z" Width="*" Binding="{Binding Path=HypothesisMz, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Score" Width="*" Binding="{Binding Path=Score, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Fired/tested" Width="*" Binding="{Binding Path=HypothesesFired, Mode=OneWay}" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <DataGrid Grid.Row="3" ItemsSource="{Binding Path=Terms}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HeadersVisibility="Column" SelectionUnit="FullRow">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Rule" Width="1.5*" Binding="{Binding Path=RuleId, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Term" Width="1.5*" Binding="{Binding Path=Term, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Role" Width="*" Binding="{Binding Path=Role, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Peak" Width="*" Binding="{Binding Path=PeakIndex, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Observed m/z" Width="*" Binding="{Binding Path=ObservedMz, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Theoretical m/z" Width="*" Binding="{Binding Path=TheoreticalMz, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Error (mDa)" Width="*" Binding="{Binding Path=ErrorMDa, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Error (ppm)" Width="*" Binding="{Binding Path=ErrorPpm, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Rel" Width="*" Binding="{Binding Path=Rel, Mode=OneWay}" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <DataGrid Grid.Row="4" ItemsSource="{Binding Path=ChemOnt}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HeadersVisibility="Column" SelectionUnit="FullRow" MaxHeight="120">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Rule" Width="1.5*" Binding="{Binding Path=RuleId, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Motif" Width="1.5*" Binding="{Binding Path=MotifId, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="FSEA top term" Width="*" Binding="{Binding Path=TopFormula, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Base rank 1" Width="*" Binding="{Binding Path=BaseRank1, Mode=OneWay}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Ranked rank 1" Width="*" Binding="{Binding Path=RankedRank1, Mode=OneWay}" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
                     </TabItem>
                 </TabControl>
 

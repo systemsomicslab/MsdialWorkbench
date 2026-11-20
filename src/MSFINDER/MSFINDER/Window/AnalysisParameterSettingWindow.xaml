@@ -700,6 +700,39 @@
 
                         </Grid>
 
+                        <Grid Grid.Row="3">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Name="CheckBox_DiagnosticRuleEvaluation" Grid.ColumnSpan="3" Content="Diagnostic-ion rules (experimental)" IsChecked="{Binding Path=DiagnosticRuleEvaluation}" Margin="25,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Evaluate the class-conditional diagnostic-ion rules and write their evidence (report only). Scope, rule-set directory, instrument type and Strict are set in the method file." />
+                                </ToolTipService.ToolTip>
+                            </CheckBox>
+
+                            <Label Content="Diagnostic rule weight:" Grid.Column="0" Height="30" VerticalContentAlignment="Center" VerticalAlignment="Top" Margin="20,27,0,0" />
+
+                            <TextBox Name="TextBox_DiagnosticRuleRankingWeight" Grid.Column="1" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" IsEnabled="{Binding Path=DiagnosticRuleEvaluation}" VerticalAlignment="Top" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Height="25" Margin="5,29.5,5,0">
+                                <TextBox.Text>
+                                    <Binding Path="DiagnosticRuleRankingWeight" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <local:PositiveDoubleNumericValidation />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Weight w of the rule term added to the total score for ranking (0 = evidence only, no reordering)" />
+                                </ToolTipService.ToolTip>
+                            </TextBox>
+
+                            <Label Content="0 = report only" Grid.Column="2" Height="30" VerticalContentAlignment="Center" VerticalAlignment="Top" Margin="0,27,0,0" />
+
+                        </Grid>
+
                     </Grid>
                 </TabItem>
 
