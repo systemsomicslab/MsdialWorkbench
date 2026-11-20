@@ -154,7 +154,9 @@ namespace CompMs.MsdialCore.DataObj
             var projectDir = projectParameter.ProjectFolderPath;
             var projectFile = projectParameter.ProjectFileName;
 
-            FileNotFoundException? missingInNewFolder = null;
+            // The folder the project was opened from is tried first. Its failure is the one to report if the stored
+            // folder fails as well: that is where the person looked, and the stored folder may be on another machine.
+            Exception? failureInNewFolder = null;
             if (projectDir != newProjectDir) {
                 try {
                     using var streamManager = datasetStreamManagerFactory?.Invoke(newProjectDir);
@@ -164,12 +166,8 @@ namespace CompMs.MsdialCore.DataObj
                     KeepPreviousRtCorrectionResult(storage);
                     return storage;
                 }
-                catch (FileNotFoundException ex) {
-                    // The project file is in this folder, so this is the file to name if the stored folder fails too.
-                    missingInNewFolder = ex;
-                }
-                catch {
-
+                catch (Exception ex) {
+                    failureInNewFolder = ex;
                 }
             }
 
@@ -180,7 +178,7 @@ namespace CompMs.MsdialCore.DataObj
                 return storage;
             }
             catch (FileNotFoundException ex) {
-                datasetLoadFailed?.Invoke(projectParameter, missingInNewFolder ?? ex);
+                datasetLoadFailed?.Invoke(projectParameter, failureInNewFolder ?? ex);
                 if (setNewPlacement is null) {
                     throw;
                 }
@@ -195,7 +193,7 @@ namespace CompMs.MsdialCore.DataObj
             }
             catch (Exception ex) {
                 // A corrupt or unreadable dataset is dropped from the project as well; it is reported so that this is not silent.
-                datasetLoadFailed?.Invoke(projectParameter, ex);
+                datasetLoadFailed?.Invoke(projectParameter, failureInNewFolder ?? ex);
                 throw;
             }
 
