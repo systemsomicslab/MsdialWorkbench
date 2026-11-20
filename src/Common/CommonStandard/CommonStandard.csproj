@@ -20,6 +20,7 @@
     <None Remove="Resources\IUPAC.txt" />
     <None Remove="Resources\LbmQueries.txt" />
     <None Remove="Resources\LipidClassProperties.csv" />
+    <None Remove="StructureFinder\DiagnosticRules\RuleSet\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,9 @@
     <EmbeddedResource Include="Resources\IUPAC.txt" />
     <EmbeddedResource Include="Resources\LbmQueries.txt" />
     <EmbeddedResource Include="Resources\LipidClassProperties.csv" />
+    <!-- The diagnostic-rule set: a LogicalName keeps the path, because rule ids contain dots. -->
+    <EmbeddedResource Include="StructureFinder\DiagnosticRules\RuleSet\**\*.json;StructureFinder\DiagnosticRules\RuleSet\ruleset-history.tsv"
+                      LogicalName="DiagnosticRules/RuleSet/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>

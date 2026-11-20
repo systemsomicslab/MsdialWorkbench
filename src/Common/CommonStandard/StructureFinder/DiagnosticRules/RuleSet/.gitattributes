@@ -1,0 +1,3 @@
+# The rule set is hashed and pinned (ruleset-history.tsv); git must not convert line endings.
+*.json -text
+*.tsv -text
