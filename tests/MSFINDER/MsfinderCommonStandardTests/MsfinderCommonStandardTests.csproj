@@ -30,4 +30,10 @@
     <None Update="Resources\Ini\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- The engine's IL scanner and per-rule fixture spectra, shared with CommonStandardTests (design 6.1 items 3 and 5). -->
+  <ItemGroup>
+    <Compile Include="..\..\Common\CommonStandardTests\StructureFinder\DiagnosticRules\IlReferenceScanner.cs" Link="Linked\IlReferenceScanner.cs" />
+    <None Include="..\..\Common\CommonStandardTests\Resources\DiagnosticRuleFixtures\rules\*.json" Link="Resources\DiagnosticRuleFixtures\rules\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
