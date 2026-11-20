@@ -14,9 +14,10 @@ namespace CompMs.Common.Lipidomics
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly TotalChainParser chainsParserSub = TotalChainParser.BuildParser(2);
-        public static readonly string PatternSub = $"^CL\\s*(?<sn1sn2>{chainsParserSub.Pattern})[/_]*?(?<sn3sn4>{chainsParserSub.Pattern})*?$";
+        public static readonly string PatternSub = $"^CL\\s*(?<sn1sn2>{chainsParserSub.Pattern})/?(?<sn3sn4>{chainsParserSub.Pattern})*?$";
         private static readonly Regex patternSub = new Regex(PatternSub, RegexOptions.Compiled);
-        public static readonly string PatternSub2 = $"^CL\\s*(?<sn>{chainsParserSub.Pattern})$";
+        private static readonly TotalChainParser chainsParserSub2 = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string PatternSub2 = $"^CL\\s*(?<sn>{chainsParserSub.Pattern})*?$";
         private static readonly Regex patternSub2 = new Regex(PatternSub2, RegexOptions.Compiled);
 
 
@@ -31,7 +32,7 @@ namespace CompMs.Common.Lipidomics
         private static readonly double SkeltonSub = new[]
         {
             MassDiffDictionary.CarbonMass * 9,
-            MassDiffDictionary.HydrogenMass * 14,
+            MassDiffDictionary.HydrogenMass * 16,
             MassDiffDictionary.OxygenMass * 15,
             MassDiffDictionary.PhosphorusMass *2,
         }.Sum();
@@ -53,18 +54,18 @@ namespace CompMs.Common.Lipidomics
                     var groupSub = matchSub.Groups;
                     if (groupSub["sn3sn4"].Value != "")
                     {
-                        var chains = chainsParser.Parse(groupSub["sn1sn2"].Value + "_" + groupSub["sn3sn4"].Value);
+                        match = pattern.Match(lipidStr.Replace("_", "/"));
+                        var group = match.Groups;
+                        var chains = chainsParser.Parse(group["sn"].Value);
                         return new Lipid(LbmClass.CL, Skelton + chains.Mass, chains);
                     }
-                    //else
-                    //{
-                    //    var carbon = int.Parse(groupSub["carbon"].Captures[0].Value) + int.Parse(groupSub["carbon"].Captures[1].Value);
-                    //    var db = int.Parse(groupSub["db"].Captures[0].Value) + int.Parse(groupSub["db"].Captures[1].Value);
-                    //    var ox = !groupSub["ox"].Success ? 0 : !groupSub["oxnum"].Success ? 1 : int.Parse(groupSub["oxnum"].Value);
-                    //    var chains = chainsParser.Parse("CL " + carbon + ":" + db + ";" + ox);
-                    //    return new Lipid(LbmClass.CL, Skelton + chains.Mass, chains);
-
-                    //}
+                    else if (groupSub["sn1sn2"].Value != "")
+                    {
+                        var matchSub2 = patternSub2.Match(lipidStr);
+                        var groupSub2 = matchSub2.Groups;
+                        var chains = chainsParserSub.Parse(groupSub2["sn"].Value);
+                        return new Lipid(LbmClass.CL, SkeltonSub + chains.Mass, chains);
+                    }
                 }
             }
             return null;

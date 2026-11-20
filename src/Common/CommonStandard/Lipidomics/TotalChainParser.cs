@@ -39,7 +39,7 @@ namespace CompMs.Common.Lipidomics
             return new TotalChainParser(chainCount, chainCount, true, false, false);
         }
 
-        private TotalChainParser(int chainCount, int capacity, bool hasSphingosine, bool hasEther, bool atLeastSpeciesLevel) {
+        protected TotalChainParser(int chainCount, int capacity, bool hasSphingosine, bool hasEther, bool atLeastSpeciesLevel) {
             ChainCount = chainCount;
             Capacity = capacity;
             var submolecularLevelPattern = hasEther
@@ -54,7 +54,7 @@ namespace CompMs.Common.Lipidomics
                 ? $"(?<PositionLevel>(?<Chain>{SphingoChainParser.Pattern})/({ChainsPattern}/?){{{Capacity-1}}})"
                 : hasEther
                 ? $"(?<PositionLevel>({ChainsPattern}/?){{{Capacity}}})"
-                : $"(?<PositionLevel>({AcylChainsPattern}/?){{{Capacity}}})";
+                : $"(?<PositionLevel>({AcylChainsPattern}[/\\)]?){{{Capacity}}})";
             if (Capacity == 1) {
                 var postionLevelExpression = new Regex(positionLevelPattern, RegexOptions.Compiled);
                 Pattern = positionLevelPattern;
@@ -106,7 +106,7 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 
-        private PositionLevelChains ParsePositionLevelChains(GroupCollection groups) {
+        protected PositionLevelChains ParsePositionLevelChains(GroupCollection groups) {
             var matches = groups["Chain"].Captures.Cast<Capture>().ToArray();
             if (HasSphingosine) {
                 if (SphingoParser.Parse(matches[0].Value) is IChain sphingo) {
@@ -125,14 +125,14 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        private MolecularSpeciesLevelChains ParseMolecularSpeciesLevelChains(GroupCollection groups) {
+        protected MolecularSpeciesLevelChains ParseMolecularSpeciesLevelChains(GroupCollection groups) {
             return new MolecularSpeciesLevelChains(
                 groups["Chain"].Captures.Cast<Capture>()
                     .Select(c => AlkylParser.Parse(c.Value) ?? AcylParser.Parse(c.Value))
                     .ToArray());
         }
 
-        private TotalChain ParseTotalChains(GroupCollection groups, int chainCount) {
+        protected TotalChain ParseTotalChains(GroupCollection groups, int chainCount) {
             var carbon = int.Parse(groups["carbon"].Value);
             var db = int.Parse(groups["db"].Value);
             var ox = !groups["ox"].Success ? 0 : !groups["oxnum"].Success ? 1 : int.Parse(groups["oxnum"].Value);

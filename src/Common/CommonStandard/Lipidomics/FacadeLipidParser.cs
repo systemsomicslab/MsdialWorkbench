@@ -13,14 +13,18 @@ namespace CompMs.Common.Lipidomics
         /// </summary>
         /// <param name="lipidStr">The lipid name to parse.</param>
         /// <returns>The parsed ILipid object, or null if parsing fails.</returns>
-        public ILipid Parse(string lipidStr) {
+        public ILipid Parse(string lipidStr)
+        {
             var key = lipidStr.Split()[0];
-            if (map.TryGetValue(key, out var parsers)) {
+            if (map.TryGetValue(key, out var parsers))
+            {
                 // Remove lipid synonym (e.g. PC 34:1|PC 16:0_18:1 -> PC 16:0_18:1) if it exists
                 var parts = lipidStr.Split('|');
                 lipidStr = parts.Length > 1 ? parts[1] : lipidStr;
-                foreach (var parser in parsers) {
-                    if (parser.Parse(lipidStr) is ILipid lipid) {
+                foreach (var parser in parsers)
+                {
+                    if (parser.Parse(lipidStr) is ILipid lipid)
+                    {
                         return lipid;
                     }
                 }
@@ -28,22 +32,29 @@ namespace CompMs.Common.Lipidomics
             return null;
         }
 
-        public void Add(ILipidParser parser) {
-            if (!map.ContainsKey(parser.Target)) {
+        public void Add(ILipidParser parser)
+        {
+            if (!map.ContainsKey(parser.Target))
+            {
                 map.Add(parser.Target, new List<ILipidParser>());
             }
             map[parser.Target].Add(parser);
         }
 
-        public void Remove(ILipidParser parser) {
-            if (map.ContainsKey(parser.Target)) {
+        public void Remove(ILipidParser parser)
+        {
+            if (map.ContainsKey(parser.Target))
+            {
                 map[parser.Target].Remove(parser);
             }
         }
 
-        public static ILipidParser Default {
-            get {
-                if (@default is null) {
+        public static ILipidParser Default
+        {
+            get
+            {
+                if (@default is null)
+                {
                     var parser = new FacadeLipidParser();
                     new List<ILipidParser>{
                         new BMPLipidParser(),
@@ -55,6 +66,7 @@ namespace CompMs.Common.Lipidomics
                         new LPGLipidParser(),
                         new LPILipidParser(),
                         new LPSLipidParser(),
+                        new LPALipidParser(),
                         new MGLipidParser(),
                         new PALipidParser(),
                         new PCLipidParser(),
@@ -62,21 +74,27 @@ namespace CompMs.Common.Lipidomics
                         new PGLipidParser(),
                         new PILipidParser(),
                         new PSLipidParser(),
+                        new PTLipidParser(),
                         new TGLipidParser(),
-                        new DGLipidParser(),
+                        new EtherTGLipidParser(),
+                        new EtherDGLipidParser(),
                         new EtherPCLipidParser(),
                         new EtherPELipidParser(),
+                        new EtherPGLipidParser(),
+                        new EtherPILipidParser(),
+                        new EtherPSLipidParser(),
                         new EtherLPCLipidParser(),
                         new EtherLPELipidParser(),
+                        new EtherLPGLipidParser(),
                         new SMLipidParser(),
                         new CeramideLipidParser(),
                         new HexCerLipidParser(),
                         new Hex2CerLipidParser(),
+                        new Hex3CerLipidParser(),
                         new DGTALipidParser(),
                         new DGTSLipidParser(),
                         new LDGTALipidParser(),
                         new LDGTSLipidParser(),
-                        new GM3LipidParser(),
                         new SHexCerLipidParser(),
                         new CARLipidParser(),
                         new CLLipidParser(),
@@ -99,6 +117,132 @@ namespace CompMs.Common.Lipidomics
                         new DGd5LipidParser(),
                         new TGd5LipidParser(),
                         new CEd7LipidParser(),
+                        new PMeOHLipidParser(),
+                        new PEtOHLipidParser(),
+                        new MMPELipidParser(),
+                        new DMPELipidParser(),
+                        new bmPCLipidParser(),
+                        new GPNAELipidParser(),
+                        new BisMeLPALipidParser(),
+                        new LNAPELipidParser(),
+                        new LNAPSLipidParser(),
+                        new MGMGLipidParser(),
+                        new MGDGLipidParser(),
+                        new DGMGLipidParser(),
+                        new DGDGLipidParser(),
+                        new SMGDGLipidParser(),
+                        new SQDGLipidParser(),
+                        new EtherMGDGLipidParser(),
+                        new EtherDGDGLipidParser(),
+                        new EtherSMGDGLipidParser(),
+                        new DLCLLipidParser(),
+                        new MLCLLipidParser(),
+                        new DGCCLipidParser(),
+                        new LDGCCLipidParser(),
+                        new DGGALipidParser(),
+                        new GM3LipidParser(),
+                        new GD1aLipidParser(),
+                        new GD1bLipidParser(),
+                        new GD2LipidParser(),
+                        new GD3LipidParser(),
+                        new GM1LipidParser(),
+                        new GQ1bLipidParser(),
+                        new GT1bLipidParser(),
+                        new MIPCLipidParser(),
+                        new NGcGM3LipidParser(),
+                        new Ac2PIM1LipidParser(),
+                        new Ac2PIM2LipidParser(),
+                        new Ac3PIM2LipidParser(),
+                        new Ac4PIM2LipidParser(),
+                        new ADGGALipidParser(),
+                        new TG_ESTLipidParser(),
+                        new CerPLipidParser(),
+                        new PI_CerLipidParser(),
+                        new PE_CerLipidParser(),
+                        new SLLipidParser(),
+                        new ASMLipidParser(),
+                        new AHexCerLipidParser(),
+                        new ASHexCerLipidParser(),
+                        new CerEbdsLipidParser(),
+                        new CerEosLipidParser(),
+                        new HexCerEosLipidParser(),
+                        new FALipidParser(),
+                        new FAHFALipidParser(),
+                        new AAHFALipidParser(),
+                        new WELipidParser(),
+                        new NAGlyLipidParser(),
+                        new NAGlySerLipidParser(),
+                        new NAOrnLipidParser(),
+                        new NATauLipidParser(),
+                        new NAPheLipidParser(),
+                        new NATryALipidParser(),
+                        new NA5HTLipidParser(),
+                        new NASerLipidParser(),
+                        new NAAlaLipidParser(),
+                        new NAGlnLipidParser(),
+                        new NALeuLipidParser(),
+                        new NAValLipidParser(),
+                        new NAOrn_FAHFALipidParser(),
+                        new NATryA_FAHFALipidParser(),
+                        new NAGly_FAHFALipidParser(),
+                        new NAGlySer_FAHFALipidParser(),
+                        new NAAntLipidParser(),
+                        new NAGABALipidParser(),
+                        new NAELipidParser(),
+                        new VAELipidParser(),
+                        new SpbLipidParser(),
+                        new CELipidParser(),
+                        new BRSELipidParser(),
+                        new CASELipidParser(),
+                        new SISELipidParser(),
+                        new STSELipidParser(),
+                        new AHexBRSLipidParser(),
+                        new AHexCASLipidParser(),
+                        new AHexCSLipidParser(),
+                        new AHexSISLipidParser(),
+                        new AHexSTSLipidParser(),
+                        new DCAELipidParser(),
+                        new GDCAELipidParser(),
+                        new GLCAELipidParser(),
+                        new TDCAELipidParser(),
+                        new TLCAELipidParser(),
+                        new KLCAELipidParser(),
+                        new KDCAELipidParser(),
+                        new LCAELipidParser(),
+                        new EGSELipidParser(),
+                        new DEGSELipidParser(),
+                        new DSMSELipidParser(),
+                        new CSLPHexLipidParser(),
+                        new BRSLPHexLipidParser(),
+                        new CASLPHexLipidParser(),
+                        new SISLPHexLipidParser(),
+                        new STSLPHexLipidParser(),
+                        new CSPHexLipidParser(),
+                        new BRSPHexLipidParser(),
+                        new CASPHexLipidParser(),
+                        new SISPHexLipidParser(),
+                        new STSPHexLipidParser(),
+                        new BAHexLipidParser(),
+                        new BASulfateLipidParser(),
+                        new BAHex_ST_LipidParser(),
+                        new BASulfate_ST_LipidParser(),
+                        new SHexLipidParser(),
+                        new STLipidParser(),
+                        new SPEHexLipidParser(),
+                        new SPGHexLipidParser(),
+                        new SPELipidParser(),
+                        new SSulfateLipidParser(),
+                        new BALipidParser(),
+                        new BA_ST_LipidParser(),
+                        new VitDLipidParser(),
+                        new VitELipidParser(),
+                        new LipidALipidParser(),
+                        new CeramideD9LipidParser(),
+                        new CoqLipidParser(),
+                        new Ac2PIM1LipidParser(),
+                        new Ac2PIM2LipidParser(),
+                        new Ac3PIM2LipidParser(),
+                        new Ac4PIM2LipidParser(),
 
                     }.ForEach(parser.Add);
                     @default = parser;
