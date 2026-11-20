@@ -39,5 +39,11 @@ converting them.
 
 Rule files carry facts and citations only: DOI or reference with a page, table or figure locator, and notes of at
 most one paraphrased sentence. They hold formulas, never typed masses, and no key that reads a precursor, product
-or library formula. The current version is the format skeleton: the element, adduct and unit tables, and empty
-motif and nesting tables, with no scaffold list and no rule.
+or library formula.
+
+The current version, 0.1.0, is the first shipped set: 106 rules, 58 scaffold lists, 106 motifs and 28 nesting rows,
+over the element, adduct and unit tables of the 0.0.1-skeleton format release. It is the WS8 P3 draft with its motif,
+nesting, unit and adduct staging rows merged into the four tables (table rows first, then the staging files in path
+order, as a draft directory set loads them), so every rule's `rule_semantic_sha256` is the one the draft gave. No
+rule has had the author's review yet: every rule is `author_reviewed: false` with no `review`, so no outcome is
+claim-eligible (each lists `not_reviewed`), and the motif ChemOnt nodes are still empty.

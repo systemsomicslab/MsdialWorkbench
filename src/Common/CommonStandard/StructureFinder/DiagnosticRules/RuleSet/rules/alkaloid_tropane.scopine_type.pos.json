@@ -1,0 +1,210 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C8H14NO2"
+  ],
+  "motif_id": "tropane_6_7_dioxygenated",
+  "negative_examples": [
+   {
+    "pubchem_cid": 174174,
+    "smiles": "CN1[C@@H]2CC[C@H]1CC(C2)OC(=O)C(CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 6918612,
+    "smiles": "CN1[C@H]2C[C@@H](C[C@@H]1[C@H](C2)O)OC(=O)[C@H](CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 107938,
+    "smiles": "C[C@@H]([C@@](C(C)C)(C(=O)OCC1=CCN2[C@H]1[C@@H](CC2)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "6,7-epoxide (scopine) versus 6,7-diol is not resolved by these ions",
+   "the ester acid is decided by the precursor composition, not by these ions"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5184,
+    "smiles": "CN1C2CC(CC1C3C2O3)OC(=O)C(CO)C4=CC=CC=C4"
+   },
+   {
+    "pubchem_cid": 4105431,
+    "smiles": "CN1C2CC(CC1C3C2O3)OC(=O)C(CO)(C4=CC=CC=C4)O"
+   },
+   {
+    "pubchem_cid": 3083622,
+    "smiles": "CN1[C@@H]2CC(C[C@H]1[C@H]3[C@@H]2O3)OC(=O)C(=C)C4=CC=CC=C4"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C8H14NO2"
+   },
+   {
+    "term": "ion_C8H12NO"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): C8H12NO+ (138) is the H2O daughter of C8H14NO2+ (156), so the two claim ions are one parent-daughter channel and one independent claim ion remains.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "pyrrolizidine_retronecine_type",
+    "note": "C8H12NO+ 138 and C8H14NO2+ 156 have the compositions of retronecine-type necine ions (composition identity; the tropane sources do not discuss pyrrolizidines)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_tropane_bases",
+   "unit_totals": {
+    "acyl": [
+     1,
+     2
+    ]
+   },
+   "units": {
+    "acetyl": [
+     0,
+     2
+    ],
+    "atropoyl": [
+     0,
+     2
+    ],
+    "benzoyl": [
+     0,
+     2
+    ],
+    "mandeloyl": [
+     0,
+     2
+    ],
+    "methylpyrrolecarbonyl": [
+     0,
+     2
+    ],
+    "phenylacetyl": [
+     0,
+     2
+    ],
+    "syringoyl": [
+     0,
+     2
+    ],
+    "tigloyl": [
+     0,
+     2
+    ],
+    "trimethoxybenzoyl": [
+     0,
+     2
+    ],
+    "trimethoxycinnamoyl": [
+     0,
+     2
+    ],
+    "tropoyl": [
+     0,
+     2
+    ],
+    "veratroyl": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "One or two ester groups, drawn from the acids whose neutral losses identify Erythroxylum and Solanaceae tropane esters",
+    "source": "src:5"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_tropane.scopine_type.pos",
+ "source": [
+  {
+   "doi": "10.1007/s00216-016-0043-6",
+   "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpd 4 (p. 1152)"
+  },
+  {
+   "doi": "10.1002/jssc.201801201",
+   "locator": "Sec. 3.1 (p. 1165); Figure 2A, 2E (p. 1165); Table 1 (p. 1166)"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (p. 10); Table 1, peaks 15 and 18 (pp. 4-6); Fig. 5 (p. 11)"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (p. 11); Table 1, peak 8 (pp. 4-6); Fig. 6 (p. 11)"
+  },
+  {
+   "doi": "10.1021/acs.jnatprod.4c00304",
+   "locator": "Results and Discussion, paragraph 2"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "formula": "C8H14NO2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "156.1019; also src:1, src:2, src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C8H14NO2",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C8H12NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "138.0913; also src:1, src:2, src:3, src:4",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C8H12NO",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

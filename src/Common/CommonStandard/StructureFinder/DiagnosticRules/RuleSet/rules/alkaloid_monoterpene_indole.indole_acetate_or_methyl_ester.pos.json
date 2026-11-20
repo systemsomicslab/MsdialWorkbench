@@ -1,0 +1,132 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "loss_C2H4O2",
+   "ion_C12H14NO"
+  ],
+  "motif_id": "indole_or_indoline_acetate_or_methyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 6857472,
+    "smiles": "CC[C@]12CCCN3[C@H]1[C@@]4(CC3)[C@@H](CC2)NC5=CC=CC=C45"
+   }
+  ],
+  "non_claims": [
+   "acetate versus methyl ester is not resolved by the C2H4O2 loss",
+   "the vindoline (aspidosperma) skeleton is not claimed; C12H14NO+ is also printed for other methoxyindole alkaloids",
+   "the methoxy position is not resolved",
+   "a C2H4O2 difference also arises from two sequential losses (CH3OH then CO, or ketene then H2O), so the loss alone does not show an acetate or methyl ester"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 260535,
+    "smiles": "CC[C@@]12C=CCN3[C@@H]1[C@]4(CC3)[C@H]([C@]([C@@H]2OC(=O)C)(C(=O)OC)O)N(C5=C4C=CC(=C5)OC)C"
+   },
+   {
+    "pubchem_cid": 260534,
+    "smiles": "CC[C@@]12C=CCN3[C@@H]1[C@]4(CC3)[C@H]([C@]([C@@H]2O)(C(=O)OC)O)N(C5=C4C=CC(=C5)OC)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_C2H4O2"
+   },
+   {
+    "term": "ion_C12H14NO"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19) pending the author: the P3 proposal makes every monoterpene indole alkaloid rule report-only, so this rule is kept but not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "aspidospermane",
+    "note": "N-acyl aspidospermanes without an ester in the shared list (aspidocarpine, PubChem 632854; aspidolimine, 579958) can reach the C2H4O2 difference by ketene then H2O loss (not checked against a source)."
+   },
+   {
+    "motif_id": "indole_or_indoline_omethyl",
+    "note": "Methyl ethers without an acetate or methyl ester (for example the aryl methoxy aspidospermanes of the shared list) can reach the C2H4O2 difference by CH3OH then CO loss (not checked against a source)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_monoterpene_indole_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_monoterpene_indole.indole_acetate_or_methyl_ester.pos",
+ "source": [
+  {
+   "doi": "10.1002/rcm.8037",
+   "locator": "Sec. 3.1-3.2; Scheme 5; Table 1 (compounds 37, 66)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.1016/j.jpha.2016.04.008",
+   "locator": "Sec. 3.1 (C-ring RDA ions of reserpine)"
+  },
+  {
+   "doi": "10.1007/s10600-015-1215-x",
+   "locator": "Table 2 (compound 2)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:1",
+   "formula": "C2H4O2",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "CH3COOH loss from vindoline (457 to 397.2109, src:0 Scheme 5); deacetylvindoline, which has no acetate, shows the same C2H4O2 difference (415 to 355.2010, 65 %), and src:3 prints [M+H-HCOOCH3]+ for a methyl ester.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_C2H4O2",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:1",
+   "formula": "C12H14NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Base peak of vindoline (188.1062 in Scheme 5, 188.1057 in Table 1) and deacetylvindoline (188.1066); formula from the loss of C11H15NO3 from 397 in Scheme 5; src:2 prints 188.1070 among the C-ring RDA ions of reserpine.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C12H14NO",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 draft from LLM-extracted candidates, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,220 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_so3",
+   "so3_radical"
+  ],
+  "motif_id": "aryl_or_vinyl_sulfate",
+  "negative_examples": [
+   {
+    "pubchem_cid": 20818,
+    "smiles": "C1=CC=C(C=C1)COS(=O)(=O)O"
+   },
+   {
+    "pubchem_cid": 12594,
+    "smiles": "C[C@]12CC[C@H]3[C@H]([C@@H]1CCC2=O)CC=C4[C@@]3(CC[C@@H](C4)OS(=O)(=O)O)C"
+   }
+  ],
+  "non_claims": [
+   "The sulfate position on the ring is not resolved (regioisomers give near-identical spectra).",
+   "Aromatic versus vinyl (enol) attachment is not resolved.",
+   "The number of sulfate groups is not claimed; only mono-sulfate hypotheses are tried."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 4615423,
+    "smiles": "CC1=CC=C(C=C1)OS(=O)(=O)O"
+   },
+   {
+    "pubchem_cid": 1655,
+    "smiles": "CC12CCC3C(C1CCC2O)CCC4=C3C=CC(=C4)OS(=O)(=O)O"
+   },
+   {
+    "pubchem_cid": 10258,
+    "smiles": "C1=CC=C2C(=C1)C(=CN2)OS(=O)(=O)O"
+   },
+   {
+    "pubchem_cid": 5280362,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)OS(=O)(=O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_so3"
+   },
+   {
+    "term": "so3_radical"
+   },
+   {
+    "not": {
+     "term": "hso4"
+    }
+   }
+  ]
+ },
+ "loss_reference": "observed",
+ "measure": true,
+ "notes": "Aromatic sulfates lose SO3 and give the SO3 radical anion (Lafaye 2004; Fitzgerald 2022), while an intense HSO4- points to alkyl or benzylic sulfation (Taglioni 2025), so HSO4- stronger than both vetoes the rule.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "sulfate_ester",
+    "note": "Alkyl, alicyclic and some benzylic sulfates give an intense HSO4- (Lafaye 2004; Taglioni 2025); benzyl sulfate, an isomer of p-cresyl sulfate, gives m/z 95.951 and no HSO4- (Correia 2020)."
+   },
+   {
+    "motif_id": "c_sulfonic_acid",
+    "note": "C-sulfonates also carry an SO3 group."
+   },
+   {
+    "motif_id": "organophosphate_monoester",
+    "note": "H2PO4- and the HPO3 loss sit 9.5 mDa from HSO4- and the SO3 loss; the p2 product tolerance and the observed-precursor loss reference keep them apart."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "sulfated_metabolite_parents",
+   "unit_totals": {},
+   "units": {
+    "sulfate": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Only mono-sulfate [M-H]- hypotheses are tried: bis-sulfates ionise mainly as [M-2H]2-, a charge state outside the v1 format.",
+    "source": "src:13"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "sulfated_metabolite.aryl_sulfate.neg",
+ "source": [
+  {
+   "doi": "10.1002/jms.635",
+   "locator": "Results and Discussion, opening paragraph and Parameters of CID conditions (p. 657)"
+  },
+  {
+   "doi": "10.1002/jms.635",
+   "locator": "Parameters of CID conditions (p. 657; estradiol 3-sulfate m/z 351 to 271 and m/z 80)"
+  },
+  {
+   "doi": "10.1002/jms.635",
+   "locator": "Parameters of CID conditions (p. 657; DHEA sulfate base peak m/z 97); Fig. 2C (p. 659)"
+  },
+  {
+   "doi": "10.1007/s00216-025-06027-3",
+   "locator": "Results and discussion, Sulfated and non-sulfated phenolic compound annotation; Table 1"
+  },
+  {
+   "doi": "10.3390/metabo10100415",
+   "locator": "Section 2.2, Table 1"
+  },
+  {
+   "doi": "10.3390/metabo10100415",
+   "locator": "Section 2.2, Table 1; Section 2.1, Figure 2D"
+  },
+  {
+   "doi": "10.3390/metabo10100415",
+   "locator": "Section 2.2, Table 1"
+  },
+  {
+   "doi": "10.3389/fmolb.2022.829511",
+   "locator": "Table 1 (Materials and Methods, Data Workflow Pipeline and Processing, p. 4); Results and Discussion, Speciation of Sulfates (p. 7)"
+  },
+  {
+   "doi": "10.3389/fmolb.2022.829511",
+   "locator": "Results and Discussion: Speciation of Sulfates (p. 7) and Profiling the Hydrolytic Activity of Sulfatases in Pooled Human Urine (p. 10); two or more sulfate-derived fragments counted at a 5 % relative abundance threshold"
+  },
+  {
+   "doi": "10.1021/acs.analchem.6b03671",
+   "locator": "Results, Extraction Recovery and Limit of Detection (pp. 5-6; estradiol bis-sulfate A24)"
+  },
+  {
+   "doi": "10.3389/fpls.2019.00885",
+   "locator": "Materials and Methods, Mass Spectrometry Analysis; Results, MS Method Development; Supplementary Figure S2"
+  },
+  {
+   "doi": "10.3390/molecules29204888",
+   "locator": "Section 2.1 (Figure 2 discussion; SO3 loss in all synthetic sulfates); Section 3.2 (LC-IT-TOF)"
+  },
+  {
+   "doi": "10.1002/rcm.7286",
+   "locator": "Abstract; Results and Discussion (p. 4); Fig. 2 (p. 2); Fig. 3b (p. 3); Experimental, NCE 27 (p. 4)"
+  },
+  {
+   "doi": "10.1021/acs.analchem.6b03671",
+   "locator": "Results, MS Behavior of Steroid Bis-sulfates, Ionization (p. 4); Table 1"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:8",
+   "formula": "O3S",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.05,
+   "note": "SO3 79.9568 is lost from the observed precursor, so the HPO3 loss of a phosphate (9.5 mDa heavier) falls outside the product tolerance.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_so3",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "O3S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.05,
+   "note": "SO3 radical anion 79.9574 (SO3 plus one electron).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "so3_radical",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "HO4S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.05,
+   "note": "Veto: HSO4- stronger than both the SO3 loss ion and the SO3 radical anion points to alkyl or benzylic sulfation; no ratio is printed, so the default 1.0 applies.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "veto_stronger_than",
+   "term_id": "hso4",
+   "term_source": "src:3",
+   "than": [
+    "loss_so3",
+    "so3_radical"
+   ]
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 drafting from the normalised candidates (candidates-20261118), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

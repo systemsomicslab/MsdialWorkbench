@@ -1,0 +1,190 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "aa_ion",
+   "core_pair"
+  ],
+  "motif_id": "bile_acid_amino_acid_conjugate",
+  "negative_examples": [
+   {
+    "pubchem_cid": 6675,
+    "smiles": "C[C@H](CCC(=O)NCCS(=O)(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   },
+   {
+    "pubchem_cid": 5283389,
+    "smiles": "CCCCC/C=C\\C/C=C\\C/C=C\\C/C=C\\CCCC(=O)NCC(=O)O"
+   },
+   {
+    "pubchem_cid": 221493,
+    "smiles": "C[C@H](CCC(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   }
+  ],
+  "non_claims": [
+   "C24 amide versus C3 ester linkage is not resolved (Garcia 2022; Garcia 2025); the motif covers both, with esters only at C3.",
+   "Isomeric amino acids of one formula (valine, norvaline, 5-aminovaleric acid; leucine, isoleucine; 2- and 4-aminobutyric acid) are not resolved by these ions.",
+   "Hydroxyl positions, stereochemistry and oxo versus hydroxy cores are unresolved.",
+   "The hydroxyl count is claimed only under [M+H]+; under [M+H-H2O]+ an oxo or dehydro conjugate is isobaric with a hydroxy hypothesis, so the count is not claimed there."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 132572848,
+    "smiles": "C[C@H](CCC(=O)N[C@@H](CC(C)C)C(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC[C@H]4[C@@]3(CC[C@H](C4)O)C)C"
+   },
+   {
+    "pubchem_cid": 71604570,
+    "smiles": "C[C@H](CCC(=O)N[C@@H](C(C)C)C(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC[C@H]4[C@@]3(CC[C@H](C4)O)C)C"
+   },
+   {
+    "pubchem_cid": 137653935,
+    "smiles": "C[C@H](CCC(=O)NCCCC(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC[C@H]4[C@@]3(CC[C@H](C4)O)C)C"
+   },
+   {
+    "pubchem_cid": 171120430,
+    "smiles": "C[C@H](CCC(=O)N[C@@H](CC(C)C)C(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "aa_ion"
+   },
+   {
+    "k_of": {
+     "k": 2,
+     "k_source": "src:1",
+     "of": [
+      {
+       "term": "core_pair"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Bile acids conjugated to C4-C6 amino acids give the protonated amino acid and the dehydrated core pair; one paper with three synthetic amide standards supports it, and the amide versus C3-ester linkage stays open.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+",
+   "[M+H-H2O]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "steryl_glycoside_bile_acid_c24_bile_acids",
+   "unit_totals": {
+    "conjugate": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Abu": [
+     0,
+     1
+    ],
+    "Leu": [
+     0,
+     1
+    ],
+    "Val": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "steryl_glycoside_bile_acid.amino_acid_conjugate.pos",
+ "source": [
+  {
+   "doi": "10.1021/acs.jafc.5c03548",
+   "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs); Table 2"
+  },
+  {
+   "doi": "10.1021/acs.analchem.5c05677",
+   "locator": "Results and Discussion, Development of Multistep MassQL Filtering Trees (Step 1); Figure 2; Methods, Generation and Validation of MassQL Queries"
+  },
+  {
+   "doi": "10.1016/j.cell.2024.02.019",
+   "locator": "Results (Stage 2 MassQL paragraph); Figure 1b"
+  },
+  {
+   "doi": "10.1016/j.cell.2024.02.019",
+   "locator": "Results (Stage 1 MassQL paragraph); Figure 1a"
+  },
+  {
+   "doi": "10.1016/j.steroids.2011.11.008",
+   "locator": "Sec. 3.3; Table 2"
+  },
+  {
+   "doi": "10.1021/acs.jafc.5c03548",
+   "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs) (negative-mode fragments; amide and ester standards)"
+  },
+  {
+   "doi": "10.3390/biom12050687",
+   "locator": "Section 3.2; Figure 5"
+  },
+  {
+   "doi": "10.1021/acs.analchem.1c05648",
+   "locator": "Results, Investigation of MS/MS Fragmentation Pattern of Bile Acids (text on oxo versus dehydrated hydroxyl spectra)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:8",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "aa_ion",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "class": "conjugate",
+    "minus": null,
+    "plus": "H3O"
+   }
+  },
+  {
+   "floor_source": "src:8",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "k=2 is printed for the dihydroxy pair only (src:1, Step 1); for the monohydroxy and trihydroxy entries k=2 follows from the pair logic (both ions of the entry's pair are required).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "scaffold_ions": "core_dehydrated",
+   "term_id": "core_pair",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 rule drafting from the normalised candidates (2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

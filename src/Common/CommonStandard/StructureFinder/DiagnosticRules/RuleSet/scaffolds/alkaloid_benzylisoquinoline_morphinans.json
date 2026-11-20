@@ -1,0 +1,99 @@
+{
+ "entries": [
+  {
+   "class": "morphinan",
+   "formula": "C17H19NO3",
+   "ions": {},
+   "name": "morphine",
+   "origin": "as_published",
+   "scaffold_id": "morphine",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(03)00539-7",
+     "locator": "Results, morphine and codeine, pp. 1265-1266; Table 1 (pp. 1264-1265); Scheme 1"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 5288826 (morphine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "morphinan",
+   "formula": "C18H21NO3",
+   "ions": {},
+   "name": "codeine",
+   "origin": "as_published",
+   "scaffold_id": "codeine",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(03)00539-7",
+     "locator": "Results, morphine and codeine, pp. 1265-1266; Table 1 (pp. 1264-1265); Scheme 1"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 5284371 (codeine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "morphinan",
+   "formula": "C17H17NO3",
+   "ions": {},
+   "name": "morphinone",
+   "origin": "as_published",
+   "scaffold_id": "morphinone",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(03)00539-7",
+     "locator": "Results, morphinone, codeinone and neopinone, p. 1267; Table 2 (p. 1266); Scheme 2"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 5459823 (morphinone), compound record"
+    }
+   ]
+  },
+  {
+   "class": "morphinan",
+   "formula": "C18H19NO3",
+   "ions": {},
+   "name": "codeinone (neopinone and oripavine share the formula)",
+   "origin": "as_published",
+   "scaffold_id": "codeinone",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(03)00539-7",
+     "locator": "Results, morphinone, codeinone and neopinone, p. 1267; Table 2 (p. 1266); Scheme 2"
+    },
+    {
+     "doi": "10.1016/s1044-0305(03)00539-7",
+     "locator": "Results, thebaine and oripavine, p. 1267; Table 3 (p. 1267)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 5459910 (codeinone), compound record"
+    }
+   ]
+  },
+  {
+   "class": "morphinan",
+   "formula": "C19H21NO3",
+   "ions": {},
+   "name": "thebaine",
+   "origin": "as_published",
+   "scaffold_id": "thebaine",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(03)00539-7",
+     "locator": "Results, thebaine and oripavine, p. 1267; Table 3 (p. 1267)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 5324289 (thebaine), compound record"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_benzylisoquinoline_morphinans"
+}

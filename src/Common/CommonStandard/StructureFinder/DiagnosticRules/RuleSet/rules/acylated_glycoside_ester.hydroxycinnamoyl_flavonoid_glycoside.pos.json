@@ -1,0 +1,214 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "y0",
+   "acylium_feruloyl",
+   "acylium_sinapoyl"
+  ],
+  "motif_id": "hydroxycinnamoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5282102,
+    "smiles": "C1=CC(=CC=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 10621,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=CC(=C4C(=O)C[C@H](OC4=C3)C5=CC(=C(C=C5)OC)O)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 44257815,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C=C(C=C3O2)O[C@H]4C([C@H]([C@@H](C(O4)C(=O)O)O)O)O[C@H]5C([C@H]([C@@H](C(O5)C(=O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 122738,
+    "smiles": "C1[C@H]([C@H](OC2=C1C(=CC(=C2[C@@H]3[C@H]([C@H](OC4=CC(=CC(=C34)O)O)C5=CC(=C(C=C5)O)O)O)O)O)C6=CC(=C(C=C6)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the sugar that carries the acyl group and the acyl position are not resolved",
+   "the aglycone and the acyl identity come from the hypothesis and are reported, not claimed; isomeric aglycone and acyl combinations share one precursor composition",
+   "p-coumaroyl and caffeoyl esters, and flavanone, dihydroflavonol, flavan-3-ol, chalcone and dihydrochalcone aglycones, are outside this rule"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 23265189,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC=C(C=C5)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 11114901,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC(=C(C=C5)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 122183634,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=CC(=C4C(=C3)OC(=CC4=O)C5=CC=C(C=C5)O)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "y0"
+   },
+   {
+    "any": [
+     {
+      "term": "acylium_feruloyl"
+     },
+     {
+      "term": "acylium_sinapoyl"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Two ions jointly: the protonated aglycone of a flavone, flavonol or isoflavone glycoside hypothesis with one feruloyl or sinapoyl unit, and that acyl's acylium ion; flavanone-type aglycones are excluded because their B ring can give cinnamoyl-type ions.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavonoid_o_glycoside",
+    "note": "non-acylated glucuronides lie 0.015 Da from feruloyl hypotheses of the same aglycone and share Y0; the hexuronic acid oxonium ion C6H9O6+ 177.0394 is 0.015 Da from the feruloyl acylium"
+   },
+   {
+    "motif_id": "proanthocyanidin",
+    "note": "B-type dimers C30H26O11 to C30H26O14 are exact isomers of aglycone|Pen1,feruloyl1 hypotheses; their fragments at the y0 and acylium targets were not checked against a source"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "acylated_glycoside_ester_flavone_flavonol_isoflavone",
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     3
+    ],
+    "HexA": [
+     0,
+     2
+    ],
+    "Pen": [
+     0,
+     2
+    ],
+    "dHex": [
+     0,
+     2
+    ],
+    "feruloyl": [
+     0,
+     1
+    ],
+    "sinapoyl": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.pos",
+ "source": [
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "Acylated glycosyl flavonoids; Table 1"
+  },
+  {
+   "doi": "10.1002/pca.1189",
+   "locator": "Results and Discussion, Fragmentation pathways of acylated flavone diglycosides; Table 2"
+  },
+  {
+   "doi": "10.1007/s11306-011-0287-2",
+   "locator": "Table 1; Figure 4"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:3",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[aglycone+H]+ after loss of all sugars and the acyl group (e.g. apigenin 271.0601, chrysoeriol 301.0707 in src:1); also src:2 for acylated isoflavone glucuronides",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "y0",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "feruloyl acylium C10H9O3+ 177.0546, listed for [M+H]+ of acylated flavonoid glycosides in src:0",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acylium_feruloyl",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "feruloyl",
+    "plus": "H"
+   }
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "sinapoyl acylium C11H11O4+ 207.0652, listed for [M+H]+ of acylated flavonoid glycosides in src:0",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acylium_sinapoyl",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "sinapoyl",
+    "plus": "H"
+   }
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18) from the LLM-extracted candidate records of candidates-20261118; source-checked 2026-11-18; review fixes 2026-11-19, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,59 @@
+{
+ "entries": [
+  {
+   "class": "aspidosperma",
+   "formula": "C22H30N2O",
+   "ions": {},
+   "name": "demethoxypalosine (PubChem CID 579957, 17-demethoxypalosine)",
+   "origin": "as_published",
+   "scaffold_id": "demethoxypalosine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1"
+    },
+    {
+     "doi": "10.21577/0100-4042.20250138",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C23H32N2O3",
+   "ions": {},
+   "name": "aspidolimine as PubChem names it (N-propionyl; the sources call this structure aspidocarpine, compound 3)",
+   "origin": "as_published",
+   "scaffold_id": "aspidolimine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1 (compound 3)"
+    },
+    {
+     "doi": "10.21577/0100-4042.20250138",
+     "locator": "Table 1 (compound 3)"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C22H30N2O3",
+   "ions": {},
+   "name": "aspidocarpine as PubChem names it (N-acetyl; the sources call this structure aspidolimine, compound 4)",
+   "origin": "as_published",
+   "scaffold_id": "aspidocarpine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1 (compound 4)"
+    },
+    {
+     "doi": "10.21577/0100-4042.20250138",
+     "locator": "Table 1 (compound 4)"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_monoterpene_indole_aspidosperma_n_acyl"
+}

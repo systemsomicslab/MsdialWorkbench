@@ -1,0 +1,191 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "ellagate",
+   "reporter_275",
+   "reporter_249",
+   "loss_hhdp"
+  ],
+  "motif_id": "hhdp_or_ellagic_unit",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280804,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "HHDP positions on the glucose and the biaryl configuration are not resolved",
+   "C-glycosidic (vescalagin-type) and oligomeric ellagitannins are outside the composition series"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 442688,
+    "smiles": "C1[C@@H]2[C@H]([C@H]3[C@H](C(O2)O)OC(=O)C4=CC(=C(C(=C4C5=C(C(=C(C=C5C(=O)O3)O)O)O)O)O)O)OC(=O)C6=CC(=C(C(=C6C7=C(C(=C(C=C7C(=O)O1)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 73644,
+    "smiles": "C1[C@@H]2[C@H]([C@H]3[C@H]([C@@H](O2)OC(=O)C4=CC(=C(C(=C4)O)O)O)OC(=O)C5=CC(=C(C(=C5C6=C(C(=C(C=C6C(=O)O3)O)O)O)O)O)O)OC(=O)C7=CC(=C(C(=C7C8=C(C(=C(C=C8C(=O)O1)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 73568,
+    "smiles": "C1[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC(=O)C3=CC(=C(C(=C3)O)O)O)O)OC(=O)C4=CC(=C(C(=C4C5=C(C(=C(C=C5C(=O)O1)O)O)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:5",
+   "of": [
+    {
+     "term": "ellagate"
+    },
+    {
+     "term": "reporter_275"
+    },
+    {
+     "term": "reporter_249"
+    },
+    {
+     "term": "loss_hhdp"
+    }
+   ]
+  }
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "HHDP-glucose ellagitannin [M-H]-: two of the reporter ions 301, 275, 249 and the HHDP loss 302 (Tan 2011 CID MS2; Bowers 2018 classified anions by 2 of 3 reporters in HCD; Engstrom 2015).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavonol_core",
+    "note": "quercetin glycosides give 300/301 ions near the ellagic acid ion (Bowers 2018; Engstrom 2015)"
+   }
+  ],
+  "composition": {
+   "core": "C6H12O6",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     4
+    ]
+   },
+   "units": {
+    "HHDP": [
+     1,
+     2
+    ],
+    "galloyl": [
+     0,
+     3
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "phenolics_other.ellagitannin.neg",
+ "source": [
+  {
+   "doi": "10.1038/s41598-018-27708-3",
+   "locator": "Bowers 2018: Fig. 1a-c (reporter structures); Methods, Method Settings (trigger ions 249.040, 275.019, 300.998, 5 ppm, top 10 HCD peaks)"
+  },
+  {
+   "doi": "10.1038/s41598-018-27708-3",
+   "locator": "Bowers 2018: Results, Fragmentation of Ellagitannins and Mass Trigger Validation (T-2RT; quercetin glycoside 300.029 and 301.037); Table 2 (anions and dianions classified under T-2RT)"
+  },
+  {
+   "doi": "10.1002/pca.1312",
+   "locator": "Tan 2011: Table 1 compounds 15-17 (p. 519; MS2 of [M-H]- 633, 785, 937); Results, Ellagitannins (pp. 522-524); Fig. 5 (p. 523)"
+  },
+  {
+   "doi": "10.1021/acs.jafc.5b00595",
+   "locator": "Engstrom 2015: Table 3 (p. 4073; tellimagrandin I 785 to 301); Fig. 2A (p. 4071); p. 4076 (quercetin glycosides give a 0.1-1 % false ellagitannin response)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions this work must respect",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision that a class claim needs two or three diagnostic ions jointly (author, 2026-11-15)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "C14H5O8",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "ellagic acid anion C14H5O8- 301 (Bowers 2018 300.998; base peak in the MS2 of 633 and 785, Tan 2011)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ellagate",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C13H7O7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "C13H7O7- 275 pentahydroxydibenzopyranone (Bowers 2018 275.019; Tan 2011 MS2 of 633, 785, 937 at 19, 15 and 1 %)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "reporter_275",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C12H9O6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "C12H9O6- 249 hexahydroxybiphenyl (Bowers 2018 249.040, HCD); in CID MS2 only 1 % for compound 15 (Tan 2011)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "reporter_249",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C14H6O8",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "HHDP loss C14H6O8 302 (785 to 483; 937 to 635; Tan 2011)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_hhdp",
+   "term_source": "src:2",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

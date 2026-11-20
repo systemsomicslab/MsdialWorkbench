@@ -1,0 +1,95 @@
+{
+ "entries": [
+  {
+   "class": "tropane_base",
+   "formula": "C8H15NO",
+   "ions": {},
+   "name": "tropine (N-methyltropan-3-ol; pseudotropine has the same formula)",
+   "origin": "as_published",
+   "scaffold_id": "tropine",
+   "source": [
+    {
+     "doi": "10.1007/s00216-016-0043-6",
+     "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpd 8 (p. 1152)"
+    },
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.1 (p. 1165); Figure 2B (p. 1165); Table 1 (p. 1166); Table 2 (p. 1169)"
+    },
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-7); Table 1, peaks 14, 20, 23 (pp. 4-6); Fig. 3 (p. 9)"
+    }
+   ]
+  },
+  {
+   "class": "tropane_base",
+   "formula": "C7H13NO",
+   "ions": {},
+   "name": "nortropine (tropan-3-ol without the N-methyl)",
+   "origin": "as_published",
+   "scaffold_id": "nortropine",
+   "source": [
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.1 (p. 1165); Figure 2D (p. 1165); Table 1 (p. 1166)"
+    },
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (p. 10); Table 1, peak 16 (pp. 4-6)"
+    }
+   ]
+  },
+  {
+   "class": "tropane_base",
+   "formula": "C8H15NO2",
+   "ions": {},
+   "name": "6-hydroxytropine (N-methyltropane-3,6-diol)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxytropine_6",
+   "source": [
+    {
+     "doi": "10.1007/s00216-016-0043-6",
+     "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpds 3 and 6 (p. 1152)"
+    },
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 7-10); Table 1, peaks 2-7, 9-13, 17, 19, 29 (pp. 4-6); Fig. 4 (p. 9)"
+    }
+   ]
+  },
+  {
+   "class": "tropane_base",
+   "formula": "C8H13NO2",
+   "ions": {},
+   "name": "scopine (6,7-epoxy-N-methyltropan-3-ol)",
+   "origin": "as_published",
+   "scaffold_id": "scopine",
+   "source": [
+    {
+     "doi": "10.1007/s00216-016-0043-6",
+     "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpd 4 (p. 1152)"
+    },
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.1 (p. 1165); Figure 2A, 2E (p. 1165); Table 1 (p. 1166)"
+    }
+   ]
+  },
+  {
+   "class": "tropane_base",
+   "formula": "C8H15NO3",
+   "ions": {},
+   "name": "N-methyltropane-3,6,7-triol",
+   "origin": "as_published",
+   "scaffold_id": "tropanetriol_3_6_7",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (p. 11); Table 1, peak 8 (pp. 4-6); Fig. 6 (p. 11)"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloids_misc_and_other_tropane_bases"
+}

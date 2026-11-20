@@ -1,0 +1,45 @@
+{
+ "entries": [
+  {
+   "class": "hydroxyalkenyl",
+   "formula": "C4H7O",
+   "ions": {},
+   "name": "2-hydroxy-3-butenyl (progoitrin, epiprogoitrin)",
+   "origin": "as_published",
+   "scaffold_id": "progoitrin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 312, Results"
+    },
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5690, Results; p. 5691, Fig. 4"
+    },
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Table 2; p. 2833, Results"
+    }
+   ]
+  },
+  {
+   "class": "hydroxyalkenyl",
+   "formula": "C5H9O",
+   "ions": {},
+   "name": "2-hydroxy-4-pentenyl (gluconapoleiferin)",
+   "origin": "as_published",
+   "scaffold_id": "gluconapoleiferin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    }
+   ]
+  }
+ ],
+ "list_id": "glucosinolate_sidechains_2_hydroxyalkyl"
+}

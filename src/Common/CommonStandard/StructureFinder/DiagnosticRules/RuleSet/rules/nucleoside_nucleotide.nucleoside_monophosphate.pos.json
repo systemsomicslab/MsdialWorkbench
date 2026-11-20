@@ -1,0 +1,163 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "base_ion",
+   "sugar_phosphate_cation"
+  ],
+  "motif_id": "nucleotide",
+  "negative_examples": [
+   {
+    "pubchem_cid": 439424,
+    "smiles": "C1=C(C(=O)NC(=O)N1)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The phosphate position is not resolved; positive-mode ions do not reveal the phosphate."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 6083,
+    "smiles": "C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)O)O)O)N"
+   },
+   {
+    "pubchem_cid": 135398597,
+    "smiles": "C1[C@@H]([C@H](O[C@H]1N2C=NC3=C2N=C(NC3=O)N)COP(=O)(O)O)O"
+   },
+   {
+    "pubchem_cid": 6030,
+    "smiles": "C1=CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O"
+   },
+   {
+    "pubchem_cid": 6131,
+    "smiles": "C1=CN(C(=O)N=C1N)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "base_ion"
+   },
+   {
+    "term": "sugar_phosphate_cation"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured: positive-mode nucleotide MS2 shows almost only the protonated base, and the sugar-phosphate cation is very weak in the one standards report (Kamel 2004; Strzelecka 2017).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "c_glycosyl_pyrimidine",
+    "note": "Pseudouridine 5'-phosphate is a C-glycoside isomer of UMP."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "nucleoside_nucleotide_nucleobases",
+   "unit_totals": {
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Pen": [
+     0,
+     1
+    ],
+    "dPen": [
+     0,
+     1
+    ],
+    "phosphate": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Positive-mode nucleotide spectra carry base-derived ions only; ribose and phosphate ions are absent or very weak.",
+    "source": "src:2"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "nucleoside_nucleotide.nucleoside_monophosphate.pos",
+ "source": [
+  {
+   "doi": "10.1255/ejms.538",
+   "locator": "Scheme 5; Results (protonated vidarabine monophosphate)"
+  },
+  {
+   "doi": "10.1255/ejms.538",
+   "locator": "Results (protonated vidarabine monophosphate); Table 3 (continued); Scheme 5(b)"
+  },
+  {
+   "doi": "10.1038/s41598-017-09416-6",
+   "locator": "Results (comparison of ESI(+) and ESI(-) spectra); Conclusions"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:3",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Protonated base [B+H]+, almost the only product of nucleotide [M+H]+.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "base_ion",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Pentose-phosphate cation C5H10O7P+ 213.0159; very weak; no deoxy value is printed.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "sugar_phosphate_cation",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "Pen",
+    "plus": "H2O3P"
+   }
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 drafting from the normalised candidates (candidates-20261118), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

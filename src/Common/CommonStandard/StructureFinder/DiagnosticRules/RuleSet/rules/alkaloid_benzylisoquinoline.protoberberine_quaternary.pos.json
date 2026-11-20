@@ -1,0 +1,164 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_ch3",
+   "loss_ch4"
+  ],
+  "motif_id": "protoberberine_quaternary",
+  "negative_examples": [
+   {
+    "pubchem_cid": 2703,
+    "smiles": "C[N+]1=C2C(=C3C=CC(=C(C3=C1)OC)OC)C=CC4=CC5=C(C=C42)OCO5"
+   },
+   {
+    "pubchem_cid": 4501,
+    "smiles": "C[N+]1=CC2=CC(=C(C=C2C3=C1C4=CC5=C(C=C4C=C3)OCO5)OC)OC"
+   }
+  ],
+  "non_claims": [
+   "positions of the methoxy and hydroxy groups (2,3 versus 9,10) are not resolved",
+   "methylenedioxy-only protoberberines (coptisine type) lack the CH3 loss and are outside the precursor list"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 2353,
+    "smiles": "COC1=C(C2=C[N+]3=C(C=C2C=C1)C4=CC5=C(C=C4CC3)OCO5)OC"
+   },
+   {
+    "pubchem_cid": 19009,
+    "smiles": "COC1=C(C2=C[N+]3=C(C=C2C=C1)C4=CC(=C(C=C4CC3)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 72323,
+    "smiles": "COC1=C(C2=C[N+]3=C(C=C2C=C1)C4=CC(=C(C=C4CC3)O)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_c2h4o"
+   },
+   {
+    "any": [
+     {
+      "term": "loss_ch3"
+     },
+     {
+      "term": "loss_ch4"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): M-C2H4O is M-CH4 minus CO and M-CH3 minus CO and H, so the required C2H4O loss with the CH3 or CH4 loss is one parent-daughter channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "benzophenanthridine_quaternary",
+    "note": "methoxylated quaternary benzo[c]phenanthridines give the same net CH3, CH4 and C2H4O losses, the last two only at MS3-MS4 in an ion trap (doi:10.1002/rcm.3045)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_benzylisoquinoline_protoberberinium",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_benzylisoquinoline.protoberberine_quaternary.pos",
+ "source": [
+  {
+   "doi": "10.1016/j.jpba.2004.11.026",
+   "locator": "Sec. 3.1, pp. 439-441; Table 1 (p. 439)"
+  },
+  {
+   "doi": "10.1002/jms.727",
+   "locator": "Results, standard samples, pp. 1358-1360; Table 2 (p. 1361); Figs. 2-4; Schemes 1-3"
+  },
+  {
+   "doi": "10.1016/j.apsb.2014.04.003",
+   "locator": "Section 3.1.3; Fig. 6; Table 1"
+  },
+  {
+   "doi": "10.1002/jssc.200600246",
+   "locator": "Sec. 3.2, p. 836"
+  },
+  {
+   "doi": "10.1038/s41598-019-57406-7",
+   "locator": "Results, type III common pathways (alkaloids 59 and 60); Summary rule (4)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "formula": "C2H4O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "[M-C2H4O]+, also printed as M-44 (CH3 radical, H radical and CO)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_c2h4o",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "CH3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "[M-CH3]+ radical cation from a methoxy group",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch3",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "CH4",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "[M-CH4]+",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch4",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18; family alkaloid_benzylisoquinoline)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,144 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ab_ion",
+   "ab_ion_demethyl"
+  ],
+  "motif_id": "guaiacyl_aryltetrahydrofuran",
+  "negative_examples": [
+   {
+    "pubchem_cid": 119205,
+    "smiles": "COC1=C(C=CC(=C1)C[C@H]2COC(=O)[C@@H]2CC3=CC(=C(C=C3)O)OC)O"
+   },
+   {
+    "pubchem_cid": 65373,
+    "smiles": "COC1=C(C=CC(=C1)C[C@@H](CO)[C@@H](CC2=CC(=C(C=C2)O)OC)CO)O"
+   },
+   {
+    "pubchem_cid": 5372367,
+    "smiles": "COC1=CC(=CC2=C1OC(C2CO)C3=CC(=C(C=C3)O)OC)/C=C/CO"
+   }
+  ],
+  "non_claims": [
+   "furofuran versus monotetrahydrofuran (lariciresinol-type) lignans is not resolved by these ions",
+   "stereoisomers such as pinoresinol and epipinoresinol are not resolved",
+   "glycosides are outside the precursor population: both ions under a glucoside precursor are shown only for pinoresinol 4-O-glucoside in TQ CAD (Ricci 2008 Fig. 4a), whose QIT MS2 gives neither, and no medioresinol or syringaresinol glycoside shows the pair",
+   "pinoresinol [M+CH3COO]- and syringaresinol [M-H]- have one composition (417.1555), so the reported aglycone and adduct hypothesis can be the wrong one; the motif is the same"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 73399,
+    "smiles": "COC1=C(C=CC(=C1)[C@@H]2[C@H]3CO[C@@H]([C@H]3CO2)C4=CC(=C(C=C4)O)OC)O"
+   },
+   {
+    "pubchem_cid": 181681,
+    "smiles": "COC1=CC(=CC(=C1O)OC)[C@@H]2[C@H]3CO[C@@H]([C@H]3CO2)C4=CC(=C(C=C4)O)OC"
+   },
+   {
+    "pubchem_cid": 100067,
+    "smiles": "COC1=CC(=CC(=C1O)OC)C2C3COC(C3CO2)C4=CC(=C(C(=C4)OC)O)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ab_ion"
+   },
+   {
+    "term": "ab_ion_demethyl"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Phenolic furofuran aglycones give the guaiacyl 151 or syringyl 181 cleavage anion and its CH3 radical loss 136 or 166 (Eklund 2008 ion-trap MS2; Ricci 2008); the second ion is a radical-loss product of the first, so one cleavage is shown and the rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "dibenzylbutyrolactone_lignan",
+    "note": "Matairesinol is an isomer of pinoresinol; its [M-H]- loses CO2 and a methyl radical instead of giving the aryl cleavage anion (Eklund 2008)."
+   },
+   {
+    "motif_id": "phenylcoumaran_neolignan",
+    "note": "Dehydrodiconiferyl alcohol (8-5' phenylcoumaran, C20H22O6) is an isomer of pinoresinol; no cited source reports its negative-mode ions, so it is declared for the competitor FPR."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "lignan_furofuran_aglycones",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "lignan.furofuran.neg",
+ "source": [
+  {
+   "doi": "10.1002/jms.1276",
+   "locator": "Eklund 2008: Results, Furofuranolignans (p. 104); Table 1 (p. 103); Scheme 3 (p. 101)"
+  },
+  {
+   "doi": "10.1002/rcm.3746",
+   "locator": "Ricci 2008: Table 1 (p. 3385); [M-H]- CAD spectra section (pp. 3386-3387); Fig. 4 (p. 3387); Fig. 5 (p. 3388); Scheme 2 (p. 3389); gas-phase ion chemistry of the furofuranic ring (pp. 3390-3391)"
+  },
+  {
+   "doi": "10.3390/plants11172323",
+   "locator": "Section 8.3, Table 3: pinoresinol, medioresinol and syringaresinol rows (ref. 141, Eklund 2008)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Side-chain cleavage anion of the hypothesised aryl units: guaiacyl C8H7O3- 151.0401, syringyl C9H9O4- 181.0506 (nominal in the sources; formula from the drawn ion).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "ab_cleavage",
+   "term_id": "ab_ion",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Methyl-radical loss from the cleavage anion: C7H4O3 radical anion 136.0166, C8H6O4 radical anion 166.0272 (nominal in the sources).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "ab_cleavage_demethyl",
+   "term_id": "ab_ion_demethyl",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

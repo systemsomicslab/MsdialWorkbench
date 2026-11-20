@@ -1,0 +1,45 @@
+{
+ "entries": [
+  {
+   "class": "triamine",
+   "formula": "C7H19N3",
+   "ions": {},
+   "name": "spermidine",
+   "origin": "as_published",
+   "scaffold_id": "spermidine",
+   "source": [
+    {
+     "doi": "10.1002/hlca.19960790809",
+     "locator": "Results; Schemes 1, 2, 5; Figs 1, 2, 4"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2023.136402",
+     "locator": "Sec. 3.4; Fig. 3a; Fig. 4"
+    },
+    {
+     "doi": "10.1007/s00216-010-4129-2",
+     "locator": "Results, fragmentation; Fig. 3; Table 1"
+    },
+    {
+     "doi": "10.1021/acs.jnatprod.3c00047",
+     "locator": "Results; Scheme 3; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "tetraamine",
+   "formula": "C10H26N4",
+   "ions": {},
+   "name": "spermine",
+   "origin": "as_published",
+   "scaffold_id": "spermine",
+   "source": [
+    {
+     "doi": "10.1255/ejms.910",
+     "locator": "Results and discussion; Fig. 1; Table 1"
+    }
+   ]
+  }
+ ],
+ "list_id": "hydroxycinnamic_acid_amide_aminopropyl_polyamines"
+}

@@ -1,0 +1,31 @@
+{
+ "entries": [
+  {
+   "class": "n_methoxyindolylmethyl",
+   "formula": "C10H10NO",
+   "ions": {},
+   "name": "1-methoxyindol-3-ylmethyl (neoglucobrassicin)",
+   "origin": "as_published",
+   "scaffold_id": "neoglucobrassicin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Section 2.4; Table 4"
+    },
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Table 2; p. 2832, Fig. 3A; p. 2833, Results"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 525, Results and Fig. 5; p. 524, Table 2"
+    }
+   ]
+  }
+ ],
+ "list_id": "glucosinolate_sidechains_n_methoxy"
+}

@@ -1,0 +1,237 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "y0",
+   "y_series"
+  ],
+  "motif_id": "triterpenoid_saponin",
+  "negative_examples": [
+   {
+    "pubchem_cid": 119245,
+    "smiles": "C[C@@H]1CC[C@@]2([C@H]([C@H]3[C@@H](O2)C[C@@H]4[C@@]3(CC[C@H]5[C@H]4CC=C6[C@@]5(CC[C@@H](C6)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO)O[C@H]8[C@@H]([C@@H]([C@H]([C@@H](O8)C)O)O)O)O)O[C@H]9[C@@H]([C@@H]([C@H]([C@@H](O9)C)O)O)O)C)C)C)OC1"
+   },
+   {
+    "pubchem_cid": 5742590,
+    "smiles": "CC[C@H](CC[C@@H](C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C)C)C(C)C"
+   },
+   {
+    "pubchem_cid": 442089,
+    "smiles": "C[C@@]12CCC[C@@]([C@H]1CC[C@]34[C@H]2CC[C@](C3)(C(=C)C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O[C@H]6[C@@H]([C@H]([C@@H]([C@H](O6)CO)O)O)O)(C)C(=O)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The sapogenin is not claimed: isobaric sapogenins (for example hederagenin and echinocystic acid) give the same ions, and the chosen scaffold entry is a hypothesis detail.",
+   "Sugar identity, sequence, branching, linkage and glycosylation site (C-3 ether or C-28 ester) are not resolved; unit counts are hypothesis details."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 9898279,
+    "smiles": "CC(=CCC[C@@](C)([C@H]1CC[C@@]2([C@@H]1[C@@H](C[C@H]3[C@]2(CC[C@@H]4[C@@]3(CC[C@@H](C4(C)C)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O[C@H]6[C@@H]([C@H]([C@@H]([C@H](O6)CO)O)O)O)C)C)O)C)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO[C@H]8[C@@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)O)O)O)C"
+   },
+   {
+    "pubchem_cid": 122097,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)O[C@@H]2[C@H]([C@H]([C@H](O[C@H]2O[C@@H]3[C@H]([C@@H]([C@H](O[C@H]3O[C@H]4CC[C@]5([C@H]([C@@]4(C)CO)CC[C@@]6([C@@H]5CC=C7[C@]6(CC[C@@]8([C@H]7CC(C[C@H]8O)(C)C)C)C)C)C)C(=O)O)O)O)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 11815492,
+    "smiles": "C[C@]12CC[C@@H](C([C@@H]1CC[C@@]3([C@@H]2CC=C4[C@]3(CC[C@@]5([C@H]4CC(CC5)(C)C)C(=O)O[C@H]6[C@@H]([C@H]([C@@H]([C@H](O6)CO)O)O)O)C)C)(C)C)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)C(=O)O)O)O)O[C@H]8[C@@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 167928,
+    "smiles": "C[C@@H]1[C@@H]([C@@H]([C@H]([C@@H](O1)O[C@H]2CC[C@]3([C@H]([C@]2(C)CO)CC[C@@]4([C@@H]3C=C[C@@]56[C@]4(C[C@@H]([C@@]7([C@H]5CC(CC7)(C)C)CO6)O)C)C)C)O)O[C@H]8[C@@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "y0"
+   },
+   {
+    "k_of": {
+     "k": 1,
+     "k_source": "src:3",
+     "of": [
+      {
+       "term": "y_series"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Deprotonated triterpenoid saponins lose their sugars by successive glycosidic cleavages down to the deprotonated sapogenin (C-23 carboxyl sapogenins after CO2 and H2O loss); [M+HCOO]- is not declared, the floor is the protocol default and the HexA step is reported only.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "steroid",
+    "note": "Steroidal saponins and steryl glycosides lose the same sugars, but C-4 of their ring A carries no carbon substituent."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "triterpenoid_saponin_sapogenins_neg",
+   "unit_totals": {
+    "sugar": [
+     2,
+     6
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     6
+    ],
+    "HexA": [
+     0,
+     2
+    ],
+    "Pen": [
+     0,
+     6
+    ],
+    "dHex": [
+     0,
+     6
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "The largest cited glycans hold six sugars (zanhic acid bidesmosides with two Glc at C-3 and a four-sugar C-28 ester chain).",
+    "source": "src:9"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "triterpenoid_saponin.triterpenoid_saponin.neg",
+ "source": [
+  {
+   "doi": "10.1021/np200218r",
+   "locator": "p. 1471 (Identification of Saponins); Fig. 1 (p. 1463); Table 1"
+  },
+  {
+   "doi": "10.1021/np200218r",
+   "locator": "p. 1474, Table 2; Fig. 4 (p. 1473)"
+  },
+  {
+   "doi": "10.1021/np200218r",
+   "locator": "Fig. 3C (p. 1472); p. 1473 (Most Abundant Compounds); p. 1474 (Ten Different Aglycones; Table 2)"
+  },
+  {
+   "doi": "10.1016/j.jgr.2024.01.004",
+   "locator": "Section 1; Table 1"
+  },
+  {
+   "doi": "10.1002/rcm.899",
+   "locator": "MS/MS analysis of malonyl ginsenosides; Fig. 4(c)"
+  },
+  {
+   "doi": "10.1002/rcm.3261",
+   "locator": "Results; Table 1"
+  },
+  {
+   "doi": "10.1021/jf8036984",
+   "locator": "p. 2828, Chemical data of saponins 1-19; Results"
+  },
+  {
+   "doi": "10.1021/jf8036984",
+   "locator": "p. 2828, Chemical data of saponins 3, 4, 5, 18, 19"
+  },
+  {
+   "doi": "10.1021/jf2005854",
+   "locator": "p. 6144, Chemical data of saponins 1-3, 5, 8, 10, 11; Results (pp. 6144-6145)"
+  },
+  {
+   "doi": "10.1021/jf051256x",
+   "locator": "p. 7658, Table 1 (zanhic acid compounds 1-4, 6-9; medicagenic acid compounds 5, 10-15)"
+  },
+  {
+   "doi": "10.1002/rcm.8415",
+   "locator": "Sec. 3.1; Fig. 2B-C, 2G-H; Fig. 3A"
+  },
+  {
+   "doi": "10.1002/jms.3806",
+   "locator": "Results (ESI- fragmentation of reference standards; peaks 12 and 14); Figure 3"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:12",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Deprotonated sapogenin [Agly-H]-, or for C-23 carboxyl sapogenins [Agly-H-CO2-H2O]- (saikogenins also [Agly-H-CH3OH]-), per scaffold entry.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "y0",
+   "term_id": "y0",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:12",
+   "form": "even",
+   "kind": "ion_series",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Deprotonated Y ions that keep part of the sugar chain, from successive glycosidic cleavages.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "y_series",
+   "term_source": "src:0",
+   "than": null,
+   "unit_classes": [
+    "sugar"
+   ]
+  },
+  {
+   "floor_source": "src:12",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Loss of one HexA residue from the precursor, reported only.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "hexa_loss",
+   "term_source": "src:7",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "HexA",
+    "plus": null
+   }
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18; LLM-extracted candidates)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

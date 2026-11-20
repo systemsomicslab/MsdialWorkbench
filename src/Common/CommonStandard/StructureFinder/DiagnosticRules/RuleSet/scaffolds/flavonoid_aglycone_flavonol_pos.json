@@ -1,0 +1,92 @@
+{
+ "entries": [
+  {
+   "class": "flavonol",
+   "formula": "C15H10O6",
+   "ions": {
+    "rda_13b_m2h": {
+     "neg": [],
+     "pos": [
+      "C8H5O2"
+     ]
+    }
+   },
+   "name": "kaempferol",
+   "origin": "as_published",
+   "scaffold_id": "kaempferol",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 7 (p. 1362)"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 8 (p. 1362); Fig. 5 (p. 1363)"
+    },
+    {
+     "doi": "10.3390/molecules29225246",
+     "locator": "Table A6 (kaempferol); Section 2.2.2"
+    },
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "flavonol",
+   "formula": "C15H10O7",
+   "ions": {
+    "rda_13b_m2h": {
+     "neg": [],
+     "pos": [
+      "C8H5O3"
+     ]
+    }
+   },
+   "name": "quercetin",
+   "origin": "as_published",
+   "scaffold_id": "quercetin",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 7 (p. 1362)"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 8 (p. 1362); Fig. 5 (p. 1363)"
+    },
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "flavonol",
+   "formula": "C16H12O7",
+   "ions": {
+    "rda_13b_m2h": {
+     "neg": [],
+     "pos": [
+      "C9H7O3"
+     ]
+    }
+   },
+   "name": "isorhamnetin",
+   "origin": "as_published",
+   "scaffold_id": "isorhamnetin",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 7 (p. 1362)"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 8 (p. 1362); Fig. 5 (p. 1363)"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_flavonol_pos"
+}

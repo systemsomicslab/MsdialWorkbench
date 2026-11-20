@@ -1,0 +1,160 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "sterol_cation",
+   "loss_hex_nh3"
+  ],
+  "motif_id": "steryl_hexoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5283632,
+    "smiles": "CCCCCCCC/C=C\\CCCCCCCC(=O)O[C@H]1CC[C@@]2([C@H]3CC[C@]4([C@H]([C@@H]3CC=C2C1)CC[C@@H]4[C@H](C)CCCC(C)C)C)C"
+   },
+   {
+    "pubchem_cid": 222284,
+    "smiles": "CC[C@H](CC[C@@H](C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C)C(C)C"
+   }
+  ],
+  "non_claims": [
+   "The sterol identity comes from the precursor composition; C24 alkylation isomers and C5 epimers give identical spectra (Munger 2018, Table 3).",
+   "Steryl esters give the same dehydrated sterol cation from [M+NH4]+.",
+   "The motif matches any steroid 3-O-hexoside, including acylated steryl glucosides, which lie outside the Hex1 composition."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5742590,
+    "smiles": "CC[C@H](CC[C@@H](C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C)C)C(C)C"
+   },
+   {
+    "pubchem_cid": 6602508,
+    "smiles": "CC[C@H](/C=C/[C@@H](C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C)C)C(C)C"
+   },
+   {
+    "pubchem_cid": 12895787,
+    "smiles": "C[C@H](CC[C@@H](C)C(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C)C"
+   },
+   {
+    "pubchem_cid": 440145,
+    "smiles": "C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C)C"
+   }
+  ]
+ },
+ "complementary": [
+  [
+   "sterol_cation",
+   "loss_hex_nh3"
+  ]
+ ],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "sterol_cation"
+   },
+   {
+    "term": "loss_hex_nh3"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Only one usable ion is reported: [M+NH4]+ loses hexose with water and NH3 to the dehydrated sterol cation (the same peak as the 197.09 loss), which steryl esters also give, so the rule stays unmeasured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+NH4]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "steryl_glycoside_bile_acid_sterols",
+   "unit_totals": {},
+   "units": {
+    "Hex": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "mz_only",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "steryl_glycoside_bile_acid.steryl_hexoside.pos",
+ "source": [
+  {
+   "doi": "10.1194/jlr.d013987",
+   "locator": "Methods; Table 3; Results"
+  },
+  {
+   "doi": "10.1007/s11745-011-3602-9",
+   "locator": "Experimental Procedure, Electrospray ionization tandem mass spectrometry; Table 1"
+  },
+  {
+   "doi": "10.1007/978-1-4939-0606-2_8",
+   "locator": "Sec. 3.6.1; Sec. 3.6.2"
+  },
+  {
+   "doi": "10.1007/978-1-0716-1362-7_9",
+   "locator": "Table 2"
+  },
+  {
+   "doi": "10.1111/tpj.13013",
+   "locator": "Experimental Procedures, Nanoelectrospray ionization triple quadrupole tandem mass spectrometry; Table 1"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.3389/fchem.2018.00342",
+   "locator": "Results (spectral similarity of free sterols); Table 3"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:5",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": "H2O",
+   "note": null,
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "sterol_cation",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C6H15NO6",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_hex_nh3",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 rule drafting from the normalised candidates (2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,0 +1,71 @@
+{
+ "entries": [
+  {
+   "class": "flavonol",
+   "formula": "C15H10O7",
+   "ions": {
+    "rda_12a": {
+     "neg": [
+      "C8H3O5"
+     ],
+     "pos": []
+    },
+    "rda_12b": {
+     "neg": [
+      "C7H5O2"
+     ],
+     "pos": []
+    }
+   },
+   "name": "quercetin",
+   "origin": "as_published",
+   "scaffold_id": "quercetin",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 2 (p. 710); Fragmentation of Flavonol Aglycones and Scheme 3 (pp. 713-714)"
+    },
+    {
+     "doi": "10.1007/s00216-020-02547-2",
+     "locator": "Table 2, row Qstd (p. 3009)"
+    },
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 3 (p. 498); CID of flavonols (p. 497); Scheme 1 (p. 499)"
+    }
+   ]
+  },
+  {
+   "class": "flavonol",
+   "formula": "C15H10O6",
+   "ions": {
+    "rda_12a": {
+     "neg": [
+      "C8H3O4"
+     ],
+     "pos": []
+    },
+    "rda_12b": {
+     "neg": [
+      "C7H5O2"
+     ],
+     "pos": []
+    }
+   },
+   "name": "fisetin",
+   "origin": "as_published",
+   "scaffold_id": "fisetin",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 2 (p. 710); Fragmentation of Flavonol Aglycones and Scheme 3 (pp. 713-714)"
+    },
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 3 (p. 498); CID of flavonols (p. 497); Scheme 1 (p. 499)"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_flavonol_neg"
+}

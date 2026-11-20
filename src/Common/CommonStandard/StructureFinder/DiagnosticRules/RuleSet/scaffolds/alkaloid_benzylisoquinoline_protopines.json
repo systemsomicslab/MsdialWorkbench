@@ -1,0 +1,36 @@
+{
+ "entries": [
+  {
+   "class": "protopine",
+   "formula": "C20H19NO5",
+   "ions": {
+    "rda_benzyl": {
+     "neg": [],
+     "pos": [
+      "C9H9O2"
+     ]
+    },
+    "rda_iminium": {
+     "neg": [],
+     "pos": [
+      "C11H12NO3"
+     ]
+    }
+   },
+   "name": "protopine",
+   "origin": "as_published",
+   "scaffold_id": "protopine",
+   "source": [
+    {
+     "doi": "10.1016/j.apsb.2014.04.003",
+     "locator": "Section 3.1.2; Fig. 5"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 4970 (protopine), compound record"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_benzylisoquinoline_protopines"
+}

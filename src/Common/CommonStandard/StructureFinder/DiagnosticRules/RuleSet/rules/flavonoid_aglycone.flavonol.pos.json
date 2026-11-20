@@ -1,0 +1,199 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "a02",
+   "b13m2h"
+  ],
+  "motif_id": "flavonol_core",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280445,
+    "smiles": "C1=CC(=C(C=C1C2=CC(=O)C3=C(C=C(C=C3O2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281801,
+    "smiles": "C1=CC(=C(C=C1C2=COC3=CC(=CC(=C3C2=O)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Hydroxyl and methoxyl positions beyond the hypothesis scaffold are not resolved",
+   "Free aglycone versus an in-source aglycone ion of a conjugate is not decided by this rule",
+   "Anthocyanidin [M]+ ions isobaric with a flavonol [M+H]+ (cyanidin and kaempferol) are not excluded by the precondition",
+   "For quercetin the (1,3B+)-2H formula is C8H5O3+: by calculation C8H5O3+ (149.0233) is also protonated phthalic anhydride, the usual fragment of phthalate plasticizers, so a co-isolated phthalate can supply this claim ion (inference, not from a cited source)",
+   "Precursors at the other common positive adducts tried under adduct_ambiguous ([M+NH4]+, [M+Na]+, [M+K]+) are not described by the cited [M+H]+ fragmentation"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280863,
+    "smiles": "C1=CC(=CC=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280343,
+    "smiles": "C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281654,
+    "smiles": "COC1=C(C=CC(=C1)C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "a13"
+   },
+   {
+    "term": "b13m2h"
+   },
+   {
+    "term": "a02"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Flavonol aglycone [M+H]+: 1,3A+ with (1,3B+)-2H and 0,2A+, ions that CID of standards gave for flavonols and not for flavones (Ma 1997); (1,4A+)+2H is reported as an upgrade only.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavone_c3_nonoxy",
+    "note": "luteolin shares C15H10O6 with kaempferol"
+   },
+   {
+    "motif_id": "isoflavone_core",
+    "note": "orobol shares C15H10O6 with kaempferol"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycone_flavonol_pos",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_aglycone.flavonol.pos",
+ "source": [
+  {
+   "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+   "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 7 (p. 1362)"
+  },
+  {
+   "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+   "locator": "pp. 1360-1361, Fragmentation of flavonol aglycones; Table 2 (p. 1361); Scheme 8 (p. 1362); Fig. 5 (p. 1363)"
+  },
+  {
+   "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+   "locator": "Table 2 (p. 1361); Scheme 7 (p. 1362)"
+  },
+  {
+   "doi": "10.3390/molecules29225246",
+   "locator": "Table A6 (kaempferol); Section 2.2.2"
+  },
+  {
+   "doi": "10.3390/molecules29225246",
+   "locator": "Table 2; Table A5 (isorhamnetin)"
+  },
+  {
+   "doi": "10.1016/j.jchromb.2026.125348",
+   "locator": "Sec. 3.3.1 (p. 3); Table 1 (pp. 4-5); Table 2 (p. 6)"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "p. 5, Flavonoid aglycone, Positive ion mode; Fig. 2"
+  },
+  {
+   "doi": "10.1002/mas.20212",
+   "locator": "pp. 10-11, Sec. IV.E Nature of the Aglycone; Fig. 9c,d (p. 10)"
+  },
+  {
+   "doi": "10.1021/ac102546x",
+   "locator": "p. 413, Results, Flavonoids with Different Hydroxylation Patterns"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.3390/12030593",
+   "locator": "Table 2 (kaempferol, quercetin)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:9",
+   "formula": "C7H5O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,3A+ of a 5,7-dihydroxy A ring; also Jiang 2024 and Zhang 2026; shared by flavones and flavanones, so not a claim term",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a13",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:9",
+   "formula": "C8H5O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "0,2A+ for all four flavonols and not for flavones (Ma 1997); Jiang 2024 print C8H5O4+ for kaempferol and isorhamnetin, Tsimogiannis 2007 and Zhang 2026 for kaempferol and quercetin",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a02",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:9",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "(1,3B+)-2H, which flavonols give in place of the intact 1,3B+ of flavones (Ma 1997); Jiang 2024 list C8H5O2+ for kaempferol unassigned, Tsimogiannis 2007 print 133 and 149 labelled 1,3B+",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_13b_m2h",
+   "term_id": "b13m2h",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:9",
+   "formula": "C6H7O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "(1,4A+)+2H for all four flavonols at 1.4-14 % (Ma 1997), an upgrade only: no source shows flavones lack it, van der Hooft 2011 report C6H7O3+ only as a minor morin-specific ion, Jiang 2024 Tables A5-A6 do not list it, and by calculation it is also the formula of hexose dehydration ions",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "a14p2h",
+   "term_source": "src:2",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

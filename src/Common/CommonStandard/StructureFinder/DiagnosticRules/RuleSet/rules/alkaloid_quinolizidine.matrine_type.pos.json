@@ -1,0 +1,138 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C10H16N"
+  ],
+  "motif_id": "quinolizidine_matrine_type",
+  "negative_examples": [
+   {
+    "pubchem_cid": 91471,
+    "smiles": "C1CCN2C[C@@H]3C[C@H]([C@@H]2C1)CN4[C@@H]3CCCC4=O"
+   },
+   {
+    "pubchem_cid": 10235,
+    "smiles": "C1[C@H]2CNC[C@@H]1C3=CC=CC(=O)N3C2"
+   },
+   {
+    "pubchem_cid": 5351589,
+    "smiles": "C1CCN2C[C@H]3C[C@@H]([C@H]2C1)CN4C3=CC=CC4=O"
+   }
+  ],
+  "non_claims": [
+   "matrine, sophoridine and isomatrine (stereoisomers) are separated only by retention time",
+   "free base versus N-oxide and ring-D unsaturation are decided by the precursor composition"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 91466,
+    "smiles": "C1C[C@@H]2[C@H]3CCCN4[C@H]3[C@@H](CCC4)CN2C(=O)C1"
+   },
+   {
+    "pubchem_cid": 24864132,
+    "smiles": "C1C[C@@H]2[C@H]3CCC[N@+]4([C@H]3[C@@H](CCC4)CN2C(=O)C1)[O-]"
+   },
+   {
+    "pubchem_cid": 115269,
+    "smiles": "C1C[C@H]2CN3[C@H](CC=CC3=O)[C@@H]4[C@H]2N(C1)CCC4"
+   },
+   {
+    "pubchem_cid": 165549,
+    "smiles": "C1C[C@@H]2[C@H]3CCCN4[C@H]3[C@H](CCC4)CN2C(=O)C1"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C10H16N"
+   },
+   {
+    "term": "ion_C10H14N"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): C10H14N+ (148) is C10H16N+ (150) minus two H, a sum in the WS0 loss list, so the two claim ions are one parent-daughter channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "quinolizidine_sparteine_type",
+    "note": "lupanine is isomeric with matrine (C15H24N2O) and gives a nominal 136 base ion instead (Liu 2011, tentative; C9H14N+ by calculation)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_matrine_type",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_quinolizidine.matrine_type.pos",
+ "source": [
+  {
+   "doi": "10.1155/2021/9915027",
+   "locator": "Sec. 3.2, Fragmentation Rules of Alkaloid Compounds; Table 1 (compounds 2, 4-6, 10)"
+  },
+  {
+   "doi": "10.1016/j.jpba.2010.12.024",
+   "locator": "Sec. 3.2 (pp. 1070-1071); Table 1 (p. 1069); Fig. 3B, 3D (p. 1071)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:2",
+   "formula": "C10H16N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "150.1277; printed 150.1298 in src:0 (matrine) and 150.1284 in src:1 (Fig. 3B, 3D)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C10H16N",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "C10H14N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "148.1121; printed 148.1152 in src:0 (matrine) and 148.1129 in src:1 (Fig. 3D)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C10H14N",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

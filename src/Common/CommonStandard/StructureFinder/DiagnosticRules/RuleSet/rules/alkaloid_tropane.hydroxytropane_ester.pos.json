@@ -1,0 +1,205 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C8H14NO"
+  ],
+  "motif_id": "tropane_6_oxygenated",
+  "negative_examples": [
+   {
+    "pubchem_cid": 174174,
+    "smiles": "CN1[C@@H]2CC[C@H]1CC(C2)OC(=O)C(CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 5184,
+    "smiles": "CN1C2CC(CC1C3C2O3)OC(=O)C(CO)C4=CC=CC=C4"
+   },
+   {
+    "pubchem_cid": 5281742,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OC[C@H]2CCN3[C@H]2[C@@H](CC3)OC1=O)(C)O)C"
+   }
+  ],
+  "non_claims": [
+   "6-hydroxy versus 6-acyloxy substitution and the 6/7 position are not resolved",
+   "the ester acids are decided by the precursor composition, not by these ions"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 6918612,
+    "smiles": "CN1[C@H]2C[C@@H](C[C@@H]1[C@H](C2)O)OC(=O)[C@H](CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 21159049,
+    "smiles": "C/C=C(\\C)/C(=O)O[C@H]1C[C@H]2C[C@@H]([C@@H](C1)N2C)OC(=O)/C(=C/C)/C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C8H14NO"
+   },
+   {
+    "term": "ion_C8H12N"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): C8H12N+ (122) is the H2O daughter of C8H14NO+ (140), so the two claim ions are one parent-daughter channel and one independent claim ion remains.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "pyrrolizidine_platynecine_type",
+    "note": "the saturated necine platynecine can give C8H14NO+ 140 and C8H12N+ 122 by water losses"
+   },
+   {
+    "motif_id": "tropane_tropine_type",
+    "note": "tropine esters give 124 instead of 140 (Goncalves Dantas 2023, convolamine versus anisodamine)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_tropane_bases",
+   "unit_totals": {
+    "acyl": [
+     1,
+     2
+    ]
+   },
+   "units": {
+    "acetyl": [
+     0,
+     2
+    ],
+    "atropoyl": [
+     0,
+     2
+    ],
+    "benzoyl": [
+     0,
+     2
+    ],
+    "mandeloyl": [
+     0,
+     2
+    ],
+    "methylpyrrolecarbonyl": [
+     0,
+     2
+    ],
+    "phenylacetyl": [
+     0,
+     2
+    ],
+    "syringoyl": [
+     0,
+     2
+    ],
+    "tigloyl": [
+     0,
+     2
+    ],
+    "trimethoxybenzoyl": [
+     0,
+     2
+    ],
+    "trimethoxycinnamoyl": [
+     0,
+     2
+    ],
+    "tropoyl": [
+     0,
+     2
+    ],
+    "veratroyl": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "One or two ester groups, drawn from the acids whose neutral losses identify Erythroxylum and Solanaceae tropane esters",
+    "source": "src:4"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_tropane.hydroxytropane_ester.pos",
+ "source": [
+  {
+   "doi": "10.1007/s00216-016-0043-6",
+   "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpds 3 and 6 (p. 1152)"
+  },
+  {
+   "doi": "10.1002/jssc.201801201",
+   "locator": "Sec. 3.1 (p. 1165); Figure 2C (p. 1165); Table 1 (p. 1166)"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (pp. 7-10); Table 1, both ions in MS2 for peaks 2-4, 6, 7, 9-13, 17, 21, 22, 29 (pp. 4-6); Fig. 4 (p. 9)"
+  },
+  {
+   "doi": "10.1007/s00216-016-0043-6",
+   "locator": "Results, Ionic extraction and identification (p. 1150); Table 1, cpd 11 (p. 1152)"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "formula": "C8H14NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "140.1070; also src:1, src:2, src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C8H14NO",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C8H12N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "122.0964; also src:1, src:2 (MS2; peaks 5 and 19 show it only in MS3), src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C8H12N",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

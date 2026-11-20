@@ -1,0 +1,139 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "ion_rda_a",
+   "ion_rda_d"
+  ],
+  "motif_id": "tetrahydroprotoberberine",
+  "negative_examples": [
+   {
+    "pubchem_cid": 16754,
+    "smiles": "CN1CCC2=CC(=C(C3=C2[C@@H]1CC4=CC(=C(C=C43)OC)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 2353,
+    "smiles": "COC1=C(C2=C[N+]3=C(C=C2C=C1)C4=CC5=C(C=C4CC3)OCO5)OC"
+   }
+  ],
+  "non_claims": [
+   "positions of the methoxy groups are not resolved",
+   "the precursor list holds only the 2,3,9,10-tetramethoxy pattern (tetrahydropalmatine)"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 72301,
+    "smiles": "COC1=C(C2=C(C[C@H]3C4=CC(=C(C=C4CCN3C2)OC)OC)C=C1)OC"
+   },
+   {
+    "pubchem_cid": 34458,
+    "smiles": "COC1=C(C2=C(CC3C4=CC5=C(C=C4CCN3C2)OCO5)C=C1)OC"
+   },
+   {
+    "pubchem_cid": 101301,
+    "smiles": "C[C@@H]1[C@@H]2C3=CC(=C(C=C3CCN2CC4=C1C=CC(=C4OC)OC)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_rda_a"
+   },
+   {
+    "term": "ion_rda_d"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Tetrahydroprotoberberines open ring C by a retro-Diels-Alder cleavage into an A-ring iminium ion and a D-ring ion, which separates them from isomeric aporphines; the precursor list holds tetrahydropalmatine only, although corydaline RDA masses are also printed.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "aporphine",
+    "note": "glaucine is isomeric with tetrahydropalmatine and loses CH3NH2 instead of giving RDA ions (doi:10.1016/j.apsb.2014.04.003)"
+   },
+   {
+    "motif_id": "benzyltetrahydroisoquinoline",
+    "note": "N-methyl 6,7-oxygenated benzylisoquinolines also give C11H14NO2+ (doi:10.1255/ejms.745)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_benzylisoquinoline_tetrahydroprotoberberines",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_benzylisoquinoline.tetrahydroprotoberberine.pos",
+ "source": [
+  {
+   "doi": "10.1016/j.apsb.2014.04.003",
+   "locator": "Section 3.1.1; Fig. 3; Table 1"
+  },
+  {
+   "doi": "10.5478/msl.2013.4.4.79",
+   "locator": "Results, p. 81; Scheme 2-A; Figure 1-III"
+  },
+  {
+   "doi": "10.1016/j.apsb.2014.04.003",
+   "locator": "Section 3.2; Fig. 9"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "RDA ion with the A ring and nitrogen (m/z 192 for a 2,3-dimethoxy A ring)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_isoquinoline",
+   "term_id": "ion_rda_a",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "RDA ion with the D ring (m/z 165)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_benzyl",
+   "term_id": "ion_rda_d",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18; family alkaloid_benzylisoquinoline)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

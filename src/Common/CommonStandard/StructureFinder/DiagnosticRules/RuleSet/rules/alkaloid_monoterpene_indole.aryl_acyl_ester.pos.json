@@ -1,0 +1,133 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "ion_C10H11O4",
+   "loss_C10H12O5"
+  ],
+  "motif_id": "monocyclic_aryl_acyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280954,
+    "smiles": "CO[C@H]1[C@@H](C[C@@H]2CN3CCC4=C([C@H]3C[C@@H]2[C@@H]1C(=O)OC)NC5=C4C=CC(=C5)OC)OC(=O)/C=C/C6=CC(=C(C(=C6)OC)OC)OC"
+   }
+  ],
+  "non_claims": [
+   "the acyl group is not resolved: any benzenoid acyl of composition C10H11O4 (trimethoxybenzoyl, hydroxy-dimethoxyphenylacetyl and others) gives the same ion and loss",
+   "the substitution pattern of the aryl ring is not resolved",
+   "the ester position on the alkaloid is not resolved",
+   "the alkaloid skeleton is not claimed by this rule",
+   "the ion formula C10H11O4 is inferred from the printed m/z; neither source assigns it, and the radical cation C13H9NO lies 2.7 mDa away"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5770,
+    "smiles": "CO[C@H]1[C@@H](C[C@@H]2CN3CCC4=C([C@H]3C[C@@H]2[C@@H]1C(=O)OC)NC5=C4C=CC(=C5)OC)OC(=O)C6=CC(=C(C(=C6)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 8550,
+    "smiles": "CO[C@H]1[C@@H](C[C@@H]2CN3CCC4=C([C@H]3C[C@@H]2[C@@H]1C(=O)OC)NC5=CC=CC=C45)OC(=O)C6=CC(=C(C(=C6)OC)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C10H11O4"
+   },
+   {
+    "term": "loss_C10H12O5"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19) pending the author: the P3 proposal makes every monoterpene indole alkaloid rule report-only, so this rule is kept but not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_monoterpene_indole_reserpine_esters",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_monoterpene_indole.aryl_acyl_ester.pos",
+ "source": [
+  {
+   "doi": "10.1016/j.jpha.2016.04.008",
+   "locator": "Sec. 3.1, 3.2.1; Scheme 1; Table 1 (compounds 38, 40, 43, 44)"
+  },
+  {
+   "doi": "10.1002/rcm.8037",
+   "locator": "Sec. 3.2; Table 1 (compound 72, reserpine)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": false,
+ "terms": [
+  {
+   "floor_source": "src:2",
+   "formula": "C10H11O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Base peak of the reserpine standard (195.0658, src:1) and of the four esters of src:0 (195.0622-195.0649); neither source names or assigns the ion, so C10H11O4+ (195.0652) is a model inference from m/z, not a printed formula.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C10H11O4",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "C10H12O5",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Loss of C10H12O5, printed in src:0 for the reserpine class and in src:1 for reserpine (397.2139).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_C10H12O5",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "CH4O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Methyl ester loss reported for reserpine; reported only.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "loss_CH4O",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 draft from LLM-extracted candidates, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

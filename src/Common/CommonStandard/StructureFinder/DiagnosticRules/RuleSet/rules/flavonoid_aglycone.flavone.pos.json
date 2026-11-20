@@ -1,0 +1,201 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "b04",
+   "b04w"
+  ],
+  "motif_id": "flavone_c3_nonoxy",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280863,
+    "smiles": "C1=CC(=CC=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280961,
+    "smiles": "C1=CC(=CC=C1C2=COC3=CC(=CC(=C3C2=O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280373,
+    "smiles": "COC1=CC=C(C=C1)C2=COC3=CC(=CC(=C3C2=O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Hydroxyl and methoxyl positions beyond the hypothesis scaffold are not resolved",
+   "Free aglycone versus an in-source aglycone ion of a conjugate is not decided by this rule",
+   "Anthocyanidin [M]+ ions isobaric with a flavone [M+H]+ (pelargonidin with apigenin, cyanidin with luteolin; Abranko 2015 p. 73) are not excluded by the precondition",
+   "Precursors at the other common positive adducts tried under adduct_ambiguous ([M+NH4]+, [M+Na]+, [M+K]+) are not described by the cited [M+H]+ fragmentation"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280443,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C=C(C=C3O2)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280445,
+    "smiles": "C1=CC(=C(C=C1C2=CC(=O)C3=C(C=C(C=C3O2)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280442,
+    "smiles": "COC1=CC=C(C=C1)C2=CC(=O)C3=C(C=C(C=C3O2)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "a13"
+   },
+   {
+    "term": "b13"
+   },
+   {
+    "any": [
+     {
+      "term": "b04"
+     },
+     {
+      "term": "b04w"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): 1,3B+ is 0,4B+ minus CO2 for every listed flavone, so the required 1,3B+ with 0,4B+ is one parent-daughter channel; 0,4B+-H2O stays an alternative to 0,4B+.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavonol_core",
+    "note": "kaempferol shares C15H10O6 with luteolin and gives nominal 135, luteolin's 1,3B+, at 2-3 % (Abranko 2015 p. 77); by calculation its [M+H-C6H6O3]+, the complement of (1,4A+)+2H, would be C9H5O3+, luteolin's 0,4B+-H2O formula (inference)"
+   },
+   {
+    "motif_id": "isoflavone_core",
+    "note": "genistein shares C15H10O5 with apigenin and biochanin A C16H12O5 with acacetin; by calculation they would give every target formula (1,3A+, 1,3B+, 0,4B+ and 0,4B+-H2O), and no cited positive-mode source contrasts flavones with isoflavones"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycone_flavone_pos",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_aglycone.flavone.pos",
+ "source": [
+  {
+   "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+   "locator": "pp. 1358-1360, Results, pathway I; Scheme 1a (p. 1358); Table 1 (p. 1360)"
+  },
+  {
+   "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+   "locator": "p. 1360, Results, pathway III; Table 1 and Scheme 4 (p. 1360)"
+  },
+  {
+   "doi": "10.3390/12030593",
+   "locator": "Table 2"
+  },
+  {
+   "doi": "10.1016/j.jchromb.2026.125348",
+   "locator": "Sec. 3.4.3 (pp. 5-6); Secs. 3.9-3.10 (pp. 9-11); Table 1 (pp. 4-5)"
+  },
+  {
+   "doi": "10.1016/j.jchromb.2026.125348",
+   "locator": "Sec. 3.5 (pp. 6-7); Table 3 (p. 7); Fig. 5A (p. 8)"
+  },
+  {
+   "doi": "10.1002/jms.3474",
+   "locator": "p. 73 (isobaric anthocyanidin cations); pp. 75-77, Fragmentation of in-source formed aglycone fragment ions; Figs. 2-3 (pp. 75-76)"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "p. 5, Flavonoid aglycone, Positive ion mode; Fig. 2"
+  },
+  {
+   "doi": "10.1002/mas.20212",
+   "locator": "pp. 10-11, Sec. IV.E Nature of the Aglycone; Fig. 9c,d (p. 10)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:8",
+   "formula": "C7H5O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,3A+ of a 5,7-dihydroxy A ring; also Tsimogiannis 2007 and Zhang 2026; shared across classes, so not a claim term",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a13",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "intact 1,3B+; also Tsimogiannis 2007, Zhang 2026 (Orbitrap HCD, and present on a Waters Q-TOF, Sec. 3.10) and Abranko 2015; kaempferol gives nominal 135 at 2-3 % (Abranko 2015 p. 77)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_13b",
+   "term_id": "b13",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "0,4B+, stated not to form from flavonols (Ma 1997); acacetin 0.6 %, below the 1 % floor",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_04b",
+   "term_id": "b04",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "0,4B+ minus H2O (Ma 1997); Zhang 2026 Table 1 also lists it for apigenin and luteolin",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_04b_mh2o",
+   "term_id": "b04w",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

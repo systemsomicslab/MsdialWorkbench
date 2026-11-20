@@ -1,0 +1,89 @@
+{
+ "entries": [
+  {
+   "class": "sterol",
+   "formula": "C27H46O",
+   "ions": {},
+   "name": "cholesterol",
+   "origin": "as_published",
+   "scaffold_id": "cholesterol",
+   "source": [
+    {
+     "doi": "10.1194/jlr.d013987",
+     "locator": "Methods; Table 3 (steryl glucosides and their sterol cations)"
+    }
+   ]
+  },
+  {
+   "class": "sterol",
+   "formula": "C28H48O",
+   "ions": {},
+   "name": "campesterol",
+   "origin": "as_published",
+   "scaffold_id": "campesterol",
+   "source": [
+    {
+     "doi": "10.1194/jlr.d013987",
+     "locator": "Methods; Table 3 (steryl glucosides and their sterol cations)"
+    }
+   ]
+  },
+  {
+   "class": "sterol",
+   "formula": "C29H48O",
+   "ions": {},
+   "name": "stigmasterol",
+   "origin": "as_published",
+   "scaffold_id": "stigmasterol",
+   "source": [
+    {
+     "doi": "10.1194/jlr.d013987",
+     "locator": "Methods; Table 3 (steryl glucosides and their sterol cations)"
+    }
+   ]
+  },
+  {
+   "class": "sterol",
+   "formula": "C29H50O",
+   "ions": {},
+   "name": "beta-sitosterol",
+   "origin": "as_published",
+   "scaffold_id": "sitosterol",
+   "source": [
+    {
+     "doi": "10.1194/jlr.d013987",
+     "locator": "Methods; Table 3 (steryl glucosides and their sterol cations)"
+    }
+   ]
+  },
+  {
+   "class": "sterol",
+   "formula": "C27H48O",
+   "ions": {},
+   "name": "cholestanol",
+   "origin": "as_published",
+   "scaffold_id": "cholestanol",
+   "source": [
+    {
+     "doi": "10.1194/jlr.d013987",
+     "locator": "Methods; Table 3 (steryl glucosides and their sterol cations)"
+    }
+   ]
+  },
+  {
+   "class": "sterol",
+   "formula": "C29H52O",
+   "ions": {},
+   "name": "stigmastanol (sitostanol)",
+   "origin": "as_published",
+   "scaffold_id": "stigmastanol",
+   "source": [
+    {
+     "doi": "10.1194/jlr.d013987",
+     "locator": "Methods; Table 3 (steryl glucosides and their sterol cations)"
+    }
+   ]
+  }
+ ],
+ "list_id": "steryl_glycoside_bile_acid_sterols"
+}

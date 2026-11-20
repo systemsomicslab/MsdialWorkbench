@@ -1,0 +1,23 @@
+{
+ "entries": [
+  {
+   "class": "anhydronium",
+   "formula": "C21H20N2O3",
+   "ions": {},
+   "name": "serpentine (neutral anhydronium base C21H20N2O3; both sources tabulate it at m/z 349.1547, Kumar 2018 as [M+H]+)",
+   "origin": "as_published",
+   "scaffold_id": "serpentine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.4; Table 1 (compound 32)"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1 (compound 46)"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_monoterpene_indole_serpentine"
+}

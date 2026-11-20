@@ -1,0 +1,104 @@
+{
+ "entries": [
+  {
+   "class": "furofuran_lignan",
+   "formula": "C20H22O6",
+   "ions": {
+    "ab_cleavage": {
+     "neg": [
+      "C8H7O3"
+     ],
+     "pos": []
+    },
+    "ab_cleavage_demethyl": {
+     "neg": [
+      "C7H4O3"
+     ],
+     "pos": []
+    }
+   },
+   "name": "pinoresinol, epipinoresinol (two guaiacyl units)",
+   "origin": "as_published",
+   "scaffold_id": "pinoresinol",
+   "source": [
+    {
+     "doi": "10.1002/jms.1276",
+     "locator": "Eklund 2008: Results, Furofuranolignans (p. 104); Table 1 (p. 103)"
+    },
+    {
+     "doi": "10.1002/rcm.3746",
+     "locator": "Ricci 2008: Table 1 (p. 3385); Fig. 4b (p. 3387); Scheme 2 (p. 3389)"
+    },
+    {
+     "doi": "10.3390/plants11172323",
+     "locator": "Section 8.3, Table 3 (aglycone rows cite ref. 141, Eklund 2008)"
+    }
+   ]
+  },
+  {
+   "class": "furofuran_lignan",
+   "formula": "C21H24O7",
+   "ions": {
+    "ab_cleavage": {
+     "neg": [
+      "C8H7O3",
+      "C9H9O4"
+     ],
+     "pos": []
+    },
+    "ab_cleavage_demethyl": {
+     "neg": [
+      "C7H4O3",
+      "C8H6O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "medioresinol (one guaiacyl and one syringyl unit)",
+   "origin": "as_published",
+   "scaffold_id": "medioresinol",
+   "source": [
+    {
+     "doi": "10.1002/jms.1276",
+     "locator": "Eklund 2008: Results, Furofuranolignans (p. 104); Table 1 (p. 103)"
+    },
+    {
+     "doi": "10.3390/plants11172323",
+     "locator": "Section 8.3, Table 3 (aglycone rows cite ref. 141, Eklund 2008)"
+    }
+   ]
+  },
+  {
+   "class": "furofuran_lignan",
+   "formula": "C22H26O8",
+   "ions": {
+    "ab_cleavage": {
+     "neg": [
+      "C9H9O4"
+     ],
+     "pos": []
+    },
+    "ab_cleavage_demethyl": {
+     "neg": [
+      "C8H6O4"
+     ],
+     "pos": []
+    }
+   },
+   "name": "syringaresinol (two syringyl units)",
+   "origin": "as_published",
+   "scaffold_id": "syringaresinol",
+   "source": [
+    {
+     "doi": "10.1002/jms.1276",
+     "locator": "Eklund 2008: Results, Furofuranolignans (p. 104); Table 1 (p. 103)"
+    },
+    {
+     "doi": "10.3390/plants11172323",
+     "locator": "Section 8.3, Table 3 (aglycone rows cite ref. 141, Eklund 2008)"
+    }
+   ]
+  }
+ ],
+ "list_id": "lignan_furofuran_aglycones"
+}

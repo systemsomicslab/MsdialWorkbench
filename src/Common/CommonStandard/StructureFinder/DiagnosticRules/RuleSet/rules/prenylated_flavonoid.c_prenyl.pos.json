@@ -1,0 +1,100 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "l56"
+  ],
+  "motif_id": "c_prenyl_aryl",
+  "negative_examples": [
+   {
+    "pubchem_cid": 932,
+    "smiles": "C1C(OC2=CC(=CC(=C2C1=O)O)O)C3=CC=C(C=C3)O"
+   }
+  ],
+  "non_claims": [
+   "Prenyl position (6-C versus 8-C) is not resolved",
+   "Geranyl and lavandulyl groups are not covered",
+   "Reverse (1,1-dimethylallyl) and cyclised prenyl groups are outside the motif"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 480764,
+    "smiles": "CC(=CCC1=C2C(=C(C=C1O)O)C(=O)C[C@H](O2)C3=CC=C(C=C3)O)C"
+   },
+   {
+    "pubchem_cid": 155094,
+    "smiles": "CC(=CCC1=C(C2=C(C=C1O)O[C@@H](CC2=O)C3=CC=C(C=C3)O)O)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "l56"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "The records give only the isobutene (C4H8) loss of a C-prenyl group (checked in Cuyckens 2004), a single usable ion, so this rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycones",
+   "unit_totals": {},
+   "units": {
+    "prenyl": [
+     1,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "prenylated_flavonoid.c_prenyl.pos",
+ "source": [
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "p. 6, Flavonoid aglycone, Positive ion mode"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:1",
+   "formula": "C4H8",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "isobutene loss from a prenyl group, positive mode only (Cuyckens 2004, from FAB and APCI studies)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "l56",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -1,5 +1,2132 @@
 {
  "format": "msfinder-diagnostic-motifs",
  "format_version": 1,
- "motifs": []
+ "motifs": [
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hydroxycinnamoyl_ester",
+   "origin": "source_defined",
+   "smarts": "[#6]-[O;X2]-C(=O)-[CH]=[CH]-[c;$(c1:c(-[#8]):c:c:c:c:1),$(c1:c:c(-[#8]):c:c:c:1),$(c1:c:c:c(-[#8]):c:c:1)]",
+   "source": [
+    {
+     "doi": "10.1021/jf405538d",
+     "locator": "Results and Discussion, acylated flavonol glycosides; Table 2"
+    },
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Acylated glycosyl flavonoids; Table 1"
+    },
+    {
+     "locator": "compound records, depositor structure",
+     "reference": "PubChem CID 5320686 (tiliroside) and CID 5317991 (helichrysoside)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "malonyl_ester",
+   "origin": "source_defined",
+   "smarts": "[OX2H1,OX1-]-C(=O)-[CH2]-C(=O)-[O;X2]-[#6]",
+   "source": [
+    {
+     "doi": "10.1007/s13361-015-1240-9",
+     "locator": "Results and Discussion, Elaboration of the Compounds Giving Precursor Ions at m/z 503, 531, 533 and 547"
+    },
+    {
+     "doi": "10.1002/jms.1344",
+     "locator": "Results and Discussion, Malonylated flavonoid glycosides from L. angustifolius leaves; Table 2; Fig. 3"
+    },
+    {
+     "locator": "compound records, depositor structure",
+     "reference": "PubChem CID 9913968 (6''-O-malonyldaidzin) and CID 15934091 (malonylgenistin)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hydroxybenzoyl_ester",
+   "origin": "source_defined",
+   "smarts": "[#6]-[O;X2]-C(=O)-[c;$(c1:c(-[#8]):c:c:c:c:1),$(c1:c:c(-[#8]):c:c:c:1),$(c1:c:c:c(-[#8]):c:c:1)]",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1697",
+     "locator": "Results and Discussion, Acylated flavonoid-O-glycosides; Tables 1-2; Fig. 4"
+    },
+    {
+     "doi": "10.1002/rcm.1697",
+     "locator": "Results and Discussion, Acylated flavonoid-O-glycosides; Tables 1-2; Fig. 3b, 3d"
+    },
+    {
+     "locator": "compound records, depositor structure",
+     "reference": "PubChem CID 5491814 (quercetin 3-(6''-galloylgalactoside)) and CID 9830456 (quercetin 3-(6''-galloylglucoside))"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hydroxycinnamic_acid_o_glycoside",
+   "origin": "source_defined",
+   "smarts": "[OX2H1,OX1-]-C(=O)-[CH]=[CH]-[c;$(c1:c(-[O;X2]-[C;R]@[O;R]):c:c:c:c:1),$(c1:c:c(-[O;X2]-[C;R]@[O;R]):c:c:c:1),$(c1:c:c:c(-[O;X2]-[C;R]@[O;R]):c:c:1)]",
+   "source": [
+    {
+     "doi": "10.1021/jf501210s",
+     "locator": "Results and Discussion, Tandem Mass Spectra of O-Caffeoyl Glycosides (11 and 12); Fig. 13"
+    },
+    {
+     "locator": "compound records, depositor structure",
+     "reference": "PubChem CID 14825516 (caffeic acid 4-O-glucoside) and CID 5281759 (caffeic acid 3-glucoside)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "carnitine",
+   "origin": "source_defined",
+   "smarts": "[N+](C)(C)(C)-[CH2]-[CH]([O])-[CH2]-[C](=[O])-[O]",
+   "source": [
+    {
+     "locator": "motifs-p2-extra.tsv, row carnitine",
+     "reference": "WS8 P2 motif carnitine, catalog tools/ws8_p2/motifs-p2-extra.tsv (public carnitine definition, L-carnitine PubChem CID 10917; ester and free carboxyl forms)"
+    },
+    {
+     "doi": "10.1016/j.jpha.2023.10.004",
+     "locator": "Section 3.1 (carnitine-moiety ions of all acylcarnitines)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hydroxyacylcarnitine",
+   "origin": "source_defined",
+   "smarts": "[N+](C)(C)(C)-[CH2]-[CH](-[O]-[C](=[O])-[#6])-[CH2]-[C](=[O])-[O].[CX4][OX2H1]",
+   "source": [
+    {
+     "doi": "10.1021/bi047773a",
+     "locator": "Results; Fig. 4A-D; Fig. 5 (3-hydroxy acylcarnitines)"
+    },
+    {
+     "doi": "10.1021/acs.analchem.6c01418",
+     "locator": "Limitations; Figure S3 (hydroxyl position not assignable by MS/MS)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "trimethylammonium",
+   "origin": "source_defined",
+   "smarts": "[NX4+](-[CH3])(-[CH3])(-[CH3])-[#6]",
+   "source": [
+    {
+     "doi": "10.1002/mas.21942",
+     "locator": "Section 3.1; Table 2; Table 4 (acylcarnitines and betainized compounds share trimethylammonium ions)"
+    },
+    {
+     "doi": "10.1021/acs.analchem.0c00129",
+     "locator": "Sec. 4.1 (TMAI shared with betaines, choline and N-trimethyllysine)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "protoberberine_quaternary",
+   "origin": "source_defined",
+   "smarts": "c1ccc2c(c1)CC[n+]1cc3ccccc3cc-21",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2004.11.026",
+     "locator": "Sec. 3.1; Table 1 (quaternary protoberberine standards)"
+    },
+    {
+     "doi": "10.1002/jms.727",
+     "locator": "Results, standards; Figure 1"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 2353 (berberine) and CID 19009 (palmatine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "benzophenanthridine_quaternary",
+   "origin": "source_defined",
+   "smarts": "c1ccc2c(c1)c[n+]c1c2ccc2ccccc21",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3045",
+     "locator": "Results; Tables 1-2 (quaternary benzo[c]phenanthridines)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 2703 (chelerythrine) and CID 4501 (nitidine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "aporphine",
+   "origin": "source_defined",
+   "smarts": "[#7]1~[#6]~[#6]~c2cccc3c2[CX4]1~[#6]~c1ccccc1-3",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1343",
+     "locator": "Table 1; Scheme 1 (aporphine standards)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 16754 (glaucine) and CID 10154 (boldine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "benzyltetrahydroisoquinoline",
+   "origin": "source_defined",
+   "smarts": "c1ccccc1-[CH2;!R]-[CX4;R]1-[#7]-[CH2]-[CH2]-c2ccccc-12",
+   "source": [
+    {
+     "doi": "10.1255/ejms.745",
+     "locator": "Results; Table 1; Scheme 1 (1-benzyltetrahydroisoquinolines)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 439653 (reticuline) and CID 160487 (coclaurine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "tetrahydroprotoberberine",
+   "origin": "source_defined",
+   "smarts": "c12ccccc1CC[#7]1Cc3ccccc3C[CX4]21",
+   "source": [
+    {
+     "doi": "10.1016/j.apsb.2014.04.003",
+     "locator": "Section 3.1.1; Fig. 3 (tetrahydroprotoberberine standards)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 72301 (tetrahydropalmatine) and CID 34458 (canadine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "protopine",
+   "origin": "source_defined",
+   "smarts": "O=C1Cc2ccccc2C[#7]CCc2ccccc21",
+   "source": [
+    {
+     "doi": "10.1016/j.apsb.2014.04.003",
+     "locator": "Section 3.1.2; Fig. 5 (protopine and allocryptopine)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 4970 (protopine) and CID 98570 (allocryptopine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "morphinan",
+   "origin": "source_defined",
+   "smarts": "[#6]1~[#6]~[#6]~[#6]23~[#6]~[#6]~[#7]~[#6](~[#6]~2~[#6]~1)~[#6]~c1ccccc~31",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(03)00539-7",
+     "locator": "Results; Schemes 1-3 (morphinan skeleton of the studied alkaloids)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 6857497 (morphinan), structure record"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "indole_or_indoline_ring",
+   "origin": "source_defined",
+   "smarts": "c12ccccc1[#6]~[#6]~[#7]2",
+   "source": [
+    {
+     "locator": "PubChem CIDs 8969, 6100671, 6857472",
+     "reference": "Public ring-system definition: benzo-fused five-membered N-heterocycle (indole, indoline or oxindole), any C2-C3 bond order"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1-3.2; Scheme 3 (C10H10N+ from indole and indoline standards)"
+    },
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Table 1; Scheme 5 (indoline aspidospermidine)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "indole_or_indoline_omethyl",
+   "origin": "source_defined",
+   "smarts": "c12ccccc1[#6]~[#6]~[#7]2.[CH3;$([CH3][OX2][#6])]",
+   "source": [
+    {
+     "locator": "PubChem CIDs 8969, 5458190, 3037884",
+     "reference": "Public definition: indole_or_indoline_ring plus any O-methyl group (methyl ester, methyl ether or aryl methyl ether), as a CH3OH loss can arise from each"
+    },
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "monocyclic_aryl_acyl_ester",
+   "origin": "source_defined",
+   "smarts": "[#6][OX2]C(=O)[$([c;R1]1[c;R1][c;R1][c;R1][c;R1][c;R1]1),$([CX4,OX2;!R][c;R1]1[c;R1][c;R1][c;R1][c;R1][c;R1]1),$([CX4,OX2;!R][CX4,OX2;!R][c;R1]1[c;R1][c;R1][c;R1][c;R1][c;R1]1),$([CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][c;R1]1[c;R1][c;R1][c;R1][c;R1][c;R1]1),$([CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][c;R1]1[c;R1][c;R1][c;R1][c;R1][c;R1]1),$([CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][c;R1]1[c;R1][c;R1][c;R1][c;R1][c;R1]1),$([CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][CX4,OX2;!R][c;R1]1[c;R1][c;R1][c;R1][c;R1][c;R1]1)]",
+   "source": [
+    {
+     "locator": "PubChem CIDs 5770, 8550",
+     "reference": "Public functional-group definition: ester of a carboxylic acid whose carbonyl carbon is bonded to a non-fused benzene ring directly or through an acyclic chain of up to six sp3 carbon or ether-oxygen atoms, the form every benzenoid C10H11O4 acyl has"
+    },
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.1; Table 1 (compounds 38, 40, 43, 44)"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1 (compound 72)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "beta_carboline_unsaturated_omethyl",
+   "origin": "source_defined",
+   "smarts": "[#6;X3]1~[#6;X3]~[#7]~[#6;X3]~[#6]2~[#6]~1~c1ccccc~1~[#7]~2.[CH3;$([CH3][OX2][#6])]",
+   "source": [
+    {
+     "locator": "PubChem CIDs 73073, 441979",
+     "reference": "Public ring-system definition: beta-carboline whose pyridine-ring carbons are all three-connected (aromatic or anhydronium form; tetrahydro-beta-carbolines excluded) plus any O-methyl group (methyl ester or methyl ether), as the CH3OH loss can arise from either"
+    },
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.4; Scheme 4"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1 (compound 46)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "indole_or_indoline_acetate_or_methyl_ester",
+   "origin": "source_defined",
+   "smarts": "c12ccccc1[#6]~[#6]~[#7]2.[CH3;$([CH3]C(=O)[OX2][#6]),$([CH3][OX2]C(=O)[#6])]",
+   "source": [
+    {
+     "locator": "PubChem CIDs 260535, 260534",
+     "reference": "Public definition: indole_or_indoline_ring plus an acetate ester or a methyl ester, as a C2H4O2 loss can be acetic acid or methyl formate"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1-3.2; Scheme 5"
+    },
+    {
+     "doi": "10.1007/s10600-015-1215-x",
+     "locator": "Tables 1-3; text on compound 2"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "aspidospermane",
+   "origin": "source_defined",
+   "smarts": "[#6]12~[#6]~[#6]~[#6]~[#7]3~[#6]~1~[#6]4(~[#6]~[#6]~3)~[#6](~[#6]~[#6]~2)~[#7]~c5ccccc~4~5",
+   "source": [
+    {
+     "locator": "PubChem CIDs 6857472, 579957",
+     "reference": "Public skeleton definition: pentacyclic aspidospermane ring system (aspidospermidine without the ethyl group), any bond order"
+    },
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Table 1; Figure 1"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "cinchona_quinoline_quinuclidine",
+   "origin": "source_defined",
+   "smarts": "c1ccc2nccc([CX4][CX4]3[CX4][CX4]4[CX4][CX4][NX3]3[CX4][CX4]4)c2c1",
+   "source": [
+    {
+     "locator": "PubChem CIDs 3034034, 101744, 121515, 6914728",
+     "reference": "Public skeleton definition (competitor motif only): a quinolin-4-yl carbon linked to C-2 of a quinuclidine, as in quinine, cinchonidine and their dihydro forms; ring substituents allowed"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "quebrachamine_skeleton",
+   "origin": "source_defined",
+   "smarts": "[#6X4;H0]12~[#6]~[#6]~[#6]~[#7](~[#6]~1)~[#6]~[#6]~[#6]1~[#6](~[CH2]~[CH2]~2)~[#7]~c3ccccc~1~3",
+   "source": [
+    {
+     "locator": "PubChem CID 92990",
+     "reference": "Public skeleton definition (competitor motif only): quebrachamine-type indole with a quaternary C-20 piperidine joined through the tryptamine bridge and a C-16/C-17 ethano bridge, any bond order; aspidospermanes with CH2 at C-16 and C-17 also contain it"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_retronecine_type",
+   "origin": "source_defined",
+   "smarts": "[#8]-[CH2]-[#6]1=[#6]-[#6]-[#7]2-[#6]-[#6]-[#6](-[#8])-[#6;H1]-1-2",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Results; Figure 2"
+    },
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Results; Figure 2"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 10198 (retronecine), 1,2-unsaturated necine with C-7 and C-9 oxygens"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_retronecine_n_oxide",
+   "origin": "source_defined",
+   "smarts": "[#8]-[CH2]-[#6]1=[#6]-[#6]-[#7;$([#7+]-[#8-]),$([#7]=[#8])]2-[#6]-[#6]-[#6](-[#8])-[#6;H1]-1-2",
+   "source": [
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Abstract (p. 331); Results (pp. 333-335)"
+    },
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Results (p. 9379); Fig. 3 caption (p. 9379)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 15559785 (retronecine N-oxide)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_otonecine_type",
+   "origin": "source_defined",
+   "smarts": "[CH3]-[#7]1-[#6]-[#6]=[#6](-[CH2]-[#8])-[#6;$([#6]=[#8]),$([#6](-[#8])-[#7])]-[#6](-[#8])-[#6]-[#6]-1",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+     "locator": "Results (p. 1447); Table 1 (p. 1448)"
+    },
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Results; Table 1"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 5281752 (senkirkine), otonecine ester"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_platynecine_type",
+   "origin": "source_defined",
+   "smarts": "[#8]-[CH2]-[#6;H1]1-[#6]-[#6]-[#7]2-[#6]-[#6]-[#6](-[#8])-[#6;H1]-1-2",
+   "source": [
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Results (platynecine section); Figure 2 E1-E2"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+     "locator": "Results (pp. 1447, 1453); Table 1 (p. 1448)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 92791 (platynecine), saturated necine"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_retronecine_macrocyclic_diester",
+   "origin": "source_defined",
+   "smarts": "[#6](=[#8])-[#8;R]-[CH2]-[#6]1=[#6]-[#6]-[#7]2-[#6]-[#6]-[#6](-[#8;R]-[#6]=[#8])-[#6;H1]-1-2",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Results; Figure 2e-f; Table 1"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "pp. 107-108; Table 1 rows 25-33"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_retronecine_monoester",
+   "origin": "source_defined",
+   "smarts": "[$([OX2H1]-[CH2]-[#6]1=[#6]-[#6]-[#7]2-[#6]-[#6;!$([#6]-[#8])]-[#6](-[#8]-[#6]=[#8])-[#6;H1]-1-2),$([#8]=[#6]-[#8]-[CH2]-[#6]1=[#6]-[#6]-[#7]2-[#6]-[#6;!$([#6]-[#8])]-[#6](-[OX2H1])-[#6;H1]-1-2)]",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Results; Figure 2a; Table 1"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Sec. 3.3; Table 3"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 10198 (retronecine), necine with no C-6 oxygen; the monoester ion C8H14NO2+ is the protonated two-oxygen necine"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_crotanecine_type",
+   "origin": "source_defined",
+   "smarts": "[#8]-[CH2]-[#6]1=[#6]-[#6]-[#7]2-[#6]-[#6](-[#8])-[#6](-[#8])-[#6;H1]-1-2",
+   "source": [
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 394146 (crotanecine), 1,2-unsaturated necine with C-6, C-7 and C-9 oxygens; competitor motif only"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "pyrrolizidine_supinidine_type",
+   "origin": "source_defined",
+   "smarts": "[#8]-[CH2]-[#6]1=[#6]-[#6]-[#7]2-[#6]-[#6]-[CH2]-[#6;H1]-1-2",
+   "source": [
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 164663 (supinidine), 1,2-unsaturated necine with a C-9 oxygen and no C-7 oxygen; competitor motif only"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "tropane_tropine_type",
+   "origin": "source_defined",
+   "smarts": "[CH3]-[#7]1-[CH]2-[CH2]-[CH2]-[CH]-1-[CH2]-[CH](-[#7,#8])-[CH2]-2",
+   "source": [
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.1 (p. 1165); Figure 2B (p. 1165); Table 1 (p. 1166); Table 2 (p. 1169)"
+    },
+    {
+     "doi": "10.1007/s00216-016-0043-6",
+     "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpd 8 (p. 1152)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 174174 (atropine) and CID 637578 (tropacocaine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "tropane_6_oxygenated",
+   "origin": "source_defined",
+   "smarts": "[CH3]-[#7]1-[CH]2-[CH2]-[CH](-[#8])-[CH]-1-[CH2]-[CH](-[#7,#8])-[CH2]-2",
+   "source": [
+    {
+     "doi": "10.1007/s00216-016-0043-6",
+     "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpds 3 and 6 (p. 1152)"
+    },
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 7-10); Table 1, peaks 2-7, 9-13, 17, 19, 29 (pp. 4-6); Fig. 4 (p. 9)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 6918612 (anisodamine), structure record"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "tropane_6_7_dioxygenated",
+   "origin": "source_defined",
+   "smarts": "[CH3]-[#7]1-[CH]2-[CH;$([#6]-[#8])]-[CH;$([#6]-[#8])]-[CH]-1-[CH2]-[CH](-[#7,#8])-[CH2]-2",
+   "source": [
+    {
+     "doi": "10.1007/s00216-016-0043-6",
+     "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpd 4 (p. 1152)"
+    },
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (p. 11); Table 1, peak 8 (pp. 4-6); Fig. 6 (p. 11)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 5184 (scopolamine), structure record"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "nortropane_3_substituted",
+   "origin": "source_defined",
+   "smarts": "[#7;H1]1-[CH]2-[CH2]-[CH2]-[CH]-1-[CH2]-[CH](-[#7,#8])-[CH2]-2",
+   "source": [
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.1 (p. 1165); Figure 2D (p. 1165); Table 1 (p. 1166)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 64696 (norhyoscyamine), structure record"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "quinolizidine_matrine_type",
+   "origin": "source_defined",
+   "smarts": "[#6]1~[#6]~[#6]2~[#6]3~[#6]~[#6]~[#6]~[#7]4~[#6]~3~[#6](~[#6]~[#6]~[#6]~4)~[#6]~[#7]~2~[#6]~[#6]~1",
+   "source": [
+    {
+     "doi": "10.1155/2021/9915027",
+     "locator": "Sec. 3.2; Table 1"
+    },
+    {
+     "doi": "10.1016/j.jpba.2010.12.024",
+     "locator": "Sec. 3.2 (pp. 1069-1071); Table 1 (p. 1069); Scheme 1"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 91466 (matrine), structure record"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "quinolizidine_sparteine_type",
+   "origin": "source_defined",
+   "smarts": "[#6]1~[#6]~[#6]~[#7]2~[#6]~[#6]3~[#6]~[#6](~[#6]~2~[#6]~1)~[#6]~[#7]4~[#6]~3~[#6]~[#6]~[#6]~[#6]~4",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2010.12.024",
+     "locator": "Sec. 3.2 (p. 1070); Table 1 (p. 1069); Scheme 1E"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 644020 (sparteine) and CID 91471 (lupanine), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "glutathione_tripeptide",
+   "origin": "source_defined",
+   "smarts": "[#7]-[#6](-[#6](=[#8])-[#8])-[#6]-[#6]-[#6](=[#8])-[#7]-[#6](-[#6]-[#16])-[#6](=[#8])-[#7]-[#6]-[#6](=[#8])-[#8]",
+   "source": [
+    {
+     "doi": "10.1021/tx049741u",
+     "locator": "Abstract (p. 630); Results 1-5 (pp. 633-635); Scheme 1 (p. 634); Figure 1 (p. 632)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 124886 (glutathione), structure record"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "gamma_glutamyl_amide",
+   "origin": "source_defined",
+   "smarts": "[#7]-[#6](-[#6](=[#8])-[#8])-[#6]-[#6]-[#6](=[#8])-[#7]",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3458",
+     "locator": "Introduction (pp. 1032-1033)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 151023 (gamma-glutamylleucine), structure record"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "mandelonitrile_glycoside",
+   "origin": "source_defined",
+   "smarts": "[#7]#[#6]-[CH](-c1[cH][cH][cH][cH][cH]1)-[#8]-[#6;R]1-[#8;R]-[#6;R]-[#6;R]-[#6;R]-[#6;R]-1",
+   "source": [
+    {
+     "doi": "10.3390/molecules22091425",
+     "locator": "Sec. 2.1; Table 1; Scheme 1"
+    },
+    {
+     "doi": "10.1002/pca.1312",
+     "locator": "Results, Galloylated cyanogenic glucosides (p. 521); Table 1 (pp. 518-519)"
+    },
+    {
+     "locator": "Names and Identifiers: SMILES",
+     "reference": "PubChem CID 119033 (prunasin) and CID 656516 (amygdalin), structure records"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "anthocyanin",
+   "origin": "source_defined",
+   "smarts": "[#8;R]1~[#6;X3](~[#6;R]2~[#6;R]~[#6;R]~[#6;R]~[#6;R]~[#6;R]~2)~[#6;X3]~[#6;X3;H1]~[#6]2~[#6]~[#6]~[#6]~[#6]~[#6]~2~1.[O;D2;!R;$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1](-[O;X2;!R])-[C;X4;R1]1-[O;X2;!R]),$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1]1-[O;X2;!R])]",
+   "source": [
+    {
+     "doi": "10.1021/jf048068b",
+     "locator": "Figure 1 (p. 2589, the six common anthocyanidins); Tables 1-3 (pp. 2591-2593, their O-glycosides)"
+    },
+    {
+     "doi": "10.1002/rcm.6209",
+     "locator": "Results and discussion (pp. 1124-1126); Figure 3 (p. 1126, formation of the [M-2H]- and [M-2H+H2O]- ions)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "flavonol_core",
+   "origin": "source_defined",
+   "smarts": "O=c1c(-[OX2])c(-c2ccccc2)oc2ccccc12",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1358-1362, Results; Scheme 1 (p. 1358); Tables 1-2 (pp. 1360-1361)"
+    },
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "p. 5, Flavonoid aglycone, Positive ion mode; Fig. 2"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "flavone_c3_nonoxy",
+   "origin": "source_defined",
+   "smarts": "O=c1[c;!$(c-[OX2])]c(-c2ccccc2)oc2ccccc12",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1358-1362, Results; Scheme 1 (p. 1358); Tables 1-2 (pp. 1360-1361)"
+    },
+    {
+     "doi": "10.1021/acs.analchem.5b01559",
+     "locator": "p. 7379, Flavones and Isoflavones; Fig. 5 (p. 7378)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "isoflavone_core",
+   "origin": "source_defined",
+   "smarts": "O=c1c(-c2ccccc2)coc2ccccc12",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.5b01559",
+     "locator": "p. 7379, Flavones and Isoflavones; Fig. 5 (p. 7378)"
+    },
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 4 (p. 500); CID of isoflavones (p. 497)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "flavanone_core",
+   "origin": "source_defined",
+   "smarts": "O=C1[CH2][CX4](-c2ccccc2)Oc2ccccc12",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Tables 2-3"
+    },
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 3 (p. 711); Fragmentation of Flavanone Aglycones and Scheme 4 (p. 714)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "chalcone_core",
+   "origin": "source_defined",
+   "smarts": "O=C(-[CH]=[CH]-c1ccccc1)-c1ccccc1",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5 (p. 500); CID of flavanones and chalcones (p. 498); Scheme 1 (p. 499)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "flavanone_or_chalcone",
+   "origin": "source_defined",
+   "smarts": "[$(O=C1[CH2][CX4](-c2ccccc2)Oc2ccccc12),$(O=C(-[CH]=[CH]-c1ccccc1)-c1ccccc1)]",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5 (p. 500); CID of flavanones and chalcones (p. 498); Scheme 1 (p. 499)"
+    },
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 3 (p. 711); Fragmentation of Flavanone Aglycones and Scheme 4 (p. 714)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "dihydroflavonol_core",
+   "origin": "source_defined",
+   "smarts": "O=C1[CX4](-[OX2])[CX4](-c2ccccc2)Oc2ccccc12",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Tables 2-3"
+    },
+    {
+     "doi": "10.1016/j.jchromb.2026.125348",
+     "locator": "Sec. 3.8 (p. 9); Fig. 8 (p. 10); Table 1 (p. 4)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "flavan_3_ol_core",
+   "origin": "source_defined",
+   "smarts": "[OX2]-[CX4]1-[CX4]-c2ccccc2-O-[CX4]-1-c1ccccc1",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    },
+    {
+     "doi": "10.3390/molecules29225246",
+     "locator": "Table 2 (m/z 151, flavanols)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "c_prenyl_aryl",
+   "origin": "source_defined",
+   "smarts": "c-[CH2]-[CH]=[CX3](-[CH3])-[CH3]",
+   "source": [
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "p. 6, Flavonoid aglycone, Positive ion mode"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "dihydrochalcone_core",
+   "origin": "source_defined",
+   "smarts": "O=C(-[CH2]-[CH2]-c1ccccc1)-c1ccccc1",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "p. 493, Introduction (dihydrochalcones listed as a flavonoid subtype)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "flavonoid_c_glycoside",
+   "origin": "tuned_vs20",
+   "smarts": "[c;$(c1:c(~[#8;R;$([#8;R]1~[#6;R](-!@c)~[#6;R]~[#6;R]~c~c~1),$([#8;R]1~[#6;R]~[#6;R](-!@c)~[#6;R]~c~c~1)]):c:c:c:c:1),$(c1:c:c(~[#8;R;$([#8;R]1~[#6;R](-!@c)~[#6;R]~[#6;R]~c~c~1),$([#8;R]1~[#6;R]~[#6;R](-!@c)~[#6;R]~c~c~1)]):c:c:c:1),$(c1:c:c:c(~[#8;R;$([#8;R]1~[#6;R](-!@c)~[#6;R]~[#6;R]~c~c~1),$([#8;R]1~[#6;R]~[#6;R](-!@c)~[#6;R]~c~c~1)]):c:c:1),$(c1:c(-[#6;!R;$([#6](=O)-[#6;!R]~[#6;!R]-c)]):c:c:c:c:1),$(c1:c:c(-[#6;!R;$([#6](=O)-[#6;!R]~[#6;!R]-c)]):c:c:c:1),$(c1:c:c:c(-[#6;!R;$([#6](=O)-[#6;!R]~[#6;!R]-c)]):c:c:1)]-[C;X4;R;$([C;X4;R]1-[O;X2;R]-[C;X4;R]-[C;X4;R](-[O;X2])-[C;X4;R](-[O;X2])-[C;X4;R]1-[O;X2]),$([C;X4;R]1-[O;X2;R]-[C;X4;R]-[C;X4;R](-[O;X2])-[C;X4;R]1-[O;X2])]",
+   "source": [
+    {
+     "doi": "10.1002/mas.20212",
+     "locator": "Sec. IV.B-IV.E (C-glycosides); Figs 8, 10"
+    },
+    {
+     "locator": "compound records, IsomericSMILES via PUG REST, retrieved 2026-11-18",
+     "reference": "PubChem CID 5280441 (vitexin), CID 442664 (vicenin-2), CID 5281807 (puerarin), CID 21722188 (nothofagin)"
+    },
+    {
+     "locator": "Open questions, P3-Q14 (glycoside truth redefinition; sugar OH free or substituted)",
+     "reference": "WS8-P3 proposal 2026-11-14 (origin tuned_vs20 as recommended there, pending the author's answer)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "aryl_o_pyranoside",
+   "origin": "source_defined",
+   "smarts": "[#6;$([#6;a]),$([#6]=[#6])]-[O;X2]-[C;X4;R]1-[O;X2;R]-[C;X4;R]-[C;X4;R](-[O;X2])-[C;X4;R](-[O;X2])-[C;X4;R]1-[O;X2]",
+   "source": [
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides; Fig. 4a"
+    },
+    {
+     "locator": "compound records, IsomericSMILES via PUG REST, retrieved 2026-11-18",
+     "reference": "PubChem CID 5280704 (apigenin 7-O-glucoside), CID 5282102 (kaempferol 3-O-glucoside)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "anthrone_c_glycoside",
+   "origin": "source_defined",
+   "smarts": "[#8]=[#6]1-c2ccccc2-[#6;X4](-[#6;X4;R;$([#6]1-[#8;X2]-[#6]-[#6]-[#6]-[#6]-1),$([#6]1-[#8;X2]-[#6]-[#6]-[#6]-1)])-c2ccccc12",
+   "source": [
+    {
+     "locator": "compound records, IsomericSMILES via PUG REST, retrieved 2026-11-19",
+     "reference": "PubChem CID 12305761 (barbaloin, aloin A), CID 14989 (aloin B), CID 14889736 (10-hydroxyaloin A), CID 46173997 (aloinoside A), CID 46173998 (aloinoside B)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "o_glycoside",
+   "origin": "source_defined",
+   "smarts": "[O;D2;!R;$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1](-[O;X2;!R])-[C;X4;R1]1-[O;X2;!R]),$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1]1-[O;X2;!R])]",
+   "source": [
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides; Differentiation between O-, C- and O,C-glycosides; Fig. 4"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "flavonoid_o_glycoside",
+   "origin": "source_defined",
+   "smarts": "[$([#8]1~[#6](-c2ccccc2)~[#6]~[#6]~c2ccccc2~1),$([#8]1~[#6]~[#6](-c2ccccc2)~[#6]~c2ccccc2~1),$([#8]1~[#6]~[#6]~[#6](-c2ccccc2)~c2ccccc2~1),$([#6](=[#8])(-c1ccccc1)-[#6]~[#6]-c1ccccc1),$([#8]1~[#6](=[#6]-c2ccccc2)~[#6](=[#8])~c2ccccc2~1)].[O;D2;!R;$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1](-[O;X2;!R])-[C;X4;R1]1-[O;X2;!R]),$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1]1-[O;X2;!R])]",
+   "source": [
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides; Fig. 4"
+    },
+    {
+     "doi": "10.1039/d1np00014d",
+     "locator": "p.1739, sec. 3.2.4"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "aryl_c_glycoside",
+   "origin": "source_defined",
+   "smarts": "[c]-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1](-[O;X2;!R])-[C;X4;R1]1-[O;X2;!R]",
+   "source": [
+    {
+     "doi": "10.1002/mas.20212",
+     "locator": "Sec. IV.B; Fig. 4 (rutin vs vitexin)"
+    },
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Differentiation between O-, C- and O,C-glycosides; Fig. 4"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "anthraquinone_o_glycoside",
+   "origin": "source_defined",
+   "smarts": "[#8]=[#6]1-c2ccccc2-[#6](=[#8])-c2ccccc2-1.[O;D2;!R;$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1](-[O;X2;!R])-[C;X4;R1]1-[O;X2;!R]),$(O(-[#6;!$([#6]=[#8,#16])])-[C;X4;R1]1-[O;X2;R1]-[C;X4;R1]-[C;X4;R1]-[C;X4;R1]1-[O;X2;!R])]",
+   "source": [
+    {
+     "locator": "compound record, structure",
+     "reference": "PubChem CID 99649 (emodin 8-O-glucoside, C21H20O10, the composition of apigenin + hexose)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "glucosinolate",
+   "origin": "source_defined",
+   "smarts": "[#6]-[CX3](=[NX2]-[OX2]-[SX4](=[OX1])(=[OX1])-[OX1-,OX2H1])-[SX2]-[C;R]1-[O;R]-[C;R](-[CH2]-[OX2])-[C;R](-[OX2])-[C;R](-[OX2])-[C;R]1-[OX2]",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 307, Fig. 1; p. 308, Table 1"
+    },
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 273, Fig. 1; p. 274, Fig. 2; p. 282, Table 1"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "glucosinolate_methylsulfinylalkyl",
+   "origin": "source_defined",
+   "smarts": "[#6]-[CX3](=[NX2]-[OX2]-[SX4](=[OX1])(=[OX1])-[OX1-,OX2H1])-[SX2]-[C;R]1-[O;R]-[C;R](-[CH2]-[OX2])-[C;R](-[OX2])-[C;R](-[OX2])-[C;R]1-[OX2].[CH3]-[SX3](=[OX1])-[#6]",
+   "source": [
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Section 2.4; Table 4"
+    },
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 307, Fig. 1; p. 308, Table 1"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "glucosinolate_n_methoxy",
+   "origin": "source_defined",
+   "smarts": "[#6]-[CX3](=[NX2]-[OX2]-[SX4](=[OX1])(=[OX1])-[OX1-,OX2H1])-[SX2]-[C;R]1-[O;R]-[C;R](-[CH2]-[OX2])-[C;R](-[OX2])-[C;R](-[OX2])-[C;R]1-[OX2].[CH3]-[OX2]-[#7]",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Section 2.4; Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 525, Results and Fig. 5; p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "glucosinolate_2_hydroxyalkyl",
+   "origin": "source_defined",
+   "smarts": "[#6]-[CX4](-[OX2H1])-[CH2]-[CX3](=[NX2]-[OX2]-[SX4](=[OX1])(=[OX1])-[OX1-,OX2H1])-[SX2]-[C;R]1-[O;R]-[C;R](-[CH2]-[OX2])-[C;R](-[OX2])-[C;R](-[OX2])-[C;R]1-[OX2]",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 307, Fig. 1; p. 308, Table 1; p. 312, Results"
+    },
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4"
+    },
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5690, Results; p. 5691, Fig. 4"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "phosphate_ester",
+   "origin": "source_defined",
+   "smarts": "[C]-[O;X2]-[P](=[O])([O;H1,-1])-[O]",
+   "source": [
+    {
+     "locator": "row phosphate_ester",
+     "reference": "msdial_spectrum_catalog tools/ws8_p1/motifs-p1.tsv (P1 motif table, public functional-group definition)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hcaa_cinnamoyl_amide",
+   "origin": "source_defined",
+   "smarts": "[c][CH]=[CH][CX3](=O)[NX3]",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.8b03654",
+     "locator": "Results, characteristic MS/MS patterns; Fig. 4A"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hcaa_aminobutyl_amide",
+   "origin": "source_defined",
+   "smarts": "[c][CH]=[CH][CX3](=O)[NX3;$([NX3][CH2][CH2][CH2][CH2][#7]),$([NX3][CH2][CH2][CH2][#7][CH2][CH2][CH2][CH2][#7])]",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2023.136402",
+     "locator": "Sec. 3.2"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hcaa_spermidine_amide",
+   "origin": "source_defined",
+   "smarts": "[c][CH]=[CH][CX3](=O)[NX3;$([NX3][CH2][CH2][CH2][#7][CH2][CH2][CH2][CH2][#7]),$([NX3][CH2][CH2][CH2][CH2][#7][CH2][CH2][CH2][#7]),$([NX3]([CH2][CH2][CH2][#7])[CH2][CH2][CH2][CH2][#7])]",
+   "source": [
+    {
+     "doi": "10.1002/hlca.19960790809",
+     "locator": "Results; Schemes 1, 2, 5"
+    },
+    {
+     "doi": "10.1255/ejms.910",
+     "locator": "Results and discussion; Table 1"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hcaa_p_hydroxy_secondary_amide",
+   "origin": "source_defined",
+   "smarts": "[OX2H1]c1ccc(cc1)[CH]=[CH][CX3](=O)[NX3;H1]",
+   "source": [
+    {
+     "doi": "10.1021/acs.jnatprod.3c00047",
+     "locator": "Results; Scheme 4; Scheme 5; Fig. 3"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hcaa_cyclodopa_core",
+   "origin": "source_defined",
+   "smarts": "[OX2]c1cc2c(cc1[OX2])[#7][CH]([CX3](=O)[OX2H1,OX1-])[CH2]2",
+   "source": [
+    {
+     "doi": "10.3390/plants10091921",
+     "locator": "Sec. 2; Sec. 4.6"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hcaa_n_acyl_cyclodopa",
+   "origin": "source_defined",
+   "smarts": "[OX2]c1cc2c(cc1[OX2])[NX3]([CX3](=O)[#6])[CH]([CX3](=O)[OX2H1,OX1-])[CH2]2",
+   "source": [
+    {
+     "doi": "10.3390/plants10091921",
+     "locator": "Sec. 2; Fig. 3; Table 3"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hydroxycinnamoyl_quinate",
+   "origin": "source_defined",
+   "smarts": "[OX2;$(O[CX3](=O)[CX3]=[CX3]c1ccccc1);$(O[CX4]1[CX4][CX4]([OX2])([CX3](=O)[OX2,OX1-])[CX4][CX4]([OX2])[CX4]1[OX2]),$(O[CX4]1[CX4]([OX2])[CX4][CX4]([OX2])([CX3](=O)[OX2,OX1-])[CX4][CX4]1[OX2]),$(O[CX4]1([CX3](=O)[OX2,OX1-])[CX4][CX4]([OX2])[CX4]([OX2])[CX4]([OX2])[CX4]1)]",
+   "source": [
+    {
+     "doi": "10.1021/jf026187q",
+     "locator": "Results and Discussion, General LC-MS Fragmentation; Tables 1-2"
+    },
+    {
+     "doi": "10.1021/jf050046h",
+     "locator": "Tables 1-2; Results and Discussion, Fragmentation of 1-CQA and the 1-Acyl DiCQA"
+    },
+    {
+     "locator": "PubChem compound records, retrieved 2026-11-18",
+     "reference": "PubChem CID 1794427, 5280633, 9798666, 5281769, 6474310; cinnamoyl ester at quinic acid O1, O3, O4 or O5, carboxyl free, ionised or esterified, stereochemistry ignored"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hydroxycinnamoyl_shikimate",
+   "origin": "source_defined",
+   "smarts": "[OX2;$(O[CX3](=O)[CX3]=[CX3]c1ccccc1);$(O[CX4]1[CX3]=[CX3]([CX3](=O)[OX2,OX1-])[CX4][CX4]([OX2])[CX4]1[OX2]),$(O[CX4]1[CX4]([OX2])[CX3]=[CX3]([CX3](=O)[OX2,OX1-])[CX4][CX4]1[OX2]),$(O[CX4]1[CX4][CX3]([CX3](=O)[OX2,OX1-])=[CX3][CX4]([OX2])[CX4]1[OX2])]",
+   "source": [
+    {
+     "doi": "10.1021/jf904537z",
+     "locator": "Results and Discussion, Characterization of Caffeoylshikimic Acids (Mr 336) and Putative Dicaffeoylshikimic, Feruloylshikimic and Tricaffeoylshikimic Acids; Figs. 10-12; Table 1"
+    },
+    {
+     "doi": "10.1007/s00216-016-9450-y",
+     "locator": "Sec. Identification of CSA, diCSA, and triCSA; Table 1"
+    },
+    {
+     "locator": "PubChem compound records, retrieved 2026-11-18",
+     "reference": "PubChem CID 5281762, 10131826, 49821869; cinnamoyl ester at shikimic acid O3, O4 or O5, stereochemistry ignored"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "iridoid_c4_methoxycarbonyl_glycoside",
+   "origin": "source_defined",
+   "smarts": "[CH3]-[#8]-[#6](=[#8])-[#6;R]1=[#6;R]-[#8;R]-[#6;R;$([#6]-[#8;!R])]-[#6;R]-[#6;R]-1.[#8;X2;!R]-[#6;R]1-[#8;R]-[#6;R]-[#6;R]-[#6;R]-[#6;R]-1",
+   "source": [
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1802, Brief summary, rule 4; Figures 3-4 (pp. 1800-1801)"
+    },
+    {
+     "doi": "10.1002/rcm.3189",
+     "locator": "pp. 3044-3047, Results; Schemes 1-3 (pp. 3042, 3044, 3046); Table 1 (p. 3049)"
+    },
+    {
+     "doi": "10.1002/jssc.202200323",
+     "locator": "p. 3446, Sec. 3.1; pp. 3448-3450, Sec. 3.2 (compound 17), Figures 3D and 5; p. 3456, Concluding remarks"
+    },
+    {
+     "doi": "10.3390/foods10092050",
+     "locator": "Section 3.2.1; Scheme 1; Figures 3A, S1"
+    },
+    {
+     "locator": "PubChem compound records, structures retrieved 2026-11-18",
+     "reference": "PubChem CID 107848 (geniposide), CID 442433 (scandoside methyl ester), CID 13892722 (shanzhiside methyl ester), CID 5281544 (oleuropein)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "iridoid_c4_carboxy_glycoside",
+   "origin": "source_defined",
+   "smarts": "[#8;H1,-1]-[#6](=[#8])-[#6;R]1=[#6;R]-[#8;R]-[#6;R;$([#6]-[#8;!R])]-[#6;R]-[#6;R]-1.[#8;X2;!R]-[#6;R]1-[#8;R]-[#6;R]-[#6;R]-[#6;R]-[#6;R]-1",
+   "source": [
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1800, Fragmentation of geniposidic acid; p. 1802, summary rule 3; Figure 4a (p. 1801)"
+    },
+    {
+     "doi": "10.1002/rcm.3189",
+     "locator": "pp. 3047-3049, dihydrocornic acid and crude extract peak 1; Scheme 4 (p. 3048); Table 1 (p. 3049)"
+    },
+    {
+     "locator": "PubChem compound records, structures retrieved 2026-11-18",
+     "reference": "PubChem CID 443354 (geniposidic acid), CID 21633105 (mussaenosidic acid), CID 12315350 (deacetylasperulosidic acid), CID 11948668 (shanzhiside)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "guaiacyl_aryltetrahydrofuran",
+   "origin": "source_defined",
+   "smarts": "[#8;X2]-c1ccc(cc1-[#8;X2]-[CH3])-[CX4]1-[#8;X2]-[#6]-[#6]-[#6]-1",
+   "source": [
+    {
+     "doi": "10.1002/jms.1276",
+     "locator": "Eklund 2008: Results, Furofuranolignans (p. 104); Scheme 3 (p. 101)"
+    },
+    {
+     "doi": "10.1002/rcm.3746",
+     "locator": "Ricci 2008: Scheme 2 (p. 3389); gas-phase ion chemistry of the furofuranic ring (pp. 3390-3391)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 73399 (pinoresinol) and CID 100067 (syringaresinol): 4-oxy-3-methoxyphenyl on a tetrahydrofuran C7"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "dibenzylbutyrolactone_lignan",
+   "origin": "source_defined",
+   "smarts": "[#8]=[#6]1-[#8]-[CH2]-[CX4](-[CH2]-c)-[CX4]-1-[CH2]-c",
+   "source": [
+    {
+     "doi": "10.1002/jms.1276",
+     "locator": "Eklund 2008: Results, Dibenzylbutyrolactone lignans (p. 101); Table 1 (p. 103); Scheme 1 (p. 100)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 119205 (matairesinol), alpha,beta-dibenzyl-gamma-butyrolactone"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "dibenzocyclooctadiene_lignan",
+   "origin": "source_defined",
+   "smarts": "c12ccccc1-c1ccccc1-[#6]-[#6](-[CH3])-[#6](-[CH3])-[#6]-2",
+   "source": [
+    {
+     "doi": "10.1002/jms.1246",
+     "locator": "Huang 2007: Results (pp. 1150-1157); Figure 1 (p. 1150); Schemes 1-4 (pp. 1155-1157)"
+    },
+    {
+     "doi": "10.1002/pca.1115",
+     "locator": "Shi 2009: Results and Discussion (pp. 198-203); Scheme 1 (p. 201)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 43595 (deoxyschizandrin), 7,8-dimethyl dibenzocyclooctadiene skeleton"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "dibenzocyclooctadiene_benzylic_ester",
+   "origin": "source_defined",
+   "smarts": "c12ccccc1-c1ccccc1-[#6;X4](-[#8;X2]-[#6](=[#8])-[#6])-[#6](-[CH3])-[#6](-[CH3])-[#6]-2",
+   "source": [
+    {
+     "doi": "10.1002/pca.1115",
+     "locator": "Shi 2009: Table 2 (p. 199); Results, gomisin B, schisantherin C and schisantherin A (pp. 199-200); closing paragraph (pp. 203-204)"
+    },
+    {
+     "doi": "10.1002/jms.1246",
+     "locator": "Huang 2007: Results, schisantherin A (p. 1151); Scheme 2 (p. 1155)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 151529 (schisantherin A), C6-benzoyloxy dibenzocyclooctadiene"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "guaiacyl_4_o_hexoside",
+   "origin": "source_defined",
+   "smarts": "[CH3]-[#8]-c1cc(-[#6;X4])ccc1-[O;X2]-[C;R]1[O;R][C;R]([C;!R]-[O;H1])[C;R]([O;H1])[C;R]([O;H1])[C;R]1[O;H1]",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3746",
+     "locator": "Ricci 2008: CAD of alkali metal cation adducts (pp. 3384-3386); Scheme 1(c) (p. 3387)"
+    },
+    {
+     "doi": "10.1002/rcm.4472",
+     "locator": "Ricci 2010: [M+Na]+ CAD spectra (pp. 981-982); Scheme 1 pathway (c) (p. 982); fragmentation mechanisms section (p. 984)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 486614 (pinoresinol 4-O-glucoside); hexopyranoside SMARTS as the P1 hexoside motif"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "alkyl_o_hexoside",
+   "origin": "source_defined",
+   "smarts": "[CX4]-[O;X2]-[C;R]1[O;R][C;R]([C;!R]-[O;H1])[C;R]([O;H1])[C;R]([O;H1])[C;R]1[O;H1]",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3746",
+     "locator": "Ricci 2008: compound 4 [M+Na]+ (p. 3386); Table 1 (p. 3385); Scheme 4 (p. 3391)"
+    },
+    {
+     "doi": "10.1002/rcm.4472",
+     "locator": "Ricci 2010: [M+Na]+ CAD spectra (p. 981); Scheme 1 pathway (b) (p. 982); fragmentation mechanisms section (p. 984)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 9917980 (secoisolariciresinol diglucoside); hexopyranoside SMARTS as the P1 hexoside motif"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "phenylcoumaran_neolignan",
+   "origin": "source_defined",
+   "smarts": "c-[CX4]1-[#8]-c2ccccc2-[CX4]-1",
+   "source": [
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 5372367 (dehydrodiconiferyl alcohol), 2-aryl-2,3-dihydrobenzofuran (8-5' phenylcoumaran); competitor motif only"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "aryltetralin_lignan",
+   "origin": "source_defined",
+   "smarts": "c-[CX4]1-[CX4]-[CX4]-[CX4]-c2ccccc12",
+   "source": [
+    {
+     "doi": "10.1002/jms.1276",
+     "locator": "Eklund 2008: Fig. 1 (p. 98); Results, Dibenzylbutyrolactone lignans, aryltetralin lactone 22 (p. 101)"
+    },
+    {
+     "doi": "10.1002/rcm.3783",
+     "locator": "Schmidt 2008: Results, deoxypodophyllotoxin 16 (p. 3645); Fig. 2 (p. 3646)"
+    },
+    {
+     "locator": "compound summary, structure",
+     "reference": "PubChem CID 11223782 (phyltetralin) and CID 345501 (deoxypodophyllotoxin), 1-aryl-1,2,3,4-tetrahydronaphthalene; competitor motif only"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "nucleoside",
+   "origin": "source_defined",
+   "smarts": "[#7;R;$([#7]1~[#6]~[#7]~[#6]~[#6]~[#6]~1),$([#7]1~[#6]~[#7]~[#6]2~[#6]~1~[#7]~[#6]~[#7]~[#6]~2)]-[CX4;R;$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-[CX4]-1)]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public structural definition: a purine N9 or 1,3-diazine ring nitrogen bonded to the anomeric carbon of a furanose or pyranose ring (N-glycoside)"
+    },
+    {
+     "doi": "10.1002/mas.21388",
+     "locator": "Sec. II (N-glycosidic nucleosides; pseudouridine as the C-glycoside exception)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "nucleotide",
+   "origin": "source_defined",
+   "smarts": "[#7;R;$([#7]1~[#6]~[#7]~[#6]~[#6]~[#6]~1),$([#7]1~[#6]~[#7]~[#6]2~[#6]~1~[#7]~[#6]~[#7]~[#6]~2)]-[CX4;R;$([CX4]1-[OX2]-[CX4](-[CX4]-[OX2]-[#15](=[OX1]))-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4](-[OX2]-[#15](=[OX1]))-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-1-[OX2]-[#15](=[OX1])),$([CX4]1-[OX2]-[CX4](-[CX4]-[OX2]-[#15](=[OX1]))-[CX4]-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4](-[OX2]-[#15](=[OX1]))-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4](-[OX2]-[#15](=[OX1]))-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-[CX4]-1-[OX2]-[#15](=[OX1]))]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public structural definition: the nucleoside motif with a phosphate ester on a sugar ring carbon or on the exocyclic CH2 (any position, cyclic included)"
+    },
+    {
+     "doi": "10.1038/s41598-017-09416-6",
+     "locator": "Results (NMP section)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "nucleoside_polyphosphate",
+   "origin": "source_defined",
+   "smarts": "[#7;R;$([#7]1~[#6]~[#7]~[#6]~[#6]~[#6]~1),$([#7]1~[#6]~[#7]~[#6]2~[#6]~1~[#7]~[#6]~[#7]~[#6]~2)]-[CX4;R;$([CX4]1-[OX2]-[CX4](-[CX4]-[OX2]-[#15](=[OX1])-[OX2]-[#15](=[OX1]))-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4](-[OX2]-[#15](=[OX1])-[OX2]-[#15](=[OX1]))-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-1-[OX2]-[#15](=[OX1])-[OX2]-[#15](=[OX1])),$([CX4]1-[OX2]-[CX4](-[CX4]-[OX2]-[#15](=[OX1])-[OX2]-[#15](=[OX1]))-[CX4]-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4](-[OX2]-[#15](=[OX1])-[OX2]-[#15](=[OX1]))-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4](-[OX2]-[#15](=[OX1])-[OX2]-[#15](=[OX1]))-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-[CX4]-1-[OX2]-[#15](=[OX1])-[OX2]-[#15](=[OX1]))]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public structural definition: the nucleotide motif whose sugar-bound phosphate is part of a P-O-P anhydride (di-, tri-phosphates and NDP-sugars)"
+    },
+    {
+     "doi": "10.1038/s41598-017-09416-6",
+     "locator": "Results (NDP and NTP sections)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "c_glycosyl_pyrimidine",
+   "origin": "source_defined",
+   "smarts": "[#6;R;$([#6]1~[#6]~[#7]~[#6]~[#7]~[#6]~1),$([#6]1~[#7]~[#6]~[#7]~[#6]~[#6]~1),$([#6]1~[#7]~[#6]~[#6]~[#6]~[#7]~1)]-[CX4;R;$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-1),$([CX4]1-[OX2]-[CX4]-[CX4]-[CX4]-[CX4]-1)]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public structural definition: a 1,3-diazine ring carbon bonded to the anomeric carbon of a furanose or pyranose ring (C-glycoside)"
+    },
+    {
+     "doi": "10.1002/rcm.2151",
+     "locator": "Introduction; Discussion (comparison with uridine)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "proanthocyanidin",
+   "origin": "source_defined",
+   "smarts": "c1ccccc1-[CX4]1-[CX4]-[CX4]-c2ccccc2-[OX2]-1.c1ccccc1-[CX4]1-[CX4]-[CX4]-c2ccccc2-[OX2]-1",
+   "source": [
+    {
+     "doi": "10.1021/jf034815d",
+     "locator": "Gu 2003: pp. 7516-7517; Scheme 2 (p. 7518); Table 3 (p. 7519)"
+    },
+    {
+     "doi": "10.3390/molecules26071873",
+     "locator": "Karonen 2021: Results 2.1-2.2; Figures 3-4"
+    },
+    {
+     "doi": "10.1021/jf500745y",
+     "locator": "Engstrom 2014: Fig. 1 (p. 3391); pp. 3392-3393"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "galloyl_ester",
+   "origin": "source_defined",
+   "smarts": "[#6]-[OX2]-C(=O)-c1[cH]c(-[OH])c(-[OH])c(-[OH])[cH]1",
+   "source": [
+    {
+     "doi": "10.3390/metabo12040326",
+     "locator": "Bai 2022: Section 2.1; Figure 2; Table 1"
+    },
+    {
+     "doi": "10.1002/pca.1312",
+     "locator": "Tan 2011: Results, Gallotannins (pp. 521-522); Fig. 4 (p. 522); Table 1 (pp. 518-519)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "hhdp_or_ellagic_unit",
+   "origin": "source_defined",
+   "smarts": "[#8]=[#6]~[#6]1~[#6]~[#6](~[#8])~[#6](~[#8])~[#6](~[#8])~[#6]~1~[#6]1~[#6](~[#8])~[#6](~[#8])~[#6](~[#8])~[#6]~[#6]~1~[#6]=[#8]",
+   "source": [
+    {
+     "doi": "10.1038/s41598-018-27708-3",
+     "locator": "Bowers 2018: Fig. 1a-c; Methods, Method Settings"
+    },
+    {
+     "doi": "10.1002/pca.1312",
+     "locator": "Tan 2011: Results, Ellagitannins (pp. 522-524); Fig. 5 (p. 523)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "furanocoumarin",
+   "origin": "source_defined",
+   "smarts": "[$([#8]=[#6]1:[#6]:[#6]:[#6]2:[#6]:[#6]3:[#6]:[#6]:[#8]:[#6]:3:[#6]:[#6]:2:[#8]:1),$([#8]=[#6]1:[#6]:[#6]:[#6]2:[#6]:[#6]:[#6]3:[#6]:[#6]:[#8]:[#6]:3:[#6]:2:[#8]:1)]",
+   "source": [
+    {
+     "doi": "10.1002/pca.2496",
+     "locator": "Li 2014: Results, ESI/MSn (p. 231); Fig. 4 (p. 233); Table 1 (pp. 235-237)"
+    },
+    {
+     "doi": "10.1002/rcm.4991",
+     "locator": "Smyth 2011: Imperatorin and Seselin (p. 1312); Table 1 (p. 1313)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "resorcinol_stilbene",
+   "origin": "source_defined",
+   "smarts": "[OX2H1]-c1cc(-[OX2H1])cc(-[#6;!a]=[#6;!a]-c)c1",
+   "source": [
+    {
+     "doi": "10.1002/rcm.70074",
+     "locator": "Besrukow 2026: Section 3.1; Table 1 rows A0, C0"
+    },
+    {
+     "doi": "10.1021/jf102005z",
+     "locator": "Jiang 2010: Results, resveratrol MS2 (p. 9022)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "stilbenoid_oligomer",
+   "origin": "source_defined",
+   "smarts": "c-[#6;!a]~[#6;!a]-c.c-[#6;!a]~[#6;!a]-c",
+   "source": [
+    {
+     "doi": "10.1007/s13659-019-0212-3",
+     "locator": "Zhang 2019: Results (compounds 1-4); Conclusion"
+    },
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Goufo 2020: Table 2 IDs 116, 129-152"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "spirostane_furostane_glycoside",
+   "origin": "source_defined",
+   "smarts": "[#6]1~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]4~[#6](~[#6]~[#6](~[#8]~4)~[#6]~[#6]~[#6]~[#6]~[#8])~[#6]3~[#6]~[#6]~[#6]~1~2.[#6]-[#8;X2]-[#6;R]1-[#8;R]-[#6;R]-[#6;R](-[#8])-[#6;R](-[#8])-[#6;R]1-[#8]",
+   "source": [
+    {
+     "doi": "10.1007/978-1-4939-0606-2_12",
+     "locator": "Sec. 3.4 step 7; Fig. 3 (spirostanol and furostanol saponin branches)"
+    },
+    {
+     "doi": "10.1002/pca.2876",
+     "locator": "Sec. 3.1; Table 2 (diosgenin- and furostane-type saponins)"
+    },
+    {
+     "locator": "PubChem compound records, structures retrieved 2026-11-18",
+     "reference": "PubChem CID 119245 (dioscin), CID 441891 (protodioscin), CID 159861 (gracillin)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "steroidal_glycoalkaloid",
+   "origin": "source_defined",
+   "smarts": "[#6]1~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6](~[#6]~[#6]4~[#6]~[#6]~[#6]~[#6]~[#7]~4)~[#6]3~[#6]~[#6]~[#6]~1~2.[#6]-[#8;X2]-[#6;R]1-[#8;R]-[#6;R]-[#6;R](-[#8])-[#6;R](-[#8])-[#6;R]1-[#8]",
+   "source": [
+    {
+     "doi": "10.1002/jms.1785",
+     "locator": "Results; Schemes 1-3 (solanidane and spirosolane aglycones)"
+    },
+    {
+     "doi": "10.1007/978-1-4939-0606-2_12",
+     "locator": "Sec. 3.4 step 8; Fig. 3 (glycoalkaloid branch)"
+    },
+    {
+     "locator": "PubChem compound records, structures retrieved 2026-11-18",
+     "reference": "PubChem CID 9549171 (alpha-solanine), CID 442971 (alpha-chaconine), CID 28523 (tomatine), CID 119247 (solasonine)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "taurine_conjugate",
+   "origin": "source_defined",
+   "smarts": "[C](=[O])-[N;H1]-[CH2]-[CH2]-[S](=[O])(=[O])-[O;H1,-1]",
+   "source": [
+    {
+     "locator": "line 4",
+     "reference": "msdial_spectrum_catalog tools/ws8_p2/motifs-p2-extra.tsv (taurine_conjugate row)"
+    },
+    {
+     "doi": "10.1194/jlr.r001941-jlr200",
+     "locator": "Direct infusion ESI-MS section; Fig. 3"
+    },
+    {
+     "doi": "10.1021/acs.analchem.6b00573",
+     "locator": "Results, Fragmentation mechanisms of glycine-conjugated and taurine-conjugated BAs"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "glycine_conjugate",
+   "origin": "source_defined",
+   "smarts": "[C](=[O])-[N;H1]-[CH2]-[C](=[O])-[O;H1,-1]",
+   "source": [
+    {
+     "doi": "10.1194/jlr.r001941-jlr200",
+     "locator": "Direct infusion ESI-MS section; Fig. 3"
+    },
+    {
+     "doi": "10.1021/acs.analchem.6b00573",
+     "locator": "Results, Fragmentation mechanisms of glycine-conjugated and taurine-conjugated BAs"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "glycine_conjugated_bile_acid",
+   "origin": "source_defined",
+   "smarts": "[$([#6]1~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6](~[#6;!R]~[#6;!R]~[#6;!R]~[#6;!R](=[O])-[N;H1]-[CH2]-[C](=[O])-[O;H1,-1])~[#6]3~[#6]~[#6]~[#6]~1~2),$([#6]1(-[O]-[C](=[O])-[CH2]-[N;H2,H3+])~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6](~[#6;!R]~[#6;!R]~[#6;!R]~[#6;!R](=[O])-[O;H1,-1])~[#6]3~[#6]~[#6]~[#6]~1~2)]",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.1c05648",
+     "locator": "Results, Investigation of MS/MS Fragmentation Pattern of Bile Acids; Figure 2; Figure 5b"
+    },
+    {
+     "doi": "10.1021/acs.analchem.5c05677",
+     "locator": "Results and Discussion, Development of Multistep MassQL Filtering Trees (Step 1); Figure 2; Methods, Generation and Validation of MassQL Queries"
+    },
+    {
+     "doi": "10.1021/acs.jafc.5c03548",
+     "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs) (amide and ester standards)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "taurine_conjugated_bile_acid",
+   "origin": "source_defined",
+   "smarts": "[#6]1~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6](~[#6;!R]~[#6;!R]~[#6;!R]~[#6;!R](=[O])-[N;H1]-[CH2]-[CH2]-[S](=[O])(=[O])-[O;H1,-1])~[#6]3~[#6]~[#6]~[#6]~1~2",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.1c05648",
+     "locator": "Results, Investigation of MS/MS Fragmentation Pattern of Bile Acids; Figure 2"
+    },
+    {
+     "doi": "10.1021/acs.analchem.5c05677",
+     "locator": "Results and Discussion, Development of Multistep MassQL Filtering Trees (Step 1); Figure 2; Methods, Generation and Validation of MassQL Queries"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "bile_acid_amino_acid_conjugate",
+   "origin": "source_defined",
+   "smarts": "[$([#6]1~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6](~[#6;!R]~[#6;!R]~[#6;!R]~[#6;!R](=[O])-[NX3]-[CX4;$([CX4]-[CX3](=[O])-[O]),$([CX4]-[CX4]-[CX3](=[O])-[O]),$([CX4]-[CX4]-[CX4]-[CX3](=[O])-[O]),$([CX4]-[CX4]-[CX4]-[CX4]-[CX3](=[O])-[O])])~[#6]3~[#6]~[#6]~[#6]~1~2),$([#6]1(-[O]-[CX3](=[O])-[CX4;$([CX4]-[NX3]),$([CX4]-[CX4]-[NX3]),$([CX4]-[CX4]-[CX4]-[NX3]),$([CX4]-[CX4]-[CX4]-[CX4]-[NX3])])~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6](~[#6;!R]~[#6;!R]~[#6;!R]~[#6;!R](=[O]))~[#6]3~[#6]~[#6]~[#6]~1~2)]",
+   "source": [
+    {
+     "doi": "10.1021/acs.jafc.5c03548",
+     "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs); Table 2"
+    },
+    {
+     "doi": "10.3390/biom12050687",
+     "locator": "Section 3.2; Figure 5"
+    },
+    {
+     "doi": "10.1016/j.cell.2024.02.019",
+     "locator": "Results (Stage 2 MassQL paragraph); Figure 1b"
+    },
+    {
+     "doi": "10.1021/acs.jafc.5c03548",
+     "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs) (amide and ester standards)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "steryl_hexoside",
+   "origin": "source_defined",
+   "smarts": "[#6]1(-[O;X2]-[C;R]2[O;R][C;R]([C;!R]-[O])[C;R]([O])[C;R]([O])[C;R]2[O])~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6]~[#6]3~[#6]~[#6]~[#6]~1~2",
+   "source": [
+    {
+     "doi": "10.1194/jlr.d013987",
+     "locator": "Methods; Table 3; Results"
+    },
+    {
+     "doi": "10.1007/s11745-011-3602-9",
+     "locator": "Experimental Procedure, Electrospray ionization tandem mass spectrometry; Table 1"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "organosulfate_monoester",
+   "origin": "source_defined",
+   "smarts": "[#6,#7]-[O;X2]-[S](=[O])(=[O])-[O;H1,-1]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public functional-group definition: sulfuric acid monoester on a C- or N-bound oxygen"
+    },
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Results and Discussion, opening paragraph and Parameters of CID conditions (p. 657) (aromatic and alicyclic sulfates)"
+    },
+    {
+     "doi": "10.3389/fmolb.2022.829511",
+     "locator": "Results and Discussion, Speciation of Sulfates (p. 7; sulfate conjugates)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "aryl_or_vinyl_sulfate",
+   "origin": "source_defined",
+   "smarts": "[#6;X3]-[O;X2]-[S](=[O])(=[O])-[O;H1,-1]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public functional-group definition: sulfuric acid monoester on an sp2 (aromatic or vinyl) carbon"
+    },
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Results and Discussion, opening paragraph and Parameters of CID conditions (p. 657) (aromatic sulfates)"
+    },
+    {
+     "doi": "10.3389/fmolb.2022.829511",
+     "locator": "Table 1 (Materials and Methods, Data Workflow Pipeline and Processing, p. 4); Results and Discussion, Speciation of Sulfates (p. 7) (phenolic and other unsaturated sulfates)"
+    },
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Section 2.2, Table 1 (phenol, heteroaryl and enol sulfates)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "sulfate_ester",
+   "origin": "source_defined",
+   "smarts": "[C]-[O;X2]-[S](=[O])(=[O])-[O;H1,-1]",
+   "source": [
+    {
+     "locator": "row sulfate_ester: Public functional-group definition",
+     "reference": "msdial_spectrum_catalog tools/ws8_p1/motifs-p1.tsv (P1 motif, SMARTS unchanged)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "c_sulfonic_acid",
+   "origin": "source_defined",
+   "smarts": "[#6]-[S](=[O])(=[O])-[O;H1,-1]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public functional-group definition: C-sulfonic acid"
+    },
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Application to biological fluids (pp. 658-659; sulfonic acids such as taurine conjugates)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "n_sulfamic_acid",
+   "origin": "source_defined",
+   "smarts": "[#7]-[S](=[O])(=[O])-[O;H1,-1]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public functional-group definition: N-sulfamic acid (N-sulfate)"
+    },
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Section 2.1; Figure 2D (N-sulfo-serotonin)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "organophosphate_monoester",
+   "origin": "source_defined",
+   "smarts": "[#6]-[O;X2]-[P](=[O])(-[O;H1,-1])-[O;H1,-1]",
+   "source": [
+    {
+     "locator": "SMARTS",
+     "reference": "Public functional-group definition: phosphoric acid monoester"
+    },
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Application to biological fluids (p. 658; H2PO4- also at m/z 97)"
+    },
+    {
+     "doi": "10.1038/s41592-019-0358-2",
+     "locator": "Online Methods, Fragment database querying (phosphate PO3-)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "triterpenoid_saponin",
+   "origin": "source_defined",
+   "smarts": "[#8]~[#6;R1]1~[#6;R1]~[#6;R1]~[#6;!R1;R]2~[#6;!R1;R]3~[#6;R]~[#6;R]~[#6;!R1;R]~[#6;!R1;R]~[#6;!R1;R]~3~[#6;R]~[#6;R]~[#6;!R1;R]~2~[#6;X4;R1]~1(-[#6;!R])-[#6;!R].[O;X2;!R;H0]-[C;R1]1-[O;R1]-[C;R1]-[C;R1](-[O])-[C;R1](-[O])-[C;R1]-1",
+   "source": [
+    {
+     "doi": "10.1016/j.jgr.2024.01.004",
+     "locator": "Section 1; Table 1"
+    },
+    {
+     "doi": "10.1021/np200218r",
+     "locator": "Table 2; Fig. 4"
+    },
+    {
+     "doi": "10.1002/rcm.8415",
+     "locator": "Sec. 3.1; Fig. 2B-C, 2G-H; Fig. 3A"
+    },
+    {
+     "locator": "compound records (public structures)",
+     "reference": "PubChem CID 9898279 (ginsenoside Rb1), CID 122097 (soyasaponin I), CID 167928 (saikosaponin A)"
+    }
+   ]
+  },
+  {
+   "chemont": {
+    "broader": [],
+    "compatible": []
+   },
+   "motif_id": "steroid",
+   "origin": "source_defined",
+   "smarts": "[#6]1~[#6]~[#6]~[#6]2~[#6](~[#6]1)~[#6]~[#6]~[#6]1~[#6]3~[#6]~[#6]~[#6]~[#6]3~[#6]~[#6]~[#6]~1~2",
+   "source": [
+    {
+     "locator": "line 10 (steroid)",
+     "reference": "msdial_spectrum_catalog tools/ws8_p1/motifs-p1.tsv (P1 motif, SMARTS unchanged)"
+    }
+   ]
+  }
+ ]
 }

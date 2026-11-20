@@ -1,0 +1,183 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "ion_b",
+   "ion_e"
+  ],
+  "motif_id": "benzyltetrahydroisoquinoline",
+  "negative_examples": [
+   {
+    "pubchem_cid": 440592,
+    "smiles": "CN1CC[C@]23C=C([C@H](C=C2[C@@H]1CC4=C3C(=C(C=C4)OC)O)O)OC"
+   },
+   {
+    "pubchem_cid": 16754,
+    "smiles": "CN1CCC2=CC(=C(C3=C2[C@@H]1CC4=CC(=C(C=C43)OC)OC)OC)OC"
+   }
+  ],
+  "non_claims": [
+   "positions of OH and OCH3 within each ring are not resolved",
+   "C-1 configuration is not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 439653,
+    "smiles": "CN1CCC2=CC(=C(C=C2[C@@H]1CC3=CC(=C(C=C3)OC)O)O)OC"
+   },
+   {
+    "pubchem_cid": 440584,
+    "smiles": "CN1CCC2=CC(=C(C=C2[C@@H]1CC3=CC=C(C=C3)O)O)OC"
+   },
+   {
+    "pubchem_cid": 18519,
+    "smiles": "C1CNC(C2=CC(=C(C=C21)O)O)CC3=CC(=C(C=C3)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_b"
+   },
+   {
+    "term": "ion_e"
+   },
+   {
+    "any": [
+     {
+      "term": "loss_ch5n"
+     },
+     {
+      "term": "loss_nh3"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "1-Benzyltetrahydroisoquinolines split at C-1 into the isoquinoline ion b and the benzyl ion e, whose masses follow the ring substitution, beside the amine loss a; e is weak in ion-trap MS2 and b is weak for coclaurine-type compounds.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "morphinan",
+    "note": "salutaridinol shares the reticuline formula and gives an isoquinoline ion at m/z 192 (doi:10.1016/s1044-0305(03)00539-7)"
+   },
+   {
+    "motif_id": "aporphine",
+    "note": "aporphines also lose the amine first (doi:10.1002/rcm.1343)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_benzylisoquinoline_benzyltetrahydroisoquinolines",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_benzylisoquinoline.benzyltetrahydroisoquinoline.pos",
+ "source": [
+  {
+   "doi": "10.1255/ejms.745",
+   "locator": "Results, pp. 329-330; Table 1 (p. 328); Scheme 1 (p. 329); Figs. 1-2 (p. 327)"
+  },
+  {
+   "doi": "10.1255/ejms.745",
+   "locator": "Results, pp. 330-331; Table 1 (p. 328); Scheme 1 (p. 329)"
+  },
+  {
+   "doi": "10.1255/ejms.745",
+   "locator": "Experimental, IRMPD data (p. 327); Results (p. 329); Table 1 (p. 328); Scheme 1"
+  },
+  {
+   "doi": "10.1038/s41598-019-57406-7",
+   "locator": "Results, type I paragraph (alkaloids 1-7); Fig. 2a"
+  },
+  {
+   "doi": "10.1038/s41598-019-57406-7",
+   "locator": "Results, type I section; Fig. 2; Summary"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "isoquinoline ion b (dihydroisoquinolinium) of the hypothesised scaffold; Table 1 lists it for every entry, at 2-5 % for the coclaurine type",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "isoquinoline_b",
+   "term_id": "ion_b",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "benzyl cation e of the hypothesised scaffold",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "benzyl_e",
+   "term_id": "ion_e",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "CH5N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "ion a for N-methyl compounds",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch5n",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "H3N",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "ion a for N-H compounds (generic loss, not a claim term)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_nh3",
+   "term_source": "src:2",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18; family alkaloid_benzylisoquinoline)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

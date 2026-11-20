@@ -1,0 +1,67 @@
+{
+ "entries": [
+  {
+   "class": "flavan_3_ol",
+   "formula": "C15H14O6",
+   "ions": {
+    "rda_12b": {
+     "neg": [],
+     "pos": [
+      "C7H7O2"
+     ]
+    },
+    "rda_14b": {
+     "neg": [],
+     "pos": [
+      "C9H9O3"
+     ]
+    }
+   },
+   "name": "catechin",
+   "origin": "as_published",
+   "scaffold_id": "catechin",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    },
+    {
+     "doi": "10.3390/molecules29225246",
+     "locator": "Table 2 (m/z 151, flavanols)"
+    }
+   ]
+  },
+  {
+   "class": "flavan_3_ol",
+   "formula": "C15H14O6",
+   "ions": {
+    "rda_12b": {
+     "neg": [],
+     "pos": [
+      "C7H7O2"
+     ]
+    },
+    "rda_14b": {
+     "neg": [],
+     "pos": [
+      "C9H9O3"
+     ]
+    }
+   },
+   "name": "epicatechin",
+   "origin": "as_published",
+   "scaffold_id": "epicatechin",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    },
+    {
+     "doi": "10.3390/molecules29225246",
+     "locator": "Table 2 (m/z 151, flavanols)"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_flavan_3_ol_pos"
+}

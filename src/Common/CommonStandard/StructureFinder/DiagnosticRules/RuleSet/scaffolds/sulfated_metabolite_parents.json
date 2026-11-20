@@ -1,0 +1,777 @@
+{
+ "entries": [
+  {
+   "class": "aryl",
+   "formula": "C6H6O",
+   "ions": {},
+   "name": "phenol",
+   "origin": "as_published",
+   "scaffold_id": "phenol",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C7H6O3",
+   "ions": {},
+   "name": "hydroxybenzoic acid (2-, 3- and 4-)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxybenzoic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1 (compounds 13-15); Section 2.3, Figure 4C"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C7H8O2",
+   "ions": {},
+   "name": "methoxyphenol (2-, 3- and 4-)",
+   "origin": "as_published",
+   "scaffold_id": "methoxyphenol",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1 (compounds 1, 2 and 8); Section 2.3, Figure 4D"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C8H8O3",
+   "ions": {},
+   "name": "vanillin",
+   "origin": "as_published",
+   "scaffold_id": "vanillin",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H10O5",
+   "ions": {},
+   "name": "syringic acid",
+   "origin": "as_published",
+   "scaffold_id": "syringic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1; Figure 3C"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C11H12O5",
+   "ions": {},
+   "name": "sinapic acid",
+   "origin": "as_published",
+   "scaffold_id": "sinapic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H10O4",
+   "ions": {},
+   "name": "homovanillic acid",
+   "origin": "as_published",
+   "scaffold_id": "homovanillic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C8H8O4",
+   "ions": {},
+   "name": "methoxysalicylic acid",
+   "origin": "as_published",
+   "scaffold_id": "methoxysalicylic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C8H8O3",
+   "ions": {},
+   "name": "hydroxyphenylacetic acid (3- and 4-)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxyphenylacetic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H8O3",
+   "ions": {},
+   "name": "hydroxycinnamic acid (coumaric acid)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxycinnamic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H9NO4",
+   "ions": {},
+   "name": "hydroxyhippuric acid (3- and 4-)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxyhippuric_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1 (compounds 34 and 35); Section 2.3, Figure 4B"
+    }
+   ]
+  },
+  {
+   "class": "enol",
+   "formula": "C9H6O3",
+   "ions": {},
+   "name": "4-hydroxycoumarin",
+   "origin": "as_published",
+   "scaffold_id": "hydroxycoumarin",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "benzylic",
+   "formula": "C8H8O3",
+   "ions": {},
+   "name": "mandelic acid",
+   "origin": "as_published",
+   "scaffold_id": "mandelic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "alkyl",
+   "formula": "C9H10O3",
+   "ions": {},
+   "name": "3-phenyllactic acid",
+   "origin": "as_published",
+   "scaffold_id": "phenyllactic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1007/s00216-025-06027-3",
+     "locator": "Table 1 (ID 34)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H10O3",
+   "ions": {},
+   "name": "3-(3-hydroxyphenyl)propionic acid",
+   "origin": "as_published",
+   "scaffold_id": "hydroxyphenylpropionic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "benzylic",
+   "formula": "C7H8O",
+   "ions": {},
+   "name": "benzyl alcohol",
+   "origin": "as_published",
+   "scaffold_id": "benzyl_alcohol",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "enol",
+   "formula": "C6H6O3",
+   "ions": {},
+   "name": "3-hydroxy-2-methyl-4-pyrone (maltol)",
+   "origin": "as_published",
+   "scaffold_id": "maltol",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "enol",
+   "formula": "C6H8O3",
+   "ions": {},
+   "name": "3-hydroxy-4,5-dimethyl-2(5H)-furanone (sotolon)",
+   "origin": "as_published",
+   "scaffold_id": "sotolon",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1 (compound 10)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H13NO",
+   "ions": {},
+   "name": "N-methyltyramine",
+   "origin": "as_published",
+   "scaffold_id": "n_methyltyramine",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C7H7NO3",
+   "ions": {},
+   "name": "5-aminosalicylic acid",
+   "origin": "as_published",
+   "scaffold_id": "aminosalicylic_acid",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C10H12O2",
+   "ions": {},
+   "name": "raspberry ketone",
+   "origin": "as_published",
+   "scaffold_id": "raspberry_ketone",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C10H12N2O",
+   "ions": {},
+   "name": "serotonin (O- and N-sulfo regioisomers)",
+   "origin": "as_published",
+   "scaffold_id": "serotonin",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1 (compound 32); Section 2.1, Figure 2D"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C5H5NO",
+   "ions": {},
+   "name": "hydroxypyridine (2- and 3-)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxypyridine",
+   "source": [
+    {
+     "doi": "10.3390/metabo10100415",
+     "locator": "Table 1 (compounds 4 and 5); Section 2.3, Figure 4A"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C19H28O2",
+   "ions": {},
+   "name": "dehydroepiandrosterone",
+   "origin": "as_published",
+   "scaffold_id": "dhea",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Parameters of CID conditions (p. 657; DHEA sulfate base peak m/z 97); Fig. 2C (p. 659)"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C19H30O2",
+   "ions": {},
+   "name": "5alpha-androstan-3beta-ol-17-one (epiandrosterone)",
+   "origin": "as_published",
+   "scaffold_id": "epiandrosterone",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Experimental, Chemicals (p. 656); LC/ESI-MS/MS profiles of human urine (p. 659); Fig. 2C"
+    },
+    {
+     "doi": "10.3389/fmolb.2022.829511",
+     "locator": "Results and Discussion, Discovery of a Novel Steroid Sulfate Metabolite in Equine Urine (p. 8); Table 2"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C19H30O2",
+   "ions": {},
+   "name": "5alpha-androstan-3alpha-ol-16-one",
+   "origin": "as_published",
+   "scaffold_id": "androstanolone_16_one",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Experimental, Chemicals (p. 656); LC/ESI-MS/MS profiles of human urine (p. 659); Fig. 2C"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C18H24O2",
+   "ions": {},
+   "name": "estradiol",
+   "origin": "as_published",
+   "scaffold_id": "estradiol",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Parameters of CID conditions (p. 657; estradiol 3-sulfate m/z 351 to 271 and m/z 80)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C8H10O",
+   "ions": {},
+   "name": "ethylphenol (2-, 3- and 4-)",
+   "origin": "as_published",
+   "scaffold_id": "ethylphenol",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Identification of the ion at m/z 201 (p. 661); Fig. 5 (p. 661); Fig. 6 (p. 662)"
+    },
+    {
+     "doi": "10.1021/jacs.6c02487",
+     "locator": "Table 4 (4-ethylphenyl sulfate)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H12O4",
+   "ions": {},
+   "name": "3-methoxy-4-hydroxyphenylglycol (MHPG)",
+   "origin": "as_published",
+   "scaffold_id": "mhpg",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Experimental, Chemicals (p. 656); LC/ESI-MS/MS (p. 658)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C10H8O3",
+   "ions": {},
+   "name": "4-methylumbelliferone",
+   "origin": "as_published",
+   "scaffold_id": "methylumbelliferone",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Experimental, Chemicals (p. 656); LC/ESI-MS/MS (p. 658)"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C24H40O3",
+   "ions": {},
+   "name": "lithocholic acid",
+   "origin": "as_published",
+   "scaffold_id": "lithocholic_acid",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Experimental, Chemicals (p. 656); LC/ESI-MS/MS (p. 658)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C6H5NO4",
+   "ions": {},
+   "name": "4-nitrocatechol",
+   "origin": "as_published",
+   "scaffold_id": "nitrocatechol",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Experimental, Chemicals (p. 656); LC/ESI-MS/MS (p. 658)"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C24H32O8",
+   "ions": {},
+   "name": "estradiol 3-glucuronide (17-sulfate)",
+   "origin": "as_published",
+   "scaffold_id": "estradiol_3_glucuronide",
+   "source": [
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Experimental, Chemicals (p. 656); LC/ESI-MS/MS (p. 658)"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C19H28O2",
+   "ions": {},
+   "name": "testosterone",
+   "origin": "as_published",
+   "scaffold_id": "testosterone",
+   "source": [
+    {
+     "doi": "10.3389/fmolb.2022.829511",
+     "locator": "Results and Discussion, Discovery of a Novel Steroid Sulfate Metabolite in Equine Urine (p. 8); Table 2"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C19H32O2",
+   "ions": {},
+   "name": "5alpha-androstane-3beta,17alpha-diol",
+   "origin": "as_published",
+   "scaffold_id": "androstanediol",
+   "source": [
+    {
+     "doi": "10.3389/fmolb.2022.829511",
+     "locator": "Results and Discussion, Discovery of a Novel Steroid Sulfate Metabolite in Equine Urine (p. 8); Table 2"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C15H10O7",
+   "ions": {},
+   "name": "quercetin (3- and 7-sulfate)",
+   "origin": "as_published",
+   "scaffold_id": "quercetin",
+   "source": [
+    {
+     "doi": "10.3389/fpls.2019.00885",
+     "locator": "Materials and Methods, Chemicals and Plant Material; Results, MS Method Development"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C15H10O6",
+   "ions": {},
+   "name": "luteolin",
+   "origin": "as_published",
+   "scaffold_id": "luteolin",
+   "source": [
+    {
+     "doi": "10.3390/molecules29204888",
+     "locator": "Section 2.2; Figure 4 caption; Section 3.4"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C15H10O5",
+   "ions": {},
+   "name": "apigenin",
+   "origin": "as_published",
+   "scaffold_id": "apigenin",
+   "source": [
+    {
+     "doi": "10.3390/molecules29204888",
+     "locator": "Section 2.2; Figure 4 caption; Section 3.4"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C16H12O6",
+   "ions": {},
+   "name": "diosmetin",
+   "origin": "as_published",
+   "scaffold_id": "diosmetin",
+   "source": [
+    {
+     "doi": "10.3390/molecules29204888",
+     "locator": "Section 2.2; Figure 4 caption; Section 3.4"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C14H10O5",
+   "ions": {},
+   "name": "alternariol (AOH)",
+   "origin": "as_published",
+   "scaffold_id": "alternariol",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C15H12O5",
+   "ions": {},
+   "name": "alternariol monomethyl ether (AME)",
+   "origin": "as_published",
+   "scaffold_id": "alternariol_methyl_ether",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C15H16O6",
+   "ions": {},
+   "name": "altenuene (ALT)",
+   "origin": "as_published",
+   "scaffold_id": "altenuene",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C15H12O6",
+   "ions": {},
+   "name": "dehydroaltenusin (DHA)",
+   "origin": "as_published",
+   "scaffold_id": "dehydroaltenusin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C15H14O6",
+   "ions": {},
+   "name": "altenusin (ALU)",
+   "origin": "as_published",
+   "scaffold_id": "altenusin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C14H12O6",
+   "ions": {},
+   "name": "desmethylaltenusin (DMA)",
+   "origin": "as_published",
+   "scaffold_id": "desmethylaltenusin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C24H33NO4",
+   "ions": {},
+   "name": "altersetin (ALS)",
+   "origin": "as_published",
+   "scaffold_id": "altersetin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "site_not_stated",
+   "formula": "C14H16N2O3",
+   "ions": {},
+   "name": "maculosin (MAC)",
+   "origin": "as_published",
+   "scaffold_id": "maculosin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7286",
+     "locator": "Table 1 (p. 5)"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C27H46O",
+   "ions": {},
+   "name": "cholesterol",
+   "origin": "as_published",
+   "scaffold_id": "cholesterol",
+   "source": [
+    {
+     "doi": "10.1021/jacs.6c02487",
+     "locator": "Table 1; Table 4"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C7H8O",
+   "ions": {},
+   "name": "p-cresol",
+   "origin": "as_published",
+   "scaffold_id": "p_cresol",
+   "source": [
+    {
+     "doi": "10.1021/jacs.6c02487",
+     "locator": "Table 3; Table 4"
+    },
+    {
+     "doi": "10.1039/c8sc01502c",
+     "locator": "Results, Identification of metabolites in urine samples; Fig. 3"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C27H46O2",
+   "ions": {},
+   "name": "25-hydroxycholesterol (3-sulfate)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxycholesterol_25",
+   "source": [
+    {
+     "doi": "10.1021/jacs.6c02487",
+     "locator": "Table 3"
+    }
+   ]
+  },
+  {
+   "class": "alicyclic",
+   "formula": "C24H40O5",
+   "ions": {},
+   "name": "cholic acid (7-sulfate)",
+   "origin": "as_published",
+   "scaffold_id": "cholic_acid",
+   "source": [
+    {
+     "doi": "10.1021/jacs.6c02487",
+     "locator": "Table 3 (sulfocholic acid); Table 4 (7-sulfocholic acid)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C9H10O4",
+   "ions": {},
+   "name": "hydroxyphenyllactic acid (ring position not stated)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxyphenyllactic_acid",
+   "source": [
+    {
+     "doi": "10.1007/s00216-025-06027-3",
+     "locator": "Table 1 (ID 17)"
+    }
+   ]
+  },
+  {
+   "class": "mixed",
+   "formula": "C9H10O5",
+   "ions": {},
+   "name": "dihydroxyphenyllactic acid (positions not stated; phenolic and benzylic sulfates)",
+   "origin": "as_published",
+   "scaffold_id": "dihydroxyphenyllactic_acid",
+   "source": [
+    {
+     "doi": "10.1007/s00216-025-06027-3",
+     "locator": "Table 1 (IDs 8 and 11)"
+    }
+   ]
+  },
+  {
+   "class": "aryl",
+   "formula": "C6H6O3",
+   "ions": {},
+   "name": "phloroglucinol",
+   "origin": "as_published",
+   "scaffold_id": "phloroglucinol",
+   "source": [
+    {
+     "doi": "10.1007/s00216-025-06027-3",
+     "locator": "Table 1"
+    }
+   ]
+  }
+ ],
+ "list_id": "sulfated_metabolite_parents"
+}

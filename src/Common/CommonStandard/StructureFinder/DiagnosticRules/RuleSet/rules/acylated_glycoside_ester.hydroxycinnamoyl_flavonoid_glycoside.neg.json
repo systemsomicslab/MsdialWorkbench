@@ -1,0 +1,300 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "acid_anion",
+   "loss_acyl",
+   "loss_acyl_hex"
+  ],
+  "motif_id": "hydroxycinnamoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5282102,
+    "smiles": "C1=CC(=CC=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 10621,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=CC(=C4C(=O)C[C@H](OC4=C3)C5=CC(=C(C=C5)OC)O)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5318767,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC=C(C=C5)O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 44257815,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C=C(C=C3O2)O[C@H]4C([C@H]([C@@H](C(O4)C(=O)O)O)O)O[C@H]5C([C@H]([C@@H](C(O5)C(=O)O)O)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the sugar that carries the acyl group and the acyl position are not resolved",
+   "O- versus C-glycosidic linkage of the aglycone is not decided by these ions",
+   "the aglycone and the acyl identity come from the hypothesis and are reported, not claimed"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5320686,
+    "smiles": "C1=CC(=CC=C1/C=C/C(=O)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC=C(C=C5)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5317991,
+    "smiles": "C1=CC(=CC=C1/C=C/C(=O)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC3=C(OC4=CC(=CC(=C4C3=O)O)O)C5=CC(=C(C=C5)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 44257728,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)OCC2[C@H]([C@@H](C([C@@H](O2)OC3[C@H]([C@@H](C(O[C@H]3C4=C(C5=C(C=C4O)OC(=CC5=O)C6=CC=C(C=C6)O)O)CO)O)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:8",
+   "of": [
+    {
+     "term": "acid_anion"
+    },
+    {
+     "term": "loss_acyl"
+    },
+    {
+     "term": "loss_acid_coumaroyl"
+    },
+    {
+     "term": "loss_acid_feruloyl"
+    },
+    {
+     "term": "loss_acid_sinapoyl"
+    },
+    {
+     "term": "loss_acyl_hex"
+    }
+   ]
+  }
+ },
+ "loss_reference": "observed",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): each acid loss is the acyl loss plus H2O, so the two-of-six count can rest on one parent-daughter channel; the acid losses are now supporting terms only.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavonoid_o_glycoside",
+    "note": "non-acylated O-glycosides of the same aglycone whose sugars lie 0.021 Da (dHex for coumaroyl, Hex for caffeoyl) or 0.015 Da (HexA for feruloyl) from the hypothesis give the same Y ions; src:2 and src:3 separate them only by accurate mass"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycones",
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     3
+    ],
+    "HexA": [
+     0,
+     2
+    ],
+    "Pen": [
+     0,
+     2
+    ],
+    "caffeoyl": [
+     0,
+     1
+    ],
+    "coumaroyl": [
+     0,
+     1
+    ],
+    "dHex": [
+     0,
+     2
+    ],
+    "feruloyl": [
+     0,
+     1
+    ],
+    "sinapoyl": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glycoside.neg",
+ "source": [
+  {
+   "doi": "10.1002/rcm.1697",
+   "locator": "Results and Discussion, Acylated flavonoid-O-glycosides; Tables 1-2; Fig. 3a, 3c"
+  },
+  {
+   "doi": "10.1002/rcm.1697",
+   "locator": "Results and Discussion, Acylated flavonoid-O-glycosides; Table 2; Fig. 5g"
+  },
+  {
+   "doi": "10.1021/jf405538d",
+   "locator": "Results and Discussion, acylated flavonol glycosides; Table 2"
+  },
+  {
+   "doi": "10.1002/pca.1189",
+   "locator": "Results and Discussion, Fragmentation pathways of acylated flavone diglycosides; Table 3; Figure 2"
+  },
+  {
+   "doi": "10.1002/rcm.4910",
+   "locator": "Results and Discussion, C-Glycosyl flavones acylated with aromatic acids; Table 3"
+  },
+  {
+   "doi": "10.1007/s00216-020-02547-2",
+   "locator": "Table 2 (Q7, Q8, Q12-Q14, Q16); Fig. 3; Fig. 4"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "Acylated glycosyl flavonoids; Table 1"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions; P3 proposal, Author input 2026-11-15, Q6 principle 1",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision: a class claim needs two or three diagnostic ions jointly (author, 2026-11-15)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "deprotonated caffeic acid C9H7O4- 179 (src:0); caffeoyl only, because src:1 reports no acyl-derived product ion for coumaroyl and no cited source prints a ferulate or sinapate anion",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "acid_anion",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "caffeoyl",
+    "plus": "HO"
+   }
+  },
+  {
+   "floor_source": "src:7",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of the acyl residue (146.0366, 162.0315, 176.0471, 206.0576 printed in src:2); measured from the observed precursor, so an isobaric dHex or Hex loss (0.021 Da) or HexA loss (0.015 Da) misses it at accurate mass; also src:0, src:1, src:4, src:6",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_acyl",
+   "term_source": "src:2",
+   "than": null,
+   "unit": {
+    "class": "acyl",
+    "minus": null,
+    "plus": null
+   }
+  },
+  {
+   "floor_source": "src:7",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of p-coumaric acid, MS2 base peak of a 2-O-p-coumaroyl di-C-glucosyl flavone in src:4; src:3 reports no acyl loss for p-coumaroyl O-glucuronides",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_acid_coumaroyl",
+   "term_source": "src:4",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "coumaroyl",
+    "plus": "H2O"
+   }
+  },
+  {
+   "floor_source": "src:7",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of ferulic acid from feruloyl glucuronosyl-glucosides to Z ions in src:3; also src:2 (769.1975 to 575) and src:4 (base peak of 2-O-feruloyl di-C-glucosyl flavones)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_acid_feruloyl",
+   "term_source": "src:3",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "feruloyl",
+    "plus": "H2O"
+   }
+  },
+  {
+   "floor_source": "src:7",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of sinapic acid, MS2 base peak of a 2-O-sinapoyl di-C-glucosyl flavone in src:4",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_acid_sinapoyl",
+   "term_source": "src:4",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "sinapoyl",
+    "plus": "H2O"
+   }
+  },
+  {
+   "floor_source": "src:7",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "loss of the acylated hexose as one unit (feruloyl 338, sinapoyl 368 in src:5; caffeoyl 324, coumaroyl 308 in src:0, src:1); src:6 prints feruloyl- and sinapoylhexose losses with a +/- sign, coumaroylhexose for [M+H]+ only",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_acyl_hex",
+   "term_source": "src:5",
+   "than": null,
+   "unit": {
+    "class": "acyl",
+    "minus": null,
+    "plus": "C6H10O5"
+   }
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18) from the LLM-extracted candidate records of candidates-20261118; source-checked 2026-11-18; review fixes 2026-11-19, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

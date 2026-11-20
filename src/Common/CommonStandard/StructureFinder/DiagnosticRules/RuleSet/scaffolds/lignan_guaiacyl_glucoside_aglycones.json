@@ -1,0 +1,61 @@
+{
+ "entries": [
+  {
+   "class": "furofuran_lignan",
+   "formula": "C20H22O6",
+   "ions": {},
+   "name": "pinoresinol (as its 4-O-glucoside)",
+   "origin": "as_published",
+   "scaffold_id": "pinoresinol",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3746",
+     "locator": "Ricci 2008: Table 1 (p. 3385); Fig. 2a (p. 3384)"
+    }
+   ]
+  },
+  {
+   "class": "furofuran_lignan",
+   "formula": "C21H24O6",
+   "ions": {},
+   "name": "phillygenin epimer (phylliroside aglycone; as (+)-phylliroside, its 4-O-glucoside)",
+   "origin": "as_published",
+   "scaffold_id": "phillygenin_epimer",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3746",
+     "locator": "Ricci 2008: Table 1 (p. 3385); Fig. 1 (p. 3384); CAD of alkali metal cation adducts (p. 3384)"
+    }
+   ]
+  },
+  {
+   "class": "furofuran_lignan",
+   "formula": "C20H22O7",
+   "ions": {},
+   "name": "8-hydroxypinoresinol (as its 4-O-glucoside)",
+   "origin": "as_published",
+   "scaffold_id": "hydroxypinoresinol_8",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3746",
+     "locator": "Ricci 2008: Table 1 (p. 3385); Fig. 3b (p. 3386)"
+    }
+   ]
+  },
+  {
+   "class": "tetrahydrofuran_lignan",
+   "formula": "C20H24O7",
+   "ions": {},
+   "name": "4-O-glucosyloxy-3,3'-dimethoxy-7,9'-epoxylignan-5',8',9-triol aglycone (guaiacyl at C7 glucosylated at C4-O; isomeric with 8'-hydroxylariciresinol, whose 4'-O-glucoside gives no 309)",
+   "origin": "as_published",
+   "scaffold_id": "dimethoxy_epoxylignan_tetrol_c20h24o7",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4472",
+     "locator": "Ricci 2010: Experimental and Results, lignan 3 (p. 980); Figs. 2c and 3c (p. 981); fragmentation mechanisms section (p. 984)"
+    }
+   ]
+  }
+ ],
+ "list_id": "lignan_guaiacyl_glucoside_aglycones"
+}

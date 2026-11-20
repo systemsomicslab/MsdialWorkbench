@@ -1,0 +1,151 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "ion_rda_a",
+   "ion_rda_b"
+  ],
+  "motif_id": "protopine",
+  "negative_examples": [
+   {
+    "pubchem_cid": 72301,
+    "smiles": "COC1=C(C2=C(C[C@H]3C4=CC(=C(C=C4CCN3C2)OC)OC)C=C1)OC"
+   },
+   {
+    "pubchem_cid": 34458,
+    "smiles": "COC1=C(C2=C(CC3C4=CC5=C(C=C4CCN3C2)OCO5)C=C1)OC"
+   }
+  ],
+  "non_claims": [
+   "positions of the methylenedioxy and methoxy groups are not resolved",
+   "the precursor list holds protopine only; allocryptopine RDA ions are not printed with formulas in the records"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 4970,
+    "smiles": "CN1CCC2=CC3=C(C=C2C(=O)CC4=C(C1)C5=C(C=C4)OCO5)OCO3"
+   },
+   {
+    "pubchem_cid": 98570,
+    "smiles": "CN1CCC2=CC3=C(C=C2C(=O)CC4=C(C1)C(=C(C=C4)OC)OC)OCO3"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_h2o"
+   },
+   {
+    "term": "ion_rda_a"
+   },
+   {
+    "term": "ion_rda_b"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Protopines lose H2O from [M+H]+ and give two RDA ions, which together separate them from tetrahydroprotoberberines; the RDA ion formulas were recomputed from printed masses for protopine alone.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "tetrahydroprotoberberine",
+    "note": "tetrahydroprotoberberines also give RDA ions but no H2O loss (doi:10.1016/j.apsb.2014.04.003)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_benzylisoquinoline_protopines",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_benzylisoquinoline.protopine.pos",
+ "source": [
+  {
+   "doi": "10.1016/j.apsb.2014.04.003",
+   "locator": "Section 3.1.2; Fig. 5"
+  },
+  {
+   "doi": "10.1016/j.apsb.2014.04.003",
+   "locator": "Section 3.1.2; Fig. 5; Section 3.2"
+  },
+  {
+   "doi": "10.5478/msl.2013.4.4.79",
+   "locator": "Results, p. 81; Scheme 2-B; Figure 1-IV"
+  },
+  {
+   "doi": "10.1038/s41598-019-57406-7",
+   "locator": "Results, type II section (alkaloids 25 and 26); Fig. 6a"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "H2O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "[M+H-H2O]+ after iminolization (generic loss, not a claim term)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_h2o",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "RDA iminium ion (m/z 206 for protopine); formula recomputed from the printed m/z",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_iminium",
+   "term_id": "ion_rda_a",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "RDA benzyl-type ion (m/z 149 for protopine); formula recomputed from the printed m/z",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_benzyl",
+   "term_id": "ion_rda_b",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18; family alkaloid_benzylisoquinoline)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

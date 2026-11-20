@@ -1,0 +1,111 @@
+{
+ "entries": [
+  {
+   "class": "protoberberine",
+   "formula": "C20H18NO4",
+   "ions": {},
+   "name": "berberine (epiberberine shares the cation formula)",
+   "origin": "as_published",
+   "scaffold_id": "berberine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2004.11.026",
+     "locator": "Sec. 3.1, pp. 439-441; Table 1 (p. 439)"
+    },
+    {
+     "doi": "10.1002/jms.727",
+     "locator": "Results, standard samples, pp. 1358-1360; Table 2 (p. 1361)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 2353 (berberine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "protoberberine",
+   "formula": "C21H22NO4",
+   "ions": {},
+   "name": "palmatine",
+   "origin": "as_published",
+   "scaffold_id": "palmatine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2004.11.026",
+     "locator": "Sec. 3.1, pp. 439-441; Table 1 (p. 439)"
+    },
+    {
+     "doi": "10.1002/jms.727",
+     "locator": "Results, standard samples, pp. 1358-1360; Table 2 (p. 1361)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 19009 (palmatine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "protoberberine",
+   "formula": "C20H20NO4",
+   "ions": {},
+   "name": "jatrorrhizine (columbamine shares the cation formula)",
+   "origin": "as_published",
+   "scaffold_id": "jatrorrhizine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpba.2004.11.026",
+     "locator": "Sec. 3.1, pp. 439-441; Table 1 (p. 439)"
+    },
+    {
+     "doi": "10.1002/jms.727",
+     "locator": "Results, standard samples, pp. 1358-1360; Table 2 (p. 1361)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 72323 (jatrorrhizine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "protoberberine",
+   "formula": "C19H18NO4",
+   "ions": {},
+   "name": "demethyleneberberine",
+   "origin": "as_published",
+   "scaffold_id": "demethyleneberberine",
+   "source": [
+    {
+     "doi": "10.1016/j.apsb.2014.04.003",
+     "locator": "Section 3.1.3; Fig. 6; Table 1 (authentic standards)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 363209 (demethyleneberberine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "protoberberine",
+   "formula": "C22H24NO4",
+   "ions": {},
+   "name": "dehydrocorydaline (13-methylpalmatine)",
+   "origin": "as_published",
+   "scaffold_id": "dehydrocorydaline",
+   "source": [
+    {
+     "doi": "10.1016/j.apsb.2014.04.003",
+     "locator": "Section 3.1.3; Fig. 6; Table 1 (authentic standards)"
+    },
+    {
+     "doi": "10.1002/jms.727",
+     "locator": "Results, ion at m/z 366, pp. 1361-1362; Table 2; Fig. 8"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 34781 (dehydrocorydaline), compound record"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_benzylisoquinoline_protoberberinium"
+}

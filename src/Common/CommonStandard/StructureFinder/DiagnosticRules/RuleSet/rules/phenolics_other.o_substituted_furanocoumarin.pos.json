@@ -1,0 +1,185 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "hydroxypsoralen",
+   "ion_175",
+   "ion_159",
+   "ion_147",
+   "ion_131"
+  ],
+  "motif_id": "furanocoumarin",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5320318,
+    "smiles": "CC(=CCC1=C(C=CC2=C1OC(=O)C=C2)O)C"
+   }
+  ],
+  "non_claims": [
+   "Linear versus angular fusion and the 5- versus 8-position of the O-substituent are not resolved",
+   "The O-substituent is decided by the precursor composition, not by these ions"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 10212,
+    "smiles": "CC(=CCOC1=C2C(=CC3=C1OC=C3)C=CC(=O)O2)C"
+   },
+   {
+    "pubchem_cid": 68081,
+    "smiles": "CC(=CCOC1=C2C=CC(=O)OC2=CC3=C1C=CO3)C"
+   },
+   {
+    "pubchem_cid": 5471349,
+    "smiles": "CC(=CCC/C(=C/COC1=C2C=CC(=O)OC2=CC3=C1C=CO3)/C)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "hydroxypsoralen"
+   },
+   {
+    "any": [
+     {
+      "term": "ion_175"
+     },
+     {
+      "term": "ion_159"
+     },
+     {
+      "term": "ion_147"
+     },
+     {
+      "term": "ion_131"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured: in the cited MS2 of [M+H]+ these psoralens give 203 alone; 175, 159 and 147 appear only at MS3 of 203 (Li 2014; Concannon 2000) or in MS/MS of in-source 203 (Smyth 2011).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "phenolics_other_o_substituted_furanocoumarins",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "phenolics_other.o_substituted_furanocoumarin.pos",
+ "source": [
+  {
+   "doi": "10.1002/pca.2496",
+   "locator": "Li 2014: Results, ESI/MSn (p. 231); Fig. 4A-B (p. 233); Table 1 nos. 8, 19, 24, 29, 37, 41 (pp. 235-237; 203 at MS2, 175 and 159 at MS3 of 203)"
+  },
+  {
+   "doi": "10.1016/j.fochx.2025.102233",
+   "locator": "Gong 2025: Sections 2.6 and 3.1 (131.05 MassQL filter; Fig. S2); Section 3.1 (bergaptol MS2 175, 159, 131; 215.03 and 203.04 in O-geranyl furanocoumarins); Figure 1B-C"
+  },
+  {
+   "doi": "10.1002/1097-0231(20001215)14:23<2260::aid-rcm161>3.0.co;2-b",
+   "locator": "Concannon 2000: Table 1 compounds 9-10 (p. 2261; 271 to 203 at MS2, 175 and 159 at MS3, 147 at MS4); Scheme 5 (p. 2267)"
+  },
+  {
+   "doi": "10.1002/rcm.4991",
+   "locator": "Smyth 2011: Imperatorin (p. 1312; 203 formed in source, MS/MS of 203 gives 147, 175, 131); Table 1 (p. 1313)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": false,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "C11H7O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "protonated 5- or 8-hydroxypsoralen C11H7O4+ 203 after loss of the O-substituent (Li 2014 and Concannon 2000, MS2 base peak)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "hydroxypsoralen",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C10H7O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "203 minus CO, C10H7O3+ 175; reported at MS3 of 203 (Li 2014; Concannon 2000) or MS/MS of in-source 203 (Smyth 2011), not in MS2 of [M+H]+",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_175",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C10H7O2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "203 minus CO2, C10H7O2+ 159; reported at MS3 of 203 only (Li 2014; Concannon 2000)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_159",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C9H7O2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "203 minus two CO, C9H7O2+ 147; MS/MS of in-source 203 (Smyth 2011) and MS4 (Concannon 2000)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_147",
+   "term_source": "src:3",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C9H7O",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "C9H7O+ 131, the coumarin MassQL filter ion of Gong 2025; also in MS/MS of in-source 203 (Smyth 2011)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_131",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}
