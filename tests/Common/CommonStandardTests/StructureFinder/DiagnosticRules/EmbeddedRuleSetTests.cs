@@ -83,14 +83,16 @@ public class EmbeddedRuleSetTests
     }
 
     /// <summary>
-    /// The released rows of ruleset-history.tsv (design 3.3: append-only, so a label never names two contents), as
-    /// they are on master. The history must start with exactly these lines, in this order; a row is added here when
-    /// the change that adds it to the history is merged, and is never edited or removed afterwards. The manifest pin
-    /// above follows the embedded files, so this list is what keeps a released row from being rewritten.
+    /// The released rows of ruleset-history.tsv (design 3.3: append-only, so a label never names two contents). The
+    /// history must start with exactly these lines, in this order. A row is added here in the same change that adds it
+    /// to the history, since merging that change releases it; until the merge both may still be edited together, and
+    /// afterwards the row is never edited or removed. The manifest pin above follows the embedded files, so this list
+    /// is what keeps a released row from being rewritten.
     /// </summary>
     private static readonly string[] ReleasedHistoryRows =
     {
         "0.0.1-skeleton\t7f84e0fe34bd672e375191e282e32e85618ce51079577b71001063ee1250774e\t2026-11-19",
+        "0.1.0\taf4a7ebf2732b30b9610c7e410ba34f50f176b3fc0155d5a4f9a28fb413ab2eb\t2026-11-20",
     };
 
     [TestMethod]

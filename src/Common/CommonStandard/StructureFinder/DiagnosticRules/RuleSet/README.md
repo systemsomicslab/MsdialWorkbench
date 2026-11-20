@@ -85,12 +85,14 @@ the lists name the deep classes as well. They were built in four steps:
   `compatible` or `broader` for the parent (`MotifTests` checks it).
 - Ancestors. Every ancestor of a `compatible` class below the kingdoms that is not `compatible` is `broader`, so a
   class between two listed ones (`Steroid lactones` between `Steroids and steroid derivatives` and `Cardenolides`)
-  reads `broader`, not `differs`.
+  reads `broader`, not `differs` (`ChemOntLocalTests` checks it, below).
 
 - Source: ChemOnt 2.1, the ClassyFire ontology file `ChemOnt_2_1.obo` (OBO header `data-version: 2.1`,
   `date: 26:08:2016 16:28`; ClassyFire download path `/system/downloads/1_0/chemont/ChemOnt_2_1.obo.zip`), sha256
   `8616a6ecb96c8aeb204739a4de045cd290eab9a0e164d0ceaa5d888d0751fe22` (2,032,131 bytes). Every id and name was
-  checked against that file. The ontology itself is not committed.
+  checked against that file. The ontology itself is not committed, so the check is the local test
+  `ChemOntLocalTests`, which runs when `MSDIAL_CHEMONT_OBO` names a copy of that file (sha256 checked) and is
+  skipped otherwise; rerun it after any edit to the nodes.
 - Citation: Djoumbou Feunang Y. et al., ClassyFire: automated chemical classification with a comprehensive,
   computable taxonomy. J. Cheminform. 8, 61 (2016), doi:10.1186/s13321-016-0174-y.
 - In 0.1.0 all 106 motifs carry nodes (1,598 in all: 1,021 `compatible` and 577 `broader`; 671 distinct); 9 have an
