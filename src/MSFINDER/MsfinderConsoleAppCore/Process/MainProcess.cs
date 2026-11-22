@@ -31,6 +31,8 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                     return predictProcess(inputFolder, methodFile, outputFolder);
                 case "mssearch":
                     return mssearchProcess(inputFolder, methodFile, outputFolder);
+                case "diagrules":
+                    return new DiagrulesProcess().Run(inputFolder, methodFile, outputFolder);
                 default:
                     Console.WriteLine("Invalid analysis type. Valid options are: 'predict', 'mssearch'");
                     return -1;

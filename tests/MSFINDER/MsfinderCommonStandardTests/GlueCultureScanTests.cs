@@ -30,6 +30,8 @@ public class GlueCultureScanTests
         typeof(DiagnosticRuleRun), typeof(DiagnosticRunCounts), typeof(DiagnosticQueryContext), typeof(DiagnosticOutputNames),
         typeof(DiagnosticRuleQuery), typeof(DiagnosticRunEnvironment), typeof(DiagnosticEvidenceView), typeof(DiagnosticEvidenceOutcomeRow),
         typeof(DiagnosticEvidenceTermRow), typeof(DiagnosticRuleRuntimeCache),
+        typeof(DiagrulesHarness), typeof(DiagrulesRun), typeof(DiagrulesOutputNames), typeof(DiagrulesReaderCounts),
+        typeof(DiagrulesMspReader), typeof(DiagrulesRecord), typeof(CollisionEnergyBin),
     };
 
     private static bool IsFloating(Type t) => t == typeof(double) || t == typeof(float) || t == typeof(decimal)

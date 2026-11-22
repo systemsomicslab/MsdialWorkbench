@@ -673,6 +673,10 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             return text == null ? JsonValue.Null : RawNumber(text);
         }
 
+        /// <summary>A manifest number with fixed decimals (null when not finite), for the diagrules manifest; written
+        /// by <see cref="ToCanonicalText"/>.</summary>
+        internal static JsonValue FixedNumber(double value, int decimals) => JsonNum(value, decimals);
+
         private const string RawMarker = "\u0001";
 
         private static readonly Regex RawPattern = new Regex("\"\\\\u0001([^\"]*)\"", RegexOptions.CultureInvariant);

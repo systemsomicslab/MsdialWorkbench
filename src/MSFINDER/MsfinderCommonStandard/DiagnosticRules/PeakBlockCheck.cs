@@ -145,5 +145,35 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             }
             return sorted;
         }
+
+        // The same grammar, line by line, for the diagrules reader (one grammar for both, design section 8 PR 5).
+
+        /// <summary>Whether <paramref name="line"/> mentions a block marker (<c>Num Peaks:</c> or <c>MSTYPE:</c>).</summary>
+        internal static bool IsMarker(string line) => AnyMarker.IsMatch(line);
+
+        /// <summary>The count of a plain <c>Num Peaks: &lt;n&gt;</c> line.</summary>
+        internal static bool TryParseNumPeaks(string line, out int count) {
+            var m = NumPeaksLine.Match(line);
+            count = m.Success ? Count(m) : 0;
+            return m.Success;
+        }
+
+        /// <summary>The level (1 or 2) of a plain <c>MSTYPE: MS1</c> or <c>MSTYPE: MS2</c> line.</summary>
+        internal static bool TryParseMsType(string line, out int level) {
+            var m = MsTypeLine.Match(line);
+            level = m.Success ? (m.Groups[1].Value == "2" ? 2 : 1) : 0;
+            return m.Success;
+        }
+
+        /// <summary>The two values of a peak line in the grammar, parsed with the invariant culture and not rounded;
+        /// false outside the grammar or for a value too large to be finite (identical under net48 and net8.0).</summary>
+        internal static bool TryParsePair(string line, out double mz, out double intensity) {
+            mz = 0.0;
+            intensity = 0.0;
+            var m = PairLine.Match(line);
+            return m.Success
+                && double.TryParse(m.Groups[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out mz) && !double.IsInfinity(mz)
+                && double.TryParse(m.Groups[2].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out intensity) && !double.IsInfinity(intensity);
+        }
     }
 }
