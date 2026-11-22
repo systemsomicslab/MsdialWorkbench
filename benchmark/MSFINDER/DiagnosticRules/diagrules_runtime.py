@@ -14,7 +14,8 @@ the script never copies or selects input files itself.
       --method-off <off.ini> --method-on <on.ini> --out <dir> [--cores 8]
 
 It writes "Diagrules runtime-<stamp>.json" (".local-vs21" before the extension when the input or a file in it is
-named vs21) into --out, with the off and on outputs in --out/off-<stamp> and --out/on-<stamp>. Nothing so named
+named vs21) into --out, with the off and on outputs in --out/off-<stamp> and --out/on-<stamp> (off-<stamp>.local-vs21.d and
+on-<stamp>.local-vs21.d for such an input). Nothing so named
 .local-vs21 may be committed. The bound itself is pre-registered elsewhere (design Q10); this script only measures.
 """
 import argparse
@@ -105,7 +106,8 @@ def only(folder, prefix):
 
 
 def is_vs21(path):
-    named = [os.path.basename(os.path.normpath(path))]
+    # Any component of the path as given or as an absolute path, and the folder's file names (as the console does).
+    named = [path, os.path.abspath(path)]
     if os.path.isdir(path):
         named += os.listdir(path)
     return any("vs21" in n.lower() for n in named)
@@ -124,7 +126,10 @@ def main():
     stamp = time.strftime("%Y%m%d%H%M%S")
     suffix = ".local-vs21" if is_vs21(a.input) else ""
     summary_path = os.path.join(a.out, "Diagrules runtime-%s%s.json" % (stamp, suffix))
-    off_dir, on_dir = os.path.join(a.out, "off-" + stamp), os.path.join(a.out, "on-" + stamp)
+    # The predict outputs of a VS21 input are VS21-derived too: their folders carry the marker as well.
+    dir_suffix = suffix + ".d" if suffix else ""
+    off_dir = os.path.join(a.out, "off-" + stamp + dir_suffix)
+    on_dir = os.path.join(a.out, "on-" + stamp + dir_suffix)
     for p in (summary_path, off_dir, on_dir):
         if os.path.exists(p):
             sys.exit("error:output_exists:" + os.path.basename(p))

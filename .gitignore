@@ -239,3 +239,6 @@ Assemblies/*.dll
 /src/MSFINDER/MsfinderCommonStandard/Resources/MINEs-StructureDB-vs*.msd
 /src/MSFINDER/MsfinderCommonStandard/Resources/MsfinderStructureDB-VS*.esd
 /src/MSFINDER/MsfinderCommonStandard/Resources/MSMS-DBs-vs*.etm
+
+# Diagnostic-rule benchmark outputs derived from a VS21 library stay local (named by the diagrules tool and scripts)
+*.local-vs21.*

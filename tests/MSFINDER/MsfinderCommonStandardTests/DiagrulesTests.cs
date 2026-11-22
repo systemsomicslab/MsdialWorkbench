@@ -183,7 +183,7 @@ public class DiagrulesReaderTests
     [DataRow("Num Peaks: two\n100 50", "peak_block_disagrees")]                     // marker not plain
     [DataRow("MSTYPE: MS3\nNum Peaks: 1\n100 50", "peak_block_disagrees")]
     [DataRow("Num Peaks: 3\n100 50\n150 20", "peak_count_mismatch")]                // the record ends first
-    [DataRow("Num Peaks: 1\n100 50\n150 20", "peak_count_mismatch")]                // a pair line after the block
+    [DataRow("Num Peaks: 3\n100 50\n\n150 20\n170 10", "peak_block_disagrees")]   // a blank line inside the block
     public void PeakLinesOutsideTheGrammarAreSkippedAsSuspect(string block, string reason) {
         var r = ReadText(Record("PRECURSORMZ: 300\nIONMODE: Positive\nCOLLISIONENERGY: 10\n" + block)).Single();
         Assert.AreEqual(reason, r.PeaksSuspect);
@@ -369,6 +369,37 @@ public class DiagrulesPredictParityTests
         var zero = new List<string>(plain) { "777.7\t0" };
         AssertParity(new[] { Msp(f, null, sub), Msp(f, null, zero) }, "guards");
     }
+
+    // The MS2 block of an Msp() query: the index of its Num Peaks line among the CRLF-split lines.
+    private static (List<string> Lines, int NumPeaks) Ms2Block(string query) {
+        var lines = query.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
+        return (lines, lines.FindLastIndex(l => l.StartsWith("Num Peaks:", StringComparison.Ordinal)));
+    }
+
+    [TestMethod]
+    public void PeakLinesAfterTheDeclaredCountAreIgnoredAsPredictIgnoresThem() {
+        var queries = Fixtures.Take(25).Where(f => f.Peaks.Count > 1).Select(f => {
+            var (lines, at) = Ms2Block(Msp(f, null));
+            lines[at] = "Num Peaks: " + (f.Peaks.Count - 1);
+            return string.Join("\r\n", lines);
+        }).ToList();
+        Assert.IsTrue(queries.Count > 0);
+        AssertParity(queries, "extra");
+    }
+
+    [TestMethod]
+    public void ABlankLineInsideThePeakBlockKeepsTheRecordWhole() {
+        var queries = Fixtures.Take(25).Where(f => f.Peaks.Count > 1).Select(f => {
+            var (lines, at) = Ms2Block(Msp(f, null));
+            lines.Insert(at + 2, "");
+            return string.Join("\r\n", lines);
+        }).ToList();
+        Assert.IsTrue(queries.Count > 0);
+        AssertParity(queries, "blank");
+        foreach (var r in DiagrulesMspReader.Read(Path.Combine(_dir, "blank.msp"))) {
+            Assert.AreEqual(DiagnosticInputInfo.PeakBlockDisagrees, r.PeaksSuspect);
+        }
+    }
 }
 
 /// <summary>A whole <c>diagrules</c> run: files, names, counts, the refusal of existing outputs, and determinism.</summary>
@@ -458,7 +489,11 @@ public class DiagrulesRunTests
         Assert.IsTrue(DiagrulesHarness.IsLocalVs21(@"lib\synthetic-VS21-pos.msp", new string[0]));
         Assert.IsTrue(DiagrulesHarness.IsLocalVs21(@"lib\vs21\", new[] { @"lib\vs21\pos.msp" }));
         Assert.IsTrue(DiagrulesHarness.IsLocalVs21(@"lib", new[] { @"lib\a.msp", @"lib\Vs21_neg.msp" }));
-        Assert.IsFalse(DiagrulesHarness.IsLocalVs21(@"lib\vs21x\fixtures", new[] { @"lib\vs21x\fixtures\a.msp" }));
+        // Any path component counts: a VS21 folder marks its files whatever their names.
+        Assert.IsTrue(DiagrulesHarness.IsLocalVs21(@"lib\vs21x\fixtures", new[] { @"lib\vs21x\fixtures\a.msp" }));
+        Assert.IsTrue(DiagrulesHarness.IsLocalVs21(@"libs\VS21\MSMS-Pos.msp", new[] { @"libs\VS21\MSMS-Pos.msp" }));
+        Assert.IsTrue(DiagrulesHarness.IsLocalVs21(@"libs\VS21\pos", new[] { @"libs\VS21\pos\a.msp" }));
+        Assert.IsFalse(DiagrulesHarness.IsLocalVs21(Path.Combine(_dir, "fixtures"), new[] { Path.Combine(_dir, "fixtures", "a.msp") }));
 
         var input = WriteInput(Path.Combine(_dir, "in"), "synthetic-vs21-stand-in.msp");
         var output = Path.Combine(_dir, "out");
@@ -467,6 +502,53 @@ public class DiagrulesRunTests
         var names = Directory.GetFiles(output).Select(Path.GetFileName).OrderBy(n => n, StringComparer.Ordinal).ToArray();
         CollectionAssert.AreEqual(new[] { "Diagrules evidence-base-20261122120000.local-vs21.jsonl", "Diagrules run-20261122120000.local-vs21.json" }, names);
         StringAssert.Contains(File.ReadAllText(Path.Combine(output, names[1])), "\"local_vs21\":true");
+    }
+
+    [TestMethod]
+    public void AnInputRemovedBetweenPassesEndsThePassWithAnErrorLine() {
+        var input = WriteInput(Path.Combine(_dir, "in"), "q.msp");
+        var output = Path.Combine(_dir, "out");
+        Directory.CreateDirectory(output);
+        var run = DiagrulesRun.Start(Runtime, new[] { input }, false, output, "20261122120000",
+                                     new[] { DiagrulesHarness.BasePass, "second" }, Environment(), out var error);
+        Assert.IsNotNull(run, error);
+        Assert.IsTrue(run!.RunBasePass(out error), error);
+        File.Delete(input);
+        Assert.IsFalse(run.RunPass("second", Runtime.Evaluator,
+            r => DiagrulesHarness.Evaluate(r, Runtime.Evaluator, Runtime.Settings.InstrumentType, false, false), out _, out error));
+        StringAssert.StartsWith(error, "Diagnostic rules: error:");
+        StringAssert.EndsWith(error, ":q.msp");
+        // The manifest still carries the hash taken at Start, of the bytes the base pass read.
+        var summary = run.Finish(out var written);
+        Assert.IsTrue(written, summary);
+        StringAssert.Contains(File.ReadAllText(Path.Combine(output, "Diagrules run-20261122120000.json")), "\"sha256\":\"");
+    }
+
+    [TestMethod]
+    public void AManifestThatCannotBeWrittenFailsTheRunAndLeavesNoEmptyFile() {
+        var input = WriteInput(Path.Combine(_dir, "in"), "q.msp");
+        var output = Path.Combine(_dir, "out");
+        Directory.CreateDirectory(output);
+        var run = DiagrulesRun.Start(Runtime, new[] { input }, false, output, "20261122120000", new[] { DiagrulesHarness.BasePass }, Environment(), out var error);
+        Assert.IsNotNull(run, error);
+        Assert.IsTrue(run!.RunBasePass(out error), error);
+        var manifest = Path.Combine(output, "Diagrules run-20261122120000.json");
+        File.WriteAllText(manifest, "keep");
+        var line = run.Finish(out var written);
+        Assert.IsFalse(written);
+        Assert.AreEqual("Diagnostic rules: error:IOException:Diagrules run-20261122120000.json", line);
+        Assert.AreEqual("keep", File.ReadAllText(manifest));
+    }
+
+    [TestMethod]
+    public void AnUnreadableInputIsRefusedAtStart() {
+        var output = Path.Combine(_dir, "out");
+        Directory.CreateDirectory(output);
+        var run = DiagrulesRun.Start(Runtime, new[] { Path.Combine(_dir, "missing.msp") }, false, output, "20261122120000",
+                                     new[] { DiagrulesHarness.BasePass }, Environment(), out var error);
+        Assert.IsNull(run);
+        Assert.AreEqual("error:FileNotFoundException:missing.msp", error);
+        Assert.AreEqual(0, Directory.GetFiles(output).Length);
     }
 
     [TestMethod]

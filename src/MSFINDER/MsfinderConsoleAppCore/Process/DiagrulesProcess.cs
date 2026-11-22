@@ -44,7 +44,11 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process
                 Console.WriteLine(error);
                 return -1;
             }
-            var summary = run.Finish();
+            var summary = run.Finish(out var written);
+            if (!written) {
+                Console.WriteLine(summary);
+                return -1;
+            }
             foreach (var pass in run.PassCounts) {
                 Console.WriteLine(DiagrulesRun.PassLine(pass.Key, pass.Value));
             }

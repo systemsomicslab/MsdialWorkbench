@@ -107,21 +107,52 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         private const string SpectrumTypeKey = "spectrumtype";
 
         /// <summary>The records of <paramref name="path"/>, in file order, read lazily.</summary>
+        /// <remarks>
+        /// Blank lines inside a peak block whose declared count is not yet reached, and followed by a peak line, stay in
+        /// the record (as MS-FINDER's reader reads on past them); the strict grammar then refuses the block as
+        /// <c>peak_block_disagrees</c>, as predict's guard does. Blank lines followed by anything else end the record.
+        /// </remarks>
         public static IEnumerable<DiagrulesRecord> Read(string path) {
             var fileName = Path.GetFileName(path);
             var lines = new List<string>();
             var index = 0;
+            var remaining = 0;
+            var pendingBlanks = new List<string>();
             using (var reader = new StreamReader(path, Encoding.UTF8, true)) {
                 string line;
                 while ((line = reader.ReadLine()) != null) {
                     if (IsBlank(line)) {
                         if (lines.Count > 0) {
+                            if (remaining > 0) {
+                                pendingBlanks.Add(line);
+                                continue;
+                            }
                             yield return Parse(fileName, index++, lines);
                             lines = new List<string>();
                         }
                         continue;
                     }
+                    var isPair = PeakBlockCheck.TryParsePair(line, out _, out _);
+                    if (pendingBlanks.Count > 0) {
+                        if (isPair) {
+                            lines.AddRange(pendingBlanks);
+                            // A blank line fills a slot of the declared count, as a line outside the grammar does.
+                            remaining = Math.Max(0, remaining - pendingBlanks.Count);
+                        }
+                        else {
+                            yield return Parse(fileName, index++, lines);
+                            lines = new List<string>();
+                            remaining = 0;
+                        }
+                        pendingBlanks.Clear();
+                    }
                     lines.Add(line);
+                    if (PeakBlockCheck.TryParseNumPeaks(line, out var declared)) {
+                        remaining = declared;
+                    }
+                    else if (remaining > 0) {
+                        remaining--;
+                    }
                 }
             }
             if (lines.Count > 0) {
@@ -163,11 +194,8 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                     i = start + count;
                     continue;
                 }
-                if (PeakBlockCheck.TryParsePair(line, out _, out _)) {
-                    // A peak line outside any block: the declared count does not cover the record's peaks.
-                    record.PeaksSuspect = DiagnosticInputInfo.PeakCountMismatch;
-                    break;
-                }
+                // A peak line outside any block (for example after a block's declared count) is ignored, as MS-FINDER's
+                // reader and predict's strict re-read ignore it; Header skips it, as it has no colon.
                 Header(record, line);
                 i++;
             }

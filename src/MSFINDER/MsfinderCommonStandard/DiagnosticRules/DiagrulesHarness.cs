@@ -154,12 +154,23 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                 .ToList();
         }
 
-        /// <summary>Whether the input is VS21 by its name: "vs21" (ASCII case-insensitive) in the last component of
-        /// <paramref name="input"/> or in any input file name. The outputs are then named <c>*.local-vs21.*</c>.</summary>
+        /// <summary>Whether the input is VS21 by its name: "vs21" (ASCII case-insensitive) in any path component of
+        /// <paramref name="input"/> (as given and as a full path) or of any input file. The outputs are then named
+        /// <c>*.local-vs21.*</c>. Over-marking is the safe direction: a marked output is only kept local.</summary>
         public static bool IsLocalVs21(string input, IEnumerable<string> files) {
             bool Named(string path) {
-                var name = Path.GetFileName((path ?? string.Empty).TrimEnd('\\', '/'));
-                return DiagrulesMspReader.AsciiLower(name).IndexOf("vs21", StringComparison.Ordinal) >= 0;
+                if (string.IsNullOrEmpty(path)) {
+                    return false;
+                }
+                if (DiagrulesMspReader.AsciiLower(path).IndexOf("vs21", StringComparison.Ordinal) >= 0) {
+                    return true;
+                }
+                try {
+                    return DiagrulesMspReader.AsciiLower(Path.GetFullPath(path)).IndexOf("vs21", StringComparison.Ordinal) >= 0;
+                }
+                catch (Exception e) when (e is ArgumentException || e is NotSupportedException || e is PathTooLongException || e is System.Security.SecurityException) {
+                    return false;
+                }
             }
             return Named(input) || (files ?? Enumerable.Empty<string>()).Any(Named);
         }
@@ -223,10 +234,13 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         private readonly List<string> _passNames;
         private readonly List<KeyValuePair<string, DiagnosticRunCounts>> _passCounts = new List<KeyValuePair<string, DiagnosticRunCounts>>();
 
-        private DiagrulesRun(DiagnosticRuleRuntime runtime, IReadOnlyList<string> inputs, DiagrulesOutputNames names, string folder,
+        private readonly List<string> _inputSha256;
+
+        private DiagrulesRun(DiagnosticRuleRuntime runtime, IReadOnlyList<string> inputs, List<string> inputSha256, DiagrulesOutputNames names, string folder,
                              IReadOnlyList<string> passNames, DiagnosticRunEnvironment environment) {
             Runtime = runtime;
             Inputs = inputs;
+            _inputSha256 = inputSha256;
             Names = names;
             _folder = folder;
             _passNames = passNames.ToList();
@@ -259,7 +273,18 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                     return null;
                 }
             }
-            return new DiagrulesRun(runtime, inputs, names, outputFolder, passNames, environment ?? new DiagnosticRunEnvironment());
+            // The inputs are hashed once, before any pass reads them, so the manifest records what the passes read.
+            var hashes = new List<string>(inputs.Count);
+            foreach (var input in inputs) {
+                try {
+                    hashes.Add(FileSha256(input));
+                }
+                catch (Exception e) when (e is IOException || e is UnauthorizedAccessException) {
+                    error = "error:" + e.GetType().Name + ":" + Path.GetFileName(input);
+                    return null;
+                }
+            }
+            return new DiagrulesRun(runtime, inputs, hashes, names, outputFolder, passNames, environment ?? new DiagnosticRunEnvironment());
         }
 
         /// <summary>The base pass: the runtime's evaluator with MS-FINDER's settings, no adduct evidence.</summary>
@@ -386,30 +411,15 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                 error = "Diagnostic rules: error:" + e.GetType().Name + ":" + name;
                 return false;
             }
-            using (writer) {
-                foreach (var input in Inputs) {
-                    var fileName = Path.GetFileName(input);
-                    var inFile = 0;
-                    foreach (var record in DiagrulesMspReader.Read(input)) {
-                        reader?.Add(record);
-                        inFile++;
-                        DiagnosticQueryEvaluation evaluation;
-                        var start = _environment.Clock();
-                        try {
-                            evaluation = evaluate(record);
-                        }
-                        catch (Exception e) {
-                            error = "Diagnostic rules (Strict): error:" + e.GetType().Name + " in " + DiagnosticRuleExport.Cell(fileName)
-                                    + "#" + DiagnosticRuleExport.Int(record.RecordIndex);
-                            return false;
-                        }
-                        evalMs += (_environment.Clock() - start) * 1000.0 / _environment.Frequency;
-                        counts.Add(evaluation);
-                        writer.Write(DiagrulesHarness.EvidenceLine(record, evaluation));
-                        writer.Write(DiagnosticRuleExport.NewLine);
-                    }
-                    reader?.RecordsByFile.Add(new KeyValuePair<string, int>(fileName, inFile));
+            try {
+                if (!WritePass(writer, evaluate, counts, reader, ref evalMs, out error)) {
+                    return false;
                 }
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException) {
+                // Writing or closing the evidence file failed.
+                error = error ?? "Diagnostic rules: error:" + e.GetType().Name + ":" + name;
+                return false;
             }
             if (reader != null) {
                 ReaderCounts = reader;
@@ -428,18 +438,86 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             return true;
         }
 
+        // The records of every input through evaluate, one evidence line each. An input that cannot be read (locked or
+        // removed between passes) ends the pass with a clean error line naming its file; the writer is closed by the caller.
+        private bool WritePass(StreamWriter writer, Func<DiagrulesRecord, DiagnosticQueryEvaluation> evaluate, DiagnosticRunCounts counts,
+                               DiagrulesReaderCounts reader, ref double evalMs, out string error) {
+            error = null;
+            using (writer) {
+                foreach (var input in Inputs) {
+                    var fileName = Path.GetFileName(input);
+                    var inFile = 0;
+                    IEnumerator<DiagrulesRecord> records = null;
+                    try {
+                        while (true) {
+                            DiagrulesRecord record;
+                            try {
+                                if (records == null) {
+                                    records = DiagrulesMspReader.Read(input).GetEnumerator();
+                                }
+                                if (!records.MoveNext()) {
+                                    break;
+                                }
+                                record = records.Current;
+                            }
+                            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException) {
+                                error = "Diagnostic rules: error:" + e.GetType().Name + ":" + DiagnosticRuleExport.Cell(fileName);
+                                return false;
+                            }
+                            if (!Evaluate(writer, evaluate, counts, reader, record, fileName, ref evalMs, out error)) {
+                                return false;
+                            }
+                            inFile++;
+                        }
+                    }
+                    finally {
+                        records?.Dispose();
+                    }
+                    reader?.RecordsByFile.Add(new KeyValuePair<string, int>(fileName, inFile));
+                }
+            }
+            return true;
+        }
+
+        private bool Evaluate(StreamWriter writer, Func<DiagrulesRecord, DiagnosticQueryEvaluation> evaluate, DiagnosticRunCounts counts,
+                              DiagrulesReaderCounts reader, DiagrulesRecord record, string fileName, ref double evalMs, out string error) {
+            error = null;
+            reader?.Add(record);
+            DiagnosticQueryEvaluation evaluation;
+            var start = _environment.Clock();
+            try {
+                evaluation = evaluate(record);
+            }
+            catch (Exception e) {
+                error = "Diagnostic rules (Strict): error:" + e.GetType().Name + " in " + DiagnosticRuleExport.Cell(fileName)
+                        + "#" + DiagnosticRuleExport.Int(record.RecordIndex);
+                return false;
+            }
+            evalMs += (_environment.Clock() - start) * 1000.0 / _environment.Frequency;
+            counts.Add(evaluation);
+            writer.Write(DiagrulesHarness.EvidenceLine(record, evaluation));
+            writer.Write(DiagnosticRuleExport.NewLine);
+            return true;
+        }
+
         /// <summary>Writes the run manifest and returns the console summary line of the base pass (or the error line).</summary>
-        public string Finish() {
+        public string Finish() => Finish(out _);
+
+        /// <summary>As <see cref="Finish()"/>; <paramref name="written"/> is false when the manifest could not be
+        /// written (the caller then fails). The manifest text is built before the file is created.</summary>
+        public string Finish(out bool written) {
             var name = Names.Run;
+            var text = Manifest() + DiagnosticRuleExport.NewLine;
+            written = false;
             try {
                 using (var run = Create(Path.Combine(_folder, name))) {
-                    run.Write(Manifest());
-                    run.Write(DiagnosticRuleExport.NewLine);
+                    run.Write(text);
                 }
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException) {
                 return "Diagnostic rules: error:" + e.GetType().Name + ":" + name;
             }
+            written = true;
             return BaseCounts == null ? "Diagnostic rules: no base pass" : DiagnosticRuleExport.SummaryLine(Runtime.RuleSet.Identity, BaseCounts);
         }
 
@@ -451,10 +529,11 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             var reader = ReaderCounts ?? new DiagrulesReaderCounts();
             var records = reader.RecordsByFile.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
             var inputs = new List<JsonValue>();
-            foreach (var input in Inputs) {
-                var fileName = Path.GetFileName(input);
+            for (var k = 0; k < Inputs.Count; k++) {
+                var fileName = Path.GetFileName(Inputs[k]);
                 records.TryGetValue(fileName, out var n);
-                inputs.Add(Obj(M("file_name", JsonValue.Of(fileName)), M("records", JsonValue.Of(n)), M("sha256", JsonValue.Of(FileSha256(input)))));
+                // Hashed at Start, so no file is read here.
+                inputs.Add(Obj(M("file_name", JsonValue.Of(fileName)), M("records", JsonValue.Of(n)), M("sha256", JsonValue.Of(_inputSha256[k]))));
             }
             var bins = reader.CollisionEnergyBins.Select(b => M(b.Key, JsonValue.Of(b.Value))).ToList();
             var outputs = new List<KeyValuePair<string, JsonValue>>();
