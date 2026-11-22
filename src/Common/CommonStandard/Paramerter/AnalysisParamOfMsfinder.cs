@@ -297,6 +297,7 @@ namespace Rfx.Riken.OsakaUniv
 
             structureScoreCutOff = 0;
             scoreCutOffForSpectralMatch = 80;
+            DiagnosticRules = new MsfinderDiagnosticRuleSettings();
         }
 
         #region Properties
@@ -999,6 +1000,9 @@ namespace Rfx.Riken.OsakaUniv
                 ccsToleranceForStructureElucidation = value;
             }
         }
+
+        /// <summary>Settings of the experimental diagnostic-ion rules; all at their defaults means off.</summary>
+        public MsfinderDiagnosticRuleSettings DiagnosticRules { get; set; }
 
         public LipidQueryBean LipidQueryBean {
             get {

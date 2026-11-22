@@ -1,6 +1,8 @@
 ﻿using Riken.Metabolomics.MsfinderCommon.Query;
+using Riken.Metabolomics.MsfinderCommon.DiagnosticRules;
 using Riken.Metabolomics.MsfinderCommon.Utility;
 using Riken.Metabolomics.StructureFinder.Parser;
+using Riken.Metabolomics.StructureFinder.Result;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -265,6 +267,100 @@ namespace Rfx.Riken.OsakaUniv {
                 this.dataStorageBean.QueryFiles = new ObservableCollection<MsfinderQueryFile>();
                 this.dataStorageBean.ImportFolderPath = string.Empty;
                 return false;
+            }
+        }
+        #endregion
+
+        #region // Diagnostic-ion rules (report only; design 5.2, 5.3)
+        private readonly DiagnosticRuleRuntimeCache diagnosticRuleRuntimeCache = new DiagnosticRuleRuntimeCache();
+        private DiagnosticRuleEvidenceVM diagnosticRuleEvidenceVM;
+        private DiagnosticQueryEvaluation diagnosticEvaluation;
+        private DiagnosticRuleRuntime diagnosticRuntime;
+
+        /// <summary>The "Diagnostic rules" tab of the selected query; null when evaluation is off.</summary>
+        public DiagnosticRuleEvidenceVM DiagnosticRuleEvidenceVM
+        {
+            get { return diagnosticRuleEvidenceVM; }
+            set { diagnosticRuleEvidenceVM = value; OnPropertyChanged("DiagnosticRuleEvidenceVM"); OnPropertyChanged("DiagnosticRulesTabVisibility"); }
+        }
+
+        /// <summary>The <c>rule_set_error:...</c> of the last failed runtime creation, or null.</summary>
+        public string DiagnosticRuleRuntimeError
+        {
+            get { return this.diagnosticRuleRuntimeCache.Error; }
+        }
+
+        public Visibility DiagnosticRulesTabVisibility
+        {
+            get { return diagnosticRuleEvidenceVM != null ? Visibility.Visible : Visibility.Collapsed; }
+        }
+
+        /// <summary>
+        /// The runtime, created lazily and cached by the settings and the product tolerance. Null when evaluation
+        /// is off or the rule set could not be loaded; a failure is shown once per settings and tolerance.
+        /// </summary>
+        public DiagnosticRuleRuntime GetDiagnosticRuleRuntime()
+        {
+            var runtime = this.diagnosticRuleRuntimeCache.Get(this.dataStorageBean.AnalysisParameter, out var created);
+            if (runtime == null && created && this.diagnosticRuleRuntimeCache.Error != null) {
+                MessageBox.Show("Diagnostic-ion rules are on, but the rule set could not be loaded. There is no rule evidence and no ranking.\r\n"
+                    + this.diagnosticRuleRuntimeCache.Error, "Diagnostic-ion rules", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            return runtime;
+        }
+
+        /// <summary>Evaluates the query just read (RawDataFileRefresh) for the tab; clears the tab when evaluation is off.</summary>
+        public void EvaluateDiagnosticRules(RawData rawData)
+        {
+            this.diagnosticEvaluation = null;
+            this.diagnosticRuntime = null;
+            var param = this.dataStorageBean.AnalysisParameter;
+            if (param == null || param.DiagnosticRules == null || !param.DiagnosticRules.Evaluation || rawData == null || rawData.Name == null) {
+                this.DiagnosticRuleEvidenceVM = null;
+                return;
+            }
+            var runtime = GetDiagnosticRuleRuntime();
+            if (runtime == null) {
+                this.DiagnosticRuleEvidenceVM = new DiagnosticRuleEvidenceVM(DiagnosticEvidenceView.Failed(this.diagnosticRuleRuntimeCache.Error));
+                return;
+            }
+            DiagnosticQueryEvaluation evaluation;
+            try {
+                evaluation = runtime.Evaluate(rawData, param.IsTmsMeoxDerivative);
+            }
+            catch (Exception e) {
+                // Only under Strict does the runtime rethrow (OQ08); the tab shows the error status.
+                evaluation = new DiagnosticQueryEvaluation(DiagnosticRuleRuntime.ErrorStatusPrefix + e.GetType().Name, null, null);
+            }
+            this.diagnosticEvaluation = evaluation;
+            this.diagnosticRuntime = runtime;
+            this.DiagnosticRuleEvidenceVM = new DiagnosticRuleEvidenceVM(DiagnosticEvidenceView.Of(evaluation, runtime));
+        }
+
+        /// <summary>
+        /// For the structure candidates of the selected formula (null when there are none): updates the ChemOnt
+        /// panel and returns them in rule-adjusted order when the weight is above zero, else null (legacy order).
+        /// </summary>
+        public DiagnosticRanking ApplyDiagnosticRules(List<FragmenterResult> candidates)
+        {
+            if (this.diagnosticRuleEvidenceVM == null || this.diagnosticEvaluation == null || this.diagnosticRuntime == null) return null;
+            var baseOrder = candidates == null ? null : MsfinderDiagnosticRanking.BaseOrder(candidates);
+            var ranking = baseOrder != null && this.diagnosticRuntime.RankingOn
+                ? MsfinderDiagnosticRanking.Rank(baseOrder, this.diagnosticEvaluation.Result, this.diagnosticRuntime)
+                : null;
+            this.diagnosticRuleEvidenceVM.UpdateChemOnt(DiagnosticQueryContext.Of(this.dataStorageBean.FormualResults, baseOrder, ranking));
+            return ranking;
+        }
+
+        /// <summary>Sets the ranking columns of the view models built from <c>ranking.Candidates()</c> (same order).</summary>
+        public static void SetDiagnosticRanking(List<FragmenterResultVM> fragmenterResultVMs, DiagnosticRanking ranking)
+        {
+            if (fragmenterResultVMs == null || ranking == null) return;
+            for (int i = 0; i < fragmenterResultVMs.Count && i < ranking.Ranked.Count; i++) {
+                var row = ranking.Ranked[i];
+                fragmenterResultVMs[i].RankingScore = row.RankingScore;
+                fragmenterResultVMs[i].RuleTerm = row.Term;
+                fragmenterResultVMs[i].MatchedMotifs = string.Join(";", row.MatchedMotifs);
             }
         }
         #endregion

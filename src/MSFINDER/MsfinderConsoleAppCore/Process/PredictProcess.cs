@@ -1,4 +1,5 @@
 ﻿using Rfx.Riken.OsakaUniv;
+using Riken.Metabolomics.MsfinderCommon.DiagnosticRules;
 using Riken.Metabolomics.MsfinderCommon.Process;
 using Riken.Metabolomics.MsfinderCommon.Query;
 using Riken.Metabolomics.MsfinderCommon.Utility;
@@ -34,6 +35,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
         private List<ExistStructureQuery> mineStructureDB;
         private List<FragmentLibrary> eiFragmentDB;
         private List<ChemicalOntology> chemicalOntologies;
+        private DiagnosticRuleRun diagnosticRun;
 
         public int Run(string input, string methodFile, string outputfolder) {
 
@@ -121,6 +123,14 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                 return -1;
             }
 
+            if (this.param.DiagnosticRules != null && this.param.DiagnosticRules.Evaluation) {
+                this.diagnosticRun = DiagnosticRuleRun.Start(this.param, outputfolder, dt, dateString, out var diagnosticError);
+                if (this.diagnosticRun == null) {
+                    Console.WriteLine(diagnosticError);
+                    return -1;
+                }
+            }
+
             Console.WriteLine("Start processing..");
             //return privateExecute();
             return executeProcess();
@@ -200,6 +210,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             if (this.param.IsFormulaFinder) {
                 //formula predictions
                 Parallel.ForEach(this.queryFiles, file => {
+                    var diagnosticFormulaWatch = this.diagnosticRun != null ? Stopwatch.StartNew() : null;
                     var rawData = RawDataParcer.RawDataFileReader(file.RawDataFilePath, this.param);
                     var formulaResults = MolecularFormulaFinder.GetMolecularFormulaList(this.productIonDB,
                         this.neutralLossDB, this.existFormulaDB, rawData, this.param);
@@ -209,6 +220,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                     ChemicalOntologyAnnotation.ProcessByOverRepresentationAnalysis(formulaResults, this.chemicalOntologies,
                         rawData.IonMode, this.param, AdductIonParcer.GetAdductIonBean(rawData.PrecursorType), productIonDB, neutralLossDB);
 
+                    if (diagnosticFormulaWatch != null) this.diagnosticRun.Timing.AddFormulaStep(file, diagnosticFormulaWatch.Elapsed);
                     lock (syncObj) {
                         progress++;
                         FormulaResultParcer.FormulaResultsWriter(file.FormulaFilePath, formulaResults);
@@ -235,6 +247,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             progress = 0;
             Parallel.ForEach(this.queryFiles, file => {
 
+                var diagnosticStructureWatch = this.diagnosticRun != null ? Stopwatch.StartNew() : null;
                 var rawData = RawDataParcer.RawDataFileReader(file.RawDataFilePath, param);
                 var structureFiles = System.IO.Directory.GetFiles(file.StructureFolderPath, "*.sfd");
                 if (structureFiles.Length > 0) FileStorageUtility.DeleteSfdFiles(structureFiles);
@@ -256,6 +269,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                     }
                 }
 
+                if (diagnosticStructureWatch != null) this.diagnosticRun.Timing.AddStructureStep(file, diagnosticStructureWatch.Elapsed);
                 lock (syncObj) {
                     progress++;
                     if (!Console.IsOutputRedirected) {
@@ -302,14 +316,24 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                 }
             }
 
+            if (this.diagnosticRun != null && !this.diagnosticRun.OpenWriters(out var diagnosticOpenError)) {
+                Console.WriteLine(diagnosticOpenError);
+                return -1;
+            }
             Console.WriteLine("Writing structure prediction results...");
             progress = 0;
             using (var sw = new StreamWriter(this.outputStructurePath, false, Encoding.ASCII)) {
+                if (this.diagnosticRun != null && this.diagnosticRun.RankingOn) sw.WriteLine(DiagnosticRuleExport.StructureHeader); else
                 sw.WriteLine("File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
                     "Precursor mz\tPrecursor type\tStructure rank\tTotal score\tDatabases\tFormula\tOntology\tInChIKey\tSMILES");
 
                 foreach (var rawfile in this.queryFiles) {
                     var rawData = RawDataParcer.RawDataFileReader(rawfile.RawDataFilePath, param);
+                    var diagnosticQuery = this.diagnosticRun != null ? this.diagnosticRun.Evaluate(rawfile, rawData) : null;
+                    if (diagnosticQuery != null && diagnosticQuery.Failed) {
+                        Console.WriteLine(this.diagnosticRun.Abort(diagnosticQuery));
+                        return -1;
+                    }
                     if (System.IO.File.Exists(rawfile.FormulaFilePath)) {
                         var formulaResults = FormulaResultParcer.FormulaResultReader(rawfile.FormulaFilePath, out error);
                         if (error != string.Empty) {
@@ -326,10 +350,13 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                                 sfdResultMerge(sfdResults, sfdResult, formulaString);
                             }
                             sfdResults = sfdResults.OrderByDescending(n => n.TotalScore).ToList();
+                            var diagnosticRanking = diagnosticQuery != null ? this.diagnosticRun.Rank(diagnosticQuery, formulaResults, sfdResults) : null;
+                            if (diagnosticRanking != null) DiagnosticRuleExport.WriteStructureRows(sw, rawData, diagnosticRanking, this.diagnosticRun.Runtime.RuleSet.Identity); else
                             writeStructureResult(sw, rawData, sfdResults);
                         }
                     }
 
+                    if (diagnosticQuery != null) this.diagnosticRun.Complete(diagnosticQuery);
                     progress++;
                     if (!Console.IsOutputRedirected) {
                         Console.Write("Writing structure prediction result finished: {0} / {1}", progress, queryCount);
@@ -341,6 +368,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
                 }
             }
 
+            if (this.diagnosticRun != null) Console.WriteLine(this.diagnosticRun.Finish());
             return 1;
         }
 

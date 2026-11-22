@@ -33,6 +33,7 @@ namespace Rfx.Riken.OsakaUniv
 
             mainWindowVM.DataStorageBean.RawData = RawDataParcer.RawDataFileReader(filePath, param);
             mainWindowVM.RawDataVM = new RawDataVM(mainWindowVM.DataStorageBean.RawData, mainWindowVM.AdductPositiveResources, mainWindowVM.AdductNegativeResources);
+            mainWindowVM.EvaluateDiagnosticRules(mainWindowVM.DataStorageBean.RawData);
             if (mainWindowVM.DataStorageBean.RawData == null || mainWindowVM.DataStorageBean.RawData.Name == null) {
                 MessageBox.Show("Error in parsing your msp/mat file, and please check the format.", "Error", MessageBoxButton.OK);
                 Mouse.OverrideCursor = null;
@@ -93,12 +94,16 @@ namespace Rfx.Riken.OsakaUniv
             var dataStorageBean = mainWindowVM.DataStorageBean;
             var file = mainWindowVM.DataStorageBean.QueryFiles[fileID];
             var filePath = getStructureDataFilePath(file, formulaVM.Formula);
+            global::Riken.Metabolomics.MsfinderCommon.DiagnosticRules.DiagnosticRanking diagnosticRanking = null;
 
             if (System.IO.File.Exists(filePath))
             {
                 dataStorageBean.FragmenterResults = FragmenterResultParcer.FragmenterResultReader(filePath);
+                diagnosticRanking = mainWindowVM.ApplyDiagnosticRules(dataStorageBean.FragmenterResults);
+                if (diagnosticRanking != null) dataStorageBean.FragmenterResults = diagnosticRanking.Candidates();
 
                 mainWindowVM.FragmenterResultVMs = DataAccessUtility.GetFragmenterResultVMs(dataStorageBean.FragmenterResults);
+                MainWindowVM.SetDiagnosticRanking(mainWindowVM.FragmenterResultVMs, diagnosticRanking);
                 if (mainWindowVM.FragmenterResultVMs != null && mainWindowVM.FragmenterResultVMs.Count != 0)
                 {
                     mainWindowVM.SelectedFragmenterVM = mainWindowVM.FragmenterResultVMs[0];
@@ -109,8 +114,11 @@ namespace Rfx.Riken.OsakaUniv
                 dataStorageBean.FragmenterResults = null;
                 mainWindowVM.FragmenterResultVMs = null;
                 mainWindowVM.SelectedFragmenterVM = null;
+                mainWindowVM.ApplyDiagnosticRules(null);
             }
 
+            mainWindow.DataGridColumn_DiagnosticRuleTerm.Visibility = diagnosticRanking != null ? Visibility.Visible : Visibility.Collapsed;
+            mainWindow.DataGridColumn_DiagnosticMatchedMotifs.Visibility = diagnosticRanking != null ? Visibility.Visible : Visibility.Collapsed;
             ActualMsMsVsInSilicoMsMsUiRefresh(mainWindow, mainWindowVM);
             mainWindow.DataGrid_FragmenterResult.UpdateLayout();
 
