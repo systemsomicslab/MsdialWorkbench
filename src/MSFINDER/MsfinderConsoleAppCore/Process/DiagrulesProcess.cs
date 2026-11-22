@@ -10,7 +10,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process
     /// <c>diagrules -i &lt;msp|folder&gt; -m &lt;ini&gt; -o &lt;dir&gt;</c>: the diagnostic-ion rule benchmark (design section
     /// 8 PR 5). It reads every record of the MSP input with the allowlisted reader, evaluates the rules with the
     /// method file's MS-FINDER settings (tolerance, diagnostic-rule settings), and writes the evidence JSONL of each pass
-    /// and the run manifest. No formula or structure step runs and no other output is written.
+    /// (the base pass, the variant passes and the <c>mz_only</c> pass with curated adduct evidence) and the run manifest. No formula or structure step runs and no other output is written.
     /// </summary>
     public sealed class DiagrulesProcess
     {
@@ -33,18 +33,22 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process
             }
             var environment = new DiagnosticRunEnvironment { IsTmsMeoxDerivative = param.IsTmsMeoxDerivative };
             var run = DiagrulesRun.Start(runtime, files, DiagrulesHarness.IsLocalVs21(input, files), outputFolder,
-                DiagnosticRuleExport.Stamp(DateTime.Now), new[] { DiagrulesHarness.BasePass }, environment, out error);
+                DiagnosticRuleExport.Stamp(DateTime.Now), DiagrulesVariants.AllPasses(), environment, out error);
             if (run == null) {
                 Console.WriteLine(error);
                 return -1;
             }
 
             Console.WriteLine("Start processing..");
-            if (!run.RunBasePass(out error)) {
+            if (!run.RunAllPasses(out error)) {
                 Console.WriteLine(error);
                 return -1;
             }
-            Console.WriteLine(run.Finish());
+            var summary = run.Finish();
+            foreach (var pass in run.PassCounts) {
+                Console.WriteLine(DiagrulesRun.PassLine(pass.Key, pass.Value));
+            }
+            Console.WriteLine(summary);
             return 0;
         }
     }
