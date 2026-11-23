@@ -13966,9 +13966,15 @@ AdductIon adduct)
                             {
                                 for (int extDouble = minExtAcylDoubleBond; extDouble <= doubleLimit; extDouble++)
                                 {
-                                    var acylCarbon = totalCarbon - sphCarbon - extCarbon;
-                                    var acylDouble = totalDoubleBond - sphDouble - extDouble;
-                                    if (acylCarbon <= 0 || acylDouble < 0) continue;
+                                    var ceramideCarbon = totalCarbon - extCarbon;
+                                    var ceramideDouble = totalDoubleBond - extDouble;
+
+                                    if (ceramideCarbon <= 0 || ceramideDouble < 0 ||
+                                        ceramideCarbon != sphCarbon ||
+                                        ceramideDouble != sphDouble)
+                                    {
+                                        continue;
+                                    }
 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
                                     //var sphMass = sphCarbon * MassDiffDictionary.CarbonMass + (2 * sphCarbon - 2 * sphDouble + 3) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass;
@@ -13997,7 +14003,7 @@ AdductIon adduct)
                                         //else
                                         //{
                                         var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2_0("ASHexCer", LbmClass.ASHexCer, hydrogenString,
-                                            sphCarbon + acylCarbon, sphDouble + acylDouble,
+                                            ceramideCarbon, ceramideDouble,
                                         extCarbon, extDouble, queryExtAcylAverageInt, acylOxidized);
                                         candidates.Add(molecule);
                                         //}
