@@ -13773,24 +13773,55 @@ AdductIon adduct)
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, ceramideQuery, ms2Tolerance, out ceramideQueryFoundCount, out ceramideQueryAverageInt);
                                     LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, sphQuery, ms2Tolerance, out sphQueryFoundCount, out sphQueryAverageInt);
 
-                                    if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount >= 1)
-                                    {
-                                        var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
-                                        acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, acylOxidized);
-                                        candidates.Add(molecule);
-                                    }
-                                    else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount >= 1)
-                                    {
-                                        var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2_0("AHexCer", LbmClass.AHexCer, "d", sphCarbon + acylCarbon, sphDouble + acylDouble,
-                                        extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, acylOxidized);
-                                        candidates.Add(molecule);
-                                    }
+                                    //if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount >= 1)
+                                    //{
+                                    //    var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
+                                    //    acylCarbon, acylDouble, extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt + sphQueryAverageInt, acylOxidized);
+                                    //    candidates.Add(molecule);
+                                    //}
+                                    //else if (ceramideQueryFoundCount >= 1 && exAcylQueryFoundCount >= 1)
+                                    //{
+                                    //    var molecule = LipidMsmsCharacterizationUtility.getAcylhexceramideMoleculeObjAsLevel2_0("AHexCer", LbmClass.AHexCer, "d", sphCarbon + acylCarbon, sphDouble + acylDouble,
+                                    //    extCarbon, extDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, acylOxidized);
+                                    //    candidates.Add(molecule);
+                                    //}
                                     //else if (sphQueryFoundCount >= 1)
                                     //{
                                     //    var molecule = getAcylhexceramideMoleculeObjAsLevel2_1("AHexCer", LbmClass.AHexCer, "d", sphCarbon, sphDouble,
                                     //    extCarbon + acylCarbon, extDouble + acylDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
                                     //    candidates.Add(molecule);
                                     //}
+                                    var ceramideScore =ceramideQueryAverageInt + exAcylQueryAverageInt;
+                                    if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1)
+                                    {
+                                        // Assign the sphingoid base and amide chain when base evidence exists.
+                                        var molecule =
+                                            LipidMsmsCharacterizationUtility
+                                                .getAcylhexceramideMoleculeObjAsLevel2(
+                                                    "AHexCer", LbmClass.AHexCer, "d",
+                                                    sphCarbon, sphDouble,
+                                                    acylCarbon, acylDouble,
+                                                    extCarbon, extDouble,
+                                                    ceramideScore + sphQueryAverageInt,
+                                                    acylOxidized);
+
+                                        candidates.Add(molecule);
+                                    }
+                                    else if (ceramideQueryFoundCount >= 1)
+                                    {
+                                        // Retain the summed ceramide composition without base evidence.
+                                        var molecule =
+                                            LipidMsmsCharacterizationUtility
+                                                .getAcylhexceramideMoleculeObjAsLevel2_0(
+                                                    "AHexCer", LbmClass.AHexCer, "d",
+                                                    sphCarbon + acylCarbon,
+                                                    sphDouble + acylDouble,
+                                                    extCarbon, extDouble,
+                                                    ceramideScore,
+                                                    acylOxidized);
+
+                                        candidates.Add(molecule);
+                                    }
                                 }
                             }
                         }
