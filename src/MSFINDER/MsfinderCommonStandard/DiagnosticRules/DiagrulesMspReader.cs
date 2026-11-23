@@ -10,8 +10,8 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
 {
     /// <summary>
     /// One record of a multi-record MSP as the diagrules reader keeps it (design section 8 PR 5): PRECURSORMZ,
-    /// PRECURSORTYPE, IONMODE, INSTRUMENTTYPE, COLLISIONENERGY, SPECTRUMTYPE, the MS2 peaks and the record index.
-    /// Nothing else of the record is read.
+    /// PRECURSORTYPE, IONMODE (or its alias IONTYPE), INSTRUMENTTYPE, COLLISIONENERGY, SPECTRUMTYPE, the MS2 peaks and the
+    /// record index. Nothing else of the record is read.
     /// </summary>
     public sealed class DiagrulesRecord
     {
@@ -32,7 +32,7 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         /// <summary>PRECURSORTYPE as written (trimmed), or null. Never passed to the base evaluation.</summary>
         public string PrecursorType { get; internal set; }
 
-        /// <summary>IONMODE as written (trimmed), or null.</summary>
+        /// <summary>IONMODE or IONTYPE as written (trimmed), the later line winning as in MS-FINDER's reader; or null.</summary>
         public string IonModeText { get; internal set; }
 
         /// <summary>INSTRUMENTTYPE as written (trimmed), or null.</summary>
@@ -102,6 +102,8 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         private const string PrecursorMzKey = "precursormz";
         private const string PrecursorTypeKey = "precursortype";
         private const string IonModeKey = "ionmode";
+        // MS-FINDER's own MSP reader takes IONTYPE as the ion mode too, so predict and diagrules agree on such records.
+        private const string IonTypeKey = "iontype";
         private const string InstrumentTypeKey = "instrumenttype";
         private const string CollisionEnergyKey = "collisionenergy";
         private const string SpectrumTypeKey = "spectrumtype";
@@ -246,6 +248,7 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                     record.PrecursorType = value;
                     break;
                 case IonModeKey:
+                case IonTypeKey:
                     record.IonModeText = value;
                     break;
                 case InstrumentTypeKey:

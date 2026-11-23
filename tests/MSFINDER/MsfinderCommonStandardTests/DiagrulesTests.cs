@@ -235,6 +235,17 @@ public class DiagrulesReaderTests
     }
 
     [DataTestMethod]
+    [DataRow("IONTYPE: Negative", IonMode.Negative)]
+    [DataRow("IONTYPE: Positive", IonMode.Positive)]
+    [DataRow("IONMODE: Positive\nIONTYPE: Negative", IonMode.Negative)]
+    [DataRow("IONTYPE: Negative\nIONMODE: Positive", IonMode.Positive)]
+    public void IonTypeIsReadAsTheIonModeAndTheLaterLineWinsAsInMsFinder(string headers, IonMode expected) {
+        var r = ReadText(Record(headers)).Single();
+        Assert.AreEqual(expected, r.IonMode);
+        Assert.IsFalse(r.IonModeAbsent);
+    }
+
+    [DataTestMethod]
     [DataRow("1,234.5")]
     [DataRow("abc")]
     [DataRow("NaN")]
