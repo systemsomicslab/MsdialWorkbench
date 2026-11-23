@@ -15098,7 +15098,12 @@ AdductIon adduct)
                 {
                     // seek [C2H8NO4P-H]-
                     var threshold = 5.0;
-                    var diagnosticMz = MassDiffDictionary.CarbonMass * 2 + MassDiffDictionary.HydrogenMass * 8 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 4 + MassDiffDictionary.PhosphorusMass - Proton;
+                    var diagnosticMz =2 * MassDiffDictionary.CarbonMass
+                        + 8 * MassDiffDictionary.HydrogenMass
+                        + MassDiffDictionary.NitrogenMass
+                        + 4 * MassDiffDictionary.OxygenMass
+                        + MassDiffDictionary.PhosphorusMass
+                        - Proton;
 
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIon1Found == false) return null;
@@ -15118,7 +15123,11 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var acylLoss1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) + Proton;
+                            // Neutral ketene loss including the acyl-chain oxygens.
+                            var acylLoss1 = theoreticalMz
+                                - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble)
+                                - acylOxidized * MassDiffDictionary.OxygenMass
+                                + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = acylLoss1, Intensity = 0.1 },
@@ -15129,32 +15138,37 @@ AdductIon adduct)
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
                             if (foundCount == 1)
-                            { // now I set 2 as the correct level
+                            { 
                                 var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("PE-Cer", LbmClass.PE_Cer, hydrogenString, sphCarbon, sphDouble,
                                     acylCarbon, acylDouble, averageIntensity);
                                 candidates.Add(molecule);
                             }
-                            var acylLoss2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - acylOxidized * MassDiffDictionary.OxygenMass + Proton;
-                            var query2 = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = acylLoss2, Intensity = 0.1 },
-                            };
+                            //var acylLoss2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - acylOxidized * MassDiffDictionary.OxygenMass + Proton;
+                            //var query2 = new List<SpectrumPeak> {
+                            //    new SpectrumPeak() { Mass = acylLoss2, Intensity = 0.1 },
+                            //};
 
-                            var foundCount2 = 0;
-                            var averageIntensity2 = 0.0;
-                            LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
+                            //var foundCount2 = 0;
+                            //var averageIntensity2 = 0.0;
+                            //LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
 
-                            if (foundCount2 == 1)
-                            { // now I set 2 as the correct level
-                                var molecule = LipidMsmsCharacterizationUtility.getCeramideoxMoleculeObjAsLevel2("PE-Cer", LbmClass.PE_Cer, hydrogenString, sphCarbon, sphDouble,
-                                    acylCarbon, acylDouble, acylOxidized, averageIntensity2);
-                                candidates.Add(molecule);
-                            }
+                            //if (foundCount2 == 1)
+                            //{ // now I set 2 as the correct level
+                            //    var molecule = LipidMsmsCharacterizationUtility.getCeramideoxMoleculeObjAsLevel2("PE-Cer", LbmClass.PE_Cer, hydrogenString, sphCarbon, sphDouble,
+                            //        acylCarbon, acylDouble, acylOxidized, averageIntensity2);
+                            //    candidates.Add(molecule);
+                            //}
+                            var result =LipidMsmsCharacterizationUtility.returnAnnotationResult(
+                                    "PE-Cer", LbmClass.PE_Cer, hydrogenString,
+                                    theoreticalMz, adduct,
+                                    totalCarbon, totalDoubleBond,
+                                    acylOxidized, candidates, 2);
 
+                            // The shared fallback helper stores only the extra oxygen argument.
+                            result.TotalOxidizedCount = totalOxidized;
+                            return result;
                         }
                     }
-
-                    return LipidMsmsCharacterizationUtility.returnAnnotationResult("PE-Cer", LbmClass.PE_Cer, hydrogenString, theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, acylOxidized, candidates, 2);
                 }
             }
             return null;
