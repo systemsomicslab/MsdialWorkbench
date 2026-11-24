@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Statistics.Filters;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
@@ -49,6 +50,7 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.CarbonMass *2,
             MassDiffDictionary.HydrogenMass * 2,
         }.Sum();
+        const double electron = 0.00054858026;
 
         private readonly IOadSpectrumPeakGenerator spectrumGenerator;
         public SMOadSpectrumGenerator() {
@@ -122,7 +124,7 @@ namespace CompMs.Common.Lipidomics {
                     }
                 );
                 if (lipid.Chains.GetChainByPosition(1) is SphingoChain sph) {
-                    spectrum.Add(new SpectrumPeak(sph.Mass - 2 * H2O + MassDiffDictionary.HydrogenMass * 2, 50d, $"{sph}-CH4O2") { SpectrumComment = SpectrumComment.acylchain });
+                    spectrum.Add(new SpectrumPeak(sph.Mass - 2 * H2O + MassDiffDictionary.HydrogenMass * 2 - electron, 50d, $"{sph}-CH4O2") { SpectrumComment = SpectrumComment.acylchain });
                 }
             }
             else if (adduct.AdductIonName == "[M+Na]+") {
@@ -139,7 +141,7 @@ namespace CompMs.Common.Lipidomics {
                     new[] {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 500d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass-CH3COO-CH3), 999d, "Precursor-CH3COO-CH3") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(C5H14NO4P-CH3, 300d, "Characteristic fragment") { SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(C5H14NO4P-CH3 + electron, 300d, "Characteristic fragment") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
                 if (lipid.Chains is SeparatedChains) {
@@ -155,7 +157,7 @@ namespace CompMs.Common.Lipidomics {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - HCO3 - MassDiffDictionary.HydrogenMass), 200d, "NL of HCO3") { SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - HCO3 - MassDiffDictionary.HydrogenMass - C3H9N), 500d, "NL of HCO3 and C3H9N") { SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - HCO3 - MassDiffDictionary.HydrogenMass - C3H9N - C2H2), 999d, "NL of HCO3 and C3H9N and C2H2") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(C5H14NO4P - MassDiffDictionary.HydrogenMass, 500d, "C3H9N") { SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(C5H14NO4P - MassDiffDictionary.HydrogenMass+ electron, 500d, "C3H9N") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
                 if (lipid.Chains.GetChainByPosition(2) is AcylChain acyl) {

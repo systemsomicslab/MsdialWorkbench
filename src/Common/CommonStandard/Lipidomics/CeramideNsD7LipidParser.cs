@@ -24,7 +24,14 @@ namespace CompMs.Common.Lipidomics
             {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
-                return new Lipid(LbmClass.Cer_NS_d7, chains.Mass, chains);
+                var labelShift = 7 * (
+                    MassDiffDictionary.Hydrogen2Mass
+                    - MassDiffDictionary.HydrogenMass);
+
+                return new Lipid(
+                    LbmClass.Cer_NS_d7,
+                    chains.Mass + labelShift,
+                    chains);
             }
             return null;
         }

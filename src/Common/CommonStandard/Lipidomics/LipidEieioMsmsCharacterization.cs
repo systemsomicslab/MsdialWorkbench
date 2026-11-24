@@ -1884,7 +1884,7 @@ namespace CompMs.Common.Lipidomics
 
                     // seek Acyl loss
                     var acyl = LipidMsmsCharacterizationUtility.acylCainMass(totalCarbon, totalDoubleBond);
-                    var diagnosticMz2 = theoreticalMz - acyl + MassDiffDictionary.ProtonMass;
+                    var diagnosticMz2 = theoreticalMz - acyl + MassDiffDictionary.HydrogenMass;
                     var threshold2 = 0.01;
                     var isClassIonFound2 = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
 
