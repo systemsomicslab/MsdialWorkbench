@@ -45,6 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     }.Merge()
                     .StartWith(Unit.Default)
                     .Throttle(TimeSpan.FromSeconds(.2)))
+                .Merge(SearchCommand.ToUnit())
                 .Where(_ => !ParameterHasErrors.Value)
                 .Select(_ => Observable.FromAsync(model.SearchAsync))
                 .Switch()

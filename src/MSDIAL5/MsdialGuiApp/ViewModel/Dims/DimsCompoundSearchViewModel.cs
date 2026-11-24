@@ -38,10 +38,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                     {
                         parameter.Ms1Tolerance.ToUnit(),
                         parameter.Ms2Tolerance.ToUnit(),
-                        SearchCommand.ToUnit(),
                     }.Merge()
                     .StartWith(Unit.Default)
                     .Throttle(TimeSpan.FromSeconds(.2)))
+            .Merge(SearchCommand.ToUnit())
             .Where(_ => !ParameterHasErrors.Value)
             .Select(_ => Observable.FromAsync(model.SearchAsync))
             .Switch()
