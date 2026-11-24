@@ -46,6 +46,13 @@ public class EmbeddedRuleSetTests
         "tables/units.json",
     };
 
+    /// <summary>The author-reviewed rules of the shipped set, in ordinal order.</summary>
+    private static readonly string[] ReviewedRuleIds =
+    {
+        "flavonoid_o_glycoside.listed_aglycone_glycoside.pos",
+        "triterpenoid_saponin.triterpenoid_saponin.neg",
+    };
+
     [TestMethod]
     public void TheEmbeddedSetLoadsPinned() {
         var set = DiagnosticRuleSet.LoadEmbedded();
@@ -57,8 +64,14 @@ public class EmbeddedRuleSetTests
         Assert.AreEqual(MotifCount, set.Motifs.Count);
         Assert.AreEqual(NestingCount, set.Nesting.Count);
         Assert.AreEqual(ScaffoldListCount, set.ScaffoldLists.Count);
-        // No rule of this version has had the author's review (design 8, PR 3).
-        Assert.IsFalse(set.Rules.Any(r => r.AuthorReviewed || r.Review != null), "a rule is marked reviewed");
+        // Exactly the rules the author reviewed after the WS8 P3 benchmark (0.2.0) carry a review, and each review is
+        // on a measured, source-checked rule.
+        CollectionAssert.AreEqual(ReviewedRuleIds,
+            set.Rules.Where(r => r.AuthorReviewed).Select(r => r.RuleId).OrderBy(id => id, StringComparer.Ordinal).ToArray(),
+            "the reviewed rules");
+        Assert.IsTrue(set.Rules.All(r => r.AuthorReviewed == (r.Review != null)), "a review flag and block disagree");
+        Assert.IsTrue(set.Rules.Where(r => r.AuthorReviewed).All(r => r.Review!.Basis == "benchmark" && r.Review.RunId == "p3cs-20261124-5a8fc37a"),
+            "a review is not the WS8 P3 benchmark's");
         CollectionAssert.AreEqual(new[] { "Hex", "dHex", "Pen", "HexA" }, set.Units.Take(4).Select(u => u.Name).ToArray());
         Assert.IsTrue(set.Adducts.Any(a => a.Adduct == "[M-H]-" && a.Common));
     }
@@ -93,6 +106,7 @@ public class EmbeddedRuleSetTests
     {
         "0.0.1-skeleton\t7f84e0fe34bd672e375191e282e32e85618ce51079577b71001063ee1250774e\t2026-11-19",
         "0.1.0\taf4a7ebf2732b30b9610c7e410ba34f50f176b3fc0155d5a4f9a28fb413ab2eb\t2026-11-20",
+        "0.2.0\tecf7988dea90992eb7233fc856ce2cb19a8afe4f1f5683628a4b35a459c93569\t2026-11-24",
     };
 
     [TestMethod]

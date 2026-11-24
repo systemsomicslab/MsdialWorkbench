@@ -41,13 +41,21 @@ Rule files carry facts and citations only: DOI or reference with a page, table o
 most one paraphrased sentence. They hold formulas, never typed masses, and no key that reads a precursor, product
 or library formula.
 
-The current version, 0.1.0, is the first shipped set: 106 rules, 58 scaffold lists, 106 motifs and 28 nesting rows.
+Version 0.1.0 is the first shipped set: 106 rules, 58 scaffold lists, 106 motifs and 28 nesting rows.
 Its element, adduct and unit tables are those of the 0.0.1-skeleton format release, which already held the WS8 P3
 draft's unit and adduct requests (the table rows first, then the request files in path order). Its rules and
 scaffold lists are the draft's, and its motif and nesting tables are the draft's motif and nesting staging rows in
-path order, so every rule's `rule_semantic_sha256` is the one the draft gave. No rule has had the author's review
-yet: every rule is `author_reviewed: false` with `review: null`, so no outcome is claim-eligible (each lists
+path order, so every rule's `rule_semantic_sha256` is the one the draft gave. In 0.1.0 no rule had the author's
+review: every rule was `author_reviewed: false` with `review: null`, so no outcome was claim-eligible (each listed
 `not_reviewed`). The motifs carry ChemOnt nodes, which are report-only (below).
+
+The current version, 0.2.0, changes only the review state of two rules. The WS8 P3 benchmark run
+`p3cs-20261124-5a8fc37a` found no rule that met the strict tier. Two rules met the provisional tier, and the author
+reviewed both: `triterpenoid_saponin.triterpenoid_saponin.neg` and
+`flavonoid_o_glycoside.listed_aglycone_glycoside.pos`. Each now has `author_reviewed: true` and a `review` block.
+Its basis is `benchmark`, measured at the p2 product tolerance and a 0.01 Da precursor tolerance, on QTOF-type,
+Orbitrap/FT and other instruments. The other 104 rules keep `author_reviewed: false`. No rule's semantics changed, so
+every `rule_semantic_sha256` is unchanged.
 
 ## ChemOnt nodes
 
