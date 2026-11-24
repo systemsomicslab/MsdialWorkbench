@@ -2867,7 +2867,7 @@ namespace CompMs.Common.Lipidomics
             { // positive ion mode 
                 if (adduct.AdductIonName == "[M+H]+")
                 {
-                    // seek -199.10 (C4H10NO6P)
+                    // seek Neutral C4H10NO6P loss (199.024574 Da)
                     var threshold = 20.0;
                     var diagnosticMz = theoreticalMz - (MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 6 + MassDiffDictionary.PhosphorusMass);
                     var isClassIonFound = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -3320,7 +3320,7 @@ namespace CompMs.Common.Lipidomics
                     var threshold = 1;
                     var diagnosticMz = theoreticalMz - C2H8NO4P;
                     var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    if (!isClassIon1Found) return null; // reject PS
+                    if (!isClassIon1Found) return null; // Reject candidates lacking the C2H8NO4P neutral-loss ion (mainly PS)
 
                     // from here, acyl level annotation is executed. 
                     var candidates = new List<LipidMolecule>();
@@ -9279,7 +9279,7 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
 
-                    var alphaOHflag01 = theoreticalMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                    var alphaOHflag01 = theoreticalMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // CH2O2 loss (46.005479 Da)
                     var nl_H2O = theoreticalMz - H2O; // -H2O
                     var query = new List<SpectrumPeak>
                                         {
@@ -9409,7 +9409,7 @@ AdductIon adduct)
 
                             var NL_SN1 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass; //[M-SN1(HFA)-H]-
                             var NL_SN2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(sn2Carbon, sn2Double) - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass; //[M - SN2-H]-
-                            var aahfaFrag1 = NL_SN1 - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // -CO2
+                            var aahfaFrag1 = NL_SN1 - (MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 2); // CH2O2 loss (46.005479 Da)
 
                             var query = new List<SpectrumPeak>
                                         {
@@ -11577,10 +11577,10 @@ AdductIon adduct)
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
-                    // seek [M-CO-H]-
+                    // seek [M-H-CH2O]-; neutral CH2O loss (30.010565 Da)
                     var threshold1 = 0.10;
                     var diagnosticMz1 = diagnosticMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
-                    // seek "[M-H2O-CO-3H]-";
+                    // seek [M-H-CH2O-H2O]-.
                     var threshold2 = 0.10;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
 
@@ -11832,10 +11832,10 @@ AdductIon adduct)
                     var diagnosticMz = adduct.AdductIonName == "[M-H]-" ? theoreticalMz :
                         adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-" ?
                         theoreticalMz - MassDiffDictionary.ProtonMass - CH3COOadduct : theoreticalMz - MassDiffDictionary.ProtonMass - HCOOadduct;
-                    // seek [M-CO-H]-
+                    // seek [M-H-CH2O]-; neutral CH2O loss (30.010565 Da)
                     var threshold1 = 0.10;
                     var diagnosticMz1 = diagnosticMz - (MassDiffDictionary.CarbonMass + MassDiffDictionary.HydrogenMass * 2 + MassDiffDictionary.OxygenMass);
-                    // seek "[M-H2O-CO-3H]-";
+                    // seek [M-H-CH2O-H2O]-.
                     var threshold2 = 0.10;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
 
@@ -13661,8 +13661,8 @@ AdductIon adduct)
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
                                     if (acylCarbon <= 0 || acylDouble < 0) continue;
 
-                                    var extAcylLoss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.ProtonMass + H2O; //[M-FA]-
-                                    var extAcylLoss2 = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.ProtonMass;      //[M-FA-H2O]-
+                                    var extAcylLoss = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.ProtonMass + H2O; // External acyl ketene loss: [M-H-(FA-H2O)]-
+                                    var extAcylLoss2 = diagnosticMz - LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.ProtonMass;      // Neutral external fatty acid loss: [M-H-FA]-.
                                     var extAcylHexloss = extAcylLoss - Sugar162;         // 
                                     var extAcylFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(extCarbon, extDouble);
                                     var sphLoss = diagnosticMz - ((sphCarbon - 2) * MassDiffDictionary.CarbonMass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2));  //[M-Sph+C2H6NO]-
@@ -13729,7 +13729,7 @@ AdductIon adduct)
 
                                     // eg. AHexCer 16:0/d18:1/22:0h
                                     var exAcylSugarIon = LipidMsmsCharacterizationUtility.acylCainMass(extCarbon, extDouble) + Sugar162 - Electron; // Hex 16:0, m/z 401
-                                    var exAcylSugarLossIon = theoreticalMz - exAcylSugarIon - H2O + Proton; // Hex 16:0, m/z 401
+                                    //var exAcylSugarLossIon = theoreticalMz - exAcylSugarIon - H2O + Proton; // Complementary neutral-loss ion; same m/z as ceramideIon_1WaterLoss. Not used in scoring.// Hex 16:0, m/z 401 
 
                                     var ceramideIon = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(extCarbon, extDouble) - Sugar162 + MassDiffDictionary.HydrogenMass;  // Cer d40:1h, m/z 638.6
                                     var ceramideIon_1WaterLoss = ceramideIon - H2O;
@@ -14770,7 +14770,7 @@ AdductIon adduct)
             }
             if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
             {
-                // seek [C11H17NO8-H]-  as 306.078
+                // Seek [C11H17NO9-H]- at m/z 306.083055.
                 var threshold1 = 0.01;
                 var diagnosticMz1 = MassDiffDictionary.CarbonMass * 11 + MassDiffDictionary.HydrogenMass * 17 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 9 - Proton;
                 var isClassIon1Found = LipidMsmsCharacterizationUtility.isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
@@ -20935,7 +20935,7 @@ AdductIon adduct)
                     //  seek "[GABA]+"; // 104
                     var threshold = 5.0;
                     var diagnosticMz1 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass + Proton;
-                    //  seek "[C4H7NO]+"; // 86
+                    //  seek Dehydrated protonated GABA: C4H8NO+, m/z 86.060040.
                     var threshold2 = 50.0;
                     var diagnosticMz2 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 1 + MassDiffDictionary.NitrogenMass + Proton;
 
@@ -20956,7 +20956,7 @@ AdductIon adduct)
                     //  seek "[GABA]-"; // 102
                     var threshold = 30.0;
                     var diagnosticMz1 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 9 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.NitrogenMass - Proton;
-                    //  seek "[C4H7NO]-"; // 84
+                    // Dehydrated deprotonated GABA: C4H6NO-, m/z 84.045487.
                     var threshold2 = 1.0;
                     var diagnosticMz2 = MassDiffDictionary.CarbonMass * 4 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.OxygenMass * 1 + MassDiffDictionary.NitrogenMass - Proton;
 
@@ -20983,7 +20983,7 @@ AdductIon adduct)
             {
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    //  seek 120 (Anthranilic acid)
+                    // Deprotonated anthranilic acid: [C7H7NO2-H]-, m/z 136.040402.
                     var threshold = 20.0;
                     var diagnosticMz = MassDiffDictionary.CarbonMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 7 - Proton;
 
