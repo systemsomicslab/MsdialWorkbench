@@ -10,6 +10,9 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Globalization;
+using System.Text;
+using System.Windows;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
@@ -32,6 +35,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IsVisible = model.IsVisible;
             IsAnnotationVisible = model.IsAnnotationVisible;
             SelectedVerticalAxisItem = model.VerticalAxisItemSelector.GetAxisItemAsObservable().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            CopyAsTableCommand = new ReactiveCommand().WithSubscribe(CopyAsTable).AddTo(Disposables);
+            SaveAsTableCommand = new ReactiveCommand().WithSubscribe(() => SaveAsTable(broker ?? MessageBroker.Default)).AddTo(Disposables);
             if (broker is not null) {
                 SaveCommand = model.CanSave.ToReactiveCommand().WithSubscribe(SaveSpectrum(model.Save, filter:  "NIST format(*.msp)|*.msp", broker)).AddTo(Disposables);
             }
@@ -55,6 +60,35 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactivePropertySlim<bool> IsVisible { get; }
         public ReactivePropertySlim<bool> IsAnnotationVisible { get; }
         public ReactiveCommand? SaveCommand { get; }
+        public ReactiveCommand CopyAsTableCommand { get; }
+        public ReactiveCommand SaveAsTableCommand { get; }
+
+        private string? SpectrumAsTable() {
+            var spectrum = MsSpectrum.Value;
+            if (spectrum is null) return null;
+            var result = new StringBuilder("m/z\tIntensity\r\n");
+            foreach (var peak in spectrum.Spectrum) {
+                result.Append(peak.Mass.ToString("R", CultureInfo.InvariantCulture)).Append('\t')
+                    .Append(peak.Intensity.ToString("R", CultureInfo.InvariantCulture)).Append("\r\n");
+            }
+            return result.ToString();
+        }
+
+        private void CopyAsTable() {
+            var table = SpectrumAsTable();
+            if (table is not null) Clipboard.SetText(table);
+        }
+
+        private void SaveAsTable(IMessageBroker broker) {
+            var table = SpectrumAsTable();
+            if (table is null) return;
+            broker.Publish(new SaveFileNameRequest(path => File.WriteAllText(path, table, new UTF8Encoding(false))) {
+                Title = "Save spectrum as table",
+                Filter = "tab separated values (*.txt)|*.txt",
+                RestoreDirectory = true,
+                AddExtension = true,
+            });
+        }
 
         private Action SaveSpectrum(Action<Stream> handler, string filter, IMessageBroker broker) {
             void result() {
