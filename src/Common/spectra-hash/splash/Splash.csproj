@@ -65,7 +65,7 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
