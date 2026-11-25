@@ -20,12 +20,14 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
 {
     private readonly Ms2SpectrumListModel _model;
     private readonly SerialDisposable _axes = new SerialDisposable();
+    private readonly SerialDisposable _enlargedAxes = new SerialDisposable();
     private string? _enlargedTitle;
 
     public Ms2SpectrumListViewModel(Ms2SpectrumListModel model) {
         _model = model ?? throw new ArgumentNullException(nameof(model));
         Disposables.Add(model);
         Disposables.Add(_axes);
+        Disposables.Add(_enlargedAxes);
 
         Title = model.Title;
         Header = model.Header;
@@ -58,6 +60,9 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
             }
         }).AddTo(Disposables);
         IsEnlarged = EnlargedTile.Select(tile => tile is not null).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        // The enlarged chart is much wider than a tile. Axis margins are in pixels, so it gets axes of its own
+        // instead of sharing the tiles' axes, which would then be laid out for the wrong size.
+        EnlargedChart = EnlargedTile.Select(CreateEnlargedChart).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         EnlargedPosition = EnlargedTile.Select(tile => tile is null ? string.Empty : $"{IndexOf(tile) + 1} / {Tiles.Value.Count}")
             .ToReadOnlyReactivePropertySlim(string.Empty)
             .AddTo(Disposables);
@@ -101,6 +106,8 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
     /// <summary>The spectrum drawn large over the tiles; null while the tiles are shown.</summary>
     public ReactivePropertySlim<Ms2SpectrumListTileViewModel?> EnlargedTile { get; }
     public ReadOnlyReactivePropertySlim<bool> IsEnlarged { get; }
+    /// <summary>What the enlarged chart draws: the enlarged spectrum with axes of its own.</summary>
+    public ReadOnlyReactivePropertySlim<Ms2SpectrumListTileViewModel?> EnlargedChart { get; }
     /// <summary>Where the enlarged spectrum is among the tiles, such as "2 / 12".</summary>
     public ReadOnlyReactivePropertySlim<string> EnlargedPosition { get; }
     public ReactiveCommand<Ms2SpectrumListTileViewModel?> EnlargeCommand { get; }
@@ -135,29 +142,54 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
     }
 
     private IReadOnlyList<Ms2SpectrumListTileViewModel> CreateTiles(IReadOnlyList<Ms2SpectrumListItem> items, (double Minimum, double Maximum) massRange, MsSpectrum? reference, bool showReference, Ms2SpectrumAxisType axisType) {
+        var disposables = new CompositeDisposable();
         // One horizontal axis for every tile: zooming one tile zooms them all, so peaks stay in line.
-        var horizontalAxis = new ContinuousAxisManager<double>(massRange.Minimum, massRange.Maximum, new ConstantMargin(10d));
-        var disposables = new CompositeDisposable { horizontalAxis };
-        var mirror = showReference && (reference?.HasSpectrum ?? false);
-        // Like the main MS/MS view, each spectrum gets its own vertical axis over its own intensities.
+        var horizontalAxis = CreateHorizontalAxis(massRange);
+        disposables.Add(horizontalAxis);
         // With the reference shown, it gets a lower pane that meets the spectrum at the m/z axis.
-        var referenceAxis = CreateVerticalAxis(axisType, mirror ? reference : null);
+        var mirroredReference = showReference && (reference?.HasSpectrum ?? false) ? reference : null;
+        var referenceAxis = CreateVerticalAxis(axisType, mirroredReference);
         disposables.Add((IDisposable)referenceAxis);
-        var referencePeaks = mirror ? reference!.Spectrum : [];
-        var title = Ms2SpectrumList.GetAxisTitle(axisType);
-        var tiles = items.Select(item => {
-            var verticalAxis = CreateVerticalAxis(axisType, item.Spectrum);
-            disposables.Add((IDisposable)verticalAxis);
-            return new Ms2SpectrumListTileViewModel(item, horizontalAxis, verticalAxis, referenceAxis, mirror, referencePeaks, axisType, title);
-        }).ToList();
+        var tiles = items.Select(item => CreateTile(item, massRange, horizontalAxis, mirroredReference, referenceAxis, axisType, disposables)).ToList();
         _axes.Disposable = disposables;
         return tiles;
     }
 
+    private Ms2SpectrumListTileViewModel? CreateEnlargedChart(Ms2SpectrumListTileViewModel? tile) {
+        if (tile is null) {
+            _enlargedAxes.Disposable = null;
+            return null;
+        }
+        var disposables = new CompositeDisposable();
+        var horizontalAxis = CreateHorizontalAxis(tile.MassRange);
+        disposables.Add(horizontalAxis);
+        var referenceAxis = CreateVerticalAxis(tile.AxisType, tile.MirroredReference);
+        disposables.Add((IDisposable)referenceAxis);
+        var chart = CreateTile(tile.Item, tile.MassRange, horizontalAxis, tile.MirroredReference, referenceAxis, tile.AxisType, disposables);
+        _enlargedAxes.Disposable = disposables;
+        return chart;
+    }
+
+    private static Ms2SpectrumListTileViewModel CreateTile(Ms2SpectrumListItem item, (double Minimum, double Maximum) massRange, ContinuousAxisManager<double> horizontalAxis, MsSpectrum? mirroredReference, IAxisManager<double> referenceAxis, Ms2SpectrumAxisType axisType, CompositeDisposable disposables) {
+        // Like the main MS/MS view, each spectrum gets its own vertical axis over its own intensities.
+        var verticalAxis = CreateVerticalAxis(axisType, item.Spectrum);
+        disposables.Add((IDisposable)verticalAxis);
+        return new Ms2SpectrumListTileViewModel(item, massRange, horizontalAxis, verticalAxis, referenceAxis, mirroredReference, axisType, Ms2SpectrumList.GetAxisTitle(axisType));
+    }
+
+    /// <summary>Margins in pixels, as in the main MS/MS view, leave room for the m/z labels of the outermost peaks.</summary>
+    internal static ContinuousAxisManager<double> CreateHorizontalAxis((double Minimum, double Maximum) massRange) {
+        return new ContinuousAxisManager<double>(massRange.Minimum, massRange.Maximum, new ConstantMargin(HorizontalMarginPixels));
+    }
+
+    internal const double HorizontalMarginPixels = 40d;
+    /// <summary>Room above the base peak for its m/z label.</summary>
+    internal const double TopMarginPixels = 30d;
+
     /// <summary>The same kinds of vertical axis as the main MS/MS view offers, over the intensities of one spectrum.</summary>
     internal static IAxisManager<double> CreateVerticalAxis(Ms2SpectrumAxisType type, MsSpectrum? spectrum) {
         var (min, max) = Ms2SpectrumList.GetIntensityRange(spectrum);
-        var margin = new RelativeMargin(0d, .1d);
+        var margin = new ConstantMargin(0d, TopMarginPixels);
         switch (type) {
             case Ms2SpectrumAxisType.Absolute:
                 return new ContinuousAxisManager<double>(0d, max, margin, new AxisRange(0d, 0d)) { LabelType = LabelType.Standard };
@@ -175,23 +207,35 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
 
 internal sealed class Ms2SpectrumListTileViewModel
 {
-    public Ms2SpectrumListTileViewModel(Ms2SpectrumListItem item, IAxisManager<double> horizontalAxis, IAxisManager<double> verticalAxis, IAxisManager<double> referenceVerticalAxis, bool isMirrored, List<SpectrumPeak> referencePeaks, Ms2SpectrumAxisType axisType, string verticalTitle) {
+    public Ms2SpectrumListTileViewModel(Ms2SpectrumListItem item, (double Minimum, double Maximum) massRange, IAxisManager<double> horizontalAxis, IAxisManager<double> verticalAxis, IAxisManager<double> referenceVerticalAxis, MsSpectrum? mirroredReference, Ms2SpectrumAxisType axisType, string verticalTitle) {
+        Item = item;
+        MassRange = massRange;
+        MirroredReference = mirroredReference;
         Title = item.Title;
         Detail = item.Detail;
+        CollisionEnergy = item.CollisionEnergy;
         IsRepresentative = item.IsRepresentative;
         HasSpectrum = item.HasSpectrum;
         Peaks = item.Spectrum.Spectrum;
-        ReferencePeaks = referencePeaks;
+        ReferencePeaks = mirroredReference?.Spectrum ?? [];
         HorizontalAxis = horizontalAxis;
         VerticalAxis = verticalAxis;
         ReferenceVerticalAxis = referenceVerticalAxis;
-        IsMirrored = isMirrored;
+        IsMirrored = mirroredReference is not null;
         AxisType = axisType;
         VerticalTitle = verticalTitle;
     }
 
+    internal Ms2SpectrumListItem Item { get; }
+    internal (double Minimum, double Maximum) MassRange { get; }
+    /// <summary>The reference drawn under the spectrum; null when it is not shown.</summary>
+    internal MsSpectrum? MirroredReference { get; }
+
     public string Title { get; }
     public string Detail { get; }
+    /// <summary>"CE 35 eV" or "CE n/a", shown as a badge next to the title; null where there is no MS2.</summary>
+    public string? CollisionEnergy { get; }
+    public bool IsCollisionEnergyKnown => CollisionEnergy is not null && CollisionEnergy != Ms2SpectrumList.UnknownCollisionEnergy;
     public bool IsRepresentative { get; }
     public bool HasSpectrum { get; }
     public List<SpectrumPeak> Peaks { get; }

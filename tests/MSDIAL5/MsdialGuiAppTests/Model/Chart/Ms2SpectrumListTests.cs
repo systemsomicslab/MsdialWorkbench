@@ -6,6 +6,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -95,6 +96,21 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
         }
 
         [TestMethod()]
+        public void AxesLeaveRoomForThePeakLabels() {
+            var horizontal = Ms2SpectrumListViewModel.CreateHorizontalAxis((100d, 900d));
+            var horizontalMargin = (ConstantMargin)horizontal.ChartMargin;
+            Assert.AreEqual(40d, horizontalMargin.Lower, "Room for the label of the leftmost peak.");
+            Assert.AreEqual(40d, horizontalMargin.Upper, "Room for the label of the rightmost peak.");
+
+            foreach (var type in new[] { Ms2SpectrumAxisType.Relative, Ms2SpectrumAxisType.Absolute, Ms2SpectrumAxisType.Log10, Ms2SpectrumAxisType.Sqrt }) {
+                var vertical = (BaseAxisManager<double>)Ms2SpectrumListViewModel.CreateVerticalAxis(type, new MsSpectrum(Peaks((100, 20), (200, 5000))));
+                var verticalMargin = (ConstantMargin)vertical.ChartMargin;
+                Assert.AreEqual(0d, verticalMargin.Lower, type.ToString());
+                Assert.AreEqual(30d, verticalMargin.Upper, $"Room above the base peak for its label ({type}).");
+            }
+        }
+
+        [TestMethod()]
         public void EachAxisTypeGetsItsKindOfAxis() {
             var spectrum = new MsSpectrum(Peaks((100, 20), (200, 5000)));
 
@@ -144,17 +160,29 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
         public void AlignedSamplesAreMarkedByTheRepresentativeFile() {
             var items = Ms2SpectrumList.FromAlignedSamples(
                 [
-                    new AlignedSampleMs2(0, "QC_01", "QC", Peaks((100, 1), (120, 2))),
+                    new AlignedSampleMs2(0, "QC_01", "QC", Peaks((100, 1), (120, 2)), collisionEnergy: 35d),
                     new AlignedSampleMs2(1, "Sample_01", "", Peaks((100, 1))),
-                    new AlignedSampleMs2(2, "Blank_01", "Blank", null),
+                    new AlignedSampleMs2(2, "Blank_01", "Blank", null, collisionEnergy: 35d),
                 ],
                 representativeFileId: 1);
 
             CollectionAssert.AreEqual(new[] { "QC_01", "Sample_01", "Blank_01" }, items.Select(item => item.Title).ToArray());
             CollectionAssert.AreEqual(new[] { false, true, false }, items.Select(item => item.IsRepresentative).ToArray());
             CollectionAssert.AreEqual(new[] { "Class: QC, 2 peaks", "1 peak", "Class: Blank, no MS2" }, items.Select(item => item.Detail).ToArray());
+            // The collision energy is kept apart from the detail, for every sample with MS2; "n/a" when the raw data did not record it.
+            CollectionAssert.AreEqual(new[] { "CE 35 eV", "CE n/a", null }, items.Select(item => item.CollisionEnergy).ToArray());
             CollectionAssert.AreEqual(new[] { true, true, false }, items.Select(item => item.HasSpectrum).ToArray());
             Assert.AreEqual("2 of 3 samples have an MS2 spectrum.", Ms2SpectrumList.Summarize(items.ToList(), "samples"));
+        }
+
+        [TestMethod()]
+        public void TheCollisionEnergyOfASampleIsThatOfItsRepresentativeScan() {
+            var scanToCe = new Dictionary<int, double> { [12] = 40d, [10] = 20d, [11] = 30d };
+
+            Assert.AreEqual(30d, Ms2SpectrumList.GetCollisionEnergy(11, scanToCe));
+            Assert.AreEqual(20d, Ms2SpectrumList.GetCollisionEnergy(-1, scanToCe), "Without the representative scan, the first scan is used.");
+            Assert.IsNull(Ms2SpectrumList.GetCollisionEnergy(10, new Dictionary<int, double>()));
+            Assert.IsNull(Ms2SpectrumList.GetCollisionEnergy(10, null), "A gap-filled peak has no MS2 scans.");
         }
 
         [TestMethod()]
@@ -167,8 +195,9 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
                 representativeScanId: 10);
 
             CollectionAssert.AreEqual(new[] { "Scan 10", "Scan 12" }, items.Select(item => item.Title).ToArray());
-            Assert.AreEqual("RT 5.123 min, Precursor m/z 760.5851, CE 35 eV, 1 peak", items[0].Detail);
+            Assert.AreEqual("RT 5.123 min, Precursor m/z 760.5851, 1 peak", items[0].Detail);
             Assert.AreEqual("no MS2", items[1].Detail);
+            CollectionAssert.AreEqual(new[] { "CE 35 eV", "CE n/a" }, items.Select(item => item.CollisionEnergy).ToArray());
             CollectionAssert.AreEqual(new[] { true, false }, items.Select(item => item.IsRepresentative).ToArray());
         }
 
@@ -270,6 +299,27 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
         }
 
         [TestMethod()]
+        public async Task TilesShowTheCollisionEnergyApart() {
+            var target = new ReactivePropertySlim<string?>("spot");
+            using var model = Ms2SpectrumListModel.Create("title", "samples", target, t => t,
+                _ => Task.FromResult<IReadOnlyList<Ms2SpectrumListItem>>(Ms2SpectrumList.FromAlignedSamples(
+                    [
+                        new AlignedSampleMs2(0, "QC_01", "QC", Peaks((100, 1)), collisionEnergy: 20d),
+                        new AlignedSampleMs2(1, "QC_02", "QC", Peaks((100, 1))),
+                        new AlignedSampleMs2(2, "Blank_01", "Blank", null),
+                    ],
+                    representativeFileId: 0)),
+                Observable.Return<MsSpectrum?>(null));
+            using var vm = new Ms2SpectrumListViewModel(model);
+            vm.ShowEmpty.Value = true;
+            await WaitUntilAsync(() => vm.Tiles.Value.Count == 3);
+
+            CollectionAssert.AreEqual(new[] { "CE 20 eV", "CE n/a", null }, vm.Tiles.Value.Select(tile => tile.CollisionEnergy).ToArray());
+            CollectionAssert.AreEqual(new[] { true, false, false }, vm.Tiles.Value.Select(tile => tile.IsCollisionEnergyKnown).ToArray());
+            Assert.AreEqual("Class: QC, 1 peak", vm.Tiles.Value[0].Detail);
+        }
+
+        [TestMethod()]
         public async Task AClickedTileIsEnlargedAndTheArrowsStepThroughTheTiles() {
             var target = new ReactivePropertySlim<string?>("spot1");
             Task<IReadOnlyList<Ms2SpectrumListItem>> Load(string t) => Task.FromResult<IReadOnlyList<Ms2SpectrumListItem>>(t == "spot1"
@@ -301,9 +351,15 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
             Assert.AreEqual("B", vm.EnlargedTile.Value?.Title);
             Assert.AreSame(vm.Tiles.Value[0], vm.EnlargedTile.Value);
             Assert.AreEqual("1 / 2", vm.EnlargedPosition.Value);
+            // The enlarged chart draws the same spectrum on axes of its own, laid out for its larger size.
+            Assert.AreEqual("B", vm.EnlargedChart.Value?.Title);
+            Assert.AreNotSame(vm.EnlargedTile.Value!.HorizontalAxis, vm.EnlargedChart.Value!.HorizontalAxis);
+            Assert.AreNotSame(vm.EnlargedTile.Value.VerticalAxis, vm.EnlargedChart.Value.VerticalAxis);
+            CollectionAssert.AreEqual(vm.EnlargedTile.Value.Peaks, vm.EnlargedChart.Value.Peaks);
 
             vm.CloseEnlargedCommand.Execute();
             Assert.IsFalse(vm.IsEnlarged.Value);
+            Assert.IsNull(vm.EnlargedChart.Value);
             Assert.AreEqual(string.Empty, vm.EnlargedPosition.Value);
         }
 
@@ -332,7 +388,8 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
             CollectionAssert.AreEqual(new[] { "Scan 1", "Scan 3", "Scan 42" }, items.Select(item => item.Title).ToArray());
             CollectionAssert.AreEqual(new[] { false, true, false }, items.Select(item => item.IsRepresentative).ToArray());
             CollectionAssert.AreEqual(new[] { 101d, 600d }, items[0].Spectrum.Spectrum.Select(p => p.Mass).ToArray());
-            Assert.AreEqual("RT 5.010 min, Precursor m/z 500.0000, CE 35 eV, 2 peaks", items[0].Detail);
+            Assert.AreEqual("RT 5.010 min, Precursor m/z 500.0000, 2 peaks", items[0].Detail);
+            Assert.AreEqual("CE 35 eV", items[0].CollisionEnergy);
             Assert.IsFalse(items[2].HasSpectrum, "A scan the raw data does not have is listed with no spectrum.");
 
             parameter.RemoveAfterPrecursor = true;

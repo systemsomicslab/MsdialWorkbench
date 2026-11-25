@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -19,6 +20,10 @@ namespace CompMs.App.Msdial.Model.DataObj
         public int MasterPeakID => _innerModel.MasterPeakID;
         public int PeakID => _innerModel.PeakID;
         public int MSDecResultID => _innerModel.GetMSDecResultID();
+        /// <summary>The representative MS2 scan of this sample's peak.</summary>
+        public int MS2RawSpectrumID => _innerModel.MS2RawSpectrumID;
+        /// <summary>Every MS2 scan of this sample's peak and its collision energy, as read from the raw data; null for a gap-filled peak.</summary>
+        public IReadOnlyDictionary<int, double>? MS2RawSpectrumID2CE => _innerModel.MS2RawSpectrumID2CE;
         public double TotalScore => _innerModel.MatchResults.Representative.TotalScore;
         public AdductIon Adduct => _innerModel.PeakCharacter.AdductType;
         public double Mass => _innerModel.Mass;

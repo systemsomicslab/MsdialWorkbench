@@ -59,7 +59,14 @@ namespace CompMs.App.Msdial.Model.Loader
             }
             var files = _analysisFiles.AnalysisFiles.ToArray();
             var scans = await _loaders.GetCurrentScansAsync(files, target).ConfigureAwait(false);
-            var samples = files.Select((file, i) => new AlignedSampleMs2(file.AnalysisFileId, file.AnalysisFileName, file.AnalysisFileClass, scans[i]?.Spectrum));
+            // The collision energies come from each sample's peak, which peak picking filled from the raw data.
+            var peaks = (target.AlignedPeakPropertiesModelProperty.Value ?? (IEnumerable<AlignmentChromPeakFeatureModel>)[])
+                .GroupBy(peak => peak.FileID)
+                .ToDictionary(group => group.Key, group => group.First());
+            var samples = files.Select((file, i) => {
+                var ce = peaks.TryGetValue(file.AnalysisFileId, out var peak) ? Ms2SpectrumList.GetCollisionEnergy(peak.MS2RawSpectrumID, peak.MS2RawSpectrumID2CE) : null;
+                return new AlignedSampleMs2(file.AnalysisFileId, file.AnalysisFileName, file.AnalysisFileClass, scans[i]?.Spectrum, ce);
+            });
             return Ms2SpectrumList.FromAlignedSamples(samples, target.RepresentativeFileID);
         }
 

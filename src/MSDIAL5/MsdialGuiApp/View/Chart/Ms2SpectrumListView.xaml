@@ -49,7 +49,7 @@
                                               HorizontalTitle="m/z"
                                               VerticalTitle="{Binding VerticalTitle}"
                                               ContextMenu="{StaticResource Ms2SpectrumChartMenu}"
-                                              Style="{StaticResource NoWheelBasicChart}">
+                                              Style="{StaticResource BasicChart}">
                         <Grid>
                         <chart:LineSpectrumControlSlim ItemsSource="{Binding Peaks}"
                                                        DataType="{x:Type components:SpectrumPeak}"
@@ -196,6 +196,35 @@
                                 Visibility="{Binding IsRepresentative, Converter={StaticResource BooleanToVisibility}}">
                             <TextBlock Text="Representative" Foreground="White" FontSize="11"/>
                         </Border>
+                        <!-- The collision energy on its own, so spectra taken at different energies are told apart at a glance. -->
+                        <Border DockPanel.Dock="Right" CornerRadius="3" Padding="5,0" Margin="0,0,4,0" VerticalAlignment="Center"
+                                ToolTip="Collision energy of this MS2 scan, as recorded in the raw data">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="SteelBlue"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CollisionEnergy}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsCollisionEnergyKnown}" Value="False">
+                                            <Setter Property="Background" Value="Gainsboro"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{Binding CollisionEnergy}" FontSize="11" FontWeight="Bold">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCollisionEnergyKnown}" Value="False">
+                                                <Setter Property="Foreground" Value="DimGray"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
                         <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
                     </DockPanel>
                     <TextBlock Text="{Binding Detail}" Foreground="DimGray" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip="{Binding Detail}"/>
@@ -234,6 +263,7 @@
                 <StackPanel>
                     <TextBlock Text="{Binding Header.Value}" FontWeight="Bold" FontSize="14" TextTrimming="CharacterEllipsis"/>
                     <TextBlock Text="{Binding Summary.Value}" Foreground="DimGray"/>
+                    <TextBlock Text="Zoom: mouse wheel or right-drag on a chart (all tiles zoom together). Double-click resets. Scroll the list over the tile titles or with the scroll bar." Foreground="Gray" FontSize="11" TextTrimming="CharacterEllipsis"/>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -269,6 +299,7 @@
                                     </DockPanel>
                                 </Button>
                                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource Ms2SpectrumChart}"
+                                                MouseWheel="Chart_MouseWheel"
                                                 Focusable="False" Grid.Row="1">
                                     <ContentControl.Tag>
                                         <sys:Int32>5</sys:Int32>
@@ -313,7 +344,9 @@
                         <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource Ms2SpectrumHeader}"
                                           TextElement.FontSize="14"/>
                     </DockPanel>
-                    <ContentControl Content="{Binding}" ContentTemplate="{StaticResource Ms2SpectrumChart}"
+                    <ContentControl Content="{Binding DataContext.EnlargedChart.Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    ContentTemplate="{StaticResource Ms2SpectrumChart}"
+                                    MouseWheel="Chart_MouseWheel"
                                     Focusable="False" Grid.Row="1">
                         <ContentControl.Tag>
                             <sys:Int32>15</sys:Int32>
