@@ -777,6 +777,7 @@ namespace CompMs.App.MsdialConsole.Parser
             (param, method, value) => DetailedAlignmentProvenanceLine(method, value, _ => { }),
             (param, method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
             (param, method, value) => AutomaticRtCorrectionPreviewOnlyLine(method, value, _ => { }),
+            (param, method, value) => Ms2MassAccuracyPreviewOnlyLine(method, value, _ => { }),
             (param, method, value) => ReadAutomaticRtCorrectionParameter(param, method, value),
             (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
             (param, method, value) => MsmsEntropyCleanupLine(param.ChromDecBaseParam, method, value),
@@ -971,6 +972,36 @@ namespace CompMs.App.MsdialConsole.Parser
             return result;
         }
 
+        /// <summary>
+        /// Whether the run stops once every file's peaks are picked and their product-ion scans' m/z measured against
+        /// the MS1 survey (the MS2 mass accuracy report), without deconvolution, annotation or alignment, and the value
+        /// of the last line that says neither True nor False, or null. LcmsProcess refuses such a line, as it refuses an
+        /// unusable automatic RT correction preview switch: read as False, it would turn the quick look someone asked
+        /// for into a full run.
+        /// </summary>
+        public static bool ReadMs2MassAccuracyPreviewOnly(string filepath, out string? unusableValue) {
+            string? unusable = null;
+            var result = false;
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable || value.IsEmptyOrNull()) {
+                        continue;
+                    }
+                    var read = false;
+                    var outcome = Ms2MassAccuracyPreviewOnlyLine(method, value, v => read = v);
+                    if (outcome.IsApplied) {
+                        result = read;
+                    }
+                    else if (outcome.IsUnusableValue) {
+                        unusable = value;
+                    }
+                }
+            }
+            unusableValue = unusable;
+            return result;
+        }
+
         private static string ReadMspAnnotatorSettingsFilePath(string filepath) {
             return ReadLast(filepath, string.Empty, MspAnnotatorSettingsFilePathLine);
         }
@@ -1051,6 +1082,15 @@ namespace CompMs.App.MsdialConsole.Parser
         private static MethodKeyOutcome AutomaticRtCorrectionPreviewOnlyLine(string method, string value, Action<bool> assign) {
             switch (method.ToLowerInvariant()) {
                 case "automatic rt correction preview only":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome Ms2MassAccuracyPreviewOnlyLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "ms2 mass accuracy preview only":
                     return TrueOrFalse(value, assign);
                 default:
                     return MethodKeyOutcome.UnknownKey;

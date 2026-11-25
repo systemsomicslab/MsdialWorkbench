@@ -93,13 +93,129 @@ internal static class SyntheticLcmsMzml
         writer.WriteEndDocument();
     }
 
-    private static void WriteSpectrum(XmlWriter writer, int index, double minutes, double[] mzs, double[] intensities) {
+    public const double C13Spacing = 1.0033548378;
+
+    /// <summary>
+    /// As <see cref="Write"/>, with SWATH product-ion scans after every MS1 scan, one per isolation window in
+    /// <paramref name="windows"/>, 0.001 min apart. Each compound has an M+1 isotope at 30% of its height, and in the
+    /// window that holds it, a third of the precursor and of its isotope survive unfragmented beside a fragment at
+    /// 60% of its m/z. Every product ion is read <paramref name="ms2ShiftPpm"/> off its true m/z, as a product-ion
+    /// scan with a calibration error would read it; the MS1 scans are exact.
+    /// </summary>
+    public static void WriteSwath(
+        string path,
+        IReadOnlyList<(double Mz, double Rt, double Height)> compounds,
+        IReadOnlyList<(double Lower, double Upper)> windows,
+        double ms2ShiftPpm,
+        double cycle = 0.02,
+        double end = 10) {
+        var cycles = (int)Math.Round(end / cycle) + 1;
+        var scanCount = cycles * (1 + windows.Count);
+        using var writer = XmlWriter.Create(path, new XmlWriterSettings { Indent = true });
+        writer.WriteStartDocument();
+        writer.WriteStartElement("mzML", "http://psi.hupo.org/ms/mzml");
+        writer.WriteAttributeString("id", "synthetic");
+        writer.WriteAttributeString("version", "1.1.0");
+
+        writer.WriteStartElement("cvList");
+        writer.WriteAttributeString("count", "2");
+        WriteCv(writer, "MS", "Proteomics Standards Initiative Mass Spectrometry Ontology", "https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo");
+        WriteCv(writer, "UO", "Unit Ontology", "https://raw.githubusercontent.com/bio-ontology-research-group/unit-ontology/master/uo.obo");
+        writer.WriteEndElement();
+
+        writer.WriteStartElement("fileDescription");
+        writer.WriteStartElement("fileContent");
+        WriteCvParam(writer, "MS:1000579", "MS1 spectrum");
+        WriteCvParam(writer, "MS:1000580", "MSn spectrum");
+        writer.WriteEndElement();
+        writer.WriteEndElement();
+
+        writer.WriteStartElement("softwareList");
+        writer.WriteAttributeString("count", "1");
+        writer.WriteStartElement("software");
+        writer.WriteAttributeString("id", "MsdialCoreTestAppTests");
+        writer.WriteAttributeString("version", "1");
+        WriteCvParam(writer, "MS:1000799", "custom unreleased software tool", "MsdialCoreTestAppTests");
+        writer.WriteEndElement();
+        writer.WriteEndElement();
+
+        writer.WriteStartElement("instrumentConfigurationList");
+        writer.WriteAttributeString("count", "1");
+        writer.WriteStartElement("instrumentConfiguration");
+        writer.WriteAttributeString("id", "IC1");
+        WriteCvParam(writer, "MS:1000031", "instrument model");
+        writer.WriteEndElement();
+        writer.WriteEndElement();
+
+        writer.WriteStartElement("dataProcessingList");
+        writer.WriteAttributeString("count", "1");
+        writer.WriteStartElement("dataProcessing");
+        writer.WriteAttributeString("id", "synthesis");
+        writer.WriteStartElement("processingMethod");
+        writer.WriteAttributeString("order", "0");
+        writer.WriteAttributeString("softwareRef", "MsdialCoreTestAppTests");
+        WriteCvParam(writer, "MS:1000544", "Conversion to mzML");
+        writer.WriteEndElement();
+        writer.WriteEndElement();
+        writer.WriteEndElement();
+
+        writer.WriteStartElement("run");
+        writer.WriteAttributeString("id", "synthetic");
+        writer.WriteAttributeString("defaultInstrumentConfigurationRef", "IC1");
+        writer.WriteStartElement("spectrumList");
+        writer.WriteAttributeString("count", Format(scanCount));
+        writer.WriteAttributeString("defaultDataProcessingRef", "synthesis");
+        var index = 0;
+        var shift = 1d + ms2ShiftPpm * 1e-6;
+        for (var c = 0; c < cycles; c++) {
+            var rt = c * cycle;
+            var heights = compounds.Select(compound => compound.Height * Math.Exp(-Math.Pow(rt - compound.Rt, 2) / (2 * 0.05 * 0.05))).ToArray();
+
+            var ms1 = new List<(double Mz, double Intensity)>();
+            for (var i = 0; i < compounds.Count; i++) {
+                ms1.Add((compounds[i].Mz, 50d + heights[i]));
+                ms1.Add((compounds[i].Mz + C13Spacing, 15d + 0.3d * heights[i]));
+            }
+            ms1.Add((LastMz, 3000d));
+            ms1 = ms1.OrderBy(peak => peak.Mz).ToList();
+            WriteSpectrum(writer, index++, rt, ms1.Select(peak => peak.Mz).ToArray(), ms1.Select(peak => peak.Intensity).ToArray());
+
+            for (var w = 0; w < windows.Count; w++) {
+                var (lower, upper) = windows[w];
+                var ms2 = new List<(double Mz, double Intensity)>();
+                for (var i = 0; i < compounds.Count; i++) {
+                    if (compounds[i].Mz < lower || compounds[i].Mz >= upper) {
+                        continue;
+                    }
+                    ms2.Add((compounds[i].Mz * shift, 20d + heights[i] / 3d));
+                    ms2.Add(((compounds[i].Mz + C13Spacing) * shift, 6d + 0.1d * heights[i]));
+                    ms2.Add((0.6d * compounds[i].Mz * shift, 30d + 0.5d * heights[i]));
+                }
+                ms2.Add((LastMz, 3000d));
+                ms2 = ms2.OrderBy(peak => peak.Mz).ToList();
+                WriteSpectrum(writer, index++, rt + 0.001d * (w + 1), ms2.Select(peak => peak.Mz).ToArray(), ms2.Select(peak => peak.Intensity).ToArray(), (lower, upper));
+            }
+        }
+        writer.WriteEndElement();
+        writer.WriteEndElement();
+
+        writer.WriteEndElement();
+        writer.WriteEndDocument();
+    }
+
+    private static void WriteSpectrum(XmlWriter writer, int index, double minutes, double[] mzs, double[] intensities, (double Lower, double Upper)? window = null) {
         writer.WriteStartElement("spectrum");
         writer.WriteAttributeString("index", Format(index));
         writer.WriteAttributeString("id", $"index={Format(index)}");
         writer.WriteAttributeString("defaultArrayLength", Format(mzs.Length));
-        WriteCvParam(writer, "MS:1000511", "ms level", "1");
-        WriteCvParam(writer, "MS:1000579", "MS1 spectrum");
+        if (window is null) {
+            WriteCvParam(writer, "MS:1000511", "ms level", "1");
+            WriteCvParam(writer, "MS:1000579", "MS1 spectrum");
+        }
+        else {
+            WriteCvParam(writer, "MS:1000511", "ms level", "2");
+            WriteCvParam(writer, "MS:1000580", "MSn spectrum");
+        }
         WriteCvParam(writer, "MS:1000130", "positive scan");
         WriteCvParam(writer, "MS:1000127", "centroid spectrum");
 
@@ -110,6 +226,31 @@ internal static class SyntheticLcmsMzml
         WriteCvParam(writer, "MS:1000016", "scan start time", Format(minutes), ("UO", "UO:0000031", "minute"));
         writer.WriteEndElement();
         writer.WriteEndElement();
+
+        if (window is { } w) {
+            var target = (w.Lower + w.Upper) / 2d;
+            var half = (w.Upper - w.Lower) / 2d;
+            writer.WriteStartElement("precursorList");
+            writer.WriteAttributeString("count", "1");
+            writer.WriteStartElement("precursor");
+            writer.WriteStartElement("isolationWindow");
+            WriteCvParam(writer, "MS:1000827", "isolation window target m/z", Format(target), ("MS", "MS:1000040", "m/z"));
+            WriteCvParam(writer, "MS:1000828", "isolation window lower offset", Format(half), ("MS", "MS:1000040", "m/z"));
+            WriteCvParam(writer, "MS:1000829", "isolation window upper offset", Format(half), ("MS", "MS:1000040", "m/z"));
+            writer.WriteEndElement();
+            writer.WriteStartElement("selectedIonList");
+            writer.WriteAttributeString("count", "1");
+            writer.WriteStartElement("selectedIon");
+            WriteCvParam(writer, "MS:1000744", "selected ion m/z", Format(target), ("MS", "MS:1000040", "m/z"));
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+            writer.WriteStartElement("activation");
+            WriteCvParam(writer, "MS:1000422", "beam-type collision-induced dissociation");
+            WriteCvParam(writer, "MS:1000045", "collision energy", "35", ("UO", "UO:0000266", "electronvolt"));
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+            writer.WriteEndElement();
+        }
 
         writer.WriteStartElement("binaryDataArrayList");
         writer.WriteAttributeString("count", "2");
