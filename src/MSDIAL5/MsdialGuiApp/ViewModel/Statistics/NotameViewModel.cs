@@ -11,6 +11,8 @@ using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -156,13 +158,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                 MessageBox.Show($"Notame output files were created in {exportDirectory}.", "Notame");
             }
             catch (NotamePackageException ex) {
-                var result = MessageBox.Show(
-                    "R is missing what the Notame preprocessing needs:\r\n  " + string.Join("\r\n  ", ex.MissingPackages) +
-                    "\r\n\r\nRun the setup script yourself in R or RStudio, then restart MS-DIAL. View the script?",
-                    "Notame", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
-                if (result == DialogResult.Yes) {
-                    ShowScript();
-                }
+                await OfferPackageInstallationAsync(ex);
             }
             catch (System.Exception ex) {
                 MessageBox.Show(
@@ -172,6 +168,35 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
             finally {
                 _isRunning = false;
                 RunNotameCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private async Task OfferPackageInstallationAsync(NotamePackageException requirements) {
+            var packages = requirements.Packages.Select(package =>
+                package == "notame" && requirements.OldNotameVersion.Length > 0
+                    ? $"notame 1.0 or later (installed: {requirements.OldNotameVersion})"
+                    : package).ToList();
+            if (requirements.InstallTinyTex) {
+                packages.Add("TinyTeX (LaTeX distribution for PDF reports, if needed)");
+            }
+            var answer = MessageBox.Show(
+                "Notame needs these packages to continue.\r\n\r\n  " + string.Join("\r\n  ", packages) +
+                $"\r\n\r\nDownload and install these packages and their required dependencies using R at {requirements.RHome}?" +
+                "\r\n\r\nAfter setup, restart MS-DIAL and run Notame again.",
+                "Install Notame packages", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (answer != DialogResult.Yes) {
+                return;
+            }
+
+            try {
+                var publisher = new TaskProgressPublisher(_broker, "Installing Notame packages...");
+                using (publisher.Start()) {
+                    await Notame.InstallPackagesAsync(requirements);
+                }
+                MessageBox.Show("Setup completed. Restart MS-DIAL and run Notame again.", "Notame");
+            }
+            catch (System.Exception ex) {
+                CustomPackageDialog.ShowDialog("Notame package setup failed.\r\n\r\n" + ex.Message);
             }
         }
 

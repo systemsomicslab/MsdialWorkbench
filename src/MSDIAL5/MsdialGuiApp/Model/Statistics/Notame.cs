@@ -10,6 +10,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,22 +22,44 @@ namespace CompMs.App.Msdial.Model.Statistics {
         /// <summary>R packages the scripts in Resources (Notame.R, Report.R) use.</summary>
         private static readonly string[] _requiredPackages = [
             "notame", "SummarizedExperiment", "BiocParallel", "pcaMethods", "missForest", "MUVR",
-            "doParallel", "foreach", "dplyr", "openxlsx", "cowplot", "ggsignif", "futile.logger",
+            "doParallel", "foreach", "dplyr", "ggplot2", "openxlsx", "cowplot", "ggsignif", "futile.logger",
         ];
 
-        /// <summary>Installs everything the Notame preprocessing needs (notame 1.0 or later from Bioconductor).</summary>
-        public const string PackageInstallScript =
-            "# Run this in R (4.4 or later) or RStudio to install the packages used by the Notame preprocessing.\r\n" +
-            "if (!requireNamespace('BiocManager', quietly = TRUE)) {\r\n" +
-            "  install.packages('BiocManager')\r\n" +
-            "}\r\n" +
-            "BiocManager::install(c('notame', 'SummarizedExperiment', 'BiocParallel', 'pcaMethods'), update = FALSE, ask = FALSE)\r\n" +
-            "install.packages(c('remotes', 'doParallel', 'foreach', 'dplyr', 'openxlsx', 'cowplot',\r\n" +
-            "                   'ggsignif', 'missForest', 'futile.logger', 'Cairo', 'tinytex'))\r\n" +
-            "remotes::install_gitlab('CarlBrunius/MUVR')\r\n" +
-            "\r\n" +
-            "# For the PDF report:\r\n" +
-            "tinytex::install_tinytex()\r\n";
+        public static string PackageInstallScript =>
+            GetPackageInstallScript([.. _requiredPackages, "Cairo", "tinytex"], installTinyTex: true);
+
+        private static string GetPackageInstallScript(IEnumerable<string> packages, bool installTinyTex) {
+            using var stream = typeof(Notame).Assembly.GetManifestResourceStream("NotamePackageInstall.R")
+                ?? throw new InvalidOperationException("The Notame package installation script is missing.");
+            using var reader = new StreamReader(stream);
+            var packageNames = string.Join(", ", packages.Select(NotameRSession.ToRString));
+            var script = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\n", "\r\n");
+            return script + $"\r\ninstall_notame_packages(c({packageNames}), {(installTinyTex ? "TRUE" : "FALSE")})\r\n";
+        }
+
+        public static async Task InstallPackagesAsync(NotamePackageException requirements) {
+            // Use a fresh process because the embedded R keeps loaded namespaces until restart.
+            var rscript = Path.Combine(requirements.RHome, "bin", "x64", "Rscript.exe");
+            var script = GetPackageInstallScript(requirements.Packages, requirements.InstallTinyTex);
+            using var process = Process.Start(new ProcessStartInfo(rscript, "-") {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            }) ?? throw new InvalidOperationException("Could not start Rscript.");
+
+            var output = process.StandardOutput.ReadToEndAsync();
+            var errors = process.StandardError.ReadToEndAsync();
+            using (var input = process.StandardInput) {
+                await input.WriteAsync(script).ConfigureAwait(false);
+            }
+            await Task.WhenAll(output, errors).ConfigureAwait(false);
+            process.WaitForExit();
+            if (process.ExitCode != 0) {
+                throw new InvalidOperationException($"Rscript exited with code {process.ExitCode}.\r\n\r\n{errors.Result}\r\n{output.Result}");
+            }
+        }
 
         public Notame(AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, AlignmentExportGroupModel exportModel, DataExportBaseParameter dataExportParameter, ParameterBase parameterBase) {
             AlignmentFilesForExport = alignmentFilesForExport;
@@ -85,15 +108,15 @@ namespace CompMs.App.Msdial.Model.Statistics {
         /// </summary>
         /// <exception cref="NotamePackageException">R lacks packages the workflow needs.</exception>
         public async Task RunAsync(IMessageBroker broker) {
-            var rHome = RDirectory;
+            var rHome = Path.GetFullPath(RDirectory);
             var exportReport = this.exportReport;
-            var missing = await NotameRSession.RunAsync(rHome, engine => MissingPackages(engine, exportReport)).ConfigureAwait(false);
+            var missing = await NotameRSession.RunAsync(rHome, engine => CheckPackages(engine, rHome, exportReport)).ConfigureAwait(false);
             if (Settings.Default.RHome != rHome) {
                 Settings.Default.RHome = rHome;
                 Settings.Default.Save();
             }
-            if (missing.Length > 0) {
-                throw new NotamePackageException(missing);
+            if (missing is not null) {
+                throw missing;
             }
 
             var exportDirectory = ExportDirectory;
@@ -123,19 +146,22 @@ namespace CompMs.App.Msdial.Model.Statistics {
             }
         }
 
-        private static string[] MissingPackages(REngine engine, bool exportReport) {
+        private static NotamePackageException? CheckPackages(REngine engine, string rHome, bool exportReport) {
             IEnumerable<string> packages = exportReport ? [.. _requiredPackages, "tinytex"] : _requiredPackages;
-            var missing = NotameRSession.MissingPackages(engine, packages).ToList();
-            if (!missing.Contains("notame")
-                && engine.Evaluate("utils::packageVersion('notame') < '0.99.0'").AsLogical().First()) {
-                var version = engine.Evaluate("as.character(utils::packageVersion('notame'))").AsCharacter().First();
-                missing.Insert(0, $"notame 1.0 or later from Bioconductor (installed: {version})");
+            var oldNotameVersion = engine.Evaluate(
+                "tryCatch(if (utils::packageVersion('notame') < '0.99.0') as.character(utils::packageVersion('notame')) else '', error = function(e) '')")
+                .AsCharacter().First();
+            var missing = NotameRSession.MissingPackages(engine, packages.Where(package => package != "notame" || oldNotameVersion.Length == 0)).ToList();
+            if (oldNotameVersion.Length > 0) {
+                missing.Insert(0, "notame");
             }
-            if (exportReport && !missing.Contains("tinytex")
-                && !engine.Evaluate("tinytex::is_tinytex() || nzchar(Sys.which('pdflatex'))").AsLogical().First()) {
-                missing.Add("TinyTeX (run tinytex::install_tinytex())");
+            var installTinyTex = exportReport
+                && !engine.Evaluate("nzchar(Sys.which('pdflatex')) || (requireNamespace('tinytex', quietly = TRUE) && tinytex::is_tinytex())")
+                    .AsLogical().First();
+            if (missing.Count == 0 && !installTinyTex) {
+                return null;
             }
-            return missing.ToArray();
+            return new NotamePackageException(rHome, missing, oldNotameVersion, installTinyTex);
         }
 
         private Task<string> ExportAlignmentResultAsync(IMessageBroker broker, string exportDirectory) {
@@ -215,12 +241,18 @@ namespace CompMs.App.Msdial.Model.Statistics {
 
     /// <summary>R lacks packages the Notame workflow needs.</summary>
     internal sealed class NotamePackageException : Exception {
-        public NotamePackageException(IReadOnlyList<string> missingPackages)
-            : base("R is missing packages the Notame preprocessing needs: " + string.Join(", ", missingPackages)) {
-            MissingPackages = missingPackages;
+        public NotamePackageException(string rHome, IReadOnlyList<string> packages, string oldNotameVersion, bool installTinyTex)
+            : base("The Notame preprocessing needs additional packages.") {
+            RHome = rHome;
+            Packages = packages;
+            OldNotameVersion = oldNotameVersion;
+            InstallTinyTex = installTinyTex;
         }
 
-        public IReadOnlyList<string> MissingPackages { get; }
+        public string RHome { get; }
+        public IReadOnlyList<string> Packages { get; }
+        public string OldNotameVersion { get; }
+        public bool InstallTinyTex { get; }
     }
 
     public class CustomPackageDialog : Form {
