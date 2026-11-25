@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup Condition="'$(MSBuildProjectFullPath)' == '$(MSBuildThisFileDirectory)src\Common\spectra-hash\splash\Splash.csproj'">
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3243</MSBuildWarningsAsMessages>
+  </PropertyGroup>
   <!--
     Stamps the main version and the build date into the assembly that hosts MsdialBuildIdentity.
 
