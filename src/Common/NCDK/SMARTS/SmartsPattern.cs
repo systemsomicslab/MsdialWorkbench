@@ -33,9 +33,9 @@ namespace NCDK.SMARTS
 {
     /// <summary>
     /// A <see cref="Pattern"/> for matching a single SMARTS query against multiple target
-    /// compounds. When matching many queries against a single target, call
-    /// <see cref="Prepare(IAtomContainer)"/> once and disable per-query preparation with
-    /// <see cref="SetPrepare(bool)"/>.
+    /// compounds. The class should <b>not</b> be used for matching many queries
+    /// against a single target as in substructure keyed fingerprints. The <see cref="Smiles.SMARTS.SMARTSQueryTool"/> 
+    /// is currently a better option as less target initialistion is performed.
     /// </summary>
     /// <example>
     /// Simple usage:

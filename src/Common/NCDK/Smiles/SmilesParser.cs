@@ -232,23 +232,22 @@ namespace NCDK.Smiles
                 }
                 return mol;
             }
-#if DEBUG
             catch (IOException e)
             {
+#if DEBUG
                 Console.WriteLine($"could not parse '{smiles}', {e.Message}", e);
+#endif
                 return null;
+                //throw new InvalidSmilesException($"could not parse '{smiles}', {e.Message}", e);
             }
             catch (Exception e)
             {
+#if DEBUG
                 Console.WriteLine($"could not parse '{smiles}'", e);
-                return null;
-            }
-#else
-            catch (Exception)
-            {
-                return null;
-            }
 #endif
+                return null;
+                //throw new InvalidSmilesException($"could not parse '{smiles}'", e);
+            }
         }
 
         /// <summary>
