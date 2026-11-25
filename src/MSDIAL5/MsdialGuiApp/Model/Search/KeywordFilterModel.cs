@@ -107,7 +107,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
 
             public bool Match(string word, List<string> keywords) {
-                return keywords.Count == 0 || keywords.Any(keyword => keyword == word);
+                return keywords.Count == 0 || keywords.Any(keyword => string.Equals(keyword, word, StringComparison.OrdinalIgnoreCase));
             }
         }
     }
