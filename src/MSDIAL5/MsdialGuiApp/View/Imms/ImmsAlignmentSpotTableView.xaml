@@ -151,6 +151,8 @@
                         Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
                 <ContentControl Content="{Binding PeakSpotNavigatorViewModel.TagSearchBuilderViewModel}"
                                 ContentTemplate="{StaticResource FilteringPeakSpotTag}"/>
+                <ItemsControl ItemsSource="{Binding PeakSpotNavigatorViewModel.CheckFilterViewModels, Mode=OneTime}"
+                              Style="{StaticResource CheckFilterItems}"/>
                 <Button Content="Mark all as confirmed"
                         Command="{Binding MarkAllAsConfirmedCommand, Mode=OneTime, FallbackValue={x:Static commonmvvm:NeverCommand.Instance}}"
                         Margin="8,0"

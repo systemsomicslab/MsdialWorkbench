@@ -18,16 +18,18 @@ namespace CompMs.App.Msdial.Model.Search
         Amplitude = 0x40,
         Ontology = 0x80,
         Adduct = 0x100,
+        InternalStandard = 0x200,
         All = ~None,
     }
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        public PeakSpotNavigatorModel(object peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilderModel) {
+        public PeakSpotNavigatorModel(object peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilderModel, IReadOnlyList<CheckFilterModel>? checkFilterModels = null) {
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             AmplitudeFilterModel = amplitudeFilterModel;
             ValueFilterModels = new ObservableCollection<ValueFilterModel>(valueFilterModels);
             KeywordFilterModels = new ObservableCollection<KeywordFilterModel>(keywordFilterModels);
+            CheckFilterModels = new ObservableCollection<CheckFilterModel>(checkFilterModels ?? Array.Empty<CheckFilterModel>());
             TagSearchQueryBuilder = tagSearchQueryBuilderModel;
         }
 
@@ -43,6 +45,7 @@ namespace CompMs.App.Msdial.Model.Search
         public ValueFilterModel AmplitudeFilterModel { get; }
         public ObservableCollection<ValueFilterModel> ValueFilterModels { get; }
         public ObservableCollection<KeywordFilterModel> KeywordFilterModels { get; }
+        public ObservableCollection<CheckFilterModel> CheckFilterModels { get; }
         public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 
@@ -56,6 +59,9 @@ namespace CompMs.App.Msdial.Model.Search
             }
             foreach (var keywordFilterModel in KeywordFilterModels) {
                 keywordFilterModel.ClearKeywords();
+            }
+            foreach (var checkFilterModel in CheckFilterModels) {
+                checkFilterModel.Reset();
             }
             TagSearchQueryBuilder.Reset();
         }

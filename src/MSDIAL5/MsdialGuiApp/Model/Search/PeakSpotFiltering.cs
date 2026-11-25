@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Normalize;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -55,11 +56,17 @@ namespace CompMs.App.Msdial.Model.Search
                 var CommentFilterModel = new KeywordFilterModel("Comment filter");
                 keywordFilterManagers.Add(new KeywordFilterManager<T>(CommentFilterModel, FilterEnableStatus.Comment, obj => ((IFilterable)obj).Comment));
             }
+            var checkFilterManagers = new List<CheckFilterManager<T>>();
+            if ((status & FilterEnableStatus.InternalStandard) != FilterEnableStatus.None) {
+                var internalStandardFilterModel = new CheckFilterModel("IS candidates", "Show only isotope-labelled internal standard candidates: names with (d7), (13C6), -d10 and so on, or labelled lipid classes such as PC_d5.");
+                checkFilterManagers.Add(new CheckFilterManager<T>(internalStandardFilterModel, FilterEnableStatus.InternalStandard, obj => obj is IMoleculeProperty molecule && InternalStandardCandidate.IsCandidate(molecule.Name, molecule.Ontology)));
+            }
             var amplitudeFilterModel = new ValueFilterModel("Amplitude filter", 0d, 1d);
             var tagSearchQueryBuilder = new PeakSpotTagSearchQueryBuilderModel();
 
             ValueFilterManagers = valueFilterManagers;
             KeywordFilterManagers = keywordFilterManagers;
+            CheckFilterManagers = checkFilterManagers;
             AmplitudeFilterModel = amplitudeFilterModel;
             TagSearchQueryBuilder = tagSearchQueryBuilder;
             _status = status;
@@ -67,6 +74,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public List<ValueFilterManager<T>> ValueFilterManagers { get; }
         public List<KeywordFilterManager<T>> KeywordFilterManagers { get; }
+        public List<CheckFilterManager<T>> CheckFilterManagers { get; }
         public ValueFilterModel AmplitudeFilterModel { get; }
         public PeakSpotTagSearchQueryBuilderModel TagSearchQueryBuilder { get; }
 
@@ -89,6 +97,9 @@ namespace CompMs.App.Msdial.Model.Search
             }
             foreach (var keywordFilterManager in KeywordFilterManagers) {
                 keywordFilterManager.TryAttachFilter(this, view, status);
+            }
+            foreach (var checkFilterManager in CheckFilterManagers) {
+                checkFilterManager.TryAttachFilter(this, view, status);
             }
             // Filters already switched on (e.g. keywords typed while another file was open) apply from the start.
             view.Refresh();
@@ -115,6 +126,10 @@ namespace CompMs.App.Msdial.Model.Search
         public void AttachFilter(KeywordFilterModel filterModel, Func<T, string> convert, ICollectionView view) {
             bool predicate(T filterable) => filterModel.Match(convert(filterable));
             AttachFilterCore(predicate, view, filterModel.ObserveProperty(m => m.IsEnabled, isPushCurrentValueAtFirst: false), filterModel.IsEnabled);
+        }
+
+        public void AttachFilter(CheckFilterModel filterModel, Func<T, bool> predicate, ICollectionView view) {
+            AttachFilterCore(new Predicate<T>(predicate), view, filterModel.ObserveProperty(m => m.IsEnabled, isPushCurrentValueAtFirst: false), filterModel.IsEnabled);
         }
 
         private void AttachFilterCore(Predicate<T> predicate, ICollectionView view) {
@@ -161,6 +176,7 @@ namespace CompMs.App.Msdial.Model.Search
                 _viewToDisposables.Clear();
                 ValueFilterManagers.Clear();
                 KeywordFilterManagers.Clear();
+                CheckFilterManagers.Clear();
                 _disposedValue = true;
             }
         }
@@ -257,6 +273,9 @@ namespace CompMs.App.Msdial.Model.Search
                 }
                 foreach (var keywordFilterManager in _peakSpotFiltering.KeywordFilterManagers) {
                     peaks = keywordFilterManager.Apply(peaks, _status);
+                }
+                foreach (var checkFilterManager in _peakSpotFiltering.CheckFilterManagers) {
+                    peaks = checkFilterManager.Apply(peaks, _status);
                 }
                 return peaks;
             }
