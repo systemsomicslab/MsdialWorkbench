@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                 AlignmentFiles.MoveCurrentTo(notame.AlignmentFilesForExport.SelectedFile);
             }
 
-            RunNotameCommand = new DelegateCommand(RunNotame, () => !HasValidationErrors);
+            RunNotameCommand = new DelegateCommand(RunNotame, () => !HasValidationErrors && !_isRunning);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
 
             AlignmentFile = notame.AlignmentFilesForExport.SelectedFile;
@@ -126,27 +126,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
         private DelegateCommand? _showScript;
 
         private void ShowScript() {
-            string msgtext ="if (!requireNamespace('BiocManager', quietly=TRUE)){\r\n  " +
-                            "install.packages('BiocManager')}\r\n" +
-                            "BiocManager::install('pcaMethods')\r\n" +
-                            "BiocManager::install('Biobase')\r\n\r\n" +
-                            "if (!requireNamespace('devtools', quietly = TRUE)) {\r\n  " +
-                            "install.packages('devtools')}\r\n" +
-                            "devtools::install_github('antonvsdata/notame')\r\n\r\n" +
-                            "if (!requireNamespace('remotes', quietly=TRUE)){\r\n  " +
-                            "install.packages('remotes')}\r\n" +
-                            "library(remotes)\r\n" +
-                            "install_gitlab('CarlBrunius/MUVR')\r\n\r\n" +
-                            "if (!requireNamespace('tinytex', quietly=TRUE)){\r\n  " +
-                            "install.packages('tinytex')}\r\n" +
-                            "tinytex::install_tinytex()\r\n" +
-                            "tinytex::tlmgr_install('grfext')\r\n\r\n" +
-                            "required_packages <- c('doParallel', 'dplyr', 'openxlsx', 'cowplot', 'missForest', 'ggpubr', 'Cairo', 'tidyr')\r\n" +
-                            "packages_to_install <- required_packages[!(required_packages %in% installed.packages()[,'Package'])]\r\n\r\n" +
-                            "if(length(packages_to_install)) {\r\n  " +
-                            "install.packages(packages_to_install)}\r\n" +
-                            "lapply(required_packages, library, character.only = TRUE)";
-            var result = CustomPackageDialog.ShowDialog(msgtext);
+            CustomPackageDialog.ShowDialog(Notame.PackageInstallScript);
         }
 
         public bool ExportReport {
@@ -159,12 +139,37 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
         
         public DelegateCommand RunNotameCommand { get; }
 
+        private bool _isRunning;
+
         private async void RunNotame() {
-            var publisher = new TaskProgressPublisher(_broker, "Notame running in the background...");
-            using (publisher.Start())
-            {
-                await _notame.ExportAlignmentResultAsync(_broker).ConfigureAwait(false);
-                _notame.Run();
+            if (_isRunning) {
+                return;
+            }
+            _isRunning = true;
+            RunNotameCommand.RaiseCanExecuteChanged();
+            var exportDirectory = _notame.ExportDirectory;
+            try {
+                var publisher = new TaskProgressPublisher(_broker, "Notame running in the background...");
+                using (publisher.Start()) {
+                    await _notame.RunAsync(_broker);
+                }
+                MessageBox.Show($"Notame output files were created in {exportDirectory}.", "Notame");
+            }
+            catch (NotamePackageException ex) {
+                MessageBox.Show(
+                    "R is missing what the Notame preprocessing needs:\r\n  " + string.Join("\r\n  ", ex.MissingPackages) +
+                    "\r\n\r\nThe next window shows an R script that installs them. Run it in R or RStudio, then restart MS-DIAL.",
+                    "Notame", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CustomPackageDialog.ShowDialog(Notame.PackageInstallScript);
+            }
+            catch (System.Exception ex) {
+                MessageBox.Show(
+                    $"Notame failed: {ex.Message}\r\n\r\nThe log of the run is in {System.IO.Path.Combine(exportDirectory, "notame_log.txt")}.",
+                    "Notame", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally {
+                _isRunning = false;
+                RunNotameCommand.RaiseCanExecuteChanged();
             }
         }
 
