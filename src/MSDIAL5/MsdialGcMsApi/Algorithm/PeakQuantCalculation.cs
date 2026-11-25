@@ -34,8 +34,12 @@ public sealed class PeakQuantCalculation(GcmsGapFiller gapFiller, IFeatureAccess
         CancellationToken token = default) {
 
         var chromPeakInfoSerializer = ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
-        var files = analysisFiles.Select(_ => Path.GetTempFileName()).ToArray();
+        // As in PeakAligner.Alignment: the per-file spills that rebuild the EIC file are created beside it, not in %TEMP%.
+        var files = new string[analysisFiles.Count];
         try {
+            for (var i = 0; i < files.Length; i++) {
+                files[i] = AlignmentTemporaryFile.CreateBeside(alignmentFile?.EicFilePath);
+            }
             await PeakRecalculationAsync(analysisFiles, spots, chromPeakInfoSerializer, files, token);
 
             SerializeSpotInfo(
@@ -47,7 +51,7 @@ public sealed class PeakQuantCalculation(GcmsGapFiller gapFiller, IFeatureAccess
         }
         finally {
             foreach (var f in files) {
-                if (File.Exists(f)) {
+                if (f is not null && File.Exists(f)) {
                     File.Delete(f);
                 }
             }
