@@ -52,6 +52,17 @@ namespace CompMs.App.Msdial.Model.Loader
             return _referenceLoader.LoadScanAsObservable(matchResult).DefaultIfNull(scan => new MsSpectrum(scan.Spectrum), new MsSpectrum([]));
         }
 
+        /// <summary>Every sample's MS2 spectrum of the spot, in the order of the analysis files.</summary>
+        public async Task<IReadOnlyList<Ms2SpectrumListItem>> LoadMs2SpectrumListAsync(AlignmentSpotPropertyModel target) {
+            if (target is null) {
+                return [];
+            }
+            var files = _analysisFiles.AnalysisFiles.ToArray();
+            var scans = await _loaders.GetCurrentScansAsync(files, target).ConfigureAwait(false);
+            var samples = files.Select((file, i) => new AlignedSampleMs2(file.AnalysisFileId, file.AnalysisFileName, file.AnalysisFileClass, scans[i]?.Spectrum));
+            return Ms2SpectrumList.FromAlignedSamples(samples, target.RepresentativeFileID);
+        }
+
         public async Task<MatchedSpectra?> GetMatchedSpectraMatrixsAsync(AlignmentSpotPropertyModel target, MsScanMatchResult result) {
             var scorer = _compoundSearchers.GetMs2ScanMatching(result);
             if (scorer is null) {

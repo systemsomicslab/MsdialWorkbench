@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -13,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         private readonly RawDecSpectrumsModel _model;
 
-        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused) {
+        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused, IMessageBroker? broker = null) {
             _model = model;
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -29,6 +30,15 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             RawRefSpectrumViewModels = new MsSpectrumViewModel(model.RawRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
             DecRefSpectrumViewModels = new MsSpectrumViewModel(model.DecRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
+
+            if (model.CanShowMs2SpectrumList) {
+                var messageBroker = broker ?? MessageBroker.Default;
+                var showMs2SpectrumListCommand = new ReactiveCommand()
+                    .WithSubscribe(() => messageBroker.Publish(new Ms2SpectrumListViewModel(model.CreateMs2SpectrumListModel())))
+                    .AddTo(Disposables);
+                RawRefSpectrumViewModels.ShowMs2SpectrumListCommand = showMs2SpectrumListCommand;
+                DecRefSpectrumViewModels.ShowMs2SpectrumListCommand = showMs2SpectrumListCommand;
+            }
         }
 
         public MsSpectrumViewModel RawRefSpectrumViewModels { get; }

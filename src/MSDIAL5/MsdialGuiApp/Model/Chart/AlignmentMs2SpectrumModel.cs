@@ -143,6 +143,25 @@ namespace CompMs.App.Msdial.Model.Chart
             LowerSpectrumModel.Save(stream);
         }
 
+        /// <summary>
+        /// The MS2 spectra of every sample of the selected spot, the representative sample first.
+        /// It follows the selected spot until it is disposed.
+        /// </summary>
+        public Ms2SpectrumListModel CreateMs2SpectrumListModel() {
+            return Ms2SpectrumListModel.Create(
+                "MS2 spectrum list of the alignment spot",
+                "samples",
+                _target,
+                DescribeSpot,
+                _loader.LoadMs2SpectrumListAsync,
+                _spectraManager.ReferenceSpectrum);
+        }
+
+        private static string DescribeSpot(AlignmentSpotPropertyModel spot) {
+            var header = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Alignment spot ID {0}, m/z {1:F4}", spot.MasterAlignmentID, spot.Mass);
+            return string.IsNullOrWhiteSpace(spot.Name) ? header : $"{header}, {spot.Name}";
+        }
+
         public void SwitchViewToAllSpectrum() {
             _upperSpectrumModel.IsVisible.Value = true;
             _upperDifferenceModel.IsVisible.Value = false;

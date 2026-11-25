@@ -33,6 +33,10 @@
                           Style="{StaticResource VerticalConcatChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Show MS2 spectrum list of all samples"
+                              ToolTip="Draw the MS2 spectrum of every sample of this spot side by side, the representative sample first."
+                              Command="{Binding PlacementTarget.DataContext.ShowMs2SpectrumListCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <Separator/>
                     <MenuItem Header="Change axis type of upper spectrum into.."
                               ItemsSource="{Binding Path=UpperVerticalAxisSelector.AxisItems}"
                               DisplayMemberPath="Label"

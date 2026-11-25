@@ -61,6 +61,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SwitchCompareSpectrumCommand = new ReactiveCommand()
                 .WithSubscribe(model.SwitchViewToCompareSpectrum)
                 .AddTo(Disposables);
+            ShowMs2SpectrumListCommand = new ReactiveCommand()
+                .WithSubscribe(() => broker.Publish(new Ms2SpectrumListViewModel(model.CreateMs2SpectrumListModel())))
+                .AddTo(Disposables);
             _model = model;
             _broker = broker;
             FocusAction = focusAction;
@@ -72,6 +75,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public SingleSpectrumViewModel LowerSpectrumViewModel { get; }
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInformation { get; }
+        /// <summary>Opens a window that draws the MS2 spectrum of every sample of the selected spot.</summary>
+        public ReactiveCommand ShowMs2SpectrumListCommand { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }
         public AxisItemSelector<double> UpperVerticalAxisSelector => _model.UpperVerticalAxisSelector;

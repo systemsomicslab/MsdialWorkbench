@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Loader;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Algorithm.Scoring;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
@@ -11,7 +12,7 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
-        public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching, MultiMsmsRawSpectrumLoader? loader = null) {
+        public RawDecSpectrumsModel(SingleSpectrumModel rawSpectrumModel, SingleSpectrumModel decSpectrumModel, SingleSpectrumModel referenceSpectrumModel, IObservable<Ms2ScanMatching?> ms2ScanMatching, MultiMsmsRawSpectrumLoader? loader = null, IObservable<ChromatogramPeakFeatureModel?>? target = null) {
             if (rawSpectrumModel is null) {
                 throw new ArgumentNullException(nameof(rawSpectrumModel));
             }
@@ -58,6 +59,36 @@ namespace CompMs.App.Msdial.Model.Chart
                 .AddTo(Disposables);
 
             RawLoader = loader;
+            _target = target;
+            _referenceSpectrum = referenceSpectrumModel.MsSpectrum;
+        }
+
+        private readonly IObservable<ChromatogramPeakFeatureModel?>? _target;
+        private readonly IObservable<MsSpectrum?> _referenceSpectrum;
+
+        /// <summary>Whether the MS2 scans of the selected peak can be listed: the raw spectra and the selected peak are both known.</summary>
+        public bool CanShowMs2SpectrumList => RawLoader is not null && _target is not null;
+
+        /// <summary>
+        /// The MS2 spectra of every MS2 scan of the selected peak, the representative scan first.
+        /// It follows the selected peak until it is disposed.
+        /// </summary>
+        public Ms2SpectrumListModel CreateMs2SpectrumListModel() {
+            if (RawLoader is not { } loader || _target is not { } target) {
+                throw new InvalidOperationException("The MS2 scans of the peak are not available.");
+            }
+            return Ms2SpectrumListModel.Create(
+                "MS2 spectrum list of the peak",
+                "MS2 scans",
+                target,
+                DescribePeak,
+                loader.LoadMs2SpectrumListAsync,
+                _referenceSpectrum);
+        }
+
+        private static string DescribePeak(ChromatogramPeakFeatureModel peak) {
+            var header = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Peak ID {0}, m/z {1:F4}", peak.MasterPeakID, peak.Mass);
+            return string.IsNullOrWhiteSpace(peak.Name) ? header : $"{header}, {peak.Name}";
         }
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
