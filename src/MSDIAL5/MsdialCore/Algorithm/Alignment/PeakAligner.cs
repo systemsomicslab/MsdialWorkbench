@@ -64,8 +64,14 @@ public class PeakAligner {
         spots = FilterAlignments(spots, Param);
 
         var chromPeakInfoSerializer = spotSerializer is null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
-        var files = analysisFiles.Select(_ => Path.GetTempFileName()).ToArray();
+        // One chromatogram spill per analysis file, read back to write the EIC file. They are created beside that file
+        // (AlignmentTemporaryFile), not in %TEMP%, and inside the try so that a failure part way through creating them
+        // deletes the ones already made.
+        var files = new string[analysisFiles.Count];
         try {
+            for (var i = 0; i < files.Length; i++) {
+                files[i] = AlignmentTemporaryFile.CreateBeside(alignmentFile?.EicFilePath);
+            }
             var id2idx = CollectPeakSpots(analysisFiles, spots, chromPeakInfoSerializer, files);
             (var refined, var ids) = Refiner.Refine(spots);
 
@@ -96,7 +102,7 @@ public class PeakAligner {
         }
         finally {
             foreach (var f in files) {
-                if (File.Exists(f)) {
+                if (f is not null && File.Exists(f)) {
                     File.Delete(f);
                 }
             }
