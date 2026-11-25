@@ -352,6 +352,25 @@ namespace Rfx.Riken.OsakaUniv {
             return ranking;
         }
 
+        /// <summary>
+        /// The display-only agreement of each candidate shown (same order), whatever the ranking weight; null when
+        /// rule evaluation is off or the query has no rule result to compare with. Never reorders.
+        /// </summary>
+        public IReadOnlyList<CandidateRuleAgreement> DiagnosticRuleAgreements(List<FragmenterResult> shown)
+        {
+            if (shown == null || this.diagnosticRuleEvidenceVM == null || this.diagnosticEvaluation == null || this.diagnosticRuntime == null) return null;
+            return DiagnosticRuleAgreement.Of(shown, this.diagnosticEvaluation.Result, this.diagnosticRuntime);
+        }
+
+        /// <summary>Sets the agreement column of the view models built from the same candidates (same order).</summary>
+        public static void SetDiagnosticRuleAgreements(List<FragmenterResultVM> fragmenterResultVMs, IReadOnlyList<CandidateRuleAgreement> agreements)
+        {
+            if (fragmenterResultVMs == null || agreements == null) return;
+            for (int i = 0; i < fragmenterResultVMs.Count && i < agreements.Count; i++) {
+                fragmenterResultVMs[i].RuleAgreement = agreements[i].DisplayText;
+            }
+        }
+
         /// <summary>Sets the ranking columns of the view models built from <c>ranking.Candidates()</c> (same order).</summary>
         public static void SetDiagnosticRanking(List<FragmenterResultVM> fragmenterResultVMs, DiagnosticRanking ranking)
         {

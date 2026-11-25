@@ -95,6 +95,7 @@ namespace Rfx.Riken.OsakaUniv
             var file = mainWindowVM.DataStorageBean.QueryFiles[fileID];
             var filePath = getStructureDataFilePath(file, formulaVM.Formula);
             global::Riken.Metabolomics.MsfinderCommon.DiagnosticRules.DiagnosticRanking diagnosticRanking = null;
+            IReadOnlyList<global::Riken.Metabolomics.MsfinderCommon.DiagnosticRules.CandidateRuleAgreement> diagnosticAgreements = null;
 
             if (System.IO.File.Exists(filePath))
             {
@@ -104,6 +105,8 @@ namespace Rfx.Riken.OsakaUniv
 
                 mainWindowVM.FragmenterResultVMs = DataAccessUtility.GetFragmenterResultVMs(dataStorageBean.FragmenterResults);
                 MainWindowVM.SetDiagnosticRanking(mainWindowVM.FragmenterResultVMs, diagnosticRanking);
+                diagnosticAgreements = mainWindowVM.DiagnosticRuleAgreements(dataStorageBean.FragmenterResults);
+                MainWindowVM.SetDiagnosticRuleAgreements(mainWindowVM.FragmenterResultVMs, diagnosticAgreements);
                 if (mainWindowVM.FragmenterResultVMs != null && mainWindowVM.FragmenterResultVMs.Count != 0)
                 {
                     mainWindowVM.SelectedFragmenterVM = mainWindowVM.FragmenterResultVMs[0];
@@ -119,6 +122,7 @@ namespace Rfx.Riken.OsakaUniv
 
             mainWindow.DataGridColumn_DiagnosticRuleTerm.Visibility = diagnosticRanking != null ? Visibility.Visible : Visibility.Collapsed;
             mainWindow.DataGridColumn_DiagnosticMatchedMotifs.Visibility = diagnosticRanking != null ? Visibility.Visible : Visibility.Collapsed;
+            mainWindow.DataGridColumn_DiagnosticRuleAgreement.Visibility = diagnosticAgreements != null ? Visibility.Visible : Visibility.Collapsed;
             ActualMsMsVsInSilicoMsMsUiRefresh(mainWindow, mainWindowVM);
             mainWindow.DataGrid_FragmenterResult.UpdateLayout();
 
