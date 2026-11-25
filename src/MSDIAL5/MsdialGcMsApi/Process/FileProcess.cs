@@ -35,16 +35,45 @@ namespace CompMs.MsdialGcMsApi.Process
         private readonly Ms1Dec _ms1Deconvolution;
         private readonly Annotation _annotation;
 
-        public FileProcess(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage, CalculateMatchScore calculateMatchScore) {
+        /// <param name="numThreadsPerFile">
+        /// The threads one file's peak spotting and annotation may use, at least 1; see <see cref="ThreadsPerFile"/>.
+        /// </param>
+        public FileProcess(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage, CalculateMatchScore calculateMatchScore, int numThreadsPerFile) {
             if (storage is null || storage.Parameter is null) {
                 throw new ArgumentNullException(nameof(storage));
+            }
+            if (numThreadsPerFile < 1) {
+                throw new ArgumentOutOfRangeException(nameof(numThreadsPerFile), numThreadsPerFile, "At least one thread is required.");
             }
             _riCompoundType = storage.Parameter.RiCompoundType;
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _riDictionaryInfo = storage.Parameter.FileIdRiInfoDictionary;
-            _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter);
+            _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter, numThreadsPerFile);
             _ms1Deconvolution = new Ms1Dec(storage.Parameter);
-            _annotation = new Annotation(calculateMatchScore, storage.Parameter);
+            _annotation = new Annotation(calculateMatchScore, storage.Parameter, numThreadsPerFile);
+        }
+
+        /// <summary>
+        /// The threads each file may use when <paramref name="numParallel"/> files are processed at once,
+        /// so that together they stay within the usable "Number of threads".
+        /// </summary>
+        /// <remarks>
+        /// Each file used to get the whole NumThreads for peak spotting (one producer plus NumThreads - 1
+        /// blocking consumers, and the file's own thread blocked in Task.WaitAll) and an unbounded
+        /// Parallel.For for annotation, while NumThreads / 2 files ran at once: NumThreads / 2 x
+        /// (NumThreads + 1) pool threads held by peak spotting, and every file's annotation asking for
+        /// every core. Neither result depends on this number, since both write each item to its own index.
+        ///
+        /// A run of "Number of threads: 1" keeps 1, the single-thread peak-spotting path, which yields a
+        /// different peak list by design. Otherwise at least 2, so a run never falls onto that path, and
+        /// a lone file still gets every usable thread.
+        /// </remarks>
+        public static int ThreadsPerFile(ProcessBaseParameter parameter, int numParallel, int fileCount) {
+            if (parameter.NumThreads <= 1) {
+                return 1;
+            }
+            var concurrentFiles = Math.Max(1, Math.Min(numParallel, fileCount));
+            return Math.Max(2, parameter.UsableNumThreads / concurrentFiles);
         }
 
         public async Task RunAsync(AnalysisFileBean analysisFile, ProcessOption option, IProgress<int>? progress, CancellationToken token = default) {
@@ -128,7 +157,7 @@ namespace CompMs.MsdialGcMsApi.Process
 
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, IProgress<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            FileProcess processor = new(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType, container.Parameter.RiCompoundType));
+            FileProcess processor = new(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType, container.Parameter.RiCompoundType), ThreadsPerFile(container.Parameter.ProcessBaseParam, numParallel: 1, fileCount: 1));
             processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reportAction, token).Wait();
         }
 

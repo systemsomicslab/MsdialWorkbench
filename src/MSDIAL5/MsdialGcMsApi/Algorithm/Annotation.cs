@@ -17,14 +17,20 @@ namespace CompMs.MsdialGcMsApi.Algorithm
     public class Annotation {
         private readonly MsdialGcmsParameter _parameter;
         private readonly CalculateMatchScore _calculateMatchScore;
+        private readonly int _numThreads;
 
-        public Annotation(CalculateMatchScore calculateMatchScore, MsdialGcmsParameter parameter) {
+        /// <param name="numThreads">
+        /// The degree of parallelism of this file's annotation, at least 1. Each peak's matches are
+        /// written to its own index, so the results do not depend on it.
+        /// </param>
+        public Annotation(CalculateMatchScore calculateMatchScore, MsdialGcmsParameter parameter, int numThreads) {
             _calculateMatchScore = calculateMatchScore;
             _parameter = parameter;
+            _numThreads = numThreads;
         }
 
-        public Annotation(DataBaseItem<MoleculeDataBase> mspDB, MsdialGcmsParameter parameter)
-            : this(new CalculateMatchScore(mspDB, parameter.MspSearchParam, parameter.RetentionType, parameter.RiCompoundType), parameter) {
+        public Annotation(DataBaseItem<MoleculeDataBase> mspDB, MsdialGcmsParameter parameter, int numThreads)
+            : this(new CalculateMatchScore(mspDB, parameter.MspSearchParam, parameter.RetentionType, parameter.RiCompoundType), parameter, numThreads) {
 
         }
 
@@ -43,7 +49,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             if (_calculateMatchScore != null && !_calculateMatchScore.LibraryIsEmpty) {
                 var containers = new MsScanMatchResultContainer[ms1DecResults.Count];
                 var counter = 0;
-                Parallel.For(0, ms1DecResults.Count, index => {
+                Parallel.For(0, ms1DecResults.Count, new ParallelOptions { MaxDegreeOfParallelism = _numThreads }, index => {
                     var results = containers[index] = new MsScanMatchResultContainer();
                     // Materialised, unlike every other site: CalculateMatches is a yield-return
                     // iterator over the retention window of the EI library, so the population size
