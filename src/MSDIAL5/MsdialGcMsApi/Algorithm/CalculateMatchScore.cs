@@ -65,6 +65,15 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
         public bool LibraryIsEmpty => _mspDB.Length == 0;
 
+        public IReadOnlyList<MoleculeMsReference> GetCandidateReferences(IMSScanProperty scan) {
+            if (LibraryIsEmpty) { return Array.Empty<MoleculeMsReference>(); }
+            var value = RetentionType == RetentionType.RT ? scan.ChromXs.RT.Value : scan.ChromXs.RI.Value;
+            var (start, end) = RetrieveMspBounds(value, Tolerance);
+            var references = new MoleculeMsReference[Math.Max(0, end - start)];
+            Array.Copy(_mspDB, start, references, 0, references.Length);
+            return references;
+        }
+
         private float Tolerance {
             get {
                 float tolerance;

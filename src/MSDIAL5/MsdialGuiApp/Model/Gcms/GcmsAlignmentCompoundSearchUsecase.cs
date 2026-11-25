@@ -15,9 +15,11 @@ namespace CompMs.App.Msdial.Model.Gcms
     internal sealed class GcmsAlignmentCompoundSearchUsecase : BindableBase, ICancellableCompoundSearchUsecase<GcmsCompoundResult, PeakSpotModel>
     {
         private readonly CalculateMatchScore? _calculateMatchScore;
+        private readonly GcmsCompoundSearchCache? _cache;
 
         public GcmsAlignmentCompoundSearchUsecase(CalculateMatchScore? calculateMatchScore)
         {
+            _cache = calculateMatchScore is null ? null : GcmsCompoundSearchCache.For(calculateMatchScore);
             SearchParameter = calculateMatchScore?.CopySearchParameter();
             _calculateMatchScore = SearchParameter is { }
                 ? calculateMatchScore?.With(SearchParameter)
@@ -46,15 +48,18 @@ namespace CompMs.App.Msdial.Model.Gcms
             if (_calculateMatchScore is null) {
                 return Array.Empty<GcmsCompoundResult>();
             }
-            var compounds = _calculateMatchScore.CalculateMatches(target.MsScan, token)
+            return _cache!.Search(target.MsScan, SearchParameter!, (scan, parameter) => {
+                var calculator = _calculateMatchScore.With(parameter);
+                var compounds = calculator.CalculateMatches(scan, token)
                     .OrderByDescending(r => r.TotalScore)
-                    .Select(result => new GcmsCompoundResult(_calculateMatchScore.Reference(result), result))
+                    .Select(result => new GcmsCompoundResult(calculator.Reference(result), result))
                     .ToArray();
-            token.ThrowIfCancellationRequested();
-            foreach (var compound in compounds) {
-                ((ICompoundResult)compound).MatchResult.Source |= SourceType.Manual;
-            }
-            return compounds;
+                token.ThrowIfCancellationRequested();
+                foreach (var compound in compounds) {
+                    ((ICompoundResult)compound).MatchResult.Source |= SourceType.Manual;
+                }
+                return compounds;
+            }, token);
         }
     }
 }

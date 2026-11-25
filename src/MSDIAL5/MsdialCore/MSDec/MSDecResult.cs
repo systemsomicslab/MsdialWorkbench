@@ -17,7 +17,13 @@ namespace CompMs.MsdialCore.MSDec {
             Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
         }
 
-        public int RawSpectrumID { get; set; } // origin of the msdec result spectrum
+        /// <summary>
+        /// Origin of the msdec result spectrum: the position, in the spectrum list the deconvolution read, of the raw
+        /// spectrum the result comes from (the product-ion spectrum for MS2Dec; the MS1 spectrum at the model peak top for
+        /// GC-MS MS1Dec). For the standard data provider that position is <see cref="CompMs.Common.DataObj.RawSpectrum.Index"/>.
+        /// Readers use it as a list position; it is not <see cref="CompMs.Common.DataObj.RawSpectrum.ScanNumber"/>.
+        /// </summary>
+        public int RawSpectrumID { get; set; }
         public double ModelPeakMz { get; set; }
         public double ModelPeakHeight { get; set; }
         public double ModelPeakArea { get; set; }

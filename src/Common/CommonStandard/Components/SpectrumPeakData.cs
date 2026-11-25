@@ -12,6 +12,9 @@ namespace CompMs.Common.Components
         private readonly SpectrumPeakValue[] _values;
         private readonly uint[] _packedValues;
 
+        public bool SharesStorageWith(SpectrumPeakData other)
+            => ReferenceEquals(_values, other._values) && ReferenceEquals(_packedValues, other._packedValues) && ReferenceEquals(_peaks, other._peaks);
+
         internal SpectrumPeakData(List<SpectrumPeak> peaks) { _peaks = peaks; _values = null; _packedValues = null; }
         internal SpectrumPeakData(SpectrumPeakValue[] values) { _values = values; _peaks = null; _packedValues = null; }
         internal SpectrumPeakData(uint[] packedValues) { _packedValues = packedValues; _values = null; _peaks = null; }
