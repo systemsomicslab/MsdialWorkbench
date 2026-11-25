@@ -184,7 +184,7 @@ public class DiagnosticGuiSupportTests
         var legacy = raw.RawdataFilePath + "\t" + Path.GetFileNameWithoutExtension(raw.RawdataFilePath) + "\t" + raw.Name + "\t" + raw.Ms1PeakNumber + "\t"
                      + raw.Ms2PeakNumber + "\t" + raw.PrecursorMz + "\t" + raw.PrecursorType + "\t" + c.Title + "\t" + c.TotalScore + "\t" + c.Resources + "\t"
                      + c.Formula + "\t" + c.Ontology + "\t" + c.Inchikey + "\t" + c.Smiles;
-        Assert.AreEqual(legacy + "\t0.000000\t2\t0\t\t\tno_outcome\t" + id.Version + "\t" + id.Sha256, lines[1]);
+        Assert.AreEqual(legacy + "\t0.000000\t2\t0\t\t\tno_outcome\t" + id.Version + "\t" + id.Sha256 + "\t\t\t", lines[1]);
         Assert.AreEqual(DiagnosticRuleExport.GuiLegacyStructureHeader + "\t" + string.Join("\t", DiagnosticRuleExport.StructureAppendedColumns), DiagnosticRuleExport.GuiStructureHeader);
         Assert.AreEqual(DiagnosticRuleExport.GuiLegacyStructureHeader.Split('\t').Length, legacy.Split('\t').Length);
     }
@@ -202,7 +202,7 @@ public class DiagnosticGuiSupportTests
         var c = candidates[0];
         var legacy = "1\t" + c.Title + "\t" + c.TotalScore + "\t" + c.RetentionTime + "\t" + c.RetentionIndex + "\t" + c.Resources + "\t" + c.Formula + "\t"
                      + c.Ontology + "\t" + c.Inchikey + "\t" + c.Smiles;
-        Assert.AreEqual(legacy + "\t3.250000\t1\t0\t\t\tno_outcome\t" + id.Version + "\t" + id.Sha256, lines[0]);
+        Assert.AreEqual(legacy + "\t3.250000\t1\t0\t\t\tno_outcome\t" + id.Version + "\t" + id.Sha256 + "\t\t\t", lines[0]);
         StringAssert.StartsWith(lines[1], "2\tb\t");
         Assert.AreEqual(DiagnosticRuleExport.EachFileLegacyStructureHeader.Split('\t').Length, legacy.Split('\t').Length);
         StringAssert.StartsWith(DiagnosticRuleExport.EachFileStructureHeader, DiagnosticRuleExport.EachFileLegacyStructureHeader + "\tRanking score\t");
