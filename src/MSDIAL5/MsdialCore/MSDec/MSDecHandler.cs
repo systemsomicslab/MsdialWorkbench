@@ -252,19 +252,56 @@ namespace CompMs.MsdialCore.MSDec {
             foreach (var ms1DecResult in msdecResults) {
                 ms1DecResult.AmplitudeScore = (float)((ms1DecResult.ModelPeakHeight - minIntensity) / (maxIntensity - minIntensity));
 
-                //calculating purity
-                //Debug.WriteLine("tic count: " + spectrumList.FindAll(sp => sp.ScanNum == ms1DecResult.ScanNumber).Count);
-                //Debug.WriteLine("deconv count: " + ms1DecResult.Spectrum.Count);
-                var tic = spectrumByScanNumber.TryGetValue(ms1DecResult.RawSpectrumID, out var peakTopSpectrum) ? peakTopSpectrum.TotalIonCurrent : 1d;
-                //Debug.WriteLine("TIC: " + tic + " -- RT: " + spectrumList.Find(sp => sp.ScanNum == ms1DecResult.ScanNumber).RTmin);
-
+                // Purity: deconvoluted intensity over the positive ion current of the peak-top raw spectrum, in [0, 1].
+                // The file's stored TotalIonCurrent is deliberately not used; see CalculateModelPeakPurity.
+                spectrumByScanNumber.TryGetValue(ms1DecResult.RawSpectrumID, out var peakTopSpectrum);
                 var eic = ms1DecResult.Spectrum.Sum(s => s.Intensity);
-                ms1DecResult.ModelPeakPurity = (float)(eic / tic);
-                //Debug.WriteLine("EIC: " + ms1DecResult.Spectrum.Sum(s => s.Intensity) + " -- RT: " + ms1DecResult.Spectrum.Average(s => s.RetentionTime));
-                //Debug.WriteLine("purity: " + ms1DecResult.ModelPeakPurity.ToString() + " \n");
-
+                ms1DecResult.ModelPeakPurity = CalculateModelPeakPurity(eic, peakTopSpectrum);
             }
             return msdecResults;
+        }
+
+        /// <summary>
+        /// GC-MS MS1Dec model-peak purity: the fraction of the ion current of the raw spectrum at the model peak top
+        /// that the deconvoluted spectrum accounts for. Always in [0, 1].
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The denominator is the sum of the positive intensities of the peak-top raw spectrum. It replaces the
+        /// <see cref="RawSpectrum.TotalIonCurrent"/> stored in the file, which earlier versions divided by.
+        /// Ion intensities cannot be negative, but some files store background-subtracted signal with the noise
+        /// left on both sides of zero: the GC-MS ABF files of the Kovats demo store every nominal m/z bin in every
+        /// scan, and 14-24% of the stored values are negative. Their stored TIC is the signed sum, which is near
+        /// zero or negative where there is little real signal, and dividing by it gave purities below 0 or far
+        /// above 1. Negative stored values are treated as zero (subtraction noise, not ions).
+        /// </para>
+        /// <para>
+        /// For a spectrum without negative values the denominator is the plain sum of its stored intensities. That
+        /// equals the stored TIC when the file's TIC is the sum of the stored peaks; a file whose TIC was computed
+        /// differently (for example over a wider m/z range than the stored peaks) gives a different denominator.
+        /// </para>
+        /// <para>
+        /// The ratio is clamped to [0, 1] because the deconvoluted (model) intensities are not bounded by the raw
+        /// ones. A missing spectrum, or one with no positive intensity, gives 0.
+        /// </para>
+        /// </remarks>
+        internal static float CalculateModelPeakPurity(double deconvolutedIntensitySum, RawSpectrum? peakTopSpectrum) {
+            var positiveIonCurrent = 0d;
+            if (peakTopSpectrum?.Spectrum is RawPeakElement[] peaks) {
+                foreach (var peak in peaks) {
+                    if (peak.Intensity > 0d) {
+                        positiveIonCurrent += peak.Intensity;
+                    }
+                }
+            }
+            if (positiveIonCurrent <= 0d) {
+                return 0f;
+            }
+            var purity = deconvolutedIntensitySum / positiveIonCurrent;
+            if (!(purity > 0d)) { // also maps NaN to 0
+                return 0f;
+            }
+            return purity >= 1d ? 1f : (float)purity;
         }
 
         public static QuantifiedChromatogramPeak? GetChromatogramQuantInformation(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
