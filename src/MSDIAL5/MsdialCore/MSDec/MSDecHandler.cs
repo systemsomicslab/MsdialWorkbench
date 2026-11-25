@@ -240,13 +240,22 @@ namespace CompMs.MsdialCore.MSDec {
                 reporter.Report(i, modelChromatograms.Count);
             }
 
+            // RawSpectrumID is the ScanNumber of the MS1 spectrum at the model peak top (RdamScanOfPeakTop);
+            // ScanID is only the result counter. Index the spectra by ScanNumber once, first occurrence wins.
+            var spectrumByScanNumber = new Dictionary<int, RawSpectrum>(spectrumList.Count);
+            foreach (var spectrum in spectrumList) {
+                if (!spectrumByScanNumber.ContainsKey(spectrum.ScanNumber)) {
+                    spectrumByScanNumber[spectrum.ScanNumber] = spectrum;
+                }
+            }
+
             foreach (var ms1DecResult in msdecResults) {
                 ms1DecResult.AmplitudeScore = (float)((ms1DecResult.ModelPeakHeight - minIntensity) / (maxIntensity - minIntensity));
 
                 //calculating purity
                 //Debug.WriteLine("tic count: " + spectrumList.FindAll(sp => sp.ScanNum == ms1DecResult.ScanNumber).Count);
                 //Debug.WriteLine("deconv count: " + ms1DecResult.Spectrum.Count);
-                var tic = spectrumList.FirstOrDefault(sp => sp.ScanNumber == ms1DecResult.ScanID)?.TotalIonCurrent ?? 1d;
+                var tic = spectrumByScanNumber.TryGetValue(ms1DecResult.RawSpectrumID, out var peakTopSpectrum) ? peakTopSpectrum.TotalIonCurrent : 1d;
                 //Debug.WriteLine("TIC: " + tic + " -- RT: " + spectrumList.Find(sp => sp.ScanNum == ms1DecResult.ScanNumber).RTmin);
 
                 var eic = ms1DecResult.Spectrum.Sum(s => s.Intensity);
