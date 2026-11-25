@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Search.Tests
         [DataRow("Pc", "pC")]
         [DataRow("cer_ns", "Cer_NS")]
         public void TheOntologyFilterIgnoresCase(string typed, string ontology) {
-            using var model = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch) { KeywordText = typed };
+            using var model = new KeywordFilterModel("Ontology filter", KeywordFilteringType.WholeValueMatchIgnoreCase) { KeywordText = typed };
 
             Assert.IsTrue(model.Match(ontology));
             Assert.AreEqual(typed, model.KeywordText, "The text stays as typed.");
@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Search.Tests
 
         [TestMethod]
         public void TheOntologyFilterStillMatchesWholeClassNamesOnly() {
-            using var model = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch) { KeywordText = "pc lpc" };
+            using var model = new KeywordFilterModel("Ontology filter", KeywordFilteringType.WholeValueMatchIgnoreCase) { KeywordText = "pc lpc" };
 
             Assert.IsTrue(model.Match("PC"));
             Assert.IsTrue(model.Match("LPC"));

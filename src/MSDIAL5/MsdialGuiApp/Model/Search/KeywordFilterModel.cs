@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Search
         None,
         IgnoreIfWordIsNull,
         KeepIfWordIsNull,
-        ExactMatch,
+        WholeValueMatchIgnoreCase,
     }
 
     public sealed class KeywordFilterModel : DisposableModelBase
@@ -22,8 +22,8 @@ namespace CompMs.App.Msdial.Model.Search
             _keywords = [];
             Keywords = _keywords.AsReadOnly();
             switch (type) {
-                case KeywordFilteringType.ExactMatch:
-                    _method = new ExactMatch();
+                case KeywordFilteringType.WholeValueMatchIgnoreCase:
+                    _method = new WholeValueMatchIgnoreCase();
                     break;
                 case KeywordFilteringType.KeepIfWordIsNull:
                     _method = new KeepIfWordIsNull();
@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
         }
 
-        sealed class ExactMatch : IKeywordFiltering {
+        sealed class WholeValueMatchIgnoreCase : IKeywordFiltering {
             public IEnumerable<string> Filter(IEnumerable<string> keywords) {
                 return keywords.Where(keyword => !string.IsNullOrEmpty(keyword));
             }
