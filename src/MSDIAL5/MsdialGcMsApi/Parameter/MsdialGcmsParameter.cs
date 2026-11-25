@@ -13,7 +13,15 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         public MsdialGcmsParameter(bool isLabUseOnly) : base(isLabUseOnly) {
             this.MachineCategory = MachineCategory.GCMS;
             AlignmentBaseParam.Ms1AlignmentTolerance = .5f;
+            AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = DefaultSpectrumSimilarityAlignmentTolerance;
         } 
+
+        /// <summary>
+        /// The GC-MS alignment's threshold on the total score of two features (EI similarity and retention similarity,
+        /// weighed by their factors; see GcmsPeakJoiner): MS-DIAL 4's cutoff of 70 and the GC-MS dialog's 70 %. The 0.8
+        /// that <see cref="AlignmentBaseParameter"/> starts with splits most compounds of a GC-MS run.
+        /// </summary>
+        public const float DefaultSpectrumSimilarityAlignmentTolerance = .7f;
 
         [SerializationConstructor]
         public MsdialGcmsParameter() : this(isLabUseOnly: false) { }

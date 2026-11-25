@@ -96,17 +96,21 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         }
 
         [TestMethod]
-        public void SpectrumAInPartScoresBetweenTheThresholdsAndFailsTheDefaultCutoffs() {
-            // The premise of the threshold tests below: only the threshold decides this pair.
+        [DataRow(true)]
+        [DataRow(false)]
+        public void SpectrumAInPartScoresBelowTheDefaultOnEIAloneAndAboveItInTotal(bool isUseRetentionIndex) {
+            // The premise of the threshold tests below. 2 RI units (0.02 min) apart, a retention
+            // similarity of 0.98 for either tolerance; with the default factors of 0.5 the total
+            // score is about 0.82, while the integrated EI similarity alone is about 0.67.
             var parameter = new MsRefSearchParameterBase { Ms1Tolerance = .5f, Ms2Tolerance = .5f, MassRangeBegin = 0, MassRangeEnd = 2000, };
             var a = CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA).AnnotatedMSDecResult.MSDecResult;
             var b = CreateFeature(scanId: 0, ri: 1002d, height: 1000d, SpectrumAInPart).AnnotatedMSDecResult.MSDecResult;
 
-            var result = MsScanMatching.CompareEIMSScanProperties(a, b, parameter, eiThreshold: 1.01, rtTol: .1, riTol: RiTolerance, eiFactor: .5, riFactor: .5, isUseRetentionIndex: true);
+            var result = MsScanMatching.CompareEIMSScanProperties(a, b, parameter, rtTol: .1, riTol: RiTolerance, eiFactor: .5, riFactor: .5, isUseRetentionIndex: isUseRetentionIndex);
 
-            Assert.IsFalse(result.IsSpectrumMatch, "the default dot-product cutoffs alone must not call this pair a match");
-            var score = MsScanMatching.GetIntegratedSpectraSimilarity(result);
-            Assert.IsTrue(score > .5 && score < .8, $"integrated EI similarity {score}");
+            var ei = MsScanMatching.GetIntegratedSpectraSimilarity(result);
+            Assert.IsTrue(ei > .6 && ei < .7, $"integrated EI similarity {ei}");
+            Assert.IsTrue(result.TotalScore > .8 && result.TotalScore < .85, $"total score {result.TotalScore}");
             Assert.IsTrue(result.IsRiMatch && result.IsRtMatch);
         }
 
@@ -115,8 +119,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         [DataRow(AlignmentIndexType.RT)]
         public void JoinerKeepsSpectraBelowTheSpectrumSimilarityToleranceApart(AlignmentIndexType indexType) {
             // A method file written like an LC-MS one carries an m/z tolerance in "MS1 tolerance for
-            // alignment" (0.015). The joiner took its EI similarity threshold from there, which admits
-            // almost any spectrum within the retention window.
+            // alignment" (0.015). The joiner took its threshold from there, which admits any spectrum
+            // within the retention window.
             var data = new List<List<SpectrumFeature>>
             {
                 new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
@@ -125,7 +129,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
 
             var spots = Join(data, indexType, p => {
                 p.AlignmentBaseParam.Ms1AlignmentTolerance = .015f;
-                p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .8f;
+                p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .9f;
             });
 
             Assert.AreEqual(2, spots.Count);
@@ -135,7 +139,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         [TestMethod]
         [DataRow(AlignmentIndexType.RI)]
         [DataRow(AlignmentIndexType.RT)]
-        public void JoinerJoinsSpectraAboveTheSpectrumSimilarityTolerance(AlignmentIndexType indexType) {
+        public void JoinerJoinsByTheTotalScoreAboveTheSpectrumSimilarityTolerance(AlignmentIndexType indexType) {
+            // Total score about 0.82, integrated EI similarity about 0.67: joined at 0.75, which a
+            // threshold on the EI similarity alone, or on the MS1 tolerance (0.9 here), would not do.
             var data = new List<List<SpectrumFeature>>
             {
                 new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
@@ -144,8 +150,47 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
 
             var spots = Join(data, indexType, p => {
                 p.AlignmentBaseParam.Ms1AlignmentTolerance = .9f;
-                p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .5f;
+                p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .75f;
             });
+
+            Assert.AreEqual(1, spots.Count);
+            Assert.IsTrue(spots[0].AlignedPeakProperties.All(p => p.MasterPeakID >= 0));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void JoinerKeepsTheSameSpectrumApartWhenTheRetentionPullsTheTotalScoreBelowTheTolerance(AlignmentIndexType indexType) {
+            // The same spectrum 9 RI units (0.09 min) away, inside the retention tolerance: retention
+            // similarity 0.67, total score 0.83. A threshold of 0.9 on the EI similarity alone (1.0)
+            // would join the two.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1009d, height: 1000d, SpectrumA), },
+            };
+
+            var spots = Join(data, indexType, p => {
+                p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .9f;
+            });
+
+            Assert.AreEqual(2, spots.Count);
+            Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 1));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void TheGcmsDefaultJoinsAPartlyMatchingSpectrumOfTheSameRetention(AlignmentIndexType indexType) {
+            // Integrated EI similarity about 0.67, as two spectra of one compound in two files often
+            // score: the GC-MS default (0.7 on the total score) joins them.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1002d, height: 1000d, SpectrumAInPart), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
 
             Assert.AreEqual(1, spots.Count);
             Assert.IsTrue(spots[0].AlignedPeakProperties.All(p => p.MasterPeakID >= 0));

@@ -139,10 +139,19 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         return false;
     }
 
+    /// <remarks>
+    /// Two features are similar when they are within the retention tolerance and their total score
+    /// (<see cref="GetSimilality"/>) exceeds the spectrum similarity tolerance, as in MS-DIAL 4, where
+    /// the master list kept rt * RetentionTimeAlignmentFactor + ei * EiSimilarityAlignmentFactor
+    /// at 0.70 or above, and as here before 94659d0a4. The threshold is not applied to the
+    /// integrated EI similarity alone: two spectra of one compound in two files of a GC-MS run
+    /// commonly score 0.6-0.75 on it, because every small peak present in one spectrum only lowers
+    /// the matched-peaks term, so a threshold of 0.7 on it splits most compounds.
+    /// </remarks>
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
         var result = CompareSpectra(x, y);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
-        return result.IsSpectrumMatch && isRetentionMatch;
+        return result.TotalScore > _alignmentParameter.SpectrumSimilarityAlignmentTolerance && isRetentionMatch;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {
@@ -150,17 +159,15 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     }
 
     /// <remarks>
-    /// The EI similarity threshold and weight are the alignment's spectrum similarity settings
-    /// ("Spectrum similarity tolerance / factor for alignment" in a method file, "EI similarity
-    /// tolerance / factor" in the dialog), not its MS1 settings: "MS1 tolerance for alignment" is
-    /// an m/z tolerance (0.015 in a method file written like an LC-MS one), and as a similarity
-    /// threshold it admits almost any spectrum within the retention window. The threshold can only
-    /// grant a match: a pair that passes the dot-product cutoffs of _msMatchParam is a match
-    /// whatever its integrated similarity.
+    /// The threshold and the EI weight are the alignment's spectrum similarity settings ("Spectrum
+    /// similarity tolerance / factor for alignment" in a method file, "EI similarity tolerance /
+    /// factor" in the dialog), not its MS1 settings: "MS1 tolerance for alignment" is an m/z
+    /// tolerance (0.015 in a method file written like an LC-MS one), and as a similarity threshold
+    /// it admits any spectrum within the retention window.
     /// </remarks>
     private MsScanMatchResult CompareSpectra(SpectrumFeature x, SpectrumFeature y) {
         return MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.SpectrumSimilarityAlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
+            _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
             _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
     }
 
