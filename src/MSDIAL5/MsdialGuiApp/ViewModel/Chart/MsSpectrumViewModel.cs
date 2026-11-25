@@ -70,6 +70,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
 
+        /// <summary>Opens a window that lists every MS2 spectrum of the selected peak; null where there is no such list.</summary>
+        public System.Windows.Input.ICommand? ShowMs2SpectrumListCommand { get; set; }
+
+        public bool CanShowMs2SpectrumList => ShowMs2SpectrumListCommand is not null;
+
         public ReactiveCommand SwitchCompareSpectrumCommand { get; }
 
         public Action? FocusAction { get; }
