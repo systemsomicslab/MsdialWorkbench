@@ -1,0 +1,973 @@
+{
+ "cases": [
+  {
+   "description": "h* = altenuene|sulfate1|[M-H]-, precursor at its oracle m/z; one peak per support member: loss_so3:O3S, hso4:HO4S, so3_radical:O3S, hso3:HO3S",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "so3_radical:O3S@0",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"b8db1fe6e20ccf99be41f5ee1a1c326434569e893e9b34a75198bcb2675bd1de\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":4.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d7fe045dcc60f8e20ef2c3bb159141e7c0e49e5ef1551565315798558340e8ec"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- without the peaks of required term so3_radical; altenuene|sulfate1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@2",
+       "hso4:HO4S@1",
+       "hso3:HO3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "drop_so3_radical",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"cc789c1a2a40a468769cb8169c133611c82b6c753751d2393e511c09a8e7bac2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":2,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":1,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":0,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":3.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "76583330235fa2907418ce119cf307eb90865d850b0b3b0ace889943f5942b2f"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- without the peaks of required term hso3; altenuene|sulfate1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@2",
+       "hso4:HO4S@1",
+       "so3_radical:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "drop_hso3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"54131246e45fb570e31130b87e4715000ca5c6819d902336af8987de014fa91c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":2,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":1,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":3.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "57bf9ab380781913087716982e900f746aa58d9d1262b942c0dceae5dad15913"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- without the peaks of every support term under any node 0 (pre-order): so3_radical, hso3",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@1",
+       "hso4:HO4S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "drop_any0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"bb7f0c15832e495df9d5b982e257a69b806396728237faaa3afc2024a7a58fea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":1,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":0,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":2.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "977befefae3ac6ef9526c12acfbc4a48f09fe779c854ef788715445b3d2ad1fb"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with 2 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@2",
+       "so3_radical:O3S@0",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"34ee783709df65719a2e31382c4a55b326eacfbf80908a53828f3a5c795dfc8f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":2,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":3.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ce2a6b15aa4b25cbae4da34de2da1ecae22fc4d6b36dac738f9f8f93c7b8807d"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with 1 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"0ca983ac4485fb7643117b54d57c7015e7b3784ddd6703d55c1fe15bac4441dc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2bace6ae59687f088cf81bb690879f11d1e186c4fe61b41ff553d421007d4e0e"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with so3_radical:O3S moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "so3_radical:O3S@0",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.962354",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"7b151ba3c173b620ba5a91f073a34e32b7721896b05a16f6765dbc23cbe6567b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.004990,\"error_ppm\":62.410,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.962354,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":4.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7b93f84298267260124bf0eef75a544c8aba604845da2839dd9c0aff36359879"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with so3_radical:O3S moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.962374",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"0b2b3d25d9914f054bf8b0eb6c22bf2b658d6f3445eeac7c032e0b0cd12f0a58\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":3.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1693bcd48f6b9448daca1584f3194b8e8f86eff109c7b41b2343fe3bfa75e93c"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with so3_radical:O3S moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "so3_radical:O3S@0",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.952374",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"d1dcb1c6b9673c0c706c3b2c8c4ad0f2e020d750d2349ffb23e302d7320ffa32\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":-0.004990,\"error_ppm\":-62.407,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.952374,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":4.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9b1160177eac7b112bf2b310614278e32cd7202e8cb7de059dee78c0e6f50a6c"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with so3_radical:O3S moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.952354",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"8c8db00048d2cd66eea9acce4f9cf5a8801288aa60868b4447fa39704f028f3c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":291.087412,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.087412,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"altenuene\",\"score\":3.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0d2f82981876eaa389e5864144de062dbc3addc466c37e77214a1df49f0b7601"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "so3_radical:O3S@0",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.097402",
+      "500.0"
+     ],
+     [
+      "371.054217",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.054217"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"52ae47e7a188a286935e5697269b37e10bfa6e1b0d13eca5e8511b7894a3b042\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":291.097402,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.097402,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"altenuene\",\"score\":4.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.054217,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1524705b919852c64495d667a3ae3e24bfb9b29356ea27b57cb0cdb266a67329"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.097422",
+      "500.0"
+     ],
+     [
+      "371.054237",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.054237"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"11cacaff5057dfa428ec539e92b37e3466dc0112dc7c6860d9623ca2227b479b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.054237,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "65cb2ad7b61773ce6ea5ceccc81f8d347a8575d2b61a80361280612fa38291d3"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "altenuene|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "so3_radical:O3S@0",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "altenuene|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.077422",
+      "500.0"
+     ],
+     [
+      "371.034237",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.034237"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"72d1982e4d0708ee35f409bdca928492bc6da0d765363bd2b19fc37b021592ea\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"altenuene|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"altenuene|sulfate1|[M-H]-\",\"hypothesis_mz\":371.044227,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":291.077422,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":291.077422,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C15H16O9S\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"altenuene\",\"score\":4.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"altenuene|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.034237,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "90b83330bd43aa26f86a5841d5dd971b28a2998167e28ec3b893962be64a077e"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.077402",
+      "500.0"
+     ],
+     [
+      "371.034217",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.034217"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"47bd380782beefc7993ec2add1f7a9a131ad53da79e5b0785b6c45de5d2c238e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.034217,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "66fc2d02f527fac60fcaecc1a0c5d8e04b2ffdd05a6e6a99627a8770118ae6b6"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"83c30705eb8352401cd775081dc5cb851c7f497793dd44116d295a95004fb145\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f93667ab35ccc0dc51af35df8918f521d0549591b2523f31c9ee6b9aba49f917"
+  },
+  {
+   "description": "the union of the positive spectra of androstanolone_16_one|sulfate1|[M-H]- and epiandrosterone|sulfate1|[M-H]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": "androstanolone_16_one|sulfate1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "loss_so3:O3S@3",
+       "hso4:HO4S@2",
+       "so3_radical:O3S@0",
+       "hso3:HO3S@1"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "androstanolone_16_one|sulfate1|[M-H]-",
+       "epiandrosterone|sulfate1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "289.217304",
+      "500.0"
+     ],
+     [
+      "369.174119",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "369.174119"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"organosulfate_monoester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"7f959d7a20ca55ef3425fa3e3a0460006423abe93362d6450171178e63e7ad92\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"organosulfate_monoester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[true,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/k_of/of/2\"}],\"composition_id\":\"androstanolone_16_one|sulfate1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"androstanolone_16_one|sulfate1|[M-H]-\",\"hypothesis_mz\":369.174119,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"O3S\",\"kind\":\"loss_from_precursor\",\"member_key\":\"O3S\",\"peak_index\":3,\"peak_mz\":289.217304,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":289.217304,\"term_id\":\"loss_so3\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.005,\"ion_formula\":\"HO4S\",\"kind\":\"product_ion\",\"member_key\":\"HO4S\",\"peak_index\":2,\"peak_mz\":96.960104,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":96.960104,\"term_id\":\"hso4\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":79.957364,\"term_id\":\"so3_radical\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"HO3S\",\"kind\":\"product_ion\",\"member_key\":\"HO3S\",\"peak_index\":1,\"peak_mz\":80.965189,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":80.965189,\"term_id\":\"hso3\",\"unit_id\":3}],\"neutral_formula\":\"C19H30O5S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"androstanolone_16_one\",\"score\":4.000000,\"units\":{\"sulfate\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"androstanolone_16_one|sulfate1|[M-H]-\",\"epiandrosterone|sulfate1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":369.174119,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8123d313f8548a029b114c0849f3e7a91e3c0fa52ef4d831fd84d6562af78a88"
+  },
+  {
+   "description": "the positive spectrum of altenuene|sulfate1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "sulfated_metabolite.organosulfate.neg"
+    ],
+    "outcomes": {
+     "sulfated_metabolite.organosulfate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "80.965189",
+      "500.0"
+     ],
+     [
+      "96.960104",
+      "500.0"
+     ],
+     [
+      "291.087412",
+      "500.0"
+     ],
+     [
+      "371.044227",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "371.044227"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"input_sha256\":\"b8db1fe6e20ccf99be41f5ee1a1c326434569e893e9b34a75198bcb2675bd1de\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/k_of/of/2\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"observed\",\"motif_id\":\"organosulfate_monoester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"sulfated_metabolite.organosulfate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":371.044227,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"51be4730d3349576c95dcb64cdc2c82643ecfad7f6968221b656d70f88dff025\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "83ae73abb6cf8c889e65add75af90508080d71ef3394272b4ba00554dee4b2b8"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

@@ -1,0 +1,731 @@
+{
+ "cases": [
+  {
+   "description": "h* = demissidine|Hex1,HexA1,malonyl1|[M+H]+, precursor at its oracle m/z; one peak per support member: y0:A, f_ring_126:C8H16N",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "f_ring_126:C8H16N@0"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "demissidine|Hex1,HexA1,malonyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steroidal_glycoalkaloid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"84979e8115699a09a17e0736d08602d9f6b44d55737232c306ec8206b19ed362\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"steroidal_glycoalkaloid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"demissidine|Hex1,HexA1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"hypothesis_mz\":824.442696,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H46NO\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":400.357391,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":400.357391,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.004,\"ion_formula\":\"C8H16N\",\"kind\":\"product_ion\",\"member_key\":\"C8H16N\",\"peak_index\":0,\"peak_mz\":126.127726,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":126.127726,\"term_id\":\"f_ring_126\",\"unit_id\":1}],\"neutral_formula\":\"C42H65NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"demissidine\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "43d886fc2b681a3fc3be72419c7a1838e8a8d4a91f9f940774fa2902dc81b525"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ without the peaks of required term y0; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"a06fe0d5b195a95ac04d88266403de67c404bd0a0981c7d0e3efbf41063f9a39\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "633fc4e416b2d70bf5207fc5e9b7ed8d3230b516021efb8792e319305bf574b7"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ without the peaks of required term f_ring_126; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "drop_f_ring_126",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"d0d07797eaf1ae8db99c539fd52e6b6d216b55247db3838d1fde22ff5828b5ac\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7e48b57fb684ad26e4aad72e8be02067330806798b5f8d48c0635c995bb91a82"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ plus upgrade f_ring_98:C6H12N at intensity 500",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "f_ring_126:C8H16N@1"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "demissidine|Hex1,HexA1,malonyl1|[M+H]+"
+      ],
+      "upgrades": [
+       "f_ring_98:C6H12N@0"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "98.096425",
+      "500.0"
+     ],
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "upgrade_f_ring_98",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steroidal_glycoalkaloid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"b137cd9364b983a2e23b974a953339982aa4446e407b1f9aa8d3366a8ef541c9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"steroidal_glycoalkaloid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"demissidine|Hex1,HexA1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"hypothesis_mz\":824.442696,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H46NO\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":400.357391,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":400.357391,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.004,\"ion_formula\":\"C8H16N\",\"kind\":\"product_ion\",\"member_key\":\"C8H16N\",\"peak_index\":1,\"peak_mz\":126.127726,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":126.127726,\"term_id\":\"f_ring_126\",\"unit_id\":1}],\"neutral_formula\":\"C42H65NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"demissidine\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"malonyl\":1},\"upgrades\":[{\"error_da\":0.000000,\"error_ppm\":-0.004,\"ion_formula\":\"C6H12N\",\"kind\":\"product_ion\",\"member_key\":\"C6H12N\",\"peak_index\":0,\"peak_mz\":98.096425,\"rel_intensity\":1.000000,\"role\":\"upgrade\",\"target_mz\":98.096425,\"term_id\":\"f_ring_98\",\"unit_id\":null}],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "063698f1d4617603ff9b7b53eb7b348c5e099ec942919143c3886a1517252160"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with y0:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "f_ring_126:C8H16N@0"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "demissidine|Hex1,HexA1,malonyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.362381",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steroidal_glycoalkaloid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"1eb4d7e59f5981ec76a5408f1cbe64b7ce4d1fab41f5f3c9a4298c9658845e08\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"steroidal_glycoalkaloid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"demissidine|Hex1,HexA1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"hypothesis_mz\":824.442696,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":12.464,\"ion_formula\":\"C27H46NO\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":400.362381,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":400.357391,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.004,\"ion_formula\":\"C8H16N\",\"kind\":\"product_ion\",\"member_key\":\"C8H16N\",\"peak_index\":0,\"peak_mz\":126.127726,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":126.127726,\"term_id\":\"f_ring_126\",\"unit_id\":1}],\"neutral_formula\":\"C42H65NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"demissidine\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7d7fb44747c12199fa1f8b309754bedd5e4ab3a13cbb3500b3aadff7750e7c73"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with y0:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.362401",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"fed14471eebb64df887802095154ee25f49fc7ed0ccfb32f66fe45baf0845e46\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "59278c81fa330a7916f68efcf950054aa89598cdd1f3ab540b8b1011519959b3"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with y0:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "f_ring_126:C8H16N@0"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "demissidine|Hex1,HexA1,malonyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.352401",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steroidal_glycoalkaloid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"e6f338697fe25e77c3aead3e995fa12d2f6aa12f2cc7906d8dbdaf9fe02048b8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"steroidal_glycoalkaloid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"demissidine|Hex1,HexA1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"hypothesis_mz\":824.442696,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-12.464,\"ion_formula\":\"C27H46NO\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":400.352401,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":400.357391,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.004,\"ion_formula\":\"C8H16N\",\"kind\":\"product_ion\",\"member_key\":\"C8H16N\",\"peak_index\":0,\"peak_mz\":126.127726,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":126.127726,\"term_id\":\"f_ring_126\",\"unit_id\":1}],\"neutral_formula\":\"C42H65NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"demissidine\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "73beb3022de3ac8865c21e7d9763609dcba4297c1483cd8b7b20bd9952369547"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with y0:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.352381",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"bd418c42b8a387473f0f3f83cf67615061d01542dfc26abc49d2e9a3ad3ca74e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7214600d3cc7f19634bcd904d17397ae65069666ceaacfac08ab60fa93c9c0f0"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "f_ring_126:C8H16N@0"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "demissidine|Hex1,HexA1,malonyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.452686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.452686"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steroidal_glycoalkaloid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"3aa90832286bcccd9a8826c9ee09e152739746ee2fd83e6bd4428ebc297a4e4f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"steroidal_glycoalkaloid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"demissidine|Hex1,HexA1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"hypothesis_mz\":824.442696,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H46NO\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":400.357391,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":400.357391,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.004,\"ion_formula\":\"C8H16N\",\"kind\":\"product_ion\",\"member_key\":\"C8H16N\",\"peak_index\":0,\"peak_mz\":126.127726,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":126.127726,\"term_id\":\"f_ring_126\",\"unit_id\":1}],\"neutral_formula\":\"C42H65NO15\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"demissidine\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.452686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f421fbd6bb7c5bd1020e1aa4af15652e47bedbf7405eba89e40be2825aac8d80"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.452706",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.452706"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"335186d5218037c2cffc253b41eb3dbf785ce8490a1bb9f5eec5bd1155235f03\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.452706,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3bae13cdb1085dd75aaf83b8fc8bb660f5ca589893a2db25b315fed56622b038"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "f_ring_126:C8H16N@0"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "demissidine|Hex1,HexA1,malonyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.432706",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.432706"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steroidal_glycoalkaloid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"df15c150f23a7d9f76afe76e00027e81faa230887591cb6b048b8f027e53d01e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"steroidal_glycoalkaloid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"demissidine|Hex1,HexA1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"hypothesis_mz\":824.442696,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H46NO\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":400.357391,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":400.357391,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.004,\"ion_formula\":\"C8H16N\",\"kind\":\"product_ion\",\"member_key\":\"C8H16N\",\"peak_index\":0,\"peak_mz\":126.127726,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":126.127726,\"term_id\":\"f_ring_126\",\"unit_id\":1}],\"neutral_formula\":\"C42H65NO15\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"demissidine\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.432706,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "08641db138ba08c6079e57f0af3b0410d5eff33f2485667d33dc7dc9932217d3"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.432686",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.432686"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"1041a81475218531154dab66f4329acb2b4047a8c7dbc42e291dc7dd2d859e27\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.432686,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2f155e9cd0711f24303d40a9ad8fa1f9bde8f838a441aad40bfe190f110ddf5b"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"3d17e004f7569b0be224dc04b4b07ccb8ea31b25418a69488995df3b71925ca0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0e07d208b0830b6f0b394c4d229c41e0f56ddebb6fed52c7e8ca740d9e49f575"
+  },
+  {
+   "description": "the union of the positive spectra of demissidine|Hex1,HexA1,malonyl1|[M+H]+ and solasodine_type|Hex2,malonyl1|[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "f_ring_126:C8H16N@0"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "demissidine|Hex1,HexA1,malonyl1|[M+H]+",
+       "solasodine_type|Hex2,malonyl1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "414.336656",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steroidal_glycoalkaloid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"8ec82c72cc102205e8c85c6ef9285cfb76b4b24c6be25519179362d9f804356c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"steroidal_glycoalkaloid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"demissidine|Hex1,HexA1,malonyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"hypothesis_mz\":824.442696,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C27H46NO\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":400.357391,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":400.357391,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.004,\"ion_formula\":\"C8H16N\",\"kind\":\"product_ion\",\"member_key\":\"C8H16N\",\"peak_index\":0,\"peak_mz\":126.127726,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":126.127726,\"term_id\":\"f_ring_126\",\"unit_id\":1}],\"neutral_formula\":\"C42H65NO15\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"demissidine\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"malonyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"demissidine|Hex1,HexA1,malonyl1|[M+H]+\",\"solasodine_type|Hex2,malonyl1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b4b47821c0b533d241d10d9a7028c14c4744be75329edb0fc43ef81abead5bd7"
+  },
+  {
+   "description": "the positive spectrum of demissidine|Hex1,HexA1,malonyl1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos"
+    ],
+    "outcomes": {
+     "steroidal_glycoside.steroidal_glycoalkaloid.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "126.127726",
+      "500.0"
+     ],
+     [
+      "400.357391",
+      "500.0"
+     ],
+     [
+      "824.442696",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "824.442696"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"input_sha256\":\"84979e8115699a09a17e0736d08602d9f6b44d55737232c306ec8206b19ed362\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steroidal_glycoalkaloid\",\"n_distinct_formulas\":1,\"n_hypotheses\":3,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steroidal_glycoside.steroidal_glycoalkaloid.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":824.442696,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"36ad4a9f7af9fae57ae6aca98964853e2943bb57b148c9974fb45dd1dfea10a6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e43017aceab76c3062cb607b1acd1854f5d38b3a787a43a2e1b6c4586ce44b37"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

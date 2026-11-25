@@ -1,0 +1,27 @@
+{
+ "format": "msdial-similarity-fixtures",
+ "format_version": 1,
+ "kernels_version": "1",
+ "files": [
+  {
+   "path": "kernel-ids.json",
+   "sha256": "9052c50afd17055f1ef341eb7181a44144100561f23002a22459d0325e5c1369",
+   "cases": 16
+  },
+  {
+   "path": "prep.json",
+   "sha256": "5366fe1245915be6cf64caf45796df56b1c575f877a0309c17b732639e56ddd4",
+   "cases": 14
+  },
+  {
+   "path": "kernels.json",
+   "sha256": "f3d702c09b0c1e1cc68571f66ae06f7b90ed2fe393325171931824e52d4a10b0",
+   "cases": 18
+  },
+  {
+   "path": "kernels-vs20.json",
+   "sha256": "f4158b6f14ed8d7ae383bd291eac853736a1ba20fdc285acae784b6516ed4c70",
+   "cases": 8
+  }
+ ]
+}

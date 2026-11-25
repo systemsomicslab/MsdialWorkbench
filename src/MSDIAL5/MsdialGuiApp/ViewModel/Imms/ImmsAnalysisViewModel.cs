@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused, broker).AddTo(Disposables);
 
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
@@ -115,7 +115,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ImmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }

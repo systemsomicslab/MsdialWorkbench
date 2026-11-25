@@ -1,0 +1,647 @@
+{
+ "entries": [
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C13H19NO3",
+   "ions": {},
+   "name": "O-9-angeloylretronecine (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c13h19no3",
+   "source": [
+    {
+     "doi": "10.1002/pca.2683",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C15H25NO5",
+   "ions": {},
+   "name": "lycopsamine, intermedine, indicine, rinderine, echinatine (retronecine/heliotridine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c15h25no5",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138); Table 3 (p. 146)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C15H25NO6",
+   "ions": {},
+   "name": "lycopsamine, intermedine and indicine N-oxides",
+   "origin": "as_published",
+   "scaffold_id": "pa_c15h25no6",
+   "source": [
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Results; Figure 2 D1"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138); Table 3 (p. 146)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C16H23NO6",
+   "ions": {},
+   "name": "monocrotaline (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c16h23no6",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1002/pca.2683",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C16H23NO7",
+   "ions": {},
+   "name": "monocrotaline N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c16h23no7",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C16H27NO5",
+   "ions": {},
+   "name": "heliotrine (heliotridine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c16h27no5",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C16H27NO6",
+   "ions": {},
+   "name": "europine (heliotridine type); heliotrine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c16h27no6",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C16H27NO7",
+   "ions": {},
+   "name": "europine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c16h27no7",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C17H27NO6",
+   "ions": {},
+   "name": "7-acetyllycopsamine, 7-acetylintermedine (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c17h27no6",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 3 (p. 146)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C17H27NO7",
+   "ions": {},
+   "name": "uplandicine; 7-acetyllycopsamine and 7-acetylintermedine N-oxides",
+   "origin": "as_published",
+   "scaffold_id": "pa_c17h27no7",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 3 (p. 146)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1 rows 15-17"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C17H27NO8",
+   "ions": {},
+   "name": "uplandicine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c17h27no8",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 3 (p. 146)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1 row 18"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H23NO5",
+   "ions": {},
+   "name": "seneciphylline (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h23no5",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2014.11.093",
+     "locator": "Figure 2"
+    },
+    {
+     "doi": "10.1002/jssc.201400314",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H23NO6",
+   "ions": {},
+   "name": "riddelliine (retronecine type); seneciphylline N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h23no6",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2014.11.093",
+     "locator": "Figure 2"
+    },
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1002/jssc.201400314",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H23NO7",
+   "ions": {},
+   "name": "riddelliine N-oxide; adonifoline (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h23no7",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Sec. 3.3 (p. 143); Fig. 3; Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Results (p. 334)"
+    },
+    {
+     "doi": "10.1155/2021/1957863",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H25NO5",
+   "ions": {},
+   "name": "senecionine, integerrimine, senecivernine (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h25no5",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2014.11.093",
+     "locator": "Figure 2"
+    },
+    {
+     "doi": "10.1002/jssc.201400314",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1002/pca.2683",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H25NO6",
+   "ions": {},
+   "name": "retrorsine, jacobine (retronecine type); senecionine and integerrimine N-oxides",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h25no6",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Fig. 2 B1 (p. 333)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2014.11.093",
+     "locator": "Figure 2"
+    },
+    {
+     "doi": "10.1002/rcm.7276",
+     "locator": "Table 2"
+    },
+    {
+     "doi": "10.1002/jssc.201400314",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H25NO7",
+   "ions": {},
+   "name": "retrorsine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h25no7",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Fig. 2 A1 (p. 333)"
+    },
+    {
+     "doi": "10.1002/rcm.7276",
+     "locator": "Table 4"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H27NO5",
+   "ions": {},
+   "name": "platyphylline (platynecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h27no5",
+   "source": [
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Results (platynecine section); Figure 2 E2"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H27NO6",
+   "ions": {},
+   "name": "trichodesmine (retronecine type); platyphylline N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h27no6",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Results (platynecine section); Figure 2 E1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C18H27NO7",
+   "ions": {},
+   "name": "junceine (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c18h27no7",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C19H27NO6",
+   "ions": {},
+   "name": "senkirkine (otonecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c19h27no6",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Sec. 3.3 (p. 144); Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1155/2021/1957863",
+     "locator": "Sec. 3.2; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C20H25NO6",
+   "ions": {},
+   "name": "seneciphyllinine (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c20h25no6",
+   "source": [
+    {
+     "doi": "10.1002/jssc.201400314",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2014.11.093",
+     "locator": "Figure 2F"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C20H25NO7",
+   "ions": {},
+   "name": "seneciphyllinine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c20h25no7",
+   "source": [
+    {
+     "doi": "10.1002/jssc.201400314",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C20H29NO7",
+   "ions": {},
+   "name": "isoline (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c20h29no7",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1155/2021/1957863",
+     "locator": "Sec. 2.1, 2.6, 3.2 (standards)"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C20H31NO6",
+   "ions": {},
+   "name": "echiumine, symphytine (retronecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c20h31no6",
+   "source": [
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 3 (p. 146)"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C20H31NO7",
+   "ions": {},
+   "name": "echimidine, heliosupine (retronecine/heliotridine type); echiumine and symphytine N-oxides",
+   "origin": "as_published",
+   "scaffold_id": "pa_c20h31no7",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138); Table 3 (p. 146)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C20H31NO8",
+   "ions": {},
+   "name": "heliosupine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c20h31no8",
+   "source": [
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 3 (p. 146)"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C21H27NO7",
+   "ions": {},
+   "name": "clivorine (otonecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c21h27no7",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1155/2021/1957863",
+     "locator": "Sec. 2.1, 2.6, 3.2 (standards)"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C21H29NO8",
+   "ions": {},
+   "name": "ligularizine (otonecine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c21h29no8",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C21H33NO7",
+   "ions": {},
+   "name": "lasiocarpine (heliotridine type)",
+   "origin": "as_published",
+   "scaffold_id": "pa_c21h33no7",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.20450/mjcce.2022.2491",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "pyrrolizidine_alkaloid",
+   "formula": "C21H33NO8",
+   "ions": {},
+   "name": "lasiocarpine N-oxide",
+   "origin": "as_published",
+   "scaffold_id": "pa_c21h33no8",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Experimental, Chemicals and standards (p. 9376)"
+    },
+    {
+     "doi": "10.1016/j.foodchem.2015.01.053",
+     "locator": "Table 1 (p. 138)"
+    },
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Fig. 2 C1 (p. 333)"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_pyrrolizidine_compounds"
+}

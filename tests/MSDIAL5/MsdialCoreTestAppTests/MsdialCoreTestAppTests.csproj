@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <Nullable>annotations</Nullable>
     <IsPackable>false</IsPackable>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <LangVersion>12</LangVersion>

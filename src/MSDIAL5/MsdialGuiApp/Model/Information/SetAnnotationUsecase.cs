@@ -8,6 +8,12 @@ using CompMs.MsdialCore.Utility;
 
 namespace CompMs.App.Msdial.Model.Information
 {
+    /// <summary>A person sets the annotation of a peak or spot: a compound from a search, Unsettled, or Unknown.</summary>
+    /// <remarks>
+    /// Each of these also withdraws what the lipid RT check left on the object, its own Confirmed tag and its verdict,
+    /// which were about the annotation it replaces; a manual annotation is not evaluated by the check (addendum A6).
+    /// Setting Unknown can be undone, and its undo puts them back.
+    /// </remarks>
     internal sealed class SetAnnotationUsecase
     {
         private readonly IMoleculeProperty _molecule;
@@ -25,6 +31,7 @@ namespace CompMs.App.Msdial.Model.Information
             compoundResult.MatchResult.IsReferenceMatched = true;
             _results.RemoveManuallyResults();
             _results.AddResult(compoundResult.MatchResult);
+            WithdrawLipidRtCheck();
         }
 
         public void SetUnsettled(ICompoundResult compoundResult) {
@@ -32,6 +39,7 @@ namespace CompMs.App.Msdial.Model.Information
             compoundResult.MatchResult.IsReferenceMatched = true;
             _results.RemoveManuallyResults();
             _results.AddResult(compoundResult.MatchResult);
+            WithdrawLipidRtCheck();
         }
 
         public void SetConfidence(MoleculeMsReference msReference, MsScanMatchResult matchResult) {
@@ -39,12 +47,17 @@ namespace CompMs.App.Msdial.Model.Information
             matchResult.IsReferenceMatched = true;
             _results.RemoveManuallyResults();
             _results.AddResult(matchResult);
+            WithdrawLipidRtCheck();
         }
 
         public void SetUnknown() {
             IDoCommand command = new SetUnknownDoCommand(_molecule, _results);
             command.Do();
             _undoManager.Add(command);
+        }
+
+        private void WithdrawLipidRtCheck() {
+            (_molecule as ILipidRtCheckedObject)?.WithdrawLipidRtCheck();
         }
     }
 }

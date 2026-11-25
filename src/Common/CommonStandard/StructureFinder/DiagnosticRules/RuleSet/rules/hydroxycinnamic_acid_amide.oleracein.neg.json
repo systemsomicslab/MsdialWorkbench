@@ -1,0 +1,215 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "cyclodopa_anion",
+   "acyl_indoline_coumaroyl",
+   "acyl_indoline_caffeoyl",
+   "acyl_indoline_feruloyl"
+  ],
+  "motif_id": "hcaa_n_acyl_cyclodopa",
+  "negative_examples": [
+   {
+    "pubchem_cid": 6540685,
+    "smiles": "C1[C@H](N=C(C=C1/C=C/N2[C@@H](CC3=CC(=C(C=C32)O)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)C(=O)O)C(=O)O)C(=O)O"
+   }
+  ],
+  "non_claims": [
+   "Which hydroxyl carries each hexose, and whether a second acyl sits on a hexose, are not resolved.",
+   "The N-acyl group is identified only as coumaroyl, caffeoyl or feruloyl; a second acyl on a hexose is a composition hypothesis."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 21574472,
+    "smiles": "C1[C@H](N(C2=CC(=C(C=C21)O)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O)C(=O)/C=C/C4=CC=C(C=C4)O)C(=O)O"
+   },
+   {
+    "pubchem_cid": 21574473,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)N2[C@@H](CC3=CC(=C(C=C32)O[C@H]4[C@@H]([C@H]([C@@H]([C@H](O4)CO)O)O)O)O)C(=O)O)O"
+   },
+   {
+    "pubchem_cid": 21574474,
+    "smiles": "C1[C@H](N(C2=CC(=C(C=C21)O)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O)C(=O)/C=C/C4=CC=C(C=C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O)C(=O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "cyclodopa_anion"
+   },
+   {
+    "any": [
+     {
+      "term": "acyl_indoline_coumaroyl"
+     },
+     {
+      "term": "acyl_indoline_caffeoyl"
+     },
+     {
+      "term": "acyl_indoline_feruloyl"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Oleraceins (N-acyl cyclo-dopa glucosides) give the indoline anion C9H8NO4- and an N-coumaroyl, N-caffeoyl or N-feruloyl indoline anion in stepped-NCE Orbitrap MS2; one paper, tentative annotations, no reference standards (doi:10.3390/plants10091921).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hcaa_cyclodopa_core",
+    "note": "Betacyanins carry cyclo-dopa without an N-acyl group."
+   }
+  ],
+  "composition": {
+   "core": "C9H9NO4",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     2
+    ],
+    "sugar": [
+     1,
+     4
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     4
+    ],
+    "caffeoyl": [
+     0,
+     2
+    ],
+    "coumaroyl": [
+     0,
+     2
+    ],
+    "feruloyl": [
+     0,
+     2
+    ],
+    "sinapoyl": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "One to four hexoses and one or two acyl residues, as in the annotated set; sinapoyl occurs only on a hexose, never as the N-acyl group.",
+    "source": "src:3"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "hydroxycinnamic_acid_amide.oleracein.neg",
+ "source": [
+  {
+   "doi": "10.3390/plants10091921",
+   "locator": "Sec. 2; Sec. 2.2; Sec. 4.6; Fig. 3; Table 3"
+  },
+  {
+   "doi": "10.3390/plants10091921",
+   "locator": "Sec. 2; Sec. 2.2; Fig. 3; Table 3"
+  },
+  {
+   "doi": "10.3390/plants10091921",
+   "locator": "Sec. 4.7"
+  },
+  {
+   "doi": "10.3390/plants10091921",
+   "locator": "Sec. 2.1; Sec. 2.2; Table 2; Table 3"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:2",
+   "formula": "C9H8NO4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.005,
+   "note": "Deprotonated 5,6-dihydroxyindoline-2-carboxylic acid, C9H8NO4-.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "cyclodopa_anion",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.005,
+   "note": "N-coumaroyl indoline anion (residue + C9H8NO4), C18H14NO6- (IC).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acyl_indoline_coumaroyl",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "coumaroyl",
+    "plus": "C9H8NO4"
+   }
+  },
+  {
+   "floor_source": "src:2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.005,
+   "note": "N-caffeoyl indoline anion (residue + C9H8NO4), C18H14NO7- (IA).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acyl_indoline_caffeoyl",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "caffeoyl",
+    "plus": "C9H8NO4"
+   }
+  },
+  {
+   "floor_source": "src:2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.005,
+   "note": "N-feruloyl indoline anion (residue + C9H8NO4), C19H16NO7- (IF).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acyl_indoline_feruloyl",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "feruloyl",
+    "plus": "C9H8NO4"
+   }
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting subagent, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -10,11 +10,11 @@ namespace CompMs.App.MsdialConsole.Test {
         public ProcessTest() { }
         public void Run() {
 
-            var lcmsfile = @"D:\msdial_test\Msdial\out\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf";
-            var dimsfile = @"D:\msdial_test\Msdial\out\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf";
-            var immsfile = @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\kidney1_3times_timsON_pasef_neg000001.d";
-            var lcimmsfile = @"D:\BugReport\20201216_MS2missing\PS78_Plasma1_4_1_4029.d";
-            var samplefile = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_pos\kidney1_1-47_1_14919.d";
+            // var lcmsfile = @"D:\msdial_test\Msdial\out\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf";
+            // var dimsfile = @"D:\msdial_test\Msdial\out\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf";
+            // var immsfile = @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\kidney1_3times_timsON_pasef_neg000001.d";
+            // var lcimmsfile = @"D:\BugReport\20201216_MS2missing\PS78_Plasma1_4_1_4029.d";
+            // var samplefile = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_pos\kidney1_1-47_1_14919.d";
 
 
             //MspCurator.ExtractCCSValues(
@@ -288,6 +288,10 @@ namespace CompMs.App.MsdialConsole.Test {
         private static void DumpSpectrum(string file, int scanNumber, double mz, double mztol) {
             var allspectra = DataAccess.GetAllSpectra(file);
             var spectra = allspectra.FirstOrDefault(spec => spec.ScanNumber == scanNumber);
+            if (spectra is null) {
+                Console.WriteLine($"Scan {scanNumber} was not found in {file}.");
+                return;
+            }
             Console.WriteLine(
                 "Original index={0} ID={1}, Time={2}, Drift ID={3}, Drift time={4}, Polarity={5}, MS level={6}, Precursor mz={7}, CollisionEnergy={8}, SpecCount={9}",
                 spectra.OriginalIndex, spectra.ScanNumber, spectra.ScanStartTime, spectra.DriftScanNumber, spectra.DriftTime, spectra.ScanPolarity, spectra.MsLevel, spectra.Precursor?.SelectedIonMz ?? -1, spectra.CollisionEnergy, spectra.Spectrum.Length);

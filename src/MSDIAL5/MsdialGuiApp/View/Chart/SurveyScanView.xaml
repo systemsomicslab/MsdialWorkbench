@@ -114,7 +114,8 @@
                              OrderingPropertyName="Intensity"
                              Brush="Black"
                              Format="N4"
-                             Overlap="Horizontal,Direct"
+                             MinimumRelativeOrder="0.01"
+                             LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                              ClipToBounds="True"
                              IsHitTestVisible="False"/>
         </chart:MultiChart>

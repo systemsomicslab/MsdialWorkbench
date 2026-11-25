@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal sealed class LcmsProteomicsPeakTableViewModel : AnalysisPeakTableViewModelBase {
-        public LcmsProteomicsPeakTableViewModel(LcmsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
+        public LcmsProteomicsPeakTableViewModel(LcmsAnalysisPeakTableModel model, IObservable<EicLoader?> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel, eicLoader) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
     internal sealed class LcmsAnalysisPeakTableViewModel : AnalysisPeakTableViewModelBase
     {
-        public LcmsAnalysisPeakTableViewModel(LcmsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
+        public LcmsAnalysisPeakTableViewModel(LcmsAnalysisPeakTableModel model, IObservable<EicLoader?> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel)
             : base(model, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel, eicLoader) {
             MassMin = model.MassMin;
             MassMax = model.MassMax;
@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     }
 
     internal static class LcmsTableViewModelHelper {
-        public static AnalysisPeakTableViewModelBase CreateViewModel(LcmsAnalysisPeakTableModel model, IObservable<EicLoader> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel) {
+        public static AnalysisPeakTableViewModelBase CreateViewModel(LcmsAnalysisPeakTableModel model, IObservable<EicLoader?> eicLoader, PeakSpotNavigatorViewModel peakSpotNavigatorViewModel, ICommand setUnknownCommand, UndoManagerViewModel undoManagerViewModel) {
             switch (model.Omics) {
                 case CompMs.Common.Enum.TargetOmics.Proteomics:
                     return new LcmsProteomicsPeakTableViewModel(model, eicLoader, peakSpotNavigatorViewModel, setUnknownCommand, undoManagerViewModel);

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.CommonMVVM.Validator;
 using CompMs.Graphics.UI;
@@ -61,15 +62,26 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     Height = 100
                 };
                 message.Show();
-                model.Commit();
-                var msfinder = batchMsfinder.Process();
-                message.Close();
-                if (msfinder is not null) {
+                InternalMsFinder? msfinder = null;
+                InvalidDataException? inputError = null;
+                try {
+                    model.Commit();
+                    msfinder = batchMsfinder.Process();
+                }
+                catch (InvalidDataException ex) {
+                    inputError = ex;
+                }
+                finally {
+                    message.Close();
+                    Mouse.OverrideCursor = null;
+                }
+                if (inputError is not null) {
+                    MessageBox.Show(inputError.Message, "MS-FINDER input error", MessageBoxButton.OK, MessageBoxImage.Error);
+                } else if (msfinder is not null) {
                     broker.Publish(new InternalMsFinderViewModel(msfinder, broker));
                 } else {
                     MessageBox.Show("Please select the alignment result");
                 }
-                Mouse.OverrideCursor = null;
             }).AddTo(Disposables);
 
             Apply = new ReactiveCommand().WithSubscribe(() => {

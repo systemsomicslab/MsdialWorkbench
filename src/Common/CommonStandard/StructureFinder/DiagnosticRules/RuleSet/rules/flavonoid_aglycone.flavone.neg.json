@@ -1,0 +1,159 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "a13",
+   "b13"
+  ],
+  "motif_id": "flavone_c3_nonoxy",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280961,
+    "smiles": "C1=CC(=CC=C1C2=COC3=CC(=CC(=C3C2=O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281616,
+    "smiles": "C1=CC=C(C=C1)C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O"
+   },
+   {
+    "pubchem_cid": 5280373,
+    "smiles": "COC1=CC=C(C=C1)C2=COC3=CC(=CC(=C3C2=O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Hydroxyl and methoxyl positions beyond the hypothesis scaffold are not resolved",
+   "Free aglycone versus an in-source aglycone ion of a conjugate is not decided by this rule",
+   "Precursors at the other common negative adducts tried under adduct_ambiguous ([M+HCOO]-, [M+CH3COO]-, [M+Cl]-) are not described by the cited [M-H]- fragmentation; apigenin [M+HCOO]- coincides with isorhamnetin [M-H]-"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280443,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C=C(C=C3O2)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281617,
+    "smiles": "COC1=CC(=C2C(=C1)OC(=CC2=O)C3=CC=C(C=C3)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "a13"
+   },
+   {
+    "term": "b13"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured pending the author's decision on the 1,3A- claim role: flavonols also give C7H3O4- (Yang 2012 p. 497, Table 3), isoflavones would by calculation, and the weak 1,3B- (1-2 % for apigenin) is then the only class-specific ion.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "isoflavone_core",
+    "note": "genistein (C15H10O5, as apigenin) would give the same 1,3A- and 1,3B- formulas by calculation; Fabre 2001 saw no RDA ion for it and Yang 2012 p. 497 found RDA cleavage difficult for isoflavones, but Vukics 2010 p. 10 cite Kuhn 2003 as not confirming this; biochanin A shares C16H12O5 with genkwanin"
+   },
+   {
+    "motif_id": "flavonol_core",
+    "note": "galangin shares C15H10O5 with apigenin, and its 1,3A- and 1,3B- would have the same formulas (C7H3O4-, C8H5O-; by calculation); Yang 2012 Table 3 (p. 498) print 1,3A- 151 at 65 % for kaempferol and 55 % for quercetin"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycone_flavone_neg",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_aglycone.flavone.neg",
+ "source": [
+  {
+   "doi": "10.1021/acs.analchem.5b01559",
+   "locator": "p. 7379, Flavones and Isoflavones; Fig. 5 (p. 7378)"
+  },
+  {
+   "doi": "10.1016/s1044-0305(01)00226-4",
+   "locator": "Table 1 (p. 710); Degradation of Flavone Aglycones (pp. 710-712)"
+  },
+  {
+   "doi": "10.1016/s1044-0305(01)00226-4",
+   "locator": "Tables 1 and 3 (pp. 710-711); Scheme 2 (p. 712)"
+  },
+  {
+   "doi": "10.1002/jms.118",
+   "locator": "p. 170, MS/MS of isomeric standard compounds; Table 1 (p. 171); Scheme 2 (p. 172)"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "p. 6, Flavonoid aglycone, Negative ion mode"
+  },
+  {
+   "doi": "10.1002/mas.20212",
+   "locator": "pp. 10-11, Sec. IV.E Nature of the Aglycone; Fig. 9c,d (p. 10)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.1255/ejms.1206",
+   "locator": "Table 2 (p. 497)"
+  },
+  {
+   "doi": "10.1255/ejms.1206",
+   "locator": "p. 497, CID of flavonols and CID of isoflavones; Table 3 (p. 498)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "formula": "C7H3O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "C7H3O4-: 1,3A- of apigenin (Lei 2015, Fabre 2001, Yang 2012); for genkwanin an A-ring ion at nominal 151 after CH3 loss (Justesen 2001; Fabre 2001 at 1 %), formula by calculation; genistein gave no RDA ion (Fabre 2001)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a13",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,3B-; Fabre 2001 (apigenin, 1 %), Yang 2012 (apigenin, 2 %), Justesen 2001 (genkwanin, absent from acacetin)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_13b",
+   "term_id": "b13",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

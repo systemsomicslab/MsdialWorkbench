@@ -1,0 +1,41 @@
+{
+ "entries": [
+  {
+   "class": "dibenzocyclooctadiene_lignan",
+   "formula": "C30H32O9",
+   "ions": {},
+   "name": "schisantherin A, gomisin G (C6-benzoyloxy)",
+   "origin": "as_published",
+   "scaffold_id": "benzoyl_ester_c30h32o9",
+   "source": [
+    {
+     "doi": "10.1002/jms.1246",
+     "locator": "Huang 2007: Results, schisantherin A (p. 1151); Results, peaks 7 and 10 (p. 1160); Table 3, peaks 7 and 10 (p. 1159)"
+    },
+    {
+     "doi": "10.1002/pca.1115",
+     "locator": "Shi 2009: Table 2 (p. 199); Table 4, peaks 12 and 15 (p. 204); Table 3 (p. 203)"
+    }
+   ]
+  },
+  {
+   "class": "dibenzocyclooctadiene_lignan",
+   "formula": "C28H34O9",
+   "ions": {},
+   "name": "gomisin B, schisantherin C, angeloyl- and tigloylgomisin P (C6-angeloyloxy or tigloyloxy)",
+   "origin": "as_published",
+   "scaffold_id": "angeloyl_ester_c28h34o9",
+   "source": [
+    {
+     "doi": "10.1002/jms.1246",
+     "locator": "Huang 2007: Results, peak 8 (p. 1154); Table 3, peak 8 (p. 1159)"
+    },
+    {
+     "doi": "10.1002/pca.1115",
+     "locator": "Shi 2009: Table 2 (p. 199); Table 4, peaks 10, 13, 14, 16 (p. 204); Results, MW 514 isomers (pp. 200-201)"
+    }
+   ]
+  }
+ ],
+ "list_id": "lignan_dibenzocyclooctadiene_c6_esters"
+}

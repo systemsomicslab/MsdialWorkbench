@@ -1,0 +1,1041 @@
+{
+ "cases": [
+  {
+   "description": "h* = acacetin|Hex1,HexA1,galloyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: acid_anion:galloyl, acylhexose_ion:galloyl, loss_acyl:galloyl, loss_acyl_hex:galloyl",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"639044f4aa513f5cdb15f67faaf827a0f266c974ddba800b9de061b5a993d23d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "61a90eba02ff4c859973bb2ce71c960f3bb206288c322c3b89d4ef84ba6f28ec"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with 2 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"e873af1fa01530636b7f45c75a0aef7eea46c80d5d35f190a03ae1cbf8b86e59\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d406cd030c6a4c1dca6909d6b76ffbda7c0a0fd2e80ed79dc4714124f35ad135"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with 1 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"0d8b678c595d5ca5c56673a37c96c096f4c6ffe781208a6bcaf03c8cc05d291d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0a3bf57cb550e884919e8fac58555268c52232dbfa41996fd21532f428b175e8"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with acid_anion:galloyl moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.019237",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"effbc11fe3eda9087fc3cdb96cc246739ef13718bc622fef43008d376898823f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":29.523,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.019237,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c4cffec5bb29870894364de74954c6e2f4a49a39dfc6d9bfe37e803a6fe5767c"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with acid_anion:galloyl moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.019257",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"3fc7574723a0a03c8a03c64ca2c76ccb5e93fd02010c991d03dfec275b4741d0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "93a06a9fac07e0a260a4158274d4a821dc7f0a560c599c55195f00ff8eefb399"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with acid_anion:galloyl moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.009257",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"7e47de38389b7d4b5ad159bc528dfea9c563d82f91fdadee14fc2fde62ec2ed0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-29.526,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.009257,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b968cd303f8460af9011658ed3ffd9c86a432754ef02fd670a0851395400a254"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with acid_anion:galloyl moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.009237",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"ac8986b7546de179ca1a65a2e7a0f538cd9834a9f12bcb312732bbbd74f7a544\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ba42543dd9382fc51fe306d662492bbac4641b4256dc21a6fa4d2a1cacc1aa84"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with loss_acyl:galloyl moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.15231",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_ppm_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"1e1e980690766fa83e58f7636bacc5565cde1e41405faa29696cff75c39ade78\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.006201,\"error_ppm\":9.983,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.152310,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ca7e41c3fbf908289a78ed1f85bfc02ad4c50f02195b53c23d8e2d85986f98ec"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with loss_acyl:galloyl moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.15233",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_ppm_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"f7906c2dd4a56231aaa8f228ad344e0098b55e21c585d8e6b0dd5f8908bcf962\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "60177c67d782bc7968da19edb2ef9f31f3661121ea3f80fd20741c7ccf65871a"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with loss_acyl:galloyl moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.139907",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_ppm_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"4e74143e341dee64e8b352204bf06d9b9f7fa9abe80ef81a19dcc5c08c2a73cc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":-0.006202,\"error_ppm\":-9.985,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.139907,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a4c5530ae98965d613d666f11d3db8a94a88306a808468908d0f81ddddcec352"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with loss_acyl:galloyl moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.139887",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "tolerance_ppm_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"3038ab2d0be7c015b4f3531c371d0f11d96d388bceae804c1611c28f27789721\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":3.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5802ff4b8d7d7186d8547eee84c522ac6d33fe36bb70e14065d4b6e08febfe8c"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.167057",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.167057"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"85a5920a84ca22cc873a725e291121aab175a4b50992ea31a941bae8cc37439a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"acacetin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.167057,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "eff4a967f682cdc0e7502b1c36ede5c403b0f366ce4751796bab802f6a05d904"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.167077",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.167077"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"dc4107030549255a832ad7b1dbb83d0294491634ad8785ceced4174f37364901\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.167077,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "73772c2aceae11a4a68db0b1ea0c9c45ed7b84c42eea8358a7338ba908d1cc2d"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "acid_anion:galloyl@0",
+       "acylhexose_ion:galloyl@1",
+       "loss_acyl:galloyl@3",
+       "loss_acyl_hex:galloyl@2"
+      ],
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1,galloyl1|[M-H]-",
+       "biochanin_a|Hex1,HexA1,galloyl1|[M-H]-",
+       "calycosin|Hex1,HexA1,galloyl1|[M-H]-",
+       "genkwanin|Hex1,HexA1,galloyl1|[M-H]-",
+       "glycitein|Hex1,HexA1,galloyl1|[M-H]-",
+       "wogonin|Hex1,HexA1,galloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.147077",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.147077"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxybenzoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"a39398a01224f3b0f83c85e91f858daf3dc49a5619c1b6a5167616116554ca99\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxybenzoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1,galloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"hypothesis_mz\":773.157067,\"k_of\":[{\"count\":4,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H5O5\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":0,\"peak_mz\":169.014247,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":169.014247,\"term_id\":\"acid_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C13H13O9\",\"kind\":\"product_ion\",\"member_key\":\"galloyl\",\"peak_index\":1,\"peak_mz\":313.056506,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":313.056506,\"term_id\":\"acylhexose_ion\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H4O4\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":3,\"peak_mz\":621.146109,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":621.146109,\"term_id\":\"loss_acyl\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C13H14O9\",\"kind\":\"loss_from_precursor\",\"member_key\":\"galloyl\",\"peak_index\":2,\"peak_mz\":459.093285,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":459.093285,\"term_id\":\"loss_acyl_hex\",\"unit_id\":3}],\"neutral_formula\":\"C35H34O20\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"acacetin\",\"score\":4.000000,\"units\":{\"Hex\":1,\"HexA\":1,\"galloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":6,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1,galloyl1|[M-H]-\",\"biochanin_a|Hex1,HexA1,galloyl1|[M-H]-\",\"calycosin|Hex1,HexA1,galloyl1|[M-H]-\",\"genkwanin|Hex1,HexA1,galloyl1|[M-H]-\",\"glycitein|Hex1,HexA1,galloyl1|[M-H]-\",\"wogonin|Hex1,HexA1,galloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.147077,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "af61c74e82d7e7f1a5c02c5ebaa13ac25daa0991ad068bda910861b2217a6dc1"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.147057",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.147057"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"3598ec28b46711e19d9da68a5ac8134685e5b73a8a350f823a8dc380c0f9fefd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.147057,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "602cfbb65f436c5ab33f4d3a3f70473105a7e7f226b97722634400c788039240"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"cfe8422e25e411b94b8082e5a77bd1017fe17512e3e90015708ca4f786549c4c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7a259dc44bb6bb1214420421155c7cbcf78907b577f38cb030323cc3b7c07733"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1,galloyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 6,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "169.014247",
+      "500.0"
+     ],
+     [
+      "313.056506",
+      "500.0"
+     ],
+     [
+      "459.093285",
+      "500.0"
+     ],
+     [
+      "621.146109",
+      "500.0"
+     ],
+     [
+      "773.157067",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "773.157067"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"input_sha256\":\"639044f4aa513f5cdb15f67faaf827a0f266c974ddba800b9de061b5a993d23d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxybenzoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":6,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.hydroxybenzoyl_flavonoid_glycoside.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":773.157067,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"21829077d93e4691916bcf8034c20bd61e9d97ec8b7c3ce9a41807afa1aedb7f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b3b66a394b9bbd2efdd097466764c9fd176f9f43c356452dd49a4d96d2b84138"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

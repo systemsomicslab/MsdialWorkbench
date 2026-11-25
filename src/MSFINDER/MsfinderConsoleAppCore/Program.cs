@@ -1,4 +1,5 @@
-﻿using Rfx.Riken.OsakaUniv;
+﻿using CompMs.Common.Utility;
+using Rfx.Riken.OsakaUniv;
 using Riken.Metabolomics.MsfinderConsoleApp.Process;
 using Riken.Metabolomics.MsfinderConsoleApp.Test;
 using System;
@@ -21,6 +22,11 @@ namespace Riken.Metabolomics.MsfinderConsoleApp
         /// <param name="args"></param>
         static int Main(string[] args)
         {
+            // Before anything reads a number: on a PC whose regional format uses a decimal comma, the
+            // .mat and MSP inputs, the method file, the libraries and every output would otherwise be
+            // read or written with it.
+            ProcessCulture.UseInvariantCulture();
+
             //args = new string[] {
             //    "predict"
             //    , "-i"

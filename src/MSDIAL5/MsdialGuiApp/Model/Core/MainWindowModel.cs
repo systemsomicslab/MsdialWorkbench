@@ -160,13 +160,20 @@ namespace CompMs.App.Msdial.Model.Core
             });
         }
 
-        public async Task SaveAsync() {
+        public Task SaveAsync() {
             if (CurrentProject is null) {
-                return;
+                return Task.CompletedTask;
             }
+            return SaveProjectAsync(CurrentProject);
+        }
+
+        /// <summary>
+        /// Saves the given project, which processing passes so that the project it processed is the one saved.
+        /// </summary>
+        public async Task SaveProjectAsync(IProjectModel project) {
             using (nowSaving.ProcessStart()) {
-                await CurrentProject.SaveAsync().ConfigureAwait(false);
-                var currentCrumb = new ProjectCrumb(CurrentProject.Storage.ProjectParameter);
+                await project.SaveAsync().ConfigureAwait(false);
+                var currentCrumb = new ProjectCrumb(project.Storage.ProjectParameter);
                 await Application.Current.Dispatcher.InvokeAsync(() => {
                     DeleteSimilarProjectHistories(currentCrumb);
                     InsertTopProjectHistory(currentCrumb);
@@ -187,6 +194,10 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task LoadAsync() {
+            // The window stays responsive while a project is read; a second project is not opened over it.
+            if (nowLoading.IsBusy) {
+                return;
+            }
             using (nowLoading.ProcessStart()) {
                 try {
                     string projectPath = string.Empty;
@@ -203,7 +214,8 @@ namespace CompMs.App.Msdial.Model.Core
                     if (!File.Exists(projectPath)) {
                         return;
                     }
-                    var loadedProject = await ProjectModel.LoadAsync(projectPath, _broker).ConfigureAwait(false);
+                    // No ConfigureAwait(false): the project is set, and its view models built, on the UI thread.
+                    var loadedProject = await ProjectModel.LoadAsync(projectPath, _broker);
                     if (loadedProject is null) {
                         _broker.Publish(new ShortMessageRequest("Project loading has failed."));
                         return;
@@ -215,9 +227,13 @@ namespace CompMs.App.Msdial.Model.Core
                         InsertTopProjectHistory(currentCrumb);
                     });
                 }
-                catch {
+                catch (OperationCanceledException) {
+                    // Opening was declined, or what stopped it has already been said. Loading passes no cancellation token.
+                }
+                catch (Exception ex) {
+                    var cause = ex.GetBaseException();
                     await Application.Current.Dispatcher.InvokeAsync(() => {
-                        MessageBox.Show("Failed to load project.\nPlease check your project.");
+                        MessageBox.Show($"Failed to load project.\nPlease check your project.\n\n{cause.GetType().Name}: {cause.Message}");
                         return Task.CompletedTask;
                     });
                 }
@@ -225,12 +241,15 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task LoadProjectAsync(ProjectCrumb projectCrumb) {
+            if (nowLoading.IsBusy) {
+                return;
+            }
             using (nowLoading.ProcessStart()) {
                 try {
                     if (projectCrumb.FilePath is null || !File.Exists(projectCrumb.FilePath)) {
                         return;
                     }
-                    var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker).ConfigureAwait(false);
+                    var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker);
                     if (loadedProject is null) {
                         _broker.Publish(new ShortMessageRequest("Project loading has failed."));
                         return;
@@ -242,9 +261,13 @@ namespace CompMs.App.Msdial.Model.Core
                         InsertTopProjectHistory(currentCrumb);
                     });
                 }
-                catch {
+                catch (OperationCanceledException) {
+                    // Opening was declined, or what stopped it has already been said. Loading passes no cancellation token.
+                }
+                catch (Exception ex) {
+                    var cause = ex.GetBaseException();
                     await Application.Current.Dispatcher.InvokeAsync(() => {
-                        MessageBox.Show("Failed to load project.\nPlease check your project.");
+                        MessageBox.Show($"Failed to load project.\nPlease check your project.\n\n{cause.GetType().Name}: {cause.Message}");
                         return Task.CompletedTask;
                     });
                 }

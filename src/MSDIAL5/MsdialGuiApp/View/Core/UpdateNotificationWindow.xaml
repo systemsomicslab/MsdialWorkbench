@@ -1,0 +1,27 @@
+<Window x:Class="CompMs.App.Msdial.View.Core.UpdateNotificationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Update notification"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="16" MinWidth="360">
+        <TextBlock x:Name="MessageText"
+                   TextWrapping="Wrap"
+                   MaxWidth="480"
+                   Margin="0,0,0,16"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="8,0,0,0"/>
+                    <Setter Property="Padding" Value="12,4"/>
+                    <Setter Property="MinWidth" Value="80"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Open download page" IsDefault="True" Click="OpenReleasePage_Click"/>
+            <Button x:Name="RemindLaterButton" Click="RemindLater_Click"/>
+            <Button Content="Skip this version" Click="SkipThisVersion_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

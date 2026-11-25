@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace CompMs.App.Msdial.Model.Export
                 ExportLong(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta);
             }
             else {
-                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta);
+                ExportWide(outNameTemplate, exportDirectory, lazySpots, msdecResults, notification, exportTypes, accessPeakMeta, accessFileMeta, RetentionTimeAxisNote);
             }
         }
 
@@ -46,12 +47,18 @@ namespace CompMs.App.Msdial.Model.Export
             var outMetaPath = Path.Combine(exportDirectory, outMetaFile);
             notification?.Invoke(outMetaFile);
             var exporter = Format.CreateLongExporter();
+            // One PeakMaster serves every value type in PeakValues, so it reports the normalized
+            // unit only when normalized values are among them.
+            var metaAccessor = accessPeakMeta.GetAccessor();
+            if (exportTypes.Any(type => type.IsNormalized)) {
+                metaAccessor = new NormalizedUnitCommentMetadataAccessorDecorator(metaAccessor);
+            }
             using (var outstream = File.Open(outMetaPath, FileMode.Create, FileAccess.Write)) {
                 exporter.ExportMeta(
                     outstream,
                     lazySpots.Value,
                     msdecResults,
-                    accessPeakMeta.GetAccessor());
+                    metaAccessor);
             }
 
             var outFileMetaName = string.Format(outNameTemplate, "FileMaster");
@@ -78,8 +85,15 @@ namespace CompMs.App.Msdial.Model.Export
             }
         }
 
-        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string>? notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta, AccessFileMetaModel accessFileMeta) {
+        /// <summary>
+        /// Which RT axis the exported RTs are on, written into the wide table's header when set (an
+        /// alignment the automatic RT correction moved onto a reference file's axis); null otherwise.
+        /// </summary>
+        public string? RetentionTimeAxisNote { get; set; }
+
+        public void ExportWide(string outNameTemplate, string exportDirectory, Lazy<IReadOnlyList<AlignmentSpotProperty>> lazySpots, IReadOnlyList<MSDecResult> msdecResults, Action<string>? notification, IEnumerable<ExportType> exportTypes, AccessPeakMetaModel accessPeakMeta, AccessFileMetaModel accessFileMeta, string? rtAxisNote = null) {
             var exporter = Format.CreateWideExporter();
+            exporter.RetentionTimeAxisNote = rtAxisNote;
             var accessor = accessPeakMeta.GetAccessor();
             MsdialCore.Export.MulticlassFileMetaAccessor fileMetaAccessor = accessFileMeta.GetAccessor();
             foreach (var exportType in exportTypes) {
@@ -95,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Export
                     msdecResults,
                     _analysisFiles,
                     fileMetaAccessor,
-                    accessor,
+                    exportType.DecorateMetadata(accessor),
                     exportType.QuantValueAccessor,
                     exportType.Stats);
             }

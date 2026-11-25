@@ -1,0 +1,168 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C7H12N"
+  ],
+  "motif_id": "nortropane_3_substituted",
+  "negative_examples": [
+   {
+    "pubchem_cid": 174174,
+    "smiles": "CN1[C@@H]2CC[C@H]1CC(C2)OC(=O)C(CO)C3=CC=CC=C3"
+   }
+  ],
+  "non_claims": [
+   "the ester acid is decided by the precursor composition, not by this ion"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 64696,
+    "smiles": "C1CC2CC(CC1N2)OC(=O)[C@H](CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 12442859,
+    "smiles": "C1C[C@H]2CC(C[C@@H]1N2)OC(=O)C(CO)C3=CC=CC=C3"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C7H12N"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "C7H12N+ (110) is the only nortropane ion in both papers; Du 2019 prints the second norhyoscyamine ion as 93.0967 in Table 1 but 93.0712 and 93.0703 in Table 2, and Goncalves Dantas 2023 shows no 93, so this single-ion rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "tropane_tropine_type",
+    "note": "N-methyl tropine esters give 124 instead of 110 (Du 2019)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_tropane_bases",
+   "unit_totals": {
+    "acyl": [
+     1,
+     2
+    ]
+   },
+   "units": {
+    "acetyl": [
+     0,
+     2
+    ],
+    "atropoyl": [
+     0,
+     2
+    ],
+    "benzoyl": [
+     0,
+     2
+    ],
+    "mandeloyl": [
+     0,
+     2
+    ],
+    "methylpyrrolecarbonyl": [
+     0,
+     2
+    ],
+    "phenylacetyl": [
+     0,
+     2
+    ],
+    "syringoyl": [
+     0,
+     2
+    ],
+    "tigloyl": [
+     0,
+     2
+    ],
+    "trimethoxybenzoyl": [
+     0,
+     2
+    ],
+    "trimethoxycinnamoyl": [
+     0,
+     2
+    ],
+    "tropoyl": [
+     0,
+     2
+    ],
+    "veratroyl": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "One or two ester groups, drawn from the acids whose neutral losses identify Erythroxylum and Solanaceae tropane esters",
+    "source": "src:2"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_tropane.nortropane_ester.pos",
+ "source": [
+  {
+   "doi": "10.1002/jssc.201801201",
+   "locator": "Sec. 3.1 (p. 1165); Figure 2D (p. 1165); Table 1 (p. 1166); Table 2 (p. 1169)"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (p. 10); Table 1, peak 16 (pp. 4-6)"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C7H12N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "110.0964 after loss of the C-3 acid; also src:1",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C7H12N",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

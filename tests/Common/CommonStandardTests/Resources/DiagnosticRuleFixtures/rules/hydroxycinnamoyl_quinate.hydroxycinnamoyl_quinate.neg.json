@@ -1,0 +1,1613 @@
+{
+ "cases": [
+  {
+   "description": "h* = core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: quinate:C7H11O6, quinate_h2o:C7H9O5, caffeate:caffeoyl, dimethoxycinnamate:dimethoxycinnamoyl, caffeate_co2:caffeoyl",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"1351b59de1b70b85c728aeb5bc7c48820f0b040fa113c912c6b89e106d4cb426\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":5.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cfc257c51be7cf89960a98a2276bbcca64ea97fa5e8be28d04b2b802136af7f3"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- without the peaks of required term quinate; core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@3",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "drop_quinate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"9fd82c6363e7d007b56880b8c64a599c7a0b5e7a4eb198db10156d5d86b1862a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "12236c0097742b39d87539f92889955bda1988d2536f952276c5ffc136c1af00"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- without the peaks of required term quinate_h2o; core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@2",
+       "caffeate:caffeoyl@1",
+       "dimethoxycinnamate:dimethoxycinnamoyl@3",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "drop_quinate_h2o",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"f379d11e23d7ef825f2840b18247c4de8ac9af0334c667f0e154a691b915b0ab\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,false],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":2,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "31fc2f6124fa95f16149df583f5e8c75bfd712994fe0587e9dc07bdc0a81a716"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- without the peaks of required term caffeate; core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@2",
+       "quinate_h2o:C7H9O5@1",
+       "dimethoxycinnamate:dimethoxycinnamoyl@3",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "drop_caffeate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"f3ce25664ea87c079e7698d651eeebf9dd34ee1c2481072492e316904e842322\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[false,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[false,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":2,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4952b44235eda61666d450a2fb517ab8d5dcbf961980124372cf0481ee7935b1"
+  },
+  {
+   "description": "the positive spectrum of core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]- (h* core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- has no peak of the term) without the peaks of required term coumarate; core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@4",
+       "quinate_h2o:C7H9O5@2",
+       "caffeate:caffeoyl@3",
+       "dimethoxycinnamate:dimethoxycinnamoyl@5",
+       "caffeate_co2:caffeoyl@1",
+       "coumarate_co2:coumaroyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "119.050239",
+      "500.0"
+     ],
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "689.18758",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "689.18758"
+   },
+   "name": "drop_coumarate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"76b6793e04b7f9467396d9e8814bbe0cb3fbf61e5d37c8c99aed7bba2b7d315c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,true,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,true,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":689.187580,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":4,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":2,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":5,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":5},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C8H7O\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":0,\"peak_mz\":119.050239,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":119.050239,\"term_id\":\"coumarate_co2\",\"unit_id\":6}],\"neutral_formula\":\"C36H34O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":6.000000,\"units\":{\"caffeoyl\":1,\"coumaroyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":4,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":689.187580,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3012a6879fadf26af3e9197d4d767af35011decfc5f481382350d60562c48ef4"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]- (h* core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- has no peak of the term) without the peaks of required term ferulate; core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@4",
+       "quinate_h2o:C7H9O5@2",
+       "caffeate:caffeoyl@3",
+       "dimethoxycinnamate:dimethoxycinnamoyl@5",
+       "caffeate_co2:caffeoyl@1",
+       "ferulate_co2_ch3:feruloyl@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "134.037328",
+      "500.0"
+     ],
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "719.198144",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "719.198144"
+   },
+   "name": "drop_ferulate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"10e7314e549e6077f4d51780d10473a0209c76a01d9ccbe66d38e18d0b8e1d43\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,false,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":719.198144,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":4,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":2,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":5,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":5},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H6O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":0,\"peak_mz\":134.037328,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.037328,\"term_id\":\"ferulate_co2_ch3\",\"unit_id\":6}],\"neutral_formula\":\"C37H36O15\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":6.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":3,\"n_hypotheses\":5,\"n_hypotheses_fired\":5,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":719.198144,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c71d90136aee7af177d9b8b751957227c5a1044c55cf022b82a9d36ed0ee5a8e"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1,sinapoyl1|[M-H]- (h* core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- has no peak of the term) without the peaks of required term sinapate; core|caffeoyl1,feruloyl1,sinapoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1,sinapoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@4",
+       "quinate_h2o:C7H9O5@2",
+       "caffeate:caffeoyl@3",
+       "ferulate:feruloyl@5",
+       "caffeate_co2:caffeoyl@1",
+       "ferulate_co2_ch3:feruloyl@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1,sinapoyl1|[M-H]-",
+       "core|coumaroyl1,caffeoyl1,feruloyl1|[M+CH3COO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "134.037328",
+      "500.0"
+     ],
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "735.193059",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "735.193059"
+   },
+   "name": "drop_sinapate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"993415d9ccfb0588fb368656f71cea355609f8658a226fc7e581a39a8bfdc1a3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,true,false,false,true,false,true]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,true,false,false,true,false,true],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,feruloyl1,sinapoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1,sinapoyl1|[M-H]-\",\"hypothesis_mz\":735.193059,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":4,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":2,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":5,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"ferulate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":5},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H6O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":0,\"peak_mz\":134.037328,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":134.037328,\"term_id\":\"ferulate_co2_ch3\",\"unit_id\":6}],\"neutral_formula\":\"C37H36O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":6.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1,\"sinapoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":3,\"n_hypotheses\":5,\"n_hypotheses_fired\":4,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1,sinapoyl1|[M-H]-\",\"core|coumaroyl1,caffeoyl1,feruloyl1|[M+CH3COO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":735.193059,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8babe7fe4b936b86c7aabe5234e3d6b8b2acbc9f3b14d66ca5a20b8836d53e0b"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- without the peaks of required term dimethoxycinnamate; core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "drop_dimethoxycinnamate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"8b366e7603a6cb828a131bcc4cf2e800b295b087cc19202b0896d51cee74d91c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,false,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,false,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "044107aaba9077983859905d3d75dfce2f662c4a73861e533aca775b50b8a48f"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- without the peaks of required term caffeate_co2; core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@2",
+       "quinate_h2o:C7H9O5@0",
+       "caffeate:caffeoyl@1",
+       "dimethoxycinnamate:dimethoxycinnamoyl@3"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "drop_caffeate_co2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"8b40b7e44e9790c244d1e8d8459db848f4038e3a8bd7a67fb643e85a9396393b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,false,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,false,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":2,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":0,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":3,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e80601c7ab01002ce405e3b0b306460725414b9131963b9e10f804590c074055"
+  },
+  {
+   "description": "the positive spectrum of core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]- (h* core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- has no peak of the term) without the peaks of required term coumarate_co2; core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@4",
+       "quinate_h2o:C7H9O5@2",
+       "caffeate:caffeoyl@3",
+       "coumarate:coumaroyl@1",
+       "dimethoxycinnamate:dimethoxycinnamoyl@5",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "163.040068",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "689.18758",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "689.18758"
+   },
+   "name": "drop_coumarate_co2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"b20f8401c1c2e95e20c6bbf2c08ddcb5ecbc2b08769a0dded0952d83c412222a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,true,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":689.187580,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":4,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":2,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C9H7O3\",\"kind\":\"product_ion\",\"member_key\":\"coumaroyl\",\"peak_index\":1,\"peak_mz\":163.040068,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":163.040068,\"term_id\":\"coumarate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":5,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":5}],\"neutral_formula\":\"C36H34O14\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":6.000000,\"units\":{\"caffeoyl\":1,\"coumaroyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":4,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|coumaroyl1,caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":689.187580,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "559d4582cdcf3245abf900c9ab567f79fc209e7b7e0afce9c98c3e9c002fbc4b"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]- (h* core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- has no peak of the term) without the peaks of required term ferulate_co2_ch3; core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]- still fires, because the logic has an alternative to the term",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "ferulate:feruloyl@4",
+       "dimethoxycinnamate:dimethoxycinnamoyl@5",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "193.050633",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "719.198144",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "719.198144"
+   },
+   "name": "drop_ferulate_co2_ch3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"57c35cb6d422498894706207bb1f18de1ece97a3fe9441f2c7a31dc2ce9af150\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,true,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,true,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":719.198144,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C10H9O4\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":4,\"peak_mz\":193.050633,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":193.050633,\"term_id\":\"ferulate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":5,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":4},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":5}],\"neutral_formula\":\"C37H36O15\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":6.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":3,\"n_hypotheses\":5,\"n_hypotheses_fired\":5,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,feruloyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":719.198144,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3e0bf3ab1167f2ba826ff92473263a1cb1b6db4eaced70771d2bc5217bf72261"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- without the peaks of every support term under any node 0 (pre-order): quinate, quinate_h2o",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "drop_any0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"27fcea79ee7d5edf8ed13249bbafecaf74416284b4e685bceabe331cc1d1ac2e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false,false,false,false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "565ffc252be703773c9fcee14da3e8685b93080c334a8d1b66999df7e87d2ee9"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- without the peaks of every support term under any node 1 (pre-order): caffeate, coumarate, ferulate, sinapate, dimethoxycinnamate, caffeate_co2, coumarate_co2, ferulate_co2_ch3",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "drop_any1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"dabafdcdcb8ce7c7ebdb3d2b3dd9b1a831aa33dc1fef873df71775727f319808\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false,false,false,false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "134629f85038762784332e79550c308a9cca94f9837bc9945f1fc72de4aaaa71"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- plus upgrade acyl_series:caffeoyl1 at intensity 500",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": [
+       "acyl_series:caffeoyl1@5"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "353.087806",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "upgrade_acyl_series",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"8ed977185ad8804b9eeb386aff175b861e100a19a81907b61d4095cbc8672734\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":5.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C16H17O9\",\"kind\":\"ion_series\",\"member_key\":\"caffeoyl1\",\"peak_index\":5,\"peak_mz\":353.087806,\"rel_intensity\":1.000000,\"role\":\"upgrade\",\"target_mz\":353.087806,\"term_id\":\"acyl_series\",\"unit_id\":null}],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ddf4b7ce49ca3b230d68d09c47190f6cb623a4a34374b27125495c7dc680764c"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with quinate:C7H11O6 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.061102",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"345bda668816006f9d7947ce0b32c04e16b92ef26d1c80abc37d55b913ade465\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":26.118,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.061102,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":5.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d7a7058068b2ad53175c7c9084df9b6b8c913ca05ad1e2f4becb5663b79cb4e2"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with quinate:C7H11O6 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.061122",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"f4843d0243c208e597447ca106ed8c9b19827de18c6e46e554d674da5c22402b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c7cfc7224fb0195c3b39ddaacdb0ff2c224822684b6046e4cc3950470a48e81f"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with quinate:C7H11O6 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.051122",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"ba14b5ef651f7532013da6c314acfd44bef3f4c3519c3e68fbcebadfea51d546\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-26.118,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.051122,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":5.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "03b43f8f40a806aef0e509da579d15800a83bb4edfd0aebd1d7551c70a78f393"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with quinate:C7H11O6 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.051102",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"e07a14521a8d8d87041a563a2d29dc369132fba7e5bbc5076076adcfd8cf334c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f5845a9df1ce09e4c274cb4d6b8794bf15f0a8454d33a80cfc6387bb42e3b0d7"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.16079",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.16079"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"e8c801e2f16b845c10ffffb58a2fa3e10f027a4a478ddcf91b2b1f762821ae22\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.009990,\"scaffold_id\":null,\"score\":5.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.160790,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f6d3562582af160a52b522ffd6506fbb47a65e1f3833928a010dce55bd53c92c"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.16081",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.16081"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"a1874b10bf3fbcaa37fc6a613a66f82c3c86832dce3a07c75c38ecd312902476\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.160810,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3d92b8751183a816a3ba7329e1736c4648b12efff5f198edb63c08d392c4db93"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@3",
+       "quinate_h2o:C7H9O5@1",
+       "caffeate:caffeoyl@2",
+       "dimethoxycinnamate:dimethoxycinnamoyl@4",
+       "caffeate_co2:caffeoyl@0"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.14081",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.14081"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"371bad937fadfb98c1218dbfd871fb2dc190d9761369946598bacfcb2d8e2ffa\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,false,false,false,true,true,false,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":3,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":1,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":2,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":4,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":-0.009990,\"scaffold_id\":null,\"score\":5.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.140810,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5053c04a8ed3554adfb9cda14c75d3e4d89881ca953c326956ccef07c8dd4242"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.14079",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.14079"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"617b74e6184d5e983ff0cd6f3b0775aae8b40ecdf2c55d3c490c6fc47f4d1b60\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.140790,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7b9eb102fe0cc170c4538f7349ad4e9308ce40e77e95ccb6aa9cf54c433a8fa2"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"80b826b6fa49e7b4f2b34124282cb29812cd65c9e90f8d667eda4445bc6249e1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false,false,false,false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7d9894aaa9deee52ce9c6e896396c4ea485e6fa2794f9a3dff78a27abfec2e57"
+  },
+  {
+   "description": "the union of the positive spectra of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- and core|coumaroyl1,sinapoyl1|[M-H]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "quinate:C7H11O6@5",
+       "quinate_h2o:C7H9O5@3",
+       "caffeate:caffeoyl@4",
+       "dimethoxycinnamate:dimethoxycinnamoyl@6",
+       "caffeate_co2:caffeoyl@1"
+      ],
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-",
+       "core|coumaroyl1,sinapoyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "119.050239",
+      "500.0"
+     ],
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "163.040068",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "223.061197",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_quinate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"4a9b6fd7e6213484ba5814b7cefd5605c74709b1baf48f757a33d1f9c6465bd4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":9,\"narrowest_motifs\":[\"hydroxycinnamoyl_quinate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[true,true],\"/logic/all/1\":[true,true,false,true,true,true,true,false]},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,true],\"pointer\":\"/logic/all/0\"},{\"children\":[true,false,false,false,true,true,false,false],\"pointer\":\"/logic/all/1\"}],\"composition_id\":\"core|caffeoyl1,dimethoxycinnamoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"hypothesis_mz\":543.150800,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C7H11O6\",\"kind\":\"product_ion\",\"member_key\":\"C7H11O6\",\"peak_index\":5,\"peak_mz\":191.056112,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":191.056112,\"term_id\":\"quinate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C7H9O5\",\"kind\":\"product_ion\",\"member_key\":\"C7H9O5\",\"peak_index\":3,\"peak_mz\":173.045547,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":173.045547,\"term_id\":\"quinate_h2o\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C9H7O4\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":4,\"peak_mz\":179.034983,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":179.034983,\"term_id\":\"caffeate\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C11H11O4\",\"kind\":\"product_ion\",\"member_key\":\"dimethoxycinnamoyl\",\"peak_index\":6,\"peak_mz\":207.066283,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":207.066283,\"term_id\":\"dimethoxycinnamate\",\"unit_id\":3},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"caffeate_co2\",\"unit_id\":4}],\"neutral_formula\":\"C27H28O12\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":5.000000,\"units\":{\"caffeoyl\":1,\"dimethoxycinnamoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":3,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|caffeoyl1,dimethoxycinnamoyl1|[M-H]-\",\"core|coumaroyl1,sinapoyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0580c798ee136c171a78cf97a05851cfee20afaedecb6b250380ef7847ebddb7"
+  },
+  {
+   "description": "the positive spectrum of core|caffeoyl1,dimethoxycinnamoyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 4,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "173.045547",
+      "500.0"
+     ],
+     [
+      "179.034983",
+      "500.0"
+     ],
+     [
+      "191.056112",
+      "500.0"
+     ],
+     [
+      "207.066283",
+      "500.0"
+     ],
+     [
+      "543.1508",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "543.1508"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"input_sha256\":\"1351b59de1b70b85c728aeb5bc7c48820f0b040fa113c912c6b89e106d4cb426\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/0\":[false,false],\"/logic/all/1\":[false,false,false,false,false,false,false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_quinate\",\"n_distinct_formulas\":2,\"n_hypotheses\":4,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamoyl_quinate.hydroxycinnamoyl_quinate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":543.150800,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"bf19c53128ffacdf2ca6af7415f77e894990eeff69cd85b5e1064344c13454f8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5e9288290ee08da8abca64486f46d80fe0fb1a3e979788ddf0a920036559e35e"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

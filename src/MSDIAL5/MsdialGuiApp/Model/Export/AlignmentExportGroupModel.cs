@@ -53,12 +53,14 @@ namespace CompMs.App.Msdial.Model.Export
             var outNameTemplate = $"{{0}}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
             var msdecResults = alignmentFile.LoadMSDecResults();
             var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, default));
+            ExportMethod.RetentionTimeAxisNote = AlignmentRtAxisNote.For(alignmentFile);
             ExportMethod.Export(outNameTemplate, exportDirectory, lazyPeakSpot, msdecResults, notification, Types.Where(type => type.ShouldExport), AccessPeakMetaModel, AccessFileMeta);
         }
 
         public void Export(AlignmentFileBeanModel alignmentFile, string exportDirectory, string exportFileName, Action<string>? notification) {
             var msdecResults = alignmentFile.LoadMSDecResults();
             var lazyPeakSpot = new Lazy<IReadOnlyList<AlignmentSpotProperty>>(() => _peakSpotSupplyer.Supply(alignmentFile, default));
+            ExportMethod.RetentionTimeAxisNote = AlignmentRtAxisNote.For(alignmentFile);
             ExportMethod.Export(exportFileName, exportDirectory, lazyPeakSpot, msdecResults, notification, new[] { Types.First(type => type.ShouldExport) }, AccessPeakMetaModel, AccessFileMeta);
         }
     }

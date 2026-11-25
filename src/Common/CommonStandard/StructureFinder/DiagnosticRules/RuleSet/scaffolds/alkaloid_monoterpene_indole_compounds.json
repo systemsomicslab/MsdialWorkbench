@@ -1,0 +1,709 @@
+{
+ "entries": [
+  {
+   "class": "yohimbine",
+   "formula": "C21H26N2O3",
+   "ions": {},
+   "name": "yohimbine",
+   "origin": "as_published",
+   "scaffold_id": "yohimbine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.1; Scheme 1; Table 1"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    },
+    {
+     "doi": "10.1021/acs.analchem.9b03860",
+     "locator": "Results; Figures 1f, 2a"
+    }
+   ]
+  },
+  {
+   "class": "heteroyohimbine",
+   "formula": "C21H24N2O3",
+   "ions": {},
+   "name": "ajmalicine",
+   "origin": "as_published",
+   "scaffold_id": "ajmalicine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.2; Scheme 2"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    },
+    {
+     "doi": "10.1021/acs.analchem.9b03860",
+     "locator": "Results; Figures 1f, 2a"
+    }
+   ]
+  },
+  {
+   "class": "sarpagine_ajmaline",
+   "formula": "C20H26N2O2",
+   "ions": {},
+   "name": "ajmaline",
+   "origin": "as_published",
+   "scaffold_id": "ajmaline",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.3; Scheme 3"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "reserpine",
+   "formula": "C33H40N2O9",
+   "ions": {},
+   "name": "reserpine (isoreserpine has the same formula)",
+   "origin": "as_published",
+   "scaffold_id": "reserpine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.1; Table 1"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "reserpine",
+   "formula": "C32H38N2O8",
+   "ions": {},
+   "name": "deserpidine",
+   "origin": "as_published",
+   "scaffold_id": "deserpidine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Table 1 (compound 43)"
+    }
+   ]
+  },
+  {
+   "class": "reserpine",
+   "formula": "C32H38N2O9",
+   "ions": {},
+   "name": "pseudo-reserpine",
+   "origin": "as_published",
+   "scaffold_id": "pseudoreserpine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Table 1 (compound 38)"
+    }
+   ]
+  },
+  {
+   "class": "reserpine",
+   "formula": "C31H36N2O8",
+   "ions": {},
+   "name": "raunescine",
+   "origin": "as_published",
+   "scaffold_id": "raunescine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Table 1 (compound 40)"
+    }
+   ]
+  },
+  {
+   "class": "iboga",
+   "formula": "C21H24N2O2",
+   "ions": {},
+   "name": "catharanthine",
+   "origin": "as_published",
+   "scaffold_id": "catharanthine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1; Scheme 3; Table 1"
+    },
+    {
+     "doi": "10.1021/acs.analchem.9b03860",
+     "locator": "Results; Figures 1f, 2a"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C21H24N2O2",
+   "ions": {},
+   "name": "vindolinine",
+   "origin": "as_published",
+   "scaffold_id": "vindolinine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "corynanthe",
+   "formula": "C19H24N2O",
+   "ions": {},
+   "name": "antirhine",
+   "origin": "as_published",
+   "scaffold_id": "antirhine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1021/acs.analchem.9b03860",
+     "locator": "Results; Figures 1f, 2b"
+    }
+   ]
+  },
+  {
+   "class": "vobasine",
+   "formula": "C20H22N2O3",
+   "ions": {},
+   "name": "perivine",
+   "origin": "as_published",
+   "scaffold_id": "perivine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Table 1"
+    },
+    {
+     "doi": "10.1021/acs.analchem.9b03860",
+     "locator": "Results; Figures 1f, 2a"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C25H32N2O6",
+   "ions": {},
+   "name": "vindoline",
+   "origin": "as_published",
+   "scaffold_id": "vindoline",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1-3.2; Scheme 5; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C23H30N2O5",
+   "ions": {},
+   "name": "deacetylvindoline",
+   "origin": "as_published",
+   "scaffold_id": "deacetylvindoline",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C24H30N2O5",
+   "ions": {},
+   "name": "vindorosine",
+   "origin": "as_published",
+   "scaffold_id": "vindorosine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "bisindole",
+   "formula": "C46H58N4O9",
+   "ions": {},
+   "name": "vinblastine",
+   "origin": "as_published",
+   "scaffold_id": "vinblastine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1; Figure 1A-C; Scheme 4; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "bisindole",
+   "formula": "C46H56N4O10",
+   "ions": {},
+   "name": "vincristine",
+   "origin": "as_published",
+   "scaffold_id": "vincristine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1; Figure 1A-C; Scheme 4; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "bisindole",
+   "formula": "C43H55N5O7",
+   "ions": {},
+   "name": "vindesine",
+   "origin": "as_published",
+   "scaffold_id": "vindesine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1; Scheme 2; Figure 1A; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "bisindole",
+   "formula": "C46H54N4O10",
+   "ions": {},
+   "name": "catharine",
+   "origin": "as_published",
+   "scaffold_id": "catharine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Scheme 6; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "eburnane",
+   "formula": "C22H26N2O2",
+   "ions": {},
+   "name": "vinpocetine (semi-synthetic)",
+   "origin": "as_published",
+   "scaffold_id": "vinpocetine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.1; Scheme 1; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C19H26N2",
+   "ions": {},
+   "name": "aspidospermidine",
+   "origin": "as_published",
+   "scaffold_id": "aspidospermidine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C22H30N2O",
+   "ions": {},
+   "name": "demethoxypalosine (PubChem CID 579957, 17-demethoxypalosine)",
+   "origin": "as_published",
+   "scaffold_id": "demethoxypalosine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1"
+    },
+    {
+     "doi": "10.21577/0100-4042.20250138",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C22H30N2O3",
+   "ions": {},
+   "name": "aspidocarpine as PubChem names it (N-acetyl; the sources call this structure aspidolimine, compound 4)",
+   "origin": "as_published",
+   "scaffold_id": "aspidocarpine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1 (compound 4)"
+    },
+    {
+     "doi": "10.21577/0100-4042.20250138",
+     "locator": "Table 1 (compound 4)"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C23H32N2O3",
+   "ions": {},
+   "name": "aspidolimine as PubChem names it (N-propionyl; the sources call this structure aspidocarpine, compound 3)",
+   "origin": "as_published",
+   "scaffold_id": "aspidolimine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1 (compound 3)"
+    },
+    {
+     "doi": "10.21577/0100-4042.20250138",
+     "locator": "Table 1 (compound 3)"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C23H30N2O4",
+   "ions": {},
+   "name": "fendlerine",
+   "origin": "as_published",
+   "scaffold_id": "fendlerine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1 (compound 5); Scheme 8"
+    }
+   ]
+  },
+  {
+   "class": "aspidosperma",
+   "formula": "C22H28N2O4",
+   "ions": {},
+   "name": "aspidolimidine",
+   "origin": "as_published",
+   "scaffold_id": "aspidolimidine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4389",
+     "locator": "Figure 1; Table 1 (compound 6); Scheme 8"
+    }
+   ]
+  },
+  {
+   "class": "akuammiline",
+   "formula": "C21H26N2O4",
+   "ions": {},
+   "name": "echitaminic acid (Nb-demethylechitamine is an isomer)",
+   "origin": "as_published",
+   "scaffold_id": "echitaminic_acid",
+   "source": [
+    {
+     "doi": "10.1007/s10600-015-1215-x",
+     "locator": "Tables 1-2"
+    }
+   ]
+  },
+  {
+   "class": "oxindole",
+   "formula": "C22H28N2O4",
+   "ions": {},
+   "name": "rhynchophylline",
+   "origin": "as_published",
+   "scaffold_id": "rhynchophylline",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Results; Table 2"
+    }
+   ]
+  },
+  {
+   "class": "oxindole",
+   "formula": "C22H26N2O4",
+   "ions": {},
+   "name": "corynoxeine",
+   "origin": "as_published",
+   "scaffold_id": "corynoxeine",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Results; Table 2"
+    }
+   ]
+  },
+  {
+   "class": "corynanthe",
+   "formula": "C22H28N2O3",
+   "ions": {},
+   "name": "hirsutine",
+   "origin": "as_published",
+   "scaffold_id": "hirsutine",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "corynanthe",
+   "formula": "C22H28N2O3",
+   "ions": {},
+   "name": "dihydrocorynantheine",
+   "origin": "as_published",
+   "scaffold_id": "dihydrocorynantheine",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "corynanthe",
+   "formula": "C22H26N2O3",
+   "ions": {},
+   "name": "hirsuteine",
+   "origin": "as_published",
+   "scaffold_id": "hirsuteine",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "corynanthe",
+   "formula": "C22H26N2O3",
+   "ions": {},
+   "name": "geissoschizine methyl ether",
+   "origin": "as_published",
+   "scaffold_id": "geissoschizine_methyl_ether",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "corynanthe",
+   "formula": "C23H30N2O4",
+   "ions": {},
+   "name": "mitragynine",
+   "origin": "as_published",
+   "scaffold_id": "mitragynine",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C26H30N2O8",
+   "ions": {},
+   "name": "vincoside lactam",
+   "origin": "as_published",
+   "scaffold_id": "vincoside_lactam",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C26H30N2O8",
+   "ions": {},
+   "name": "strictosamide",
+   "origin": "as_published",
+   "scaffold_id": "strictosamide",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1121",
+     "locator": "Results; Table 1 (compound 4); Figure 5"
+    },
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C27H34N2O9",
+   "ions": {},
+   "name": "strictosidine",
+   "origin": "as_published",
+   "scaffold_id": "strictosidine",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    },
+    {
+     "doi": "10.1002/rcm.8683",
+     "locator": "Results 3.1-3.2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C27H32N2O10",
+   "ions": {},
+   "name": "cadambine",
+   "origin": "as_published",
+   "scaffold_id": "cadambine",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C27H34N2O10",
+   "ions": {},
+   "name": "3alpha-dihydrocadambine",
+   "origin": "as_published",
+   "scaffold_id": "dihydrocadambine_3alpha",
+   "source": [
+    {
+     "doi": "10.1248/cpb.c14-00481",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C26H32N2O9",
+   "ions": {},
+   "name": "strictosidinic acid",
+   "origin": "as_published",
+   "scaffold_id": "strictosidinic_acid",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8683",
+     "locator": "Results 3.2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C28H30N2O11",
+   "ions": {},
+   "name": "desoxycordifoline",
+   "origin": "as_published",
+   "scaffold_id": "desoxycordifoline",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8683",
+     "locator": "Results 3.1-3.2"
+    }
+   ]
+  },
+  {
+   "class": "glucoalkaloid",
+   "formula": "C27H30N2O9",
+   "ions": {},
+   "name": "lyaloside",
+   "origin": "as_published",
+   "scaffold_id": "lyaloside",
+   "source": [
+    {
+     "doi": "10.1002/rcm.8683",
+     "locator": "Results 3.2"
+    }
+   ]
+  },
+  {
+   "class": "indolopyridine",
+   "formula": "C20H15N3O",
+   "ions": {},
+   "name": "angustine",
+   "origin": "as_published",
+   "scaffold_id": "angustine",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1121",
+     "locator": "Results; Table 1; Figure 2"
+    }
+   ]
+  },
+  {
+   "class": "indolopyridine",
+   "formula": "C20H17N3O2",
+   "ions": {},
+   "name": "angustoline",
+   "origin": "as_published",
+   "scaffold_id": "angustoline",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1121",
+     "locator": "Results; Table 1; Figure 2"
+    }
+   ]
+  },
+  {
+   "class": "indolopyridine",
+   "formula": "C18H13N3O",
+   "ions": {},
+   "name": "nauclefine (tentative in the source)",
+   "origin": "as_published",
+   "scaffold_id": "nauclefine",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1121",
+     "locator": "Results; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "quinolone_glucoalkaloid",
+   "formula": "C26H28N2O9",
+   "ions": {},
+   "name": "pumiloside (quinolin-4-one, tentative in the source)",
+   "origin": "as_published",
+   "scaffold_id": "pumiloside",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1121",
+     "locator": "Results; Table 1 (compound 2); Figure 8"
+    }
+   ]
+  },
+  {
+   "class": "anhydronium",
+   "formula": "C21H20N2O3",
+   "ions": {},
+   "name": "serpentine (neutral anhydronium base C21H20N2O3; both sources tabulate it at m/z 349.1547, Kumar 2018 as [M+H]+)",
+   "origin": "as_published",
+   "scaffold_id": "serpentine",
+   "source": [
+    {
+     "doi": "10.1016/j.jpha.2016.04.008",
+     "locator": "Sec. 3.1, 3.2.4; Table 1 (compound 32)"
+    },
+    {
+     "doi": "10.1002/rcm.8037",
+     "locator": "Sec. 3.2; Table 1 (compound 46)"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_monoterpene_indole_compounds"
+}

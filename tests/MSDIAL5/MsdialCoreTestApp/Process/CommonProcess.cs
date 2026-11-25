@@ -43,9 +43,21 @@ namespace CompMs.App.MsdialConsole.Process
     public static class CommonProcess {
 
         public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile) {
+            return SetProjectProperty(param, input, out analysisFiles, out alignmentFile, out _);
+        }
+
+        /// <summary>
+        /// As the overload without <paramref name="orderProblems"/>, which lists the analysis CSV
+        /// rows whose analytical_order or batch_order could not be read and were replaced
+        /// (AnalysisFilesParser.ReadCsvContents); each was also said on the console.
+        /// </summary>
+        public static bool SetProjectProperty(ParameterBase param, string input, out List<AnalysisFileBean> analysisFiles, out AlignmentFileBean alignmentFile, out IReadOnlyList<string> orderProblems) {
 
             Console.WriteLine("Loading analysis files..");
-            analysisFiles = AnalysisFilesParser.ReadInput(input);
+            var problems = new List<string>();
+            orderProblems = problems;
+            // Null when the person at the console declined the mixed formats: reported as no files.
+            analysisFiles = AnalysisFilesParser.ReadInput(input, problems) ?? new List<AnalysisFileBean>();
             if (analysisFiles.IsEmptyOrNull()) {
                 alignmentFile = new AlignmentFileBean();
                 Console.WriteLine(CommonProcess.NoFileError());
@@ -65,7 +77,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             var dt = DateTime.Now;
             var projectFileName = $"Project-{dt:yyMMddhhmm}.mddata";
-            var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(input);
+            var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(Path.GetFullPath(input))!;
             param.ProjectFolderPath = inputfolder;
             param.ProjectFileName = projectFileName;
 

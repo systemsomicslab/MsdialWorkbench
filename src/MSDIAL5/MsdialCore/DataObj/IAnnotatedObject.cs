@@ -48,8 +48,19 @@ namespace CompMs.MsdialCore.DataObj
         /// agrees with the rest of the row they are building.
         /// </remarks>
         public static string CanonicalName(this IAnnotatedObject? self, string name) {
-            return CompMs.Common.Utility.AnnotationName.Canonical(
-                name, self?.MatchResults?.Representative?.IsLipidChainsMatch ?? false);
+            return CompMs.Common.Utility.AnnotationName.Canonical(name, self.AreLipidChainsResolved());
+        }
+
+        /// <summary>
+        /// The chain verdict <see cref="CanonicalName"/> reduces a dual lipid name by: whether the representative match
+        /// resolved the lipid chains. False when there is no match.
+        /// </summary>
+        /// <remarks>
+        /// For a writer that canonicalises the name itself, such as the MassBank record handler in CommonStandard,
+        /// which cannot see this type, so that it reads the verdict exactly as the other exports do.
+        /// </remarks>
+        public static bool AreLipidChainsResolved(this IAnnotatedObject? self) {
+            return self?.MatchResults?.Representative?.IsLipidChainsMatch ?? false;
         }
     }
 }

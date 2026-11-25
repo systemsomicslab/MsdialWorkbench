@@ -3,9 +3,9 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     {
         private readonly RawDecSpectrumsModel _model;
 
-        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused) {
+        public RawDecSpectrumsViewModel(RawDecSpectrumsModel model, Action focusAction, IObservable<bool> isFocused, IMessageBroker? broker = null) {
             _model = model;
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -30,6 +30,17 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             RawRefSpectrumViewModels = new MsSpectrumViewModel(model.RawRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
             DecRefSpectrumViewModels = new MsSpectrumViewModel(model.DecRefSpectrumModels, focusAction: focusAction, isFocused: isFocused).AddTo(Disposables);
+
+            if (model.CanShowMs2SpectrumList) {
+                var messageBroker = broker ?? MessageBroker.Default;
+                // Each panel opens a list that follows its own vertical axis type.
+                RawRefSpectrumViewModels.ShowMs2SpectrumListCommand = new ReactiveCommand()
+                    .WithSubscribe(() => messageBroker.Publish(new Ms2SpectrumListViewModel(model.CreateMs2SpectrumListModel(model.RawRefSpectrumModels))))
+                    .AddTo(Disposables);
+                DecRefSpectrumViewModels.ShowMs2SpectrumListCommand = new ReactiveCommand()
+                    .WithSubscribe(() => messageBroker.Publish(new Ms2SpectrumListViewModel(model.CreateMs2SpectrumListModel(model.DecRefSpectrumModels))))
+                    .AddTo(Disposables);
+            }
         }
 
         public MsSpectrumViewModel RawRefSpectrumViewModels { get; }
@@ -38,8 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
         public ReactivePropertySlim<MsSelectionItem?> SelectedMs2Id { get; }
-        public ReactivePropertySlim<AxisItemModel<double>> LowerVerticalAxisItem => _model.DecRefSpectrumModels.LowerVerticalAxisItem;
-        public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection => _model.DecRefSpectrumModels.LowerVerticalAxisItemCollection;
+        public AxisItemSelector<double> LowerVerticalAxisSelector => _model.DecRefSpectrumModels.LowerVerticalAxisSelector;
 
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }

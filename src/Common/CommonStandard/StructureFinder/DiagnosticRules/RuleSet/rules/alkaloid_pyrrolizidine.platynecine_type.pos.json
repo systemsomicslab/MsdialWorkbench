@@ -1,0 +1,146 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "C8H14NO_140"
+  ],
+  "motif_id": "pyrrolizidine_platynecine_type",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5281752,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OC/C/2=C/CN(CC[C@H](C2=O)OC1=O)C)(C)O)C"
+   },
+   {
+    "pubchem_cid": 108053,
+    "smiles": "C[C@H]([C@@](C(C)C)(C(=O)OCC1=CCN2[C@H]1CCC2)O)O"
+   },
+   {
+    "pubchem_cid": 5281743,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CCN3[C@H]2[C@@H](CC3)OC1=O)(CO)O)C"
+   }
+  ],
+  "non_claims": [
+   "free base versus N-oxide is not resolved",
+   "the necic acid and the ester pattern are not resolved",
+   "a 1,2-unsaturated necine without a C-7 oxygen (supinidine type) would give the same two ion formulas (inference) and is not excluded by the ions"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5281742,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OC[C@H]2CCN3[C@H]2[C@@H](CC3)OC1=O)(C)O)C"
+   },
+   {
+    "pubchem_cid": 163184402,
+    "smiles": "C/C=C\\1/C[C@H]([C@](C(=O)OC[C@H]2CC[N+]3([C@H]2[C@@H](CC3)OC1=O)[O-])(C)O)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "C8H12N_122"
+   },
+   {
+    "term": "C8H14NO_140"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): C8H12N+ (122) is the H2O daughter of C8H14NO+ (140), so the two claim ions are one parent-daughter channel and one independent claim ion remains.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "pyrrolizidine_otonecine_type",
+    "note": "otonecine-type PAs also give 122 (These 2013, Avula 2015)"
+   },
+   {
+    "motif_id": "pyrrolizidine_retronecine_type",
+    "note": "Jahouh 2015 Table 2 prints C8H12N+ 122.0964 among the product ions of protonated retrorsine, so 122 alone does not separate the necine types"
+   },
+   {
+    "motif_id": "pyrrolizidine_supinidine_type",
+    "note": "inference, not from a source: protonated supinidine is C8H14NO+ and its water loss C8H12N+, the claim ion formulas; supinidine esters such as supinine (C15H25NO4) are not in the composition list"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_pyrrolizidine_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_pyrrolizidine.platynecine_type.pos",
+ "source": [
+  {
+   "doi": "10.1002/jms.2969",
+   "locator": "Introduction (p. 332, ref. 20); platynecine section (p. 335); Fig. 2 E1-E2 (p. 333)"
+  },
+  {
+   "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+   "locator": "Results (pp. 1447, 1453); Table 1 (p. 1448)"
+  },
+  {
+   "doi": "10.1007/s00216-013-7365-4",
+   "locator": "Results (p. 9379)"
+  },
+  {
+   "doi": "10.1155/2021/1957863",
+   "locator": "Abstract; Sec. 3.2"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "C8H12N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "the platynecine sources give nominal m/z; C8H12N+ is printed for this ion only from retrorsine (Jahouh 2015 Table 2)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H12N_122",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C8H14NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "formula inferred from nominal m/z as the saturated analogue of C8H12NO+ 138 (2 Da higher, Ruan 2012 p. 335); no cited source prints it",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H14NO_140",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

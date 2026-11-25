@@ -297,6 +297,7 @@ namespace Rfx.Riken.OsakaUniv
 
             structureScoreCutOff = 0;
             scoreCutOffForSpectralMatch = 80;
+            DiagnosticRules = new MsfinderDiagnosticRuleSettings();
         }
 
         #region Properties
@@ -951,6 +952,10 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        /// <summary>
+        /// Time-out of the formula prediction of one spectrum, in minutes; zero or less means none. It bounds the
+        /// candidate search of the spectrum as a whole; a search that reaches it returns the candidates scored by then.
+        /// </summary>
         public double FormulaPredictionTimeOut {
             get {
                 return formulaPredictionTimeOut;
@@ -995,6 +1000,9 @@ namespace Rfx.Riken.OsakaUniv
                 ccsToleranceForStructureElucidation = value;
             }
         }
+
+        /// <summary>Settings of the experimental diagnostic-ion rules; all at their defaults means off.</summary>
+        public MsfinderDiagnosticRuleSettings DiagnosticRules { get; set; }
 
         public LipidQueryBean LipidQueryBean {
             get {

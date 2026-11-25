@@ -7,8 +7,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive.Linq;
 
@@ -23,15 +21,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
             UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m, broker)).AddTo(Disposables);
+            UpperSpectrumViewModel = UpperSpectraViewModel[model.UpperSpectraModel.IndexOf(model.UpperSpectrumModel)];
             LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel, broker).AddTo(Disposables);
 
             HorizontalAxis = model.HorizontalAxis.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            UpperVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.UpperSpectrumModel.VerticalAxisItemSelector.AxisItems);
-            LowerVerticalAxisItemCollection = new ReadOnlyObservableCollection<AxisItemModel<double>>(model.LowerVerticalAxisItemCollection);
 
             GraphTitle = model.ObserveProperty(m => m.GraphTitle).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
             HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
-            VerticalTitle = model.ObserveProperty(m => m.VerticalTitle).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
 
             SaveMatchedSpectrumCommand = model.CanSaveMatchedSpectrum.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveMatchedSpectrum,  filter: "tab separated values(*.txt)|*.txt"))
@@ -59,23 +55,25 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         }
 
         public ReadOnlyReactiveCollection<SingleSpectrumViewModel> UpperSpectraViewModel { get; }
+        public SingleSpectrumViewModel UpperSpectrumViewModel { get; }
         public SingleSpectrumViewModel LowerSpectrumViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<IAxisManager<double>?> HorizontalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel<double>?> UpperVerticalAxisItem => _model.UpperVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
-        public ReactivePropertySlim<AxisItemModel<double>?> LowerVerticalAxisItem => _model.LowerVerticalAxisItem;
-        public ReadOnlyObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
+        public AxisItemSelector<double> UpperVerticalAxisSelector => _model.UpperVerticalAxisSelector;
+        public AxisItemSelector<double> LowerVerticalAxisSelector => _model.LowerVerticalAxisSelector;
 
         public ReadOnlyReactivePropertySlim<string?> GraphTitle { get; }
 
         public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        [Obsolete("Use VerticalTitles instead.")]
-        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
         public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles => _model.VerticalTitles;
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
+
+        /// <summary>Opens a window that lists every MS2 spectrum of the selected peak; null where there is no such list.</summary>
+        public System.Windows.Input.ICommand? ShowMs2SpectrumListCommand { get; set; }
+
+        public bool CanShowMs2SpectrumList => ShowMs2SpectrumListCommand is not null;
 
         public ReactiveCommand SwitchCompareSpectrumCommand { get; }
 

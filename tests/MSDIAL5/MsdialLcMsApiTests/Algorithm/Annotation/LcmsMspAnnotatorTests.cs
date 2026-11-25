@@ -583,6 +583,131 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 actuals);
         }
 
+        /// <summary>
+        /// An annotator built without saying anything about suggestions suggests, as every annotator did before.
+        /// </summary>
+        [TestMethod()]
+        public void AnAnnotatorSuggestsByDefault() {
+            var parameter = InSilicoParameter();
+            var annotator = new LcmsMspAnnotator(InSilicoDatabase(), parameter, Common.Enum.TargetOmics.Metabolomics, "glacier", 0);
+
+            Assert.IsTrue(annotator.AllowsSuggestions);
+            var accepted = annotator.CalculateScore(BuildQuery(Measured(), parameter, annotator), Agreeing());
+            Assert.IsTrue(accepted.IsReferenceMatched);
+            Assert.IsFalse(accepted.IsAnnotationSuggested);
+            var fellShort = annotator.CalculateScore(BuildQuery(Measured(), parameter, annotator), Disagreeing());
+            Assert.IsFalse(fellShort.IsReferenceMatched);
+            Assert.IsTrue(fellShort.IsAnnotationSuggested, "a compared spectrum that fell short stands as a suggestion");
+            var noMs2 = annotator.CalculateScore(BuildQuery(WithoutMs2(), parameter, annotator), Agreeing());
+            Assert.IsTrue(noMs2.IsAnnotationSuggested, "a feature without a product-ion spectrum gets a precursor-only suggestion");
+        }
+
+        /// <summary>
+        /// With suggestions off, a reference match is untouched and nothing else stands.
+        /// </summary>
+        /// <remarks>
+        /// The in-silico tier of the reanalysis campaign: a generated library holds hundreds of records in every mass window,
+        /// so a suggestion from it would name nearly every feature after one of them.
+        /// </remarks>
+        [TestMethod()]
+        public void WithSuggestionsOffOnlyTheReferenceMatchStands() {
+            var parameter = InSilicoParameter();
+            var annotator = new LcmsMspAnnotator(InSilicoDatabase(), parameter, Common.Enum.TargetOmics.Metabolomics, "glacier", 0, allowsSuggestions: false);
+
+            var accepted = annotator.CalculateScore(BuildQuery(Measured(), parameter, annotator), Agreeing());
+            Assert.IsTrue(accepted.IsReferenceMatched, "the switch does not touch a reference match");
+            Assert.AreEqual(AnnotationEvidenceSource.BySpectrumPredictionTool, accepted.EvidenceSource);
+            var fellShort = annotator.CalculateScore(BuildQuery(Measured(), parameter, annotator), Disagreeing());
+            Assert.IsFalse(fellShort.IsReferenceMatched);
+            Assert.IsFalse(fellShort.IsAnnotationSuggested);
+            var noMs2 = annotator.CalculateScore(BuildQuery(WithoutMs2(), parameter, annotator), Agreeing());
+            Assert.IsFalse(noMs2.IsReferenceMatched);
+            Assert.IsFalse(noMs2.IsAnnotationSuggested);
+
+            var kept = annotator.FilterByThreshold(annotator.FindCandidates(BuildQuery(Measured(), parameter, annotator)));
+            CollectionAssert.AreEqual(new[] { "agreeing" }, kept.Select(result => result.Name).ToArray(),
+                "the candidate that fell short is not stored");
+            Assert.AreEqual(0, annotator.FilterByThreshold(annotator.FindCandidates(BuildQuery(WithoutMs2(), parameter, annotator))).Count,
+                "nor is a precursor-only one");
+        }
+
+        // The thresholds the author set for the in-silico tier on 2026-10-25.
+        private static MsRefSearchParameterBase InSilicoParameter() {
+            return new MsRefSearchParameterBase
+            {
+                Ms1Tolerance = 0.01f,
+                Ms2Tolerance = 0.05f,
+                WeightedDotProductCutOff = 0.5f,
+                SimpleDotProductCutOff = 0.5f,
+                ReverseDotProductCutOff = 0.5f,
+                MatchedPeaksPercentageCutOff = 0f,
+                MinimumSpectrumMatch = 3,
+                IsUseTimeForAnnotationScoring = false,
+                IsUseTimeForAnnotationFiltering = false,
+            };
+        }
+
+        private static MoleculeDataBase InSilicoDatabase() {
+            return new MoleculeDataBase(new List<MoleculeMsReference> { Agreeing(), Disagreeing(), }, "GLACIER", DataBaseSource.PredictedMsp, SourceType.MspDB, "in_silico.msp");
+        }
+
+        private static MoleculeMsReference Agreeing() {
+            return new MoleculeMsReference
+            {
+                ScanID = 0,
+                Name = "agreeing",
+                InChIKey = "AGREEING",
+                PrecursorMz = 300.1,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 100.05, Intensity = 40 },
+                    new SpectrumPeak { Mass = 150.07, Intensity = 100 },
+                    new SpectrumPeak { Mass = 200.09, Intensity = 30 },
+                    new SpectrumPeak { Mass = 250.11, Intensity = 20 },
+                },
+            };
+        }
+
+        private static MoleculeMsReference Disagreeing() {
+            return new MoleculeMsReference
+            {
+                ScanID = 1,
+                Name = "disagreeing",
+                InChIKey = "DISAGREEING",
+                PrecursorMz = 300.102,
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 60.02, Intensity = 100 },
+                    new SpectrumPeak { Mass = 72.04, Intensity = 50 },
+                    new SpectrumPeak { Mass = 88.06, Intensity = 20 },
+                },
+            };
+        }
+
+        private static ChromatogramPeakFeature Measured() {
+            return new ChromatogramPeakFeature
+            {
+                PrecursorMz = 300.1004,
+                ChromXs = new ChromXs(5, ChromXType.RT, ChromXUnit.Min),
+                Spectrum = new List<SpectrumPeak>
+                {
+                    new SpectrumPeak { Mass = 100.051, Intensity = 35 },
+                    new SpectrumPeak { Mass = 150.069, Intensity = 100 },
+                    new SpectrumPeak { Mass = 200.092, Intensity = 25 },
+                    new SpectrumPeak { Mass = 250.108, Intensity = 15 },
+                },
+            };
+        }
+
+        private static ChromatogramPeakFeature WithoutMs2() {
+            return new ChromatogramPeakFeature
+            {
+                PrecursorMz = 300.1004,
+                ChromXs = new ChromXs(5, ChromXType.RT, ChromXUnit.Min),
+                Spectrum = new List<SpectrumPeak>(),
+            };
+        }
+
         private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, MsRefSearchParameterBase parameter, LcmsMspAnnotator annotator) {
             return new AnnotationQuery(target, target, null, null, parameter, annotator, ignoreIsotopicPeak: false);
         }

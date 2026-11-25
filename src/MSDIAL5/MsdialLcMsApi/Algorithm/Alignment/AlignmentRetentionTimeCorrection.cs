@@ -134,6 +134,13 @@ public sealed class BlendedAlignmentRetentionTimeCorrectionModel : IAlignmentRet
 
     public IReadOnlyList<AlignmentRetentionTimeCorrectionControlPoint> ControlPoints => Array.Empty<AlignmentRetentionTimeCorrectionControlPoint>();
 
+    /// <summary>The model weighted by 1 - <see cref="RightWeight"/>.</summary>
+    public IAlignmentRetentionTimeCorrectionModel Left => _left;
+    /// <summary>The model weighted by <see cref="RightWeight"/>.</summary>
+    public IAlignmentRetentionTimeCorrectionModel Right => _right;
+    /// <summary>The weight of <see cref="Right"/>, between 0 and 1.</summary>
+    public double RightWeight => _rightWeight;
+
     public double Correct(double originalRt) {
         return _left.Correct(originalRt) * (1d - _rightWeight)
             + _right.Correct(originalRt) * _rightWeight;

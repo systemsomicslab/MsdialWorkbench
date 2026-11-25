@@ -1,0 +1,243 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C7H9",
+   "ion_C8H16NO"
+  ],
+  "motif_id": "tropane_tropine_type",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5184,
+    "smiles": "CN1C2CC(CC1C3C2O3)OC(=O)C(CO)C4=CC=CC=C4"
+   },
+   {
+    "pubchem_cid": 6918612,
+    "smiles": "CN1[C@H]2C[C@@H](C[C@@H]1[C@H](C2)O)OC(=O)[C@H](CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 64696,
+    "smiles": "C1CC2CC(CC1N2)OC(=O)[C@H](CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 6602484,
+    "smiles": "CN1[C@@H]2CCC[C@H]1CC(=O)C2"
+   }
+  ],
+  "non_claims": [
+   "3alpha (tropine) versus 3beta (pseudotropine) configuration is not resolved",
+   "the ester acid is decided by the precursor composition, not by these ions"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 174174,
+    "smiles": "CN1[C@@H]2CC[C@H]1CC(C2)OC(=O)C(CO)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 637578,
+    "smiles": "CN1[C@@H]2CC[C@H]1CC(C2)OC(=O)C3=CC=CC=C3"
+   },
+   {
+    "pubchem_cid": 12444363,
+    "smiles": "C/C=C(\\C)/C(=O)OC1C[C@H]2CC[C@@H](C1)N2C"
+   },
+   {
+    "pubchem_cid": 420422,
+    "smiles": "CN1C2CCC1CC(C2)OC(=O)C3=CC(=C(C=C3)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C8H14N"
+   },
+   {
+    "any": [
+     {
+      "term": "ion_C7H9"
+     },
+     {
+      "term": "ion_C8H16NO"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): the required C8H14N+ (124) is the H2O daughter of protonated tropine C8H16NO+ (142), so 124 with 142 is one channel; 124 with C7H9+ (93) would be two ions.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "tropane_6_oxygenated",
+    "note": "6-hydroxytropine esters give 140 and 122 instead; convolamine and anisodamine share C17H23NO4 and are told apart this way (Goncalves Dantas 2023)"
+   },
+   {
+    "motif_id": "tropane_6_7_dioxygenated",
+    "note": "scopine-type esters give 156 and 138 instead (Zhou 2017)"
+   },
+   {
+    "motif_id": "nortropane_3_substituted",
+    "note": "N-nor esters give 110 instead of 124 (Du 2019)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_tropane_bases",
+   "unit_totals": {
+    "acyl": [
+     1,
+     2
+    ]
+   },
+   "units": {
+    "acetyl": [
+     0,
+     2
+    ],
+    "atropoyl": [
+     0,
+     2
+    ],
+    "benzoyl": [
+     0,
+     2
+    ],
+    "mandeloyl": [
+     0,
+     2
+    ],
+    "methylpyrrolecarbonyl": [
+     0,
+     2
+    ],
+    "phenylacetyl": [
+     0,
+     2
+    ],
+    "syringoyl": [
+     0,
+     2
+    ],
+    "tigloyl": [
+     0,
+     2
+    ],
+    "trimethoxybenzoyl": [
+     0,
+     2
+    ],
+    "trimethoxycinnamoyl": [
+     0,
+     2
+    ],
+    "tropoyl": [
+     0,
+     2
+    ],
+    "veratroyl": [
+     0,
+     2
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "One or two ester groups, drawn from the acids whose neutral losses identify Erythroxylum and Solanaceae tropane esters",
+    "source": "src:4"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_tropane.tropine_ester.pos",
+ "source": [
+  {
+   "doi": "10.1002/jssc.201801201",
+   "locator": "Sec. 3.1 (p. 1165); Figure 2B (p. 1165); Table 1 (p. 1166); Table 2 (p. 1169)"
+  },
+  {
+   "doi": "10.1007/s00216-016-0043-6",
+   "locator": "Results, Fragmentation behaviors of the TA standards (pp. 1148-1149); Fig. 1b (p. 1149); Table 1, cpd 8 (p. 1152)"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (pp. 6-7); Table 1, peaks 14, 20, 23 (pp. 4-6); Fig. 3 (p. 9)"
+  },
+  {
+   "doi": "10.1021/acs.jnatprod.4c00304",
+   "locator": "Results and Discussion, paragraph 2"
+  },
+  {
+   "doi": "10.1002/rcm.9629",
+   "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "formula": "C8H14N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "124.1121 after loss of the C-3 acid; also src:1, src:2, src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C8H14N",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C7H9",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "93.0699; also src:1 (atropine standard, nominal 93) and src:2 (MS3 of 124 only)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C7H9",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C8H16NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "142.1226, protonated tropine (nominal 142 in src:1); weak in src:2 (peak 23 only)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C8H16NO",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

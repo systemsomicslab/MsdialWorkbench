@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -80,7 +81,8 @@ namespace CompMs.App.Msdial.Model.Export
                 using var stream = File.Open(filename, FileMode.Create, FileAccess.Write);
                 SelectedSpectraType.Export(stream, fileBeanModel.File, SelectedFileFormat.ExporterFactory, new ExportStyle { TrimToExcelLimit = TrimToExcelLimit });
             }
-            catch (IOException ex) {
+            catch (IOException ex) when (ex is not RawDataNotAvailableException) {
+                // A missing raw data file stops the whole export and is said once, by the caller.
                 var request = new ShortMessageRequest("Failed to export file: " + ex.Message);
                 _broker.Publish(request);
             }

@@ -1,0 +1,41 @@
+{
+ "entries": [
+  {
+   "class": "stilbene",
+   "formula": "C14H12O3",
+   "ions": {},
+   "name": "resveratrol",
+   "origin": "as_published",
+   "scaffold_id": "resveratrol",
+   "source": [
+    {
+     "doi": "10.1002/rcm.70074",
+     "locator": "Besrukow 2026: Section 3.1; Table 1 row A0 (authentic standard)"
+    },
+    {
+     "doi": "10.3390/antiox9050398",
+     "locator": "Goufo 2020: Table 2 IDs 123, 128"
+    },
+    {
+     "doi": "10.1021/jf102005z",
+     "locator": "Jiang 2010: Results, resveratrol MS2 (p. 9022)"
+    }
+   ]
+  },
+  {
+   "class": "stilbene",
+   "formula": "C14H12O4",
+   "ions": {},
+   "name": "piceatannol",
+   "origin": "as_published",
+   "scaffold_id": "piceatannol",
+   "source": [
+    {
+     "doi": "10.1002/rcm.70074",
+     "locator": "Besrukow 2026: Section 3.1; Table 1 row C0 (authentic standard)"
+    }
+   ]
+  }
+ ],
+ "list_id": "phenolics_other_resorcinol_stilbenes"
+}

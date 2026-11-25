@@ -145,6 +145,10 @@ namespace CompMs.Graphics.AxisManager
 
         public event EventHandler AxisValueMappingChanged;
 
+        protected virtual void OnAxisValueMappingChanged() {
+            AxisValueMappingChanged?.Invoke(this, args);
+        }
+
         #endregion
 
         #region Property

@@ -89,6 +89,7 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right">
                 <Button Command="{Binding Path=AddDataBaseCommand}"
+                        AutomationProperties.AutomationId="Button_AddDataBase"
                         Content="{StaticResource Plus}"
                         IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                         Foreground="Green"
@@ -130,6 +131,7 @@
                         Foreground="Red"
                         Style="{StaticResource IconButton}"/>
                 <Button Command="{Binding Path=MoveUpAnnotatorCommand}"
+                        AutomationProperties.AutomationId="Button_MoveUpAnnotator"
                         Content="{StaticResource UpArrow}"
                         IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                         Foreground="Black"

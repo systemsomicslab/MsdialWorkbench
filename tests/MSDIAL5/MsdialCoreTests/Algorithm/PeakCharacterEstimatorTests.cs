@@ -161,6 +161,56 @@ public class PeakCharacterEstimatorTests
         }
     }
 
+    [TestMethod()]
+    public void ProcessAfterClearingMatchResultsDoesNotKeepAdductOfEarlierAnnotation() {
+        // An earlier run suggested "Cer_d7 20:2;O2 [M+HCOO]-" and the estimator linked the peak to another one.
+        // Re-running from identification gives the peak no annotation, and only [M-H]- is searched.
+        var formate = AdductIon.GetAdductIon("[M+HCOO]-");
+        var peaks = new List<ChromatogramPeakFeature>
+        {
+            new ChromatogramPeakFeature {
+                MasterPeakID = 0, PeakID = 0, Name = "low score: Cer_d7 20:2;O2",
+                ChromXs = new ChromXs(5d, ChromXType.RT, ChromXUnit.Min),
+                PeakFeature = new BaseChromatogramPeakFeature { Mass = 600d, },
+                PeakCharacter = new IonFeatureCharacter {
+                    IsotopeWeightNumber = 0, IsotopeParentPeakID = 0, Charge = 1,
+                    AdductParent = 0, PeakGroupID = 0, IsLinked = true,
+                    PeakLinks = [ new() { LinkedPeakID = 1, Character = PeakLinkFeatureEnum.Adduct, }, ],
+                },
+            },
+            new ChromatogramPeakFeature {
+                MasterPeakID = 1, PeakID = 1,
+                ChromXs = new ChromXs(8d, ChromXType.RT, ChromXUnit.Min),
+                PeakFeature = new BaseChromatogramPeakFeature { Mass = 300d, },
+                PeakCharacter = new IonFeatureCharacter {
+                    IsotopeWeightNumber = 0, IsotopeParentPeakID = 1, Charge = 1,
+                    AdductParent = 0, PeakGroupID = 0, IsLinked = true,
+                    PeakLinks = [ new() { LinkedPeakID = 0, Character = PeakLinkFeatureEnum.Adduct, }, ],
+                },
+            },
+        };
+        peaks[0].SetAdductType(formate);
+        peaks[0].MatchResults.AddResult(new MsScanMatchResult { AnnotatorID = "suggested", Name = "Cer_d7 20:2;O2", Source = SourceType.MspDB, Priority = 1, });
+        Assert.IsTrue(peaks[0].IsAdductTypeFormatted);
+        var collection = new ChromatogramPeakFeatureCollection(peaks);
+        var parameter = new ParameterBase { IonMode = IonMode.Negative, };
+        var evaluator = new FakeEvaluator(matched: "matched", suggested: "suggested");
+
+        collection.ClearMatchResultProperties();
+        new PeakCharacterEstimator(0d, 100d).Process(new AnalysisFileBean(), new FakeProvider(), collection.Items, new List<MSDecResult>(), evaluator, parameter, null);
+
+        var deprotonated = AdductIon.GetAdductIon("[M-H]-");
+        foreach (var peak in peaks) {
+            Assert.AreEqual(deprotonated, peak.AdductType);
+            Assert.AreEqual(deprotonated, peak.PeakCharacter.AdductType);
+            Assert.AreEqual(1, peak.PeakCharacter.Charge);
+            Assert.AreEqual(peak.PeakID, peak.PeakCharacter.AdductParent);
+            Assert.AreEqual(0, peak.PeakCharacter.PeakLinks.Count);
+            Assert.IsFalse(peak.PeakCharacter.IsLinked);
+        }
+        Assert.AreNotEqual(peaks[0].PeakCharacter.PeakGroupID, peaks[1].PeakCharacter.PeakGroupID);
+    }
+
     class FakeProvider : IDataProvider
     {
         public ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {

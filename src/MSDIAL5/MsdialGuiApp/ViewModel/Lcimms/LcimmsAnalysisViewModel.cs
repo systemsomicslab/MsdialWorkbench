@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused, broker).AddTo(Disposables);
 
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
@@ -78,10 +78,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    if (model.CompoundSearchModel.Value is null) {
+                    using var csm = model.CreateCompoundSearchModel();
+                    if (csm is null) {
                         return;
                     }
-                    using var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value);
+                    using var vm = new LcimmsCompoundSearchViewModel(csm);
                     broker.Publish<ICompoundSearchViewModel>(vm);
                 }).AddTo(Disposables);
 
@@ -136,7 +137,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand GoToMsfinderCommand { get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }

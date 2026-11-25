@@ -128,6 +128,21 @@ namespace CompMs.MsdialCore.Parser.Tests
             }
         }
 
+        [TestMethod()]
+        public async Task GetMissingKeyThrowsFileNotFoundWithFileName() {
+            var root = Path.Combine(Path.GetTempPath(), $"msdial-dtsm-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(root);
+            try {
+                using (IStreamManager manager = new DirectoryTreeStreamManager(root)) {
+                    var ex = await Assert.ThrowsExceptionAsync<FileNotFoundException>(async () => await manager.Get("x"));
+                    Assert.AreEqual(Path.Combine(root, "x"), ex.FileName);
+                }
+            }
+            finally {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+
         private void Write(Stream s, string c) {
             var b = Encoding.UTF8.GetBytes(c);
             s.Write(b, 0, b.Length);

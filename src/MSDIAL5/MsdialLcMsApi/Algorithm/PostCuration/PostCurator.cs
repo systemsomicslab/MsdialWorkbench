@@ -22,7 +22,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
 
             // process
             foreach (var spot in spots) {
-                var frag = false;
+                // var frag = false;
 
                 var blankProps = spot.AlignedPeakProperties.Where(x => param.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Blank).ToList();
                 var isBlankDataAvailable = blankProps.IsEmptyOrNull() ? false : true;

@@ -36,9 +36,9 @@
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Change axis type of upper spectrum into.."
-                              ItemsSource="{Binding Path=UpperVerticalAxisItemCollection}"
+                              ItemsSource="{Binding Path=UpperVerticalAxisSelector.AxisItems}"
                               DisplayMemberPath="Label"
-                              behavior:ItemSelectBehavior.SelectedItem="{Binding UpperVerticalAxisItem.Value}">
+                              behavior:ItemSelectBehavior.SelectedItem="{Binding UpperVerticalAxisSelector.SelectedAxisItem}">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}">
                                 <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
@@ -46,7 +46,7 @@
                                     <Setter.Value>
                                         <MultiBinding Converter="{StaticResource AreEquals}" Mode="OneWay">
                                             <Binding Path="."/>
-                                            <Binding Path="DataContext.UpperVerticalAxisItem.Value" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                            <Binding Path="DataContext.UpperVerticalAxisSelector.SelectedAxisItem" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
                                         </MultiBinding>
                                     </Setter.Value>
                                 </Setter>
@@ -54,9 +54,9 @@
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
                     <MenuItem Header="Change axis type of lower spectrum into.."
-                              ItemsSource="{Binding Path=LowerVerticalAxisItemCollection}"
+                              ItemsSource="{Binding Path=LowerVerticalAxisSelector.AxisItems}"
                               DisplayMemberPath="Label"
-                              behavior:ItemSelectBehavior.SelectedItem="{Binding LowerVerticalAxisItem.Value}">
+                              behavior:ItemSelectBehavior.SelectedItem="{Binding LowerVerticalAxisSelector.SelectedAxisItem}">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}">
                                 <Setter Property="behavior:ItemSelectBehavior.Item" Value="{Binding}"/>
@@ -64,7 +64,7 @@
                                     <Setter.Value>
                                         <MultiBinding Converter="{StaticResource AreEquals}" Mode="OneWay">
                                             <Binding Path="."/>
-                                            <Binding Path="DataContext.LowerVerticalAxisItem.Value" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
+                                            <Binding Path="DataContext.LowerVerticalAxisSelector.SelectedAxisItem" RelativeSource="{RelativeSource AncestorType=MenuItem}"/>
                                         </MultiBinding>
                                     </Setter.Value>
                                 </Setter>
@@ -82,6 +82,11 @@
                               Command="{Binding PlacementTarget.DataContext.SaveLowerSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                     <MenuItem Header="Save matched spectrum as table format"
                               Command="{Binding PlacementTarget.DataContext.SaveMatchedSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <Separator/>
+                    <MenuItem Header="Copy upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Save image as...">
                         <MenuItem Header="Save formatted image"
                                   Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
@@ -113,7 +118,8 @@
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
-                          core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxisItem.Value.AxisManager}">
+                          Template="{StaticResource SpectrumLayersWithAnnotations}"
+                          core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxisSelector.SelectedAxisItem.AxisManager}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid/>
@@ -156,15 +162,6 @@
                                     </ToolTip>
                                 </chart:LineSpectrumControlSlim.ToolTip>
                             </chart:LineSpectrumControlSlim>
-                            <chart:Annotator ItemsSource="{Binding MsSpectrum.Value.Spectrum}"
-                                             HorizontalPropertyName="{Binding HorizontalProperty}"
-                                             VerticalPropertyName="{Binding VerticalProperty}"
-                                             LabelPropertyName="{Binding Labels.AnnotationLabelProperty}"
-                                             OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
-                                             Brush="Black"
-                                             Overlap="Horizontal, Direct"
-                                             Format="F4"
-                                             ClipToBounds="True"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -201,7 +198,8 @@
                                  OrderingPropertyName="{Binding Labels.AnnotationOrderProperty}"
                                  ContentAlignment="BottomCenter"
                                  Brush="Black"
-                                 Overlap="Horizontal, Direct"
+                                 MinimumOrder="{Binding MinimumAnnotationOrder.Value}"
+                                 LabelPlacement="{StaticResource SpectrumLabelPlacement}"
                                  Format="F4"
                                  ClipToBounds="True"/>
                     <Canvas HorizontalAlignment="Stretch" IsHitTestVisible="False">

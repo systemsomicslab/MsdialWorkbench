@@ -1,0 +1,1091 @@
+{
+ "cases": [
+  {
+   "description": "h* = c10_0||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_c4h5o2:C4H5O2, ion_c7h14no2:C7H14NO2, ion_c3h10n:C3H10N, loss_c3h9n:C3H9N",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"carnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"ca88a58273def0770f18f3263bfec203f383f96d044bbcbc2b7d6e1326343c54\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"carnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":257.174735,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2e44fc1e1c31e048ff1dc742ad499e4ccabbfafd4491cac6b6c88098fbb91edc"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ without the peaks of required term ion_c4h5o2; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "drop_ion_c4h5o2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"a7deb4f9d12330e52155d496bcab8ad824b3aee0360785dc25af0ff7157af218\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "aabe948b35c5620fd538ecd6e4730f14a6ba305347492c5c1ff2631f50e6a6a1"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ without the peaks of required term ion_c7h14no2; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "drop_ion_c7h14no2",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"21b424a351a7fdd0f1637b9cac42e77bb03c5ccb9744d95ff03e39af79cd65ba\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f8180429dba8e4e9651895f21bafe80a1e23eb24e7948e6a329fd5e5617f3b46"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ without the peaks of required term ion_c3h10n; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "drop_ion_c3h10n",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"27e4e14db99d3f392425041f45a97ede36bcc9a252f3a8f7d27a4c2864b770f1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7c6b610f0aaadc545e535a0c9349aa6c23d77b99999cf8d7f7efbd7b67a20ebb"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ without the peaks of required term loss_c3h9n; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "drop_loss_c3h9n",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"f7b61401b55b40c0f86f9e56fbe3d202ba123ce2b819d0e43d53b0a0419a02c8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "34db91f1243a1c46d7b8d73ecc1c330183f00ff26701606b1c2a1672ae268d77"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ plus veto veto_loss_nh3:H3N at intensity 1000",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": false,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "299.221685",
+      "1000.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "veto_veto_loss_nh3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":1000.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"85f9c7563dff3e61ec9125e7e4f3d7c7267e8631e156f4c6af53cd1c21e469cd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[true,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":\"veto\",\"fired\":false,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.028405,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":257.174735,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":true,\"i_a\":1.000000,\"i_b_max\":0.000000,\"peak_index\":4,\"peak_mz\":299.221685,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":true,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d486644dcb683410f290b0f1f78d6842a2ce86d8bf5a6d23a82dd48c118fc11a"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ plus veto veto_loss_ch5n:CH5N at intensity 1000",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": false,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "285.206035",
+      "1000.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "veto_veto_loss_ch5n",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":1000.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"1d17ff43d679bd8f5f85a958b0a8db94529a9db3dbf087e9c6eddcc0fba1726b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,false]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,true],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":\"veto\",\"fired\":false,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.028405,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":257.174735,\"rel_intensity\":0.500000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":true,\"i_a\":1.000000,\"i_b_max\":0.000000,\"peak_index\":4,\"peak_mz\":285.206035,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":true,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5a59bd0fb06321af3efcbdc7dcee7699ac677ca858e43792f6defc79deefcc52"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ plus upgrade upg_acylium:C10H19O at intensity 500",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@4"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0||[M+H]+"
+      ],
+      "upgrades": [
+       "upg_acylium:C10H19O@3"
+      ]
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "155.143041",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "upgrade_upg_acylium",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"carnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"5f0d7f6cec41881a8a51c7af6e10fc333bc6831532036f080087dbec0ab26219\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":6,\"narrowest_motifs\":[\"carnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":4,\"peak_mz\":257.174735,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0\",\"score\":4.000000,\"units\":{},\"upgrades\":[{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C10H19O\",\"kind\":\"product_ion\",\"member_key\":\"C10H19O\",\"peak_index\":3,\"peak_mz\":155.143041,\"rel_intensity\":1.000000,\"role\":\"upgrade\",\"target_mz\":155.143041,\"term_id\":\"upg_acylium\",\"unit_id\":null}],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bbfdcf9694d2725906f875b664edec2ac3499fe9c8d3743c7da6ac92febae71b"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with ion_c4h5o2:C4H5O2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.033395",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"carnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"44cb09a85021941e533d8b61c10ab9fe6a11d555fc107f2383dde97e1bb63619\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"carnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":58.682,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.033395,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":257.174735,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c2d08ecaeac3c4646392ab19ffc2f96aeac40f253cb12b1d433471d606931422"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with ion_c4h5o2:C4H5O2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.033415",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"1580edcce93c18243314f568fc97c1490da4a3cc890bdf60749bdde01018c23c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c4671f80fdf82713435471e07c16716bf603b0810f23b1cacba40756e59b1dff"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with ion_c4h5o2:C4H5O2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.023415",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"carnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"298649f7de6217bd88975d4e2541348d1aaab7886fe4cc6716300b522de17cc2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"carnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-58.691,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.023415,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":257.174735,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_0\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d0539aa3a43272f9635c3effe0d25e9f2c303d37fbeeb8f0cff8411e478b4040"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with ion_c4h5o2:C4H5O2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.023395",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"aa130d0d066ba105143d4534c5d2231f2d4302596ecca99f0e1299f7c00fa439\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "abe71d809b79fd8ffbde5b133b0e7cb697b60d40cc89b01ae069f57d1612b4c9"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.258225",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.258225"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"carnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"b15cc2a0c2ac377fefe4e3083adc8394de62ba8d8cc99ed73e5617c9c17b0799\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"carnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":257.174735,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"c10_0\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.258225,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e649ee3fbe8c218ab6e0edbc85ff2f802fa0b504f1aec6da7b71b12135bfaed6"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.258245",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.258245"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"9fdb7070c4b7540434ab2cc581f9b642ed1aaf456c67be6055194356eae48602\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.258245,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b44db7915afbf77aa1e4ec6db8304e22c095e9a34b1772fc8570486e7f4bc80b"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_0||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_0||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.238245",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.238245"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"carnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"29d0bbc1db31013f90f52dbca96cbf93090bb38441346a6fe7ffea1e48c59e3f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"carnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_0|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_0||[M+H]+\",\"hypothesis_mz\":316.248235,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":257.174735,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":257.174735,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H33NO4\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"c10_0\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_0||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.238245,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8d07d48beab35dc28a512e419e97d04427bcf2fa14e0c7ba91cf243b8236e78a"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.238225",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.238225"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"02708dc100667bac7827879dcee9073681c4500e9c027107e11526053d9506c0\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.238225,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c193e2cf2222e8097192f42e70cfd7fc594263d0071d5d0a06c7db5d412a5cfb"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"1ed5a43c6feb5fae49eb1b74a03f37dba6f1f8f6d6bb5cd4112a1afcef973f04\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d2c5527de9820e67c7086553c4932f6e8e69499804a20cc05e37568645f4ab1a"
+  },
+  {
+   "description": "the union of the positive spectra of c10_3||[M+H]+ and c8_0||[M+Na]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": "c10_3||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c4h5o2:C4H5O2@1",
+       "ion_c7h14no2:C7H14NO2@2",
+       "ion_c3h10n:C3H10N@0",
+       "loss_c3h9n:C3H9N@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "c10_3||[M+H]+",
+       "c8_0||[M+Na]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "251.127785",
+      "500.0"
+     ],
+     [
+      "310.201284",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "310.201284"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"carnitine\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"be6680b6e7760a13459a6e459faa861beff8951dd420bf8b8ad03cb2989d1b3e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"carnitine\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[true,true]},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[{\"children\":[false,false],\"pointer\":\"/logic/all/4/not\"}],\"composition_id\":\"c10_3|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"c10_3||[M+H]+\",\"hypothesis_mz\":310.201284,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C4H5O2\",\"kind\":\"product_ion\",\"member_key\":\"C4H5O2\",\"peak_index\":1,\"peak_mz\":85.028405,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":85.028405,\"term_id\":\"ion_c4h5o2\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H14NO2\",\"kind\":\"product_ion\",\"member_key\":\"C7H14NO2\",\"peak_index\":2,\"peak_mz\":144.101905,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":144.101905,\"term_id\":\"ion_c7h14no2\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":-0.005,\"ion_formula\":\"C3H10N\",\"kind\":\"product_ion\",\"member_key\":\"C3H10N\",\"peak_index\":0,\"peak_mz\":60.080775,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":60.080775,\"term_id\":\"ion_c3h10n\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C3H9N\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C3H9N\",\"peak_index\":3,\"peak_mz\":251.127785,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":251.127785,\"term_id\":\"loss_c3h9n\",\"unit_id\":3}],\"neutral_formula\":\"C17H27NO4\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"c10_3\",\"score\":4.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_nh3\"},{\"fired\":false,\"i_a\":0.000000,\"i_b_max\":0.000000,\"peak_index\":null,\"peak_mz\":null,\"term_id\":\"veto_loss_ch5n\"}]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"c10_3||[M+H]+\",\"c8_0||[M+Na]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":310.201284,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "dd0eecbcc67846171d5d01aec80f728ec91130c7d2afa8264714bc5cbe545f35"
+  },
+  {
+   "description": "the positive spectrum of c10_0||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "acylcarnitine.acylcarnitine.pos"
+    ],
+    "outcomes": {
+     "acylcarnitine.acylcarnitine.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "60.080775",
+      "500.0"
+     ],
+     [
+      "85.028405",
+      "500.0"
+     ],
+     [
+      "144.101905",
+      "500.0"
+     ],
+     [
+      "257.174735",
+      "500.0"
+     ],
+     [
+      "316.248235",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "316.248235"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"input_sha256\":\"ca88a58273def0770f18f3263bfec203f383f96d044bbcbc2b7d6e1326343c54\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{\"/logic/all/4/not\":[false,false]},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"carnitine\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylcarnitine.acylcarnitine.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":316.248235,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"86eaf10284a4a574063da9a25dac69afddd8aa17dd29e9f8db9cc2b8c58f8e41\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "449724f23a8f412f9f233129fc60307e137e4b26789a0eb6f925629b4bad76c8"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

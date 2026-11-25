@@ -8,10 +8,11 @@ namespace CompMs.App.MsdialConsole.Export {
         private RnaSeqProcess() { }
 
         public static void Convert2Csv4ViolinPlot(string input, string output) {
-            string[] header = null;
             var arraylist = new List<string[]>();
+            string[] header;
             using (var sr = new StreamReader(input)) {
-                header = sr.ReadLine().Split(',');
+                var headerLine = sr.ReadLine() ?? throw new InvalidDataException($"RNA-seq input file is empty: {input}");
+                header = headerLine.Split(',');
                 sr.ReadLine();
 
                 while (sr.Peek() > -1) {

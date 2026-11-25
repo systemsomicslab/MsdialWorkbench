@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused, broker).AddTo(Disposables);
 
             RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel, broker).AddTo(Disposables);
 
@@ -75,6 +75,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             GoToMsfinderCommand = model.CanSearchCompound
                 .ToReactiveCommand().WithSubscribe(() => {
+                    model.NoticeMsfinderWithoutMs1();
                     var message = new ShortMessageWindow() {
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
                         Title = "MS-FINDER running in the background...",
@@ -205,6 +206,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private async Task SaveRawSpectraAsync() {
+            // Said before the file dialog, not after a file name was chosen.
+            if (!_model.EnsureRawDataAvailable("Save raw spectra")) {
+                return;
+            }
             var filename = string.Empty;
             var request = new SaveFileNameRequest(file => filename = file)
             {
@@ -219,6 +224,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 await _model.SaveRawSpectra(filename).ConfigureAwait(false);
             }
         }
+
+        public bool EnsureRawDataAvailable(string feature) => _model.EnsureRawDataAvailable(feature);
 
         // IResultViewModel
         IResultModel IResultViewModel.Model => _model;

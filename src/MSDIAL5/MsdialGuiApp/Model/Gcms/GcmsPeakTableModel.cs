@@ -33,14 +33,14 @@ namespace CompMs.App.Msdial.Model.Gcms
         public double RiMin { get; }
         public double RiMax { get; }
 
-        public override void MarkAllAsConfirmed() {
-            IDoCommand command = new MarkAllAsCommand(PeakSpots, true);
+        public override void MarkAllAsConfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<Ms1BasedSpectrumFeature>(peakSpots.OfType<Ms1BasedSpectrumFeature>().ToList(), true);
             command.Do();
             _undoManager.Add(command);
         }
 
-        public override void MarkAllAsUnconfirmed() {
-            IDoCommand command = new MarkAllAsCommand(PeakSpots, false);
+        public override void MarkAllAsUnconfirmed(IEnumerable<object> peakSpots) {
+            IDoCommand command = new MarkAllAsConfirmedCommand<Ms1BasedSpectrumFeature>(peakSpots.OfType<Ms1BasedSpectrumFeature>().ToList(), false);
             command.Do();
             _undoManager.Add(command);
         }
@@ -50,35 +50,6 @@ namespace CompMs.App.Msdial.Model.Gcms
                 return;
             }
             _target.Value.SwitchPeakSpotTag(tag);
-        }
-
-        sealed class MarkAllAsCommand : IDoCommand {
-            private readonly IReadOnlyList<Ms1BasedSpectrumFeature> _peaks;
-            private readonly List<Ms1BasedSpectrumFeature> _confirmeds;
-            private readonly bool _status;
-
-            public MarkAllAsCommand(IReadOnlyList<Ms1BasedSpectrumFeature> peaks, bool status)
-            {
-                _peaks = peaks;
-                _status = status;
-                _confirmeds = new List<Ms1BasedSpectrumFeature>();
-            }
-
-            void IDoCommand.Do() {
-                _confirmeds.Clear();
-                foreach (var peak in _peaks) {
-                    if (peak.Confirmed != _status) {
-                        peak.Confirmed = _status;
-                        _confirmeds.Add(peak);
-                    }
-                }
-            }
-
-            void IDoCommand.Undo() {
-                foreach (var peak in _confirmeds) {
-                    peak.Confirmed = !_status;
-                }
-            }
         }
     }
 }

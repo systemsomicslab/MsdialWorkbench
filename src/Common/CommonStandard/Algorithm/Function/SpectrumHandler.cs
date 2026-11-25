@@ -23,41 +23,6 @@ namespace CompMs.Common.Algorithm.Function {
 
     public sealed class SpectrumHandler {
 
-        public static List<SpectrumPeak> GetCombinedSpectrum(
-             List<SpectrumPeak> peaks1,
-             List<SpectrumPeak> peaks2,
-             double bin) {
-
-            var peaks = new List<SpectrumPeak>();
-            var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
-
-            foreach (var peak in peaks1) {
-                var mass = peak.Mass;
-                var massframe = (int)(mass / bin);
-                if (range2Peaks.ContainsKey(massframe))
-                    range2Peaks[massframe].Add(peak);
-                else
-                    range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
-            }
-
-            foreach (var peak in peaks2) {
-                var mass = peak.Mass;
-                var massframe = (int)(mass / bin);
-                if (range2Peaks.ContainsKey(massframe))
-                    range2Peaks[massframe].Add(peak);
-                else
-                    range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
-            }
-
-            foreach (var pair in range2Peaks) {
-                var maxMass = pair.Value.Argmax(n => n.Intensity).Mass;
-                var sumIntensity = pair.Value.Sum(n => n.Intensity) * 0.5;
-                peaks.Add(new SpectrumPeak(maxMass, sumIntensity));
-            }
-
-            return peaks;
-        }
-
         public static List<SpectrumPeak> GetNormalizedPeaks(List<SpectrumPeak> spectrum, double powFactor, double maxValue) {
             if (spectrum.Count == 0) return new List<SpectrumPeak>();
             var maxIntensity = Math.Pow(spectrum.Max(n => n.Intensity), powFactor);
@@ -94,23 +59,12 @@ namespace CompMs.Common.Algorithm.Function {
             return peaks;
         }
 
+        // One peak per frame (int)(mass / bin), in m/z order: the frame's summed intensity at the m/z of its most intense peak.
         public static List<SpectrumPeak> GetBinnedSpectrum(List<SpectrumPeak> spectrum, double bin) {
-            var peaks = new List<SpectrumPeak>();
-            var range2Peaks = new Dictionary<int, List<SpectrumPeak>>();
-
-            foreach (var peak in spectrum) {
-                var mass = peak.Mass;
-                var massframe = (int)(mass / bin);
-                if (range2Peaks.ContainsKey(massframe))
-                    range2Peaks[massframe].Add(peak);
-                else
-                    range2Peaks[massframe] = new List<SpectrumPeak>() { peak };
-            }
-
-            foreach (var pair in range2Peaks) {
-                var maxMass = pair.Value.Argmax(n => n.Intensity).Mass;
-                var sumIntensity = pair.Value.Sum(n => n.Intensity);
-                peaks.Add(new SpectrumPeak(maxMass, sumIntensity));
+            var bins = FrameBinnedSpectrum.Create(spectrum, bin);
+            var peaks = new List<SpectrumPeak>(bins.Count);
+            for (int i = 0; i < bins.Count; i++) {
+                peaks.Add(new SpectrumPeak(bins.Masses[i], bins.Intensities[i]));
             }
             return peaks;
         }

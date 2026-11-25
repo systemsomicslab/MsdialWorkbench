@@ -57,6 +57,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             InstrumentType = Model.ToReactivePropertySlimAsSynchronized(m => m.InstrumentType)
                 .AddTo(Disposables);
+            // Only a helper here: choosing fills the text box, which stays free text. Project property setting is
+            // where a project is constrained to MassBank format.
+            InstrumentTypeComposer = new MassBankInstrumentTypeViewModel(InstrumentType, Observable.Return(false))
+                .AddTo(Disposables);
             Instrument = Model.ToReactivePropertySlimAsSynchronized(m => m.Instrument)
                 .AddTo(Disposables);
             Authors = Model.ToReactivePropertySlimAsSynchronized(m => m.Authors)
@@ -139,6 +143,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<TargetOmics> TargetOmics { get; }
 
         public ReactivePropertySlim<string> InstrumentType { get; }
+
+        /// <summary>Fills <see cref="InstrumentType"/> from MassBank's separation, ionisation and analyzer vocabularies.</summary>
+        public MassBankInstrumentTypeViewModel InstrumentTypeComposer { get; }
 
         public ReactivePropertySlim<string> Instrument { get; }
 

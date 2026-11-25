@@ -1,0 +1,36 @@
+{
+ "entries": [
+  {
+   "class": "tetrahydroprotoberberine",
+   "formula": "C21H25NO4",
+   "ions": {
+    "rda_benzyl": {
+     "neg": [],
+     "pos": [
+      "C10H13O2"
+     ]
+    },
+    "rda_isoquinoline": {
+     "neg": [],
+     "pos": [
+      "C11H14NO2"
+     ]
+    }
+   },
+   "name": "tetrahydropalmatine",
+   "origin": "as_published",
+   "scaffold_id": "tetrahydropalmatine",
+   "source": [
+    {
+     "doi": "10.1016/j.apsb.2014.04.003",
+     "locator": "Section 3.1.1; Fig. 3; Table 1"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 72301 (tetrahydropalmatine), compound record"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_benzylisoquinoline_tetrahydroprotoberberines"
+}

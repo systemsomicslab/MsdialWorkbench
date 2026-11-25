@@ -1,0 +1,156 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "ion_c4h5o2",
+   "ion_c6h9o4"
+  ],
+  "motif_id": "hydroxyacylcarnitine",
+  "negative_examples": [
+   {
+    "pubchem_cid": 11953816,
+    "smiles": "CCCCCCCCCCCCCCCC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C"
+   },
+   {
+    "pubchem_cid": 156962325,
+    "smiles": "CCCCCCCCCCCCCC(=O)CC(=O)OC(CC(=O)[O-])C[N+](C)(C)C"
+   }
+  ],
+  "non_claims": [
+   "The hydroxyl position is not claimed: positional isomers can give near-identical spectra (src:3).",
+   "Acyl chain length, branching and double-bond position are unresolved.",
+   "An oxo-acyl chain with one more C=C has the same composition and is not excluded by the precursor."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 71464477,
+    "smiles": "CC(CC(=O)OC(CC(=O)[O-])C[N+](C)(C)C)O"
+   },
+   {
+    "pubchem_cid": 126456228,
+    "smiles": "CCCCCCCCCCCCCC(CC(=O)O[C@H](CC(=O)[O-])C[N+](C)(C)C)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_c4h5o2"
+   },
+   {
+    "term": "ion_c6h9o4"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19) pending the author: acylcarnitines are lipid-adjacent and already covered by the MS-DIAL CAR lipid rules (design Q3), so this rule is kept but not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "carnitine",
+    "note": "Non-hydroxylated acylcarnitines; m/z 145 was absent for palmitoylcarnitine (src:2)."
+   }
+  ],
+  "composition": {
+   "core": "C7H15NO3",
+   "scaffold_list": "acylcarnitine_hydroxy_fatty_acyl",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Hydroxy fatty acyl chains C3-C26 are enumerated, inside the C0-C26 acyl-chain range of the src:5 method.",
+    "source": "src:5"
+   },
+   {
+    "note": "At most min(6, floor((n-2)/2)) C=C bonds for a Cn hydroxy fatty acyl chain.",
+    "source": "src:7"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylcarnitine.hydroxyacylcarnitine.pos",
+ "source": [
+  {
+   "doi": "10.1021/bi047773a",
+   "locator": "Results (p. 5238); Fig. 4A-D; Fig. 5 (m/z 145 specific to 3-hydroxy acylcarnitines, profiled together with m/z 85)"
+  },
+  {
+   "doi": "10.1021/acs.analchem.0c00129",
+   "locator": "Sec. 4.7, Example 2 (C6H9O4+ 145.0495 for a hydroxy at acyl C3, cited from Su et al. 2005; not observed in this paper's data)"
+  },
+  {
+   "doi": "10.1021/bi047773a",
+   "locator": "Results (pp. 5237-5238); Fig. 2 versus Fig. 4 (m/z 85 predominant in both; m/z 145 absent for palmitoylcarnitine)"
+  },
+  {
+   "doi": "10.1021/acs.analchem.6c01418",
+   "locator": "Methods, Quality Control of MS/MS; Limitations; Figure S3 (3-OH vs 8-OH C8 and C18:1/C18:2 isomers, cosine >= 0.997)"
+  },
+  {
+   "doi": "10.64898/2026.03.27.714844",
+   "locator": "Limitations of the study (3-hydroxylated synthetic acylcarnitines: 144.1019 absent, 85.0284 very weak)"
+  },
+  {
+   "doi": "10.1016/j.jpha.2023.10.004",
+   "locator": "Abstract; Section 2.1; Section 3.3; Fig. 4 legend (acyl chains C0-C26; 49 acylcarnitine standards)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 drafting bound for enumerated acyl chains: fatty acyl C2-C26 with at most min(6, floor((n-1)/2)) C=C, hydroxy fatty acyl C3-C26 with at most min(6, floor((n-2)/2)) C=C; fixed before any data look (2026-11-18)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "formula": "C4H5O2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Protonated gamma-crotonolactone, the predominant product ion of hydroxy and non-hydroxy long-chain acylcarnitines on a QqQ (src:2); very weak for some synthetic 3-hydroxy species (src:4).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c4h5o2",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C6H9O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Formula printed by src:1, which cites src:0 for it; src:0 reports nominal m/z 145 (QqQ, unit resolution) at low abundance next to m/z 85.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c6h9o4",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (LLM draft, WS8-P3 drafting 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

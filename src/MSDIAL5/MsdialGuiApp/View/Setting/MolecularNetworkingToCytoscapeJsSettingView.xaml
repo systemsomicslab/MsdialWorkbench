@@ -9,7 +9,7 @@
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         d:DataContext="{d:DesignInstance Type={x:Type vm:MolecularNetworkingSendingToCytoscapeJsSettingViewModel}}"
         mc:Ignorable="d"
-        Title="Visualization setting of molecular spectrum networking data in CytoJS" Height="600" Width="450">
+        Title="Visualization setting of molecular spectrum networking data in CytoJS" Height="690" Width="450">
     <Grid>
 
         <Grid.RowDefinitions>

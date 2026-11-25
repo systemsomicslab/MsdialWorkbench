@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.Enum;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using System;
 
@@ -17,6 +18,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             _instrumentType = parameter.InstrumentType;
             _collisionEnergy = parameter.CollisionEnergy ;
             _comment = parameter.Comment;
+            _constrainToMassBankFormat = parameter.ConstrainToMassBankFormat;
+            _massBankContributorId = parameter.MassBankContributorId ?? string.Empty;
         }
 
         public string Authors {
@@ -55,6 +58,26 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
         private string _comment = string.Empty;
 
+        /// <summary>
+        /// Whether Project property setting only accepts metadata that makes valid MassBank records; see
+        /// <see cref="ProjectBaseParameter.ConstrainToMassBankFormat"/>.
+        /// </summary>
+        public bool ConstrainToMassBankFormat {
+            get => _constrainToMassBankFormat;
+            set => SetProperty(ref _constrainToMassBankFormat, value);
+        }
+        private bool _constrainToMassBankFormat;
+
+        /// <summary>The contributor ID MassBank assigned, which the MassBank export dialogs start from; empty when not set.</summary>
+        public string MassBankContributorId {
+            get => _massBankContributorId;
+            set => SetProperty(ref _massBankContributorId, value ?? string.Empty);
+        }
+        private string _massBankContributorId = string.Empty;
+
+        /// <summary>The kind of instrument the project was created for; it does not change after the project is created.</summary>
+        public MachineCategory MachineCategory => _parameter.MachineCategory;
+
         public void Commit() {
             _parameter.Authors = _authors;
             _parameter.License = _license;
@@ -62,6 +85,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             _parameter.InstrumentType = _instrumentType;
             _parameter.CollisionEnergy = _collisionEnergy;
             _parameter.Comment = _comment;
+            _parameter.ConstrainToMassBankFormat = _constrainToMassBankFormat;
+            _parameter.MassBankContributorId = _massBankContributorId;
         }
 
         public void Cancel() {
@@ -71,6 +96,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             InstrumentType = _parameter.InstrumentType;
             CollisionEnergy = _parameter.CollisionEnergy ;
             Comment = _parameter.Comment;
+            ConstrainToMassBankFormat = _parameter.ConstrainToMassBankFormat;
+            MassBankContributorId = _parameter.MassBankContributorId;
         }
     }
 }

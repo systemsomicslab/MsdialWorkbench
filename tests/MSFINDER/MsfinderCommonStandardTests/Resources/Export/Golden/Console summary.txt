@@ -1,0 +1,1 @@
+Diagnostic rules: 0.2.0 (ecf7988dea90, embedded) evaluated 7, fired 4, veto_blocked 0, none 3, skipped 1, refused 0, errors 0

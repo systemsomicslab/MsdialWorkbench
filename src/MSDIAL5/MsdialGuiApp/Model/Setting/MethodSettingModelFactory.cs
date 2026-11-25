@@ -225,7 +225,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
-            return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
+            return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process, supportsMsmsEntropyCleanup: true);
         }
 
         public IIdentificationSettingModel CreateIdentifySetting() {

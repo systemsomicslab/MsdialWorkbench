@@ -1,0 +1,305 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "y0",
+   "y0_h2o",
+   "rda",
+   "rda_h2o",
+   "meoxopropanoate_101"
+  ],
+  "motif_id": "iridoid_c4_methoxycarbonyl_glycoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 443354,
+    "smiles": "C1C=C([C@@H]2[C@H]1C(=CO[C@H]2O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O)C(=O)O)CO"
+   },
+   {
+    "pubchem_cid": 91458,
+    "smiles": "C1=CO[C@H]([C@H]2[C@@H]1[C@@H](C=C2CO)O)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The aglycone is assigned by the precursor composition hypothesis; carbocyclic iridoid versus secoiridoid skeleton is decided by the listed composition only, not by these ions.",
+   "Isomers of one aglycone formula (geniposide vs secologanin, C6/C7 epimers, oleuropein vs oleuroside) and stereochemistry are not resolved.",
+   "Sugar identity, number and linkage, and the position of a sugar-bound acyl group, are not claimed.",
+   "The C4H5O3- ion alone is not read as proof of the ester; the claim needs it jointly with the hypothesis-specific aglycone and ring-cleavage ions."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 107848,
+    "smiles": "COC(=O)C1=CO[C@H]([C@H]2[C@@H]1CC=C2CO)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 442433,
+    "smiles": "COC(=O)C1=CO[C@H]([C@H]2[C@@H]1[C@@H](C=C2CO)O)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 13892722,
+    "smiles": "C[C@@]1(C[C@H]([C@H]2[C@@H]1[C@@H](OC=C2C(=O)OC)O[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281544,
+    "smiles": "C/C=C/1\\[C@@H](C(=CO[C@H]1O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)C(=O)OC)CC(=O)OCCC3=CC(=C(C=C3)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "y0"
+     },
+     {
+      "term": "y0_h2o"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "rda"
+     },
+     {
+      "term": "rda_h2o"
+     }
+    ]
+   },
+   {
+    "term": "meoxopropanoate_101"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Fu 2014 and Ren 2007 give hexose loss to the aglycone anion, its C4H6O3 ring-cleavage loss and C4H5O3- as C4 methyl ester marks; Wei 2022 gives the C4H6O3 loss and Abbattista 2021 the matching oleuropein ions; no floor is printed, so the 1 % default applies.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-",
+   "[M+HCOO]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "iridoid_c4_carboxy_glycoside",
+    "note": "Free C4-acid iridoid glucosides share the hexose loss but lose CO2 and C3H4O3 instead of the methyl-ester ions (Fu 2014 summary rule 3; Ren 2007 Scheme 4)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "iridoid_c4_methoxycarbonyl_aglycones",
+   "unit_totals": {
+    "acyl": [
+     0,
+     1
+    ],
+    "sugar": [
+     1,
+     2
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     2
+    ],
+    "coumaroyl": [
+     0,
+     1
+    ],
+    "sinapoyl": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "C4 methyl ester iridoid glucosides gave the formate adduct as main ion in formic-acid eluent, and C4 acids gave [M-H]-.",
+    "source": "src:9"
+   },
+   {
+    "note": "Shanzhiside methyl ester and genipin gentiobioside gave [M-H]- rather than the formate adduct.",
+    "source": "src:10"
+   },
+   {
+    "note": "Genipin gentiobioside (two hexoses) was characterised, so up to two hexoses are enumerated.",
+    "source": "src:11"
+   },
+   {
+    "note": "Hydroxycinnamoyl groups on the sugar left the aglycone ions in place, so one sugar-bound coumaroyl or sinapoyl is enumerated.",
+    "source": "src:12"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "iridoid.c4_methoxycarbonyl_glycoside.neg",
+ "source": [
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "p. 1800, Brief summary of fragmentation patterns of IGs, rule 1"
+  },
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "p. 1802, Brief summary, rule 4; Figures 3-4 (pp. 1800-1801)"
+  },
+  {
+   "doi": "10.1002/rcm.3189",
+   "locator": "pp. 3044-3047, Results (DAA methyl ester, scandoside methyl ester, geniposide, shanzhiside methyl ester); Schemes 1-3 (pp. 3042, 3044, 3046); Table 1 (p. 3049)"
+  },
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "p. 1800, Brief summary, rule 2; Figure 3d"
+  },
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "pp. 1798-1800, Fragmentation of geniposide, genipin gentiobioside and 6''-O-trans-sinapoyl genipin gentiobioside; Figure 3a-b; Table 1 (p. 1799)"
+  },
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "p. 1800, Fragmentation of scandoside methyl ester and shanzhiside methyl ester; Figure 4c (p. 1801)"
+  },
+  {
+   "doi": "10.3390/foods10092050",
+   "locator": "Section 3.2.1; Scheme 1; Figures 3A, S1"
+  },
+  {
+   "doi": "10.1002/jssc.202200323",
+   "locator": "p. 3446, Sec. 3.1; pp. 3448-3450, Sec. 3.2 (compound 17), Figures 3D and 5; p. 3456, Concluding remarks"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.1002/rcm.3189",
+   "locator": "p. 3044, Results, ESI-MSn fragmentation mechanism of standard samples; Fig. 2 (p. 3040); Table 1 (p. 3049)"
+  },
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "p. 1799, Table 1 (precursor column, footnote d); p. 1798, Fragmentation of geniposide"
+  },
+  {
+   "doi": "10.1002/rcm.3189",
+   "locator": "pp. 3048-3049, Analysis of the crude extract by LC/MSn (peak 4) and purification of genipin gentiobioside; Table 1 (p. 3049)"
+  },
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "p. 1800, 6''-O-trans-sinapoyl genipin gentiobioside (Figure 3c); pp. 1805-1806, Identification of peaks 15, 16, 18, 19 and 20; Figure 8; p. 1802, summary rule 5"
+  },
+  {
+   "doi": "10.3390/foods10092050",
+   "locator": "Sections 3.2.1-3.2.3; Schemes 1-2; Figures 3-4; Table 1"
+  },
+  {
+   "doi": "10.3390/foods10092050",
+   "locator": "Section 3.2.2; Scheme 1 (values in parentheses); Figure 3B"
+  },
+  {
+   "doi": "10.1002/jssc.202200323",
+   "locator": "p. 3446, Sec. 3.1; p. 3448, Sec. 3.2, Figure 3B"
+  },
+  {
+   "doi": "10.1002/bmc.3223",
+   "locator": "p. 1800, Fragmentation of geniposidic acid; p. 1802, summary rule 3; Figure 4a (p. 1801)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:8",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Y0, the deprotonated aglycone of the hypothesis after hexose loss.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "y0",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:8",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": "H2O",
+   "note": "Y0 after the water loss that usually follows deglycosylation.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "y0_h2o",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:8",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": "C4H6O3",
+   "note": "Y0 minus C4H6O3 in total: methyl 3-oxopropanoate after ring opening (Ren 2007; Wei 2022), or CH3OH then C3H2O2 via m/z 345 for oleuropein (Abbattista 2021); e.g. 123 genipin, 139 scandoside ME, 275 oleuropein.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "rda",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:8",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": "C4H8O4",
+   "note": "The same ring-cleavage ion after a further water loss (shanzhiside methyl ester type).",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "rda_h2o",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:8",
+   "formula": "C4H5O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Methyl 3-oxopropanoate anion, the companion of the C4H6O3 loss and the C4 methyl ester marker.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "meoxopropanoate_101",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting, iridoid family), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

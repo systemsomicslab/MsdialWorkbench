@@ -40,12 +40,17 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
 
             foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
                 if (spot.IsReferenceMatched(evaluator)) continue;
-                if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
+                if (spot.PeakCharacter.IsotopeWeightNumber > 0) {
+                    RecordRemovedAsIsotope(spot);
+                    continue;
+                }
                 TryMergeToMaster(spot, cSpots, donelist, parameter);
             }
 
             return cSpots;
         }
+
+        protected override bool RemovesIsotopeSpots => true;
 
         private static void TryMergeToMaster(AlignmentSpotProperty spot, List<AlignmentSpotProperty> cSpots, HashSet<int> donelist, MsdialImmsParameter param) {
             if (donelist.Contains(spot.AlignmentID)) return;

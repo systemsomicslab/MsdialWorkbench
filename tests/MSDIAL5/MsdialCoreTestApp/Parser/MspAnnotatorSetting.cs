@@ -12,13 +12,15 @@ public sealed class MspAnnotatorSetting
         int priority,
         MsRefSearchParameterBase searchParameter,
         TargetOmics? targetOmics = null,
-        DataBaseSource dataBaseSource = DataBaseSource.Msp) {
+        DataBaseSource dataBaseSource = DataBaseSource.Msp,
+        bool allowsSuggestions = true) {
         AnnotatorId = annotatorId;
         MspFilePath = mspFilePath;
         Priority = priority;
         SearchParameter = searchParameter;
         TargetOmics = targetOmics;
         DataBaseSource = dataBaseSource;
+        AllowsSuggestions = allowsSuggestions;
     }
 
     public string AnnotatorId { get; }
@@ -37,4 +39,17 @@ public sealed class MspAnnotatorSetting
     /// that has no GUI, which is every run the reanalysis pipeline makes.
     /// </remarks>
     public DataBaseSource DataBaseSource { get; }
+
+    /// <summary>
+    /// Whether this annotator may keep a candidate it did not accept, as a suggestion.
+    /// </summary>
+    /// <remarks>
+    /// Defaults to true, which is what every annotator did before the question could be asked, so a
+    /// settings file that says nothing behaves as it did. False keeps only the reference matches:
+    /// no precursor-only candidate for a feature without a product-ion spectrum, and no candidate
+    /// whose spectrum was compared and fell short. That is what a large in-silico library needs,
+    /// where a mass window holds hundreds of generated records and every feature would otherwise
+    /// carry a suggestion named after one of them.
+    /// </remarks>
+    public bool AllowsSuggestions { get; }
 }

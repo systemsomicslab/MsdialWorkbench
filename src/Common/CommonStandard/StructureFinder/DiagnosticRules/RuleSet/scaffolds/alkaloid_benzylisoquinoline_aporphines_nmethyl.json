@@ -1,0 +1,125 @@
+{
+ "entries": [
+  {
+   "class": "aporphine",
+   "formula": "C21H25NO4",
+   "ions": {},
+   "name": "glaucine",
+   "origin": "as_published",
+   "scaffold_id": "glaucine",
+   "source": [
+    {
+     "doi": "10.1016/j.apsb.2014.04.003",
+     "locator": "Section 3.1.4; Fig. 8"
+    },
+    {
+     "doi": "10.1002/rcm.1343",
+     "locator": "Table 1 (p. 525)"
+    },
+    {
+     "doi": "10.5478/msl.2013.4.4.79",
+     "locator": "Results, pp. 80-81; Scheme 1-C; Figure 1-I"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 16754 (glaucine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "aporphine",
+   "formula": "C19H21NO4",
+   "ions": {},
+   "name": "boldine",
+   "origin": "as_published",
+   "scaffold_id": "boldine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1343",
+     "locator": "Table 1 (p. 525); Scheme 2 (p. 526)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 10154 (boldine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "aporphine",
+   "formula": "C20H23NO4",
+   "ions": {},
+   "name": "isocorydine",
+   "origin": "as_published",
+   "scaffold_id": "isocorydine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1343",
+     "locator": "Table 1 (p. 525); Scheme 4 (p. 527)"
+    },
+    {
+     "doi": "10.5478/msl.2013.4.4.79",
+     "locator": "Results, pp. 80-81; Scheme 1-C; Figure 1-I"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 10143 (isocorydine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "aporphine",
+   "formula": "C19H19NO4",
+   "ions": {},
+   "name": "bulbocapnine",
+   "origin": "as_published",
+   "scaffold_id": "bulbocapnine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1343",
+     "locator": "Table 1 (p. 525)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 12441 (bulbocapnine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "aporphine",
+   "formula": "C20H21NO4",
+   "ions": {},
+   "name": "dicentrine",
+   "origin": "as_published",
+   "scaffold_id": "dicentrine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1343",
+     "locator": "Table 1 (p. 525)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 101300 (dicentrine), compound record"
+    }
+   ]
+  },
+  {
+   "class": "aporphine",
+   "formula": "C19H17NO4",
+   "ions": {},
+   "name": "neolitsine",
+   "origin": "as_published",
+   "scaffold_id": "neolitsine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1343",
+     "locator": "Table 1 (p. 525); Schemes 2-3 (pp. 526-527)"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 10064778 (neolitsine), compound record"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_benzylisoquinoline_aporphines_nmethyl"
+}

@@ -227,28 +227,34 @@ public sealed class GcmsProcess
         var files = storage.AnalysisFiles;
         var metaAccessor = new GcmsAnalysisMetadataAccessor(storage.DataBaseMapper, new DelegateMsScanPropertyLoader<SpectrumFeature>(s => s.AnnotatedMSDecResult.MSDecResult));
         var providerFactory = new StandardDataProviderFactory(isGuiProcess: false);
-        var process = new FileProcess(providerFactory, storage, new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.MsdialGcmsParameter.MspSearchParam, storage.MsdialGcmsParameter.RetentionType, storage.MsdialGcmsParameter.RiCompoundType));
-        // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
-        // Math.Max(1, UsableNumThreads / 2)). Without it "number of threads: 1" -- a value
-        // ConfigParser accepts -- gives 1/2 = 0 workers, ProcessRunner builds an empty Task array,
-        // and RunAllAsync returns having peak-picked nothing. The export stage then either crashes
-        // on a missing .pai or, when the raw data already carries .pai files from an earlier run,
-        // SILENTLY EXPORTS THE PREVIOUS RUN'S PEAKS AND PEAK IDS under this run's parameters,
-        // library list and version string. That is the join-breaking case: the artifacts describe a
-        // run that never happened.
-        var runner = new ProcessRunner(process, Math.Max(1, storage.MsdialGcmsParameter.NumThreads / 2));
+        // Math.Max(1, UsableNumThreads / 2), as the GUI does (LcmsMethodModel.cs and its four siblings,
+        // GcmsMethodModel.cs among them). Without Math.Max "number of threads: 1" -- a value
+        // ConfigParser accepts -- gives 1/2 = 0 workers, which ProcessRunner refuses. Its remarks say
+        // why: zero workers peak-picked nothing and then exported the previous run's .pai peaks and
+        // peak IDs under this run's parameters, library list and version string.
+        var numParallel = Math.Max(1, storage.MsdialGcmsParameter.ProcessBaseParam.UsableNumThreads / 2);
+        var process = new FileProcess(providerFactory, storage, new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.MsdialGcmsParameter.MspSearchParam, storage.MsdialGcmsParameter.RetentionType, storage.MsdialGcmsParameter.RiCompoundType), numParallel, files.Count);
+        var runner = new ProcessRunner(process, numParallel);
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 
         var tasks = new Task[files.Count];
-        using var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
+        // Math.Max(1, ...): the semaphore is awaited, and a count of 0 (one logical CPU) would never
+        // let an export start.
+        using var sem = new SemaphoreSlim(Math.Max(1, Environment.ProcessorCount / 2));
         var exporterFactory = new AnalysisCSVExporterFactory("\t");
         var scanExporter = exporterFactory.CreateExporter(metaAccessor);
         for (int i = 0; i < files.Count; i++) {
             var file = files[i];
-            tasks[i] = Task.Run(() => {
-                var sfs = file.LoadSpectrumFeatures();
-                using var stream = File.Open(Path.Combine(outputFolder, file.AnalysisFileName + ".mdscan"), FileMode.Create, FileAccess.Write, FileShare.Read);
-                scanExporter.Export(stream, file, sfs.Items, new ExportStyle());
+            tasks[i] = Task.Run(async () => {
+                await sem.WaitAsync();
+                try {
+                    var sfs = file.LoadSpectrumFeatures();
+                    using var stream = File.Open(Path.Combine(outputFolder, file.AnalysisFileName + ".mdscan"), FileMode.Create, FileAccess.Write, FileShare.Read);
+                    scanExporter.Export(stream, file, sfs.Items, new ExportStyle());
+                }
+                finally {
+                    sem.Release();
+                }
             });
         }
         await Task.WhenAll(tasks);
@@ -289,6 +295,8 @@ public sealed class GcmsProcess
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
             spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
 
+            ExportAlignmentMatrices(storage.MsdialGcmsParameter, outputFolder, alignmentFile.FileName, result.AlignmentSpotProperties, decResults, files, accessor, stats);
+
             var mztabm_filename = alignmentFile.FileName + ".mzTab";
             var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
             var spots = result.AlignmentSpotProperties; // TODO: cancellation
@@ -318,6 +326,48 @@ public sealed class GcmsProcess
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// The alignment matrices the method file asks for (see ConfigParser.GcmsAlignmentExportLine), one file per
+    /// value, laid out as the .mdalign: the spot metadata, then one column per file, then the class averages and
+    /// standard deviations. They go to "Export folder path", or to the output folder when that is blank.
+    /// </summary>
+    /// <returns>The files written, in the order written.</returns>
+    internal static List<string> ExportAlignmentMatrices(
+        ParameterBase parameter,
+        string outputFolder,
+        string alignmentName,
+        IReadOnlyList<AlignmentSpotProperty> spots,
+        IReadOnlyList<MSDecResult> decResults,
+        IReadOnlyList<AnalysisFileBean> files,
+        IMetadataAccessor accessor,
+        IReadOnlyList<StatsValue> stats) {
+        var requested = new List<(bool Requested, string ExportType, string Label, string Suffix)> {
+            (parameter.IsHeightMatrixExport, "Height", "Height", "_Height.txt"),
+            (parameter.IsPeakAreaMatrixExport, "Area", "Area", "_Area.txt"),
+            (parameter.IsPeakIdMatrixExport, "ID", "Peak ID", "_PeakID.txt"),
+            (parameter.IsRetentionTimeMatrixExport, "RT", "RT", "_RT.txt"),
+            (parameter.IsMassMatrixExport, "MZ", "Mass", "_MZ.txt"),
+            (parameter.IsSnMatrixExport, "SN", "S/N", "_SN.txt"),
+        };
+        var written = new List<string>();
+        if (!requested.Any(item => item.Requested)) {
+            return written;
+        }
+        var folder = string.IsNullOrWhiteSpace(parameter.ExportFolderPath) ? outputFolder : parameter.ExportFolderPath;
+        Directory.CreateDirectory(folder);
+        foreach (var (_, exportType, label, suffix) in requested.Where(item => item.Requested)) {
+            var path = Path.Combine(folder, alignmentName + suffix);
+            using (var matrixStream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.Read)) {
+                new AlignmentCSVExporter("\t").Export(
+                    matrixStream, spots, decResults, files, new MulticlassFileMetaAccessor(0), accessor,
+                    new LegacyQuantValueAccessor(exportType, parameter), stats);
+            }
+            Console.WriteLine($"{label} matrix: {path}");
+            written.Add(path);
+        }
+        return written;
     }
 
     private static List<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialGcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {

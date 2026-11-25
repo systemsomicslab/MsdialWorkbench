@@ -181,9 +181,9 @@ namespace CompMs.MsdialCore.Export.Tests
                 Comment = string.Empty,
                 MassCenter = 250.15,
                 TimesCenter = new ChromXs(new RetentionTime(5.5)),
-                AdductType = AdductIon.GetAdductIon("[M+H]+"),
                 PeakCharacter = new IonFeatureCharacter { IsotopeWeightNumber = 0, },
             };
+            spot.SetAdductType(AdductIon.GetAdductIon("[M+H]+"));
             spot.MatchResults.AddResult(new MsScanMatchResult
             {
                 Name = name,

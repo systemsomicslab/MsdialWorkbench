@@ -1,0 +1,165 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "tau_anion",
+   "so3_anion"
+  ],
+  "motif_id": "taurine_conjugate",
+  "negative_examples": [
+   {
+    "pubchem_cid": 10140,
+    "smiles": "C[C@H](CCC(=O)NCC(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   },
+   {
+    "pubchem_cid": 451489,
+    "smiles": "C[C@H](CCC(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC[C@H]4[C@@]3(CC[C@H](C4)OS(=O)(=O)O)C)C"
+   }
+  ],
+  "non_claims": [
+   "The steroid core (hydroxyl count, positions, stereochemistry, oxo groups) comes from the precursor composition only; these ions carry no steroid-nucleus information.",
+   "Further sulfation or glucuronidation of the core is not shown by these ions.",
+   "The claim is substituent-level only: all three ions come from the taurine moiety, and vinylsulfonate (C2H3O3S-) is the taurine anion (C2H6NO3S-) minus NH3."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 6675,
+    "smiles": "C[C@H](CCC(=O)NCCS(=O)(=O)O)[C@H]1CC[C@@H]2[C@@]1([C@H](C[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)O)C"
+   },
+   {
+    "pubchem_cid": 439763,
+    "smiles": "C[C@H](CCC(=O)NCCS(=O)(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC[C@H]4[C@@]3(CC[C@H](C4)O)C)C"
+   },
+   {
+    "pubchem_cid": 387316,
+    "smiles": "C[C@H](CCC(=O)NCCS(=O)(=O)O)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2[C@@H](C[C@H]4[C@@]3(CC[C@H](C4)O)C)O)C"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:5",
+   "of": [
+    {
+     "term": "tau_anion"
+    },
+    {
+     "term": "vinylsulfonate"
+    },
+    {
+     "term": "so3_anion"
+    }
+   ]
+  }
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): vinylsulfonate (107) is the taurine anion (124) minus NH3, so two of the three counted ions can be one parent-daughter channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "steryl_glycoside_bile_acid_c24_bile_acids",
+   "unit_totals": {},
+   "units": {
+    "Tau": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "steryl_glycoside_bile_acid.taurine_conjugate.neg",
+ "source": [
+  {
+   "doi": "10.1194/jlr.r001941-jlr200",
+   "locator": "Direct infusion ESI-MS section; Fig. 3"
+  },
+  {
+   "doi": "10.1021/acs.analchem.6b00573",
+   "locator": "Results, Fragmentation mechanisms of glycine-conjugated and taurine-conjugated BAs"
+  },
+  {
+   "doi": "10.1016/j.steroids.2011.11.008",
+   "locator": "Sec. 3.2; Figure 2 A1-C1"
+  },
+  {
+   "doi": "10.1021/acs.analchem.1c05648",
+   "locator": "Introduction; Results, Investigation of MS/MS Fragmentation Pattern of Bile Acids; Figure 2"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision that a class claim needs two or three diagnostic ions jointly"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:4",
+   "formula": "C2H6NO3S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "tau_anion",
+   "term_source": "src:2",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "C2H3O3S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "vinylsulfonate",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:4",
+   "formula": "O3S",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "so3_anion",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 rule drafting from the normalised candidates (2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

@@ -137,7 +137,7 @@ public sealed class LcimmsProcess {
             aligner.ProviderFactory = providerFactory;
             var result = aligner.Alignment(files, alignmentFile, serializer);
             result.Save(alignmentFile);
-            var align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
+            var align_decResults = LoadRepresentativeDeconvolutions(files, result.AlignmentSpotProperties).ToList();
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
 
             var align_accessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter, false);
@@ -184,29 +184,20 @@ public sealed class LcimmsProcess {
         return 0;
     }
 
-    private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcImMsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
-        var files = storage.AnalysisFiles;
-
-        var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
-        foreach (var file in files) {
-            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-            pointerss.Add((version, pointers, isAnnotationInfo));
-        }
-
-        var streams = new List<FileStream>();
-        try {
-            streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
-            foreach (var spot in spots.OrEmptyIfNull()) {
-                var repID = spot.RepresentativeFileID;
-                var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
-                var decResult = MsdecResultsReader.ReadMSDecResult(
-                    streams[repID], pointerss[repID].pointers[peakID],
-                    pointerss[repID].version, pointerss[repID].isAnnotationInfo);
-                yield return decResult;
+    /// <summary>
+    /// One deconvolution result per alignment spot, indexed by MasterAlignmentID: each RT spot followed by its
+    /// drift spots, the order LcimmsAlignmentRefiner numbers them in and the GUI's
+    /// AlignmentFileBeanModel.LoadMSDecResultsFromEachFiles reads them in. AlignmentCSVExporter and
+    /// MztabFormatExporter index this list by the drift spots' MasterAlignmentID too, so a list of the RT
+    /// spots alone overflowed on the first drift spot.
+    /// </summary>
+    internal static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<AlignmentSpotProperty>? spots) {
+        using var reader = new RepresentativeDeconvolutionReader(files);
+        foreach (var spot in spots.OrEmptyIfNull()) {
+            yield return reader.Read(spot.AlignedPeakProperties[spot.RepresentativeFileID]);
+            foreach (var driftSpot in spot.AlignmentDriftSpotFeatures.OrEmptyIfNull()) {
+                yield return reader.Read(driftSpot.AlignedPeakProperties[driftSpot.RepresentativeFileID]);
             }
-        }
-        finally {
-            streams.ForEach(stream => stream.Close());
         }
     }
 }

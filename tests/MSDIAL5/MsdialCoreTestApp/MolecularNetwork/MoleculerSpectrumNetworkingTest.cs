@@ -20,11 +20,20 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
                 sw.WriteLine("Source\tTarget\tScore\tMatchCount");
                 foreach (var file in files) {
                     using (var sr = new StreamReader(file)) {
-                        var header = sr.ReadLine().Split('\t');
+                        var headerLine = sr.ReadLine() ?? throw new InvalidDataException($"Missing header in '{file}'.");
+                        var header = headerLine.Split('\t');
+                        if (header.Length < 2 || header[0].Length < 10 || header[1].Length < 10) {
+                            throw new InvalidDataException($"Invalid edge header in '{file}', line 1.");
+                        }
                         var sourceFileName = Path.GetFileNameWithoutExtension(header[0].Substring(10));
                         var targetFileName = Path.GetFileNameWithoutExtension(header[1].Substring(10));
-                        while (sr.Peek() > -1) {
-                            var linearray = sr.ReadLine().Split('\t');
+                        var lineNumber = 1;
+                        while (sr.ReadLine() is string line) {
+                            lineNumber++;
+                            var linearray = line.Split('\t');
+                            if (linearray.Length < 4) {
+                                throw new InvalidDataException($"Expected at least 4 columns in '{file}', line {lineNumber}.");
+                            }
                             var newarray = new List<string>() { 
                                 sourceFileName + "_" + linearray[0],
                                 targetFileName + "_" + linearray[1],
@@ -45,22 +54,32 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
                 foreach (var file in files) {
                     var filename = Path.GetFileNameWithoutExtension(file);
                     using (var sr = new StreamReader(file)) {
-                        var header = sr.ReadLine().Split('\t');
+                        var headerLine = sr.ReadLine() ?? throw new InvalidDataException($"Missing header in '{file}'.");
+                        var header = headerLine.Split('\t');
                         if (isfirstfile) {
                             var newheder = new List<string>() { "File_ID", "File" };
                             foreach (var line in header) newheder.Add(line);
                             sw.WriteLine(String.Join("\t", newheder));
                         }
-                        while (sr.Peek() > -1) {
-                            var linearray = sr.ReadLine().Split('\t');
+                        var lineNumber = 1;
+                        while (sr.ReadLine() is string line) {
+                            lineNumber++;
+                            var linearray = line.Split('\t');
+                            if (linearray.Length < 2) {
+                                throw new InvalidDataException($"Expected at least 2 columns in '{file}', line {lineNumber}.");
+                            }
                             if (linearray[1].Contains("w/o MS2")) {
+                                // The four fields cleared below are columns 15 through 18.
+                                if (linearray.Length < 19) {
+                                    throw new InvalidDataException($"Expected at least 19 columns in '{file}', line {lineNumber}.");
+                                }
                                 linearray[15] = "null";
                                 linearray[16] = "null";
                                 linearray[17] = "null";
                                 linearray[18] = "null";
                             }
                             var newarray = new List<string>() { filename + "_" + linearray[0], filename };
-                            foreach (var line in linearray) newarray.Add(line);
+                            foreach (var field in linearray) newarray.Add(field);
                             sw.WriteLine(String.Join("\t", newarray));
                         }
                     }
@@ -111,10 +130,10 @@ namespace CompMs.App.MsdialConsole.MolecularNetwork {
                     if (scoreitem[0] < matchThreshold) continue;
 
                     if (node2links.ContainsKey(i)) {
-                        node2links[i].Add(new LinkNode() { Score = scoreitem, Node = spectra[j] });
+                        node2links[i].Add(new LinkNode(scoreitem, spectra[j]));
                     }
                     else {
-                        node2links[i] = new List<LinkNode>() { new LinkNode() { Score = scoreitem, Node = spectra[j] } };
+                        node2links[i] = new List<LinkNode>() { new LinkNode(scoreitem, spectra[j]) };
                     }
                 }
             }

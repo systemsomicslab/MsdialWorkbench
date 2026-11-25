@@ -6,7 +6,9 @@ using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -110,7 +112,17 @@ internal sealed class LcmsAlignmentLightRunner {
             acc.ApplySpotSummary();
         }
 
-        kept = RefineLightSpots(kept);
+        var removedAsIsotopes = new List<LightSpotAccumulator>();
+        var beforeRefinement = kept;
+        kept = RefineLightSpots(kept, removedAsIsotopes);
+        // Copied before the isotope labels of the kept spots are reset below. In light mode the aligned peaks are not
+        // held, so a parent is found only when it is the representative peak of another spot.
+        var representatives = removedAsIsotopes.ToDictionary(acc => acc.Spot, acc => acc.RepresentativePeak);
+        var removedIsotopeSpots = RemovedIsotopeSpot.Collect(
+            removedAsIsotopes.Select(acc => acc.Spot),
+            spot => representatives.TryGetValue(spot, out var peak) ? peak : null,
+            beforeRefinement.Select(acc => acc.RepresentativePeak!).Where(peak => peak is not null));
+        Console.WriteLine($"Alignment light mode: {removedIsotopeSpots.Count} alignment spots removed as isotopes (M + n) of another ion.");
         kept = AssignLightAlignmentIds(kept, peakStore);
         SetLightIsotopeAnalysis(kept);
         Console.WriteLine($"Alignment light mode: {kept.Count} alignment spots retained after spot-level LC-MS refinement.");
@@ -126,7 +138,19 @@ internal sealed class LcmsAlignmentLightRunner {
             TotalAlignmentSpotCount = resultSpots.Count,
             AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(resultSpots),
         };
-        return new LcmsAlignmentLightResult(container, msdecResults);
+        // Hook B of the lipid RT check, as PeakAligner runs it after packing the spots. In light mode the alignment
+        // objects are not saved, so the verdicts and the Confirmed tags reach only this run's exports (the Comment
+        // column, the mzTab-M columns and the review list) and are not persisted.
+        var lipidRt = RunLipidRtCheck(container.AlignmentSpotProperties, _storage);
+        return new LcmsAlignmentLightResult(container, msdecResults, lipidRt, removedIsotopeSpots);
+    }
+
+    /// <summary>
+    /// Hook B in light mode: the check on the spots, with the annotators of the project's libraries of predicted spectra,
+    /// whose matches it does not evaluate, as PeakAligner is given them.
+    /// </summary>
+    internal static LipidRtUnitRun RunLipidRtCheck(IReadOnlyList<AlignmentSpotProperty> spots, IMsdialDataStorage<MsdialLcmsParameter> storage) {
+        return LipidRtCheckHooks.RunOnSpots(spots, storage.Parameter, LipidRtInputBuilder.PredictedLibraryAnnotators(storage.DataBases));
     }
 
     private List<AlignmentSpotProperty> InitializeSpots(IReadOnlyList<ChromatogramPeakFeature> master) {
@@ -231,7 +255,7 @@ internal sealed class LcmsAlignmentLightRunner {
         return acc.IsDetectedEnoughInAnyClass(classFileCounts, classThreshold);
     }
 
-    private List<LightSpotAccumulator> RefineLightSpots(IReadOnlyList<LightSpotAccumulator> accumulators) {
+    private List<LightSpotAccumulator> RefineLightSpots(IReadOnlyList<LightSpotAccumulator> accumulators, List<LightSpotAccumulator> removedAsIsotopes) {
         var cleaned = new List<LightSpotAccumulator>();
         var done = new HashSet<int>();
 
@@ -252,6 +276,7 @@ internal sealed class LcmsAlignmentLightRunner {
                 continue;
             }
             if (acc.Spot.PeakCharacter.IsotopeWeightNumber > 0) {
+                removedAsIsotopes.Add(acc);
                 continue;
             }
             TryMergeToMaster(acc, cleaned, done);
@@ -339,7 +364,7 @@ internal sealed class LcmsAlignmentLightRunner {
                 continue;
             }
             var peak = CreateAlignmentPeak(file, acc.Spot.IonMode);
-            gapFiller.GapFill(ms1Spectra, peak, acc.GapFillCenter, acc.PeakWidth, acc.EstimatedNoise);
+            gapFiller.GapFill(ms1Spectra, peak, acc.GapFillCenter, acc.MaximumDetectedPeakWidth, acc.EstimatedNoise);
             peakStore.WriteSpotPeak(acc.Spot.MasterAlignmentID, peak);
         }
     }
@@ -357,28 +382,10 @@ internal sealed class LcmsAlignmentLightRunner {
     private static IEnumerable<MSDecResult> EnumerateRepresentativeDeconvolutions(
         IReadOnlyList<AnalysisFileBean> files,
         IReadOnlyList<LightSpotAccumulator> spots) {
-        var deconvolutionInfo = new Dictionary<int, (int version, List<long> pointers, bool isAnnotationInfo)>();
-        foreach (var file in files) {
-            MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
-            deconvolutionInfo[file.AnalysisFileId] = (version, pointers, isAnnotationInfo);
-        }
-
-        var streams = files.ToDictionary(file => file.AnalysisFileId, file => File.OpenRead(file.DeconvolutionFilePath));
-        try {
-            foreach (var acc in spots.OrderBy(acc => acc.Spot.MasterAlignmentID)) {
-                var representative = acc.RepresentativePeak ?? throw new InvalidOperationException("Alignment light spot has no representative peak.");
-                var fileId = representative.FileID;
-                var peakId = representative.MasterPeakID;
-                var info = deconvolutionInfo[fileId];
-                yield return MsdecResultsReader.ReadMSDecResult(
-                    streams[fileId], info.pointers[peakId],
-                    info.version, info.isAnnotationInfo);
-            }
-        }
-        finally {
-            foreach (var stream in streams.Values) {
-                stream.Close();
-            }
+        using var reader = new RepresentativeDeconvolutionReader(files);
+        foreach (var acc in spots.OrderBy(acc => acc.Spot.MasterAlignmentID)) {
+            var representative = acc.RepresentativePeak ?? throw new InvalidOperationException("Alignment light spot has no representative peak.");
+            yield return reader.Read(representative);
         }
     }
 
@@ -422,6 +429,15 @@ internal sealed class LcmsAlignmentLightRunner {
         public int FileCount { get; }
         public int DetectedCount { get; private set; }
         public double PeakWidth { get; private set; } = 0.2d;
+        /// <summary>
+        /// The widest detected peak, with no floor: the width the standard path's gap filler
+        /// takes (LcmsGapFiller.GapFill from the spot). The gap filler floors the window at
+        /// 0.2 min itself, after an automatic RT correction has mapped the window back onto
+        /// the file's original RTs. <see cref="PeakWidth"/> starts at that floor, and handed
+        /// to the gap filler it was floored before the mapping, so a file whose map stretches
+        /// the axis got a wider window, and other areas, than the standard path gives it.
+        /// </summary>
+        public double MaximumDetectedPeakWidth { get; private set; }
         public float EstimatedNoise { get; private set; } = 1f;
         public AlignmentChromPeakFeature? RepresentativePeak { get; private set; }
 
@@ -434,7 +450,7 @@ internal sealed class LcmsAlignmentLightRunner {
             if (fileType == AnalysisFileType.QC) {
                 _detectedQcCount++;
             }
-            if (!string.IsNullOrEmpty(className)) {
+            if (className is { Length: > 0 }) {
                 _detectedClassCounts.TryGetValue(className, out var classCount);
                 _detectedClassCounts[className] = classCount + 1;
             }
@@ -450,6 +466,7 @@ internal sealed class LcmsAlignmentLightRunner {
             _snMin = Math.Min(_snMin, peak.PeakShape.SignalToNoise);
             _snMax = Math.Max(_snMax, peak.PeakShape.SignalToNoise);
             PeakWidth = Math.Max(PeakWidth, peak.PeakWidth(ChromXType.RT));
+            MaximumDetectedPeakWidth = Math.Max(MaximumDetectedPeakWidth, peak.PeakWidth(ChromXType.RT));
             EstimatedNoise = Math.Max(EstimatedNoise, peak.PeakShape.EstimatedNoise);
             if (peak.PeakHeightTop > _maxHeightForMass) {
                 _maxHeightForMass = peak.PeakHeightTop;
@@ -522,21 +539,34 @@ internal sealed class LcmsAlignmentLightRunner {
             }
         }
 
+        /// <summary>
+        /// The light alignment's representative choice: the same order as the full aligner's,
+        /// <see cref="DataObjConverter.CompareRepresentativePrecedence"/>.
+        /// </summary>
+        /// <remarks>
+        /// Strictly better only, so the first peak streamed in -- the lowest file -- keeps a complete
+        /// tie, as <see cref="DataObjConverter.GetRepresentativePeak"/> keeps the first in its list.
+        /// </remarks>
         private static bool IsBetterRepresentative(AlignmentChromPeakFeature candidate, AlignmentChromPeakFeature current) {
-            var candidateScore = candidate.MatchResults?.Representative?.TotalScore ?? 0d;
-            var currentScore = current.MatchResults?.Representative?.TotalScore ?? 0d;
-            return (candidate.IsMsmsAssigned, candidateScore, candidate.PeakHeightTop)
-                 .CompareTo((current.IsMsmsAssigned, currentScore, current.PeakHeightTop)) > 0;
+            return DataObjConverter.CompareRepresentativePrecedence(candidate, current) > 0;
         }
     }
 }
 
 internal sealed class LcmsAlignmentLightResult {
-    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults) {
+    public LcmsAlignmentLightResult(AlignmentResultContainer container, IReadOnlyList<MSDecResult> msdecResults, LipidRtUnitRun? lipidRtRun = null, IReadOnlyList<RemovedIsotopeSpot>? removedIsotopeSpots = null) {
         Container = container;
         MsdecResults = msdecResults;
+        LipidRtRun = lipidRtRun;
+        RemovedIsotopeSpots = removedIsotopeSpots ?? Array.Empty<RemovedIsotopeSpot>();
     }
+
+    /// <summary>The spots the refinement removed as isotopes of another ion.</summary>
+    public IReadOnlyList<RemovedIsotopeSpot> RemovedIsotopeSpots { get; }
 
     public AlignmentResultContainer Container { get; }
     public IReadOnlyList<MSDecResult> MsdecResults { get; }
+
+    /// <summary>What the lipid RT check did on the light alignment (hook B).</summary>
+    public LipidRtUnitRun? LipidRtRun { get; }
 }

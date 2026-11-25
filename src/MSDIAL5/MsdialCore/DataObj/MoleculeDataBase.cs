@@ -93,14 +93,14 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Save(Stream stream, bool forceSerialize = false) {
             if (_needSerialize || forceSerialize) {
-                LargeListMessagePack.Serialize(stream, Database);
+                LargeListMessagePack.Serialize(stream, Database, CompactLibraryResolver.Instance);
                 //_needSerialize = false;
             }
         }
 
         public void Load(Stream stream, string folderpath) {
             Database?.Clear();
-            var db = LargeListMessagePack.Deserialize<MoleculeMsReference>(stream);
+            var db = LargeListMessagePack.Deserialize<MoleculeMsReference>(stream, CompactLibraryResolver.Instance);
             Database = new MoleculeMsReferenceCollection(db);
             _compoundCount = null;
             _contentDigest = null;

@@ -1,0 +1,140 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_c5h10",
+   "loss_c6h13o"
+  ],
+  "motif_id": "dibenzocyclooctadiene_lignan",
+  "negative_examples": [
+   {
+    "pubchem_cid": 11223782,
+    "smiles": "COC[C@H]1CC2=CC(=C(C=C2[C@H]([C@@H]1COC)C3=CC(=C(C=C3)OC)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 345501,
+    "smiles": "COC1=CC(=CC(=C1OC)OC)[C@H]2[C@@H]3[C@@H](CC4=CC5=C(C=C24)OCO5)COC3=O"
+   },
+   {
+    "pubchem_cid": 181796,
+    "smiles": "C[C@H](CC1=CC(=C(C(=C1)OC)OC)O)[C@@H](C)CC2=CC(=C(C(=C2)OC)OC)O"
+   }
+  ],
+  "non_claims": [
+   "methoxy versus methylenedioxy substitution and the biaryl and ring stereochemistry (schisandrin B versus gomisin N) are not resolved",
+   "dibenzocyclooctadienes with a C6, C7 or C9 hydroxyl or ester lose water or the acid first and are not covered by these terms",
+   "precursors acquired as [M+NH4]+ (listed with [M+H]+ in Shi 2009 Table 3) are not covered: the losses are computed from the hypothesis precursor, while the products follow NH3 loss, so the rule costs recall there",
+   "under the common [M+Na]+ hypothesis each sodiated precursor and its loss targets lie 2.4 mDa from those of the [M+H]+ of a composition with C2 for NaH (deoxyschisandrin vs C26H30O6, such as kurarinone), inside both tolerances, so these protonated compounds are tested against the losses"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 43595,
+    "smiles": "CC1CC2=CC(=C(C(=C2C3=C(C(=C(C=C3CC1C)OC)OC)OC)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 108130,
+    "smiles": "CC1CC2=CC3=C(C(=C2C4=C(C(=C(C=C4CC1C)OC)OC)OC)OC)OCO3"
+   },
+   {
+    "pubchem_cid": 443027,
+    "smiles": "C[C@@H]1CC2=CC3=C(C(=C2C4=C(C5=C(C=C4C[C@@H]1C)OCO5)OC)OC)OCO3"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_c5h10"
+   },
+   {
+    "term": "loss_c6h13o"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Schisandra dibenzocyclooctadienes without a ring hydroxyl or ester lose C5H10 (base) and then a methoxyl radical (C6H13O in total) from [M+H]+ (Huang 2007, Shi 2009); the second ion is a radical-loss product of the first, so one ring cleavage is shown and the rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "aryltetralin_lignan",
+    "note": "Phyltetralin (aryltetralin with two methoxymethyl groups) is C24H32O6 like deoxyschisandrin; no cited source reports its positive-mode ions, so it is declared for the competitor FPR."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "lignan_dibenzocyclooctadienes",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "lignan.dibenzocyclooctadiene.pos",
+ "source": [
+  {
+   "doi": "10.1002/jms.1246",
+   "locator": "Huang 2007: Results, reference compounds (pp. 1151-1152); Table 1 (p. 1153); Table 3, peaks 3, 9, 13, 15 (p. 1159); Schemes 3-4 (pp. 1156-1157)"
+  },
+  {
+   "doi": "10.1002/jms.1246",
+   "locator": "Huang 2007: Results, deoxyschisandrin and schisandrin B (pp. 1151-1152); Table 1 (p. 1153); Table 2 (p. 1154); Table 3, peaks 3, 9, 13, 15 (p. 1159); Schemes 3-4 (pp. 1156-1157)"
+  },
+  {
+   "doi": "10.1002/pca.1115",
+   "locator": "Shi 2009: Table 4, peaks 21-23 (p. 204); Results, MW 416 and MW 400 isomers (pp. 201-203); Table 3 (p. 203)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C5H10",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "C5H10 70.0783 from the cyclooctadiene ring (C6-C9 with the C7 and C8 methyls), the base [M+H]+ product.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_c5h10",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C6H13O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Combined C5H10 and methoxyl radical loss 101.0966 (417 to 316, 401 to 300, 389 to 288, 385 to 284), the C5H10 product losing a methoxyl.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_c6h13o",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

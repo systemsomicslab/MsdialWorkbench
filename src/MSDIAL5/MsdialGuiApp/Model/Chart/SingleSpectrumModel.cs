@@ -27,6 +27,15 @@ namespace CompMs.App.Msdial.Model.Chart
             _hueItem = hueItem;
             Brush = hueItem.Brush;
             Labels = graphLabels;
+            // Use the full spectrum's base peak; scores do not share the intensity scale.
+            MinimumAnnotationOrder = MsSpectrum
+                .CombineLatest(Labels.ObserveProperty(labels => labels.AnnotationOrderProperty), (spectrum, order) => {
+                    if (order != nameof(SpectrumPeak.Intensity)) {
+                        return double.NegativeInfinity;
+                    }
+                    var maximum = spectrum?.Spectrum.Select(peak => peak.Intensity).DefaultIfEmpty(0d).Max() ?? 0d;
+                    return maximum > 0d ? maximum * .01d : double.PositiveInfinity;
+                });
 
             IsVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
             IsAnnotationVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
@@ -35,11 +44,12 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public IObservable<MsSpectrum?> MsSpectrum => _observableMsSpectrum.MsSpectrum;
+        public IObservable<double> MinimumAnnotationOrder { get; }
         public AxisPropertySelectors<double> HorizontalPropertySelectors { get; }
-        public IObservable<IAxisManager<double>> HorizontalAxis => HorizontalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager);
+        public IObservable<IAxisManager<double>> HorizontalAxis => HorizontalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().Select(item => item.AxisManager);
         public string HorizontalProperty { get; }
         public AxisPropertySelectors<double> VerticalPropertySelectors { get; }
-        public IObservable<IAxisManager<double>> VerticalAxis => VerticalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().SkipNull().Select(item => item.AxisManager);
+        public IObservable<IAxisManager<double>> VerticalAxis => VerticalPropertySelectors.AxisItemSelector.GetAxisItemAsObservable().Select(item => item.AxisManager);
         public AxisItemSelector<double> VerticalAxisItemSelector => VerticalPropertySelectors.AxisItemSelector;
         public string VerticalProperty { get; }
         public IBrushMapper Brush { get; set; }

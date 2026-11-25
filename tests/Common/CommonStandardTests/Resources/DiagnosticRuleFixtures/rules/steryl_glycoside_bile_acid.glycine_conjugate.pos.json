@@ -1,0 +1,730 @@
+{
+ "cases": [
+  {
+   "description": "h* = dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+, precursor at its oracle m/z; one peak per support member: glycinium:C2H6NO2, core_pair:C24H33, core_pair:C24H35O",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+",
+      "fired": true,
+      "matched": [
+       "glycinium:C2H6NO2@0",
+       "core_pair:C24H33@1",
+       "core_pair:C24H35O@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glycine_conjugated_bile_acid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"179d3e5c05b3ab141f3bd68f56ea3d7008378bf5ce3e9969b3187909b30d499f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glycine_conjugated_bile_acid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H-2H2O]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Gly1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\",\"hypothesis_mz\":414.300270,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"C2H6NO2\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO2\",\"peak_index\":0,\"peak_mz\":76.039304,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":76.039304,\"term_id\":\"glycinium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C24H33\",\"kind\":\"product_ion\",\"member_key\":\"C24H33\",\"peak_index\":1,\"peak_mz\":321.257677,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":321.257677,\"term_id\":\"core_pair\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C24H35O\",\"kind\":\"product_ion\",\"member_key\":\"C24H35O\",\"peak_index\":2,\"peak_mz\":339.268242,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":339.268242,\"term_id\":\"core_pair\",\"unit_id\":2}],\"neutral_formula\":\"C26H43NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Gly\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "51ed24b00ea7b1ba33ec02d8338d3ca36f493b58ad7ecb5a006e52f6ff2842ce"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ without the peaks of required term glycinium; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "drop_glycinium",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"f40e45c40340466bec77775397f3b0835997605683e251b0ac896fca17ac9af2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "af1d7c282e7378dd0f998d6f987e237be9b5b31baaa52e69c0b8176479f2ab00"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with 2 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+",
+      "fired": true,
+      "matched": [
+       "glycinium:C2H6NO2@0",
+       "core_pair:C24H33@1",
+       "core_pair:C24H35O@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glycine_conjugated_bile_acid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"179d3e5c05b3ab141f3bd68f56ea3d7008378bf5ce3e9969b3187909b30d499f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glycine_conjugated_bile_acid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H-2H2O]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Gly1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\",\"hypothesis_mz\":414.300270,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"C2H6NO2\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO2\",\"peak_index\":0,\"peak_mz\":76.039304,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":76.039304,\"term_id\":\"glycinium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C24H33\",\"kind\":\"product_ion\",\"member_key\":\"C24H33\",\"peak_index\":1,\"peak_mz\":321.257677,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":321.257677,\"term_id\":\"core_pair\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C24H35O\",\"kind\":\"product_ion\",\"member_key\":\"C24H35O\",\"peak_index\":2,\"peak_mz\":339.268242,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":339.268242,\"term_id\":\"core_pair\",\"unit_id\":2}],\"neutral_formula\":\"C26H43NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Gly\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "51ed24b00ea7b1ba33ec02d8338d3ca36f493b58ad7ecb5a006e52f6ff2842ce"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with 1 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"1be1da24462e1442f3410f2e357c47a02ee179c6bfbc239b3c0b0a31025825e5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "88e820a99ec5905ee893101892aacbcfd1e2a388c03c2ece5c6a7f96514cc6b7"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with glycinium:C2H6NO2 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+",
+      "fired": true,
+      "matched": [
+       "glycinium:C2H6NO2@0",
+       "core_pair:C24H33@1",
+       "core_pair:C24H35O@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.044294",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glycine_conjugated_bile_acid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"819713e8656f8518783efcdc44d0c0bef2dcee9bb57e75168d801796fffa5d32\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glycine_conjugated_bile_acid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H-2H2O]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Gly1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\",\"hypothesis_mz\":414.300270,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":65.618,\"ion_formula\":\"C2H6NO2\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO2\",\"peak_index\":0,\"peak_mz\":76.044294,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":76.039304,\"term_id\":\"glycinium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C24H33\",\"kind\":\"product_ion\",\"member_key\":\"C24H33\",\"peak_index\":1,\"peak_mz\":321.257677,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":321.257677,\"term_id\":\"core_pair\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C24H35O\",\"kind\":\"product_ion\",\"member_key\":\"C24H35O\",\"peak_index\":2,\"peak_mz\":339.268242,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":339.268242,\"term_id\":\"core_pair\",\"unit_id\":2}],\"neutral_formula\":\"C26H43NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Gly\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d225a14f53c93bfd75cc48f4f42269e23fdb07e47cb5bdc8bf6d0ef6722b7b02"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with glycinium:C2H6NO2 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.044314",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"57db7a3dff45ca04411c15935464ac41534f88f5104ee8a6316e7391ca605a26\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c9d1743a52da047a4fe3ea1294621a0e518b347048d8855ff97bd4231c020874"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with glycinium:C2H6NO2 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+",
+      "fired": true,
+      "matched": [
+       "glycinium:C2H6NO2@0",
+       "core_pair:C24H33@1",
+       "core_pair:C24H35O@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.034314",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glycine_conjugated_bile_acid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"4d880cabdc66e8eb6be46b9ddebf3bd5155b0f64e1a9fd0ced24d0a33c8b3433\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glycine_conjugated_bile_acid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H-2H2O]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Gly1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\",\"hypothesis_mz\":414.300270,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-65.630,\"ion_formula\":\"C2H6NO2\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO2\",\"peak_index\":0,\"peak_mz\":76.034314,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":76.039304,\"term_id\":\"glycinium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C24H33\",\"kind\":\"product_ion\",\"member_key\":\"C24H33\",\"peak_index\":1,\"peak_mz\":321.257677,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":321.257677,\"term_id\":\"core_pair\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C24H35O\",\"kind\":\"product_ion\",\"member_key\":\"C24H35O\",\"peak_index\":2,\"peak_mz\":339.268242,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":339.268242,\"term_id\":\"core_pair\",\"unit_id\":2}],\"neutral_formula\":\"C26H43NO5\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Gly\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "70b916252e54ad406ce7717eb72920f0ea42da00fb6a63b6656cd7bb7ebdb5d5"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with glycinium:C2H6NO2 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.034294",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"6ed943d12a8c171402e4cdd67a8321c119ddaf554af878226230fabe0d4cf807\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d6e3511807d168c767f39a1d53a2c84d20fd9e9688231f25698da08f73becec3"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+",
+      "fired": true,
+      "matched": [
+       "glycinium:C2H6NO2@0",
+       "core_pair:C24H33@1",
+       "core_pair:C24H35O@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.31026",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.31026"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glycine_conjugated_bile_acid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"59e2f2509ab67b2d3300260f6cb1a07bc8cf5262142a68fcab56b86b2d744dc4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glycine_conjugated_bile_acid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H-2H2O]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Gly1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\",\"hypothesis_mz\":414.300270,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"C2H6NO2\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO2\",\"peak_index\":0,\"peak_mz\":76.039304,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":76.039304,\"term_id\":\"glycinium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C24H33\",\"kind\":\"product_ion\",\"member_key\":\"C24H33\",\"peak_index\":1,\"peak_mz\":321.257677,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":321.257677,\"term_id\":\"core_pair\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C24H35O\",\"kind\":\"product_ion\",\"member_key\":\"C24H35O\",\"peak_index\":2,\"peak_mz\":339.268242,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":339.268242,\"term_id\":\"core_pair\",\"unit_id\":2}],\"neutral_formula\":\"C26H43NO5\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Gly\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.310260,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9b6665d0b0afc51f8d97b3fe27a444c51bae482bcc5f9a90523cd55427b58df7"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.31028",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.31028"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"10f67bf8041ce214cde6629440c0c9b28ce7606c8faf5df2641d94a4c1aef429\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.310280,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a64547829b657c3235f7ef7ab8abe7e3db4d56b09f9f20208208e14a5e9466e9"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+",
+      "fired": true,
+      "matched": [
+       "glycinium:C2H6NO2@0",
+       "core_pair:C24H33@1",
+       "core_pair:C24H35O@2"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.29028",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.29028"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"glycine_conjugated_bile_acid\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"7549ff6b5e4c37a17d51f331e7701bc513d641515d81e52576d43d4aa0630f15\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"glycine_conjugated_bile_acid\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H-2H2O]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Gly1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\",\"hypothesis_mz\":414.300270,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic/all/1\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.006,\"ion_formula\":\"C2H6NO2\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO2\",\"peak_index\":0,\"peak_mz\":76.039304,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":76.039304,\"term_id\":\"glycinium\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C24H33\",\"kind\":\"product_ion\",\"member_key\":\"C24H33\",\"peak_index\":1,\"peak_mz\":321.257677,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":321.257677,\"term_id\":\"core_pair\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C24H35O\",\"kind\":\"product_ion\",\"member_key\":\"C24H35O\",\"peak_index\":2,\"peak_mz\":339.268242,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":339.268242,\"term_id\":\"core_pair\",\"unit_id\":2}],\"neutral_formula\":\"C26H43NO5\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Gly\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.290280,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "929ed7926826129c69fce1a510e5c1cde0e4ebf738f7f6b6cf0377d078078c40"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.29026",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.29026"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"8d17001a970889c9134082ea500b5df5ca5b7fda6d3d8ec89107325d4901dfdd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.290260,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3628b2776ea9ba7ace2dde9106c8741917c5591862c0ef668a5542b7e69ed31c"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"67a0f07ca8ecf71c3cc0c408a647848738252581a315f71bae439cdb32df8246\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ddcdc70900a8724f6c5634301d0752f9098f1d92b4d78483c6efbe40330bde4f"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Gly1|[M+H-2H2O]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.glycine_conjugate.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "76.039304",
+      "500.0"
+     ],
+     [
+      "321.257677",
+      "500.0"
+     ],
+     [
+      "339.268242",
+      "500.0"
+     ],
+     [
+      "414.30027",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "414.30027"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"input_sha256\":\"179d3e5c05b3ab141f3bd68f56ea3d7008378bf5ce3e9969b3187909b30d499f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"glycine_conjugated_bile_acid\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.glycine_conjugate.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":414.300270,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"1bbdf8b1ae873ae59a251277c891ec8c11245964fe9cc6b693b77d19fb60ccff\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "10f255a5b1a55507f8034ba5f0308f0dd3edfdd235a8015ffdc9fdb03fa52d47"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

@@ -1,0 +1,27 @@
+{
+ "entries": [
+  {
+   "class": "benzophenanthridine",
+   "formula": "C21H18NO4",
+   "ions": {},
+   "name": "chelerythrine (nitidine shares the cation formula)",
+   "origin": "as_published",
+   "scaffold_id": "chelerythrine",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3045",
+     "locator": "Results, pp. 1932-1935; Tables 1-2; Schemes 1-2"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 2703 (chelerythrine), compound record"
+    },
+    {
+     "locator": "Names and Identifiers: Molecular Formula",
+     "reference": "PubChem CID 4501 (nitidine), compound record"
+    }
+   ]
+  }
+ ],
+ "list_id": "alkaloid_benzylisoquinoline_benzophenanthridinium"
+}

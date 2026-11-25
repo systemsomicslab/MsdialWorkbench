@@ -2489,6 +2489,7 @@ namespace CompMs.Common.Lipidomics
             SetBasicMoleculerProperties(molecule, query);
 
             var lipidinfo = query.Name;
+            if (lipidinfo == null || lipidinfo.Length < 3) return;
             var carbonCountString = lipidinfo.Substring(3); // CoQ3 -> 3
             var carbonCount = 0;
             int.TryParse(carbonCountString, out carbonCount);
@@ -2506,6 +2507,7 @@ namespace CompMs.Common.Lipidomics
         public static void SetCoqMolecule(LipidMolecule molecule, string lipidname, string ontology)
         {
 
+            if (lipidname == null || lipidname.Length < 3) return;
             var carbonCountString = lipidname.Substring(3); // CoQ3 -> 3
             var carbonCount = 0;
             int.TryParse(carbonCountString, out carbonCount);
@@ -2591,7 +2593,7 @@ namespace CompMs.Common.Lipidomics
 
         public static void SetLipidAcylChainProperties(LipidMolecule molecule, MoleculeMsReference query)
         {
-            var lipidname = query.Name.Trim(); // e.g. ST 28:2;O;Hex;PA 12:0_12:0, SE 28:2/8:0
+            var lipidname = query.Name?.Trim() ?? string.Empty; // e.g. ST 28:2;O;Hex;PA 12:0_12:0, SE 28:2/8:0
             var chainStrings = acylChainStringSeparatorVS2(lipidname);
             var ontology = query.CompoundClass;
             //var lipidSuperClass = ConvertMsdialClassDefinitionToSuperClassVS2(ontology);
@@ -2613,6 +2615,7 @@ namespace CompMs.Common.Lipidomics
 
         public static void SetLipidAcylChainProperties(LipidMolecule molecule, string lipidname, string ontology)
         {
+            if (lipidname == null) return;
             var chainStrings = acylChainStringSeparatorVS2(lipidname);
             if (chainStrings == null) return;
             switch (chainStrings.Count())
@@ -2633,7 +2636,7 @@ namespace CompMs.Common.Lipidomics
             molecule.Mz = (float)query.PrecursorMz;
             molecule.Smiles = query.SMILES;
             molecule.InChIKey = query.InChIKey;
-            molecule.Formula = query.Formula.FormulaString;
+            molecule.Formula = query.Formula?.FormulaString ?? string.Empty; // the MSP parser leaves Formula null for FORMULA: "", "Unknown" or "null"
 
             //Console.WriteLine(query.Name + "\t" + query.AdductIonBean.AdductIonName);
 
@@ -2648,7 +2651,7 @@ namespace CompMs.Common.Lipidomics
             if (chainStrings.Count != 1) return;
             var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(ontology);
             int sn1CarbonCount, sn1DoubleBond, sn1OxidizedCount;
-            setChainPropertiesVS2(chainStrings[0], out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount);
+            if (!setChainPropertiesVS2(chainStrings[0], out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount)) return;
             var totalCarbonCount = sn1CarbonCount;
             var totalDoubleBond = sn1DoubleBond;
             var totalOxidizedCount = sn1OxidizedCount;
@@ -2792,8 +2795,8 @@ namespace CompMs.Common.Lipidomics
 
             int sn1CarbonCount, sn1DoubleBond, sn1OxidizedCount;
             int sn2CarbonCount, sn2DoubleBond, sn2OxidizedCount;
-            setChainPropertiesVS2(sn1AcylChainString, out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount);
-            setChainPropertiesVS2(sn2AcylChainString, out sn2CarbonCount, out sn2DoubleBond, out sn2OxidizedCount);
+            if (!setChainPropertiesVS2(sn1AcylChainString, out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount) ||
+                !setChainPropertiesVS2(sn2AcylChainString, out sn2CarbonCount, out sn2DoubleBond, out sn2OxidizedCount)) return;
 
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond;
@@ -2986,9 +2989,9 @@ namespace CompMs.Common.Lipidomics
             int sn2CarbonCount, sn2DoubleBond, sn2OxidizedCount;
             int sn3CarbonCount, sn3DoubleBond, sn3OxidizedCount;
 
-            setChainPropertiesVS2(sn1AcylChainString, out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount);
-            setChainPropertiesVS2(sn2AcylChainString, out sn2CarbonCount, out sn2DoubleBond, out sn2OxidizedCount);
-            setChainPropertiesVS2(sn3AcylChainString, out sn3CarbonCount, out sn3DoubleBond, out sn3OxidizedCount);
+            if (!setChainPropertiesVS2(sn1AcylChainString, out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount) ||
+                !setChainPropertiesVS2(sn2AcylChainString, out sn2CarbonCount, out sn2DoubleBond, out sn2OxidizedCount) ||
+                !setChainPropertiesVS2(sn3AcylChainString, out sn3CarbonCount, out sn3DoubleBond, out sn3OxidizedCount)) return;
 
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount + sn3CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond;
@@ -3041,10 +3044,10 @@ namespace CompMs.Common.Lipidomics
             int sn3CarbonCount, sn3DoubleBond, sn3OxidizedCount;
             int sn4CarbonCount, sn4DoubleBond, sn4OxidizedCount;
 
-            setChainPropertiesVS2(sn1AcylChainString, out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount);
-            setChainPropertiesVS2(sn2AcylChainString, out sn2CarbonCount, out sn2DoubleBond, out sn2OxidizedCount);
-            setChainPropertiesVS2(sn3AcylChainString, out sn3CarbonCount, out sn3DoubleBond, out sn3OxidizedCount);
-            setChainPropertiesVS2(sn4AcylChainString, out sn4CarbonCount, out sn4DoubleBond, out sn4OxidizedCount);
+            if (!setChainPropertiesVS2(sn1AcylChainString, out sn1CarbonCount, out sn1DoubleBond, out sn1OxidizedCount) ||
+                !setChainPropertiesVS2(sn2AcylChainString, out sn2CarbonCount, out sn2DoubleBond, out sn2OxidizedCount) ||
+                !setChainPropertiesVS2(sn3AcylChainString, out sn3CarbonCount, out sn3DoubleBond, out sn3OxidizedCount) ||
+                !setChainPropertiesVS2(sn4AcylChainString, out sn4CarbonCount, out sn4DoubleBond, out sn4OxidizedCount)) return;
 
             var totalCarbonCount = sn1CarbonCount + sn2CarbonCount + sn3CarbonCount + sn4CarbonCount;
             var totalDoubleBond = sn1DoubleBond + sn2DoubleBond + sn3DoubleBond + sn4DoubleBond;
@@ -3290,7 +3293,7 @@ namespace CompMs.Common.Lipidomics
         //    molecule.Sn4Oxidizedount = sn4OxidizedCount;
         //}
 
-        private static void setChainPropertiesVS2(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount)
+        private static bool setChainPropertiesVS2(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount)
         {
 
             carbonCount = 0;
@@ -3380,11 +3383,15 @@ namespace CompMs.Common.Lipidomics
             }
 
             // here all string expected as (carbon):(double)
-            var carbon = chainString.Split(':')[0];
-            var doublebond = chainString.Split(':')[1];
+            // a token without ':' (e.g. "Cholesterol d7", "PC 34") is not a chain; the caller leaves the molecule unvalidated
+            var chainParts = chainString.Split(':');
+            if (chainParts.Length < 2) return false;
+            var carbon = chainParts[0];
+            var doublebond = chainParts[1];
             int.TryParse(carbon, out carbonCount);
             int.TryParse(doublebond, out doubleBondCount);
             if (isPlasmenyl) doubleBondCount++;
+            return true;
         }
 
         //private static void setChainProperties(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount) {

@@ -1,0 +1,197 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "y0",
+   "acyl_hexa_coumaroyl",
+   "acyl_hexa_feruloyl"
+  ],
+  "motif_id": "hydroxycinnamoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 44257815,
+    "smiles": "C1=CC(=CC=C1C2=CC(=O)C3=C(C=C(C=C3O2)O[C@H]4C([C@H]([C@@H](C(O4)C(=O)O)O)O)O[C@H]5C([C@H]([C@@H](C(O5)C(=O)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 124025,
+    "smiles": "C1[C@H]([C@H](OC2=C1C(=CC3=C2[C@@H]4[C@H]([C@](O3)(OC5=CC(=CC(=C45)O)O)C6=CC(=C(C=C6)O)O)O)O)C7=CC(=C(C=C7)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the hexuronic acid that carries the acyl group and the acyl position are not resolved",
+   "the aglycone and the acyl identity come from the hypothesis and are reported, not claimed; isomeric aglycone and acyl combinations share one precursor composition"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 134768871,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)O[C@@H]2[C@H]([C@@H]([C@H](O[C@H]2O[C@@H]3[C@H]([C@@H]([C@H](O[C@H]3OC4=CC(=C5C(=C4)OC(=CC5=O)C6=CC=C(C=C6)O)O)C(=O)O)O)O)C(=O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 53493979,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)O[C@@H]2[C@H]([C@@H]([C@H](O[C@H]2O[C@@H]3[C@H]([C@@H]([C@H](O[C@H]3OC4=CC(=C5C(=C4)OC(=CC5=O)C6=CC(=C(C=C6)O)OC)O)C(=O)O)O)O)C(=O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 131752754,
+    "smiles": "COC1=CC(=CC(=C1O)OC)C2=CC(=O)C3=C(C=C(C=C3O2)OC4C(C(C(C(O4)C(=O)O)O)O)OC5C(C(C(C(O5)C(=O)O)O)O)OC(=O)/C=C/C6=CC(=C(C=C6)O)OC)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "y0"
+   },
+   {
+    "any": [
+     {
+      "term": "acyl_hexa_coumaroyl"
+     },
+     {
+      "term": "acyl_hexa_feruloyl"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): in 96 of 1088 hypotheses (e.g. luteolin or kaempferol with p-coumaroyl) the Y0 formula is the acyl-hexuronic acid ion minus 2 H2O, so the two claim ions can be one channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "flavonoid_o_glycoside",
+    "note": "non-acylated glucuronides lie 0.015 Da (HexA for feruloyl) or 0.021 Da (dHex for coumaroyl) from the hypothesis and share Y0; their sugar oxonium ions miss the acyl-hexuronic acid ions by the same margins"
+   },
+   {
+    "motif_id": "proanthocyanidin",
+    "note": "A-type dimers C30H24O12 and C30H24O13 are exact isomers of chrysin, daidzein, apigenin, baicalein, galangin or genistein HexA1,coumaroyl1 hypotheses; their fragments were not checked against a source"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "acylated_glycoside_ester_flavone_flavonol_isoflavone",
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     1
+    ],
+    "HexA": [
+     1,
+     2
+    ],
+    "coumaroyl": [
+     0,
+     1
+    ],
+    "feruloyl": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.hydroxycinnamoyl_flavonoid_glucuronide.pos",
+ "source": [
+  {
+   "doi": "10.1002/pca.1189",
+   "locator": "Results and Discussion, Fragmentation pathways of acylated flavone diglycosides; Table 2; Figure 3B"
+  },
+  {
+   "doi": "10.1002/pca.1189",
+   "locator": "Results and Discussion, Fragmentation pathways of acylated flavone diglycosides; Table 2"
+  },
+  {
+   "doi": "10.1007/s11306-011-0287-2",
+   "locator": "Table 1; Figure 4"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:3",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "[aglycone+H]+ after loss of all sugars and the acyl group (apigenin 271.0601, chrysoeriol 301.0707, tricin 331.0813 in src:1); also src:2 (isoflavones 255.0645, 271.0601)",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "y0",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "p-coumaroyl-hexuronic acid oxonium ion C15H15O8+ 323.076, charge kept on the acylated glucuronic acid after cleavage between the two sugars (src:0); also src:2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acyl_hexa_coumaroyl",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "coumaroyl",
+    "plus": "C6H9O6"
+   }
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "feruloyl-hexuronic acid oxonium ion C16H17O9+ 353.087 (src:0); also src:2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acyl_hexa_feruloyl",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "feruloyl",
+    "plus": "C6H9O6"
+   }
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18; split from hydroxycinnamoyl_flavonoid_glycoside.pos at the review fix, 2026-11-19) from the LLM-extracted candidate records of candidates-20261118; terms source-checked 2026-11-18, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

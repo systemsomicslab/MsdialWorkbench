@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
@@ -52,7 +53,19 @@ namespace CompMs.App.RawDataViewer.View
             }
         }
 
+        // The open summary window of each loaded file. Load opens it, and Show, pressed again for the same file, brings
+        // that window back instead of opening a second one over the same view model.
+        private readonly Dictionary<SummarizedDataViewModel, Window> summaryWindows = new Dictionary<SummarizedDataViewModel, Window>();
+
         private void ShowSummarizedDataView(SummarizedDataViewModel vm) {
+            if (summaryWindows.TryGetValue(vm, out var opened)) {
+                if (opened.WindowState == WindowState.Minimized) {
+                    // To the size it had before it was minimised, maximised included.
+                    SystemCommands.RestoreWindow(opened);
+                }
+                opened.Activate();
+                return;
+            }
             var dialog = new Window
             {
                 Content = new SummarizedDataView(),
@@ -62,6 +75,8 @@ namespace CompMs.App.RawDataViewer.View
                 Width = 1200,
                 Height = 800,
             };
+            summaryWindows.Add(vm, dialog);
+            dialog.Closed += (s, e) => summaryWindows.Remove(vm);
             dialog.Show();
         }
 

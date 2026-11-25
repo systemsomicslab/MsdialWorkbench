@@ -14,6 +14,7 @@ namespace CompMs.App.Msdial.Model.Service
         private List<MsScanMatchResult>? _manuallyResutls;
         private MsScanMatchResult? _unknownResult;
         private IMoleculeProperty? _previousMolecule;
+        private LipidRtCheckState? _previousLipidRtCheck;
 
         public SetUnknownDoCommand(IMoleculeProperty molecule, MsScanMatchResultContainerModel container)
         {
@@ -36,6 +37,12 @@ namespace CompMs.App.Msdial.Model.Service
             DataAccess.ClearMoleculePropertyInfomation(_molecule);
             _container.RemoveManuallyResults();
             _container.AddResult(_unknownResult);
+
+            // The lipid RT check's verdict and its own Confirmed were about the annotation that is now gone (addendum A6).
+            if (_molecule is ILipidRtCheckedObject checkedObject) {
+                _previousLipidRtCheck = checkedObject.CaptureLipidRtCheck();
+                checkedObject.WithdrawLipidRtCheck();
+            }
         }
 
         void IDoCommand.Undo()
@@ -51,6 +58,10 @@ namespace CompMs.App.Msdial.Model.Service
             _molecule.InChIKey = _previousMolecule.InChIKey;
             _container.RemoveResult(_unknownResult);
             _container.AddResults(_manuallyResutls);
+
+            if (_molecule is ILipidRtCheckedObject checkedObject && _previousLipidRtCheck is not null) {
+                checkedObject.RestoreLipidRtCheck(_previousLipidRtCheck);
+            }
         }
     }
 }

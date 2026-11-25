@@ -1,0 +1,222 @@
+using CompMs.App.Msdial.UiTests.Infrastructure;
+using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Definitions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace CompMs.App.Msdial.UiTests
+{
+    /// <summary>
+    /// The project metadata (instrument, authors, license, collision energy, comment) that MassBank,
+    /// MoNA and MSP exports carry: entered when the project is created, kept when it is saved and
+    /// opened again, changed afterwards in "Project property setting", constrained there to MassBank
+    /// format with a contributor ID, and written to the export.
+    /// It uses the data of the MS-DIAL metabolomics hands-on (part 1, SCIEX WIFF, positive).
+    /// </summary>
+    [TestClass]
+    [TestCategory("UI")]
+    public class ProjectMetadataTests
+    {
+        private const string PropertyDialogTitle = "Project property setting";
+        private const string MassBankSummaryTitle = "MassBank export";
+
+        // MassBank refuses to export without a contributor ID in its format (A-Z, 0-9 and _).
+        private const string ProjectContributor = "MSDIAL_UI_TEST";
+
+        // The text box ids are the same on the measurement page of the project wizard and in the
+        // project property dialog.
+        private static readonly Metadata Entered = new Metadata {
+            ["TextBox_InstrumentType"] = "LC-ESI-QTOF",
+            ["TextBox_Instrument"] = "TripleTOF 5600, SCIEX",
+            ["TextBox_Authors"] = "MS-DIAL UI test",
+            ["TextBox_License"] = "CC BY",
+            ["TextBox_CollisionEnergy"] = "35 +/- 15 V",
+            ["TextBox_Comment"] = "Entered when the project was created",
+        };
+
+        private static readonly Metadata Edited = new Metadata {
+            ["TextBox_InstrumentType"] = "LC-ESI-QFT",
+            ["TextBox_Instrument"] = "TripleTOF 6600, SCIEX",
+            ["TextBox_Authors"] = "MS-DIAL UI test, edited",
+            ["TextBox_License"] = "CC BY-SA",
+            ["TextBox_CollisionEnergy"] = "40 V",
+            ["TextBox_Comment"] = "Changed in Project property setting",
+        };
+
+        public TestContext TestContext { get; set; } = null!;
+
+        [TestMethod]
+        public void EntersSavesEditsAndExportsProjectMetadata() {
+            var exe = RunParameters.RequireMsdialExe(TestContext);
+            var handsOnDir = RunParameters.RequireHandsOnDataDir(TestContext);
+            var dataset = HandsOnData.Part1Positive(handsOnDir);
+            var work = WorkDirectory.Prepare(TestContext, handsOnDir, dataset);
+
+            // Entered in the project wizard, it shows in the property dialog and is saved.
+            using (var session = MsdialSession.Launch(TestContext, exe)) {
+                Workflow.CreateProjectAndRun(session, dataset, work, dragAndDrop: false, onMeasurementPage: wizard => EnterMetadata(session, wizard));
+                Workflow.WaitForResults(session, dataset, "processing");
+                AssertPropertyDialogShows(session, Entered, "right after processing");
+                Workflow.SaveProject(session);
+                session.Close();
+            }
+            var project = WorkDirectory.ProjectFile(work);
+
+            // It survives opening the project again, and can be changed there and saved.
+            using (var session = MsdialSession.Launch(TestContext, exe)) {
+                Workflow.LoadProject(session, dataset, project);
+                AssertPropertyDialogShows(session, Entered, "after opening the saved project");
+                EditInPropertyDialog(session, Edited, finish: true);
+                Workflow.SaveProject(session);
+                session.Close();
+            }
+
+            // The change survives, Cancel throws an edit away, the values pass when the project is
+            // constrained to MassBank format, and the export carries them.
+            using (var session = MsdialSession.Launch(TestContext, exe)) {
+                Workflow.LoadProject(session, dataset, project);
+                AssertPropertyDialogShows(session, Edited, "after editing, saving and opening again");
+                EditInPropertyDialog(session, new Metadata { ["TextBox_Authors"] = "Should be thrown away" }, finish: false);
+                AssertPropertyDialogShows(session, Edited, "after cancelling an edit");
+                ConstrainToMassBankFormat(session, Edited);
+
+                Workflow.BrowseResults(session, dataset);
+                var export = Path.Combine(work, "export");
+                // The MassBank export ends with a summary of what it wrote, once the whole export has finished.
+                var reports = Workflow.ExportAlignment(session, export, dialog => ChooseMassBankRecords(session, dialog), MassBankSummaryTitle);
+                StringAssert.Contains(reports[MassBankSummaryTitle], "MassBank record", "the MassBank export summary");
+                AssertMassBankRecordsCarry(export, Edited);
+                session.Close();
+            }
+
+            Directory.Delete(work, recursive: true);
+        }
+
+        private static void EnterMetadata(MsdialSession session, Window wizard) {
+            var advanced = session.WaitFor("finding the metadata section of the measurement parameters",
+                () => wizard.FindFirstDescendant(cf => cf.ByName("Advanced: add further meta data")),
+                Controls.FindTimeout,
+                title => title == Workflow.WizardTitle);
+            advanced.Patterns.ExpandCollapse.Pattern.Expand();
+            session.Settle("opening the metadata section", Workflow.WizardTitle);
+            foreach (var entry in Entered) {
+                session.ById(wizard, entry.Key, Workflow.WizardTitle).AsTextBox().Enter(entry.Value);
+            }
+        }
+
+        private static Window OpenPropertyDialog(MsdialSession session) {
+            Workflow.SelectRibbonTab(session, "Option");
+            session.Press(session.ButtonNamed(session.MainWindow, "Project property setting"), "Project property setting");
+            return session.WaitForDialog(PropertyDialogTitle, Workflow.DialogTimeout);
+        }
+
+        private static void AssertPropertyDialogShows(MsdialSession session, Metadata expected, string when) {
+            var dialog = OpenPropertyDialog(session);
+            var shown = new Metadata();
+            foreach (var key in expected.Keys) {
+                shown[key] = session.ById(dialog, key, PropertyDialogTitle).AsTextBox().Text;
+            }
+            session.ButtonNamed(dialog, "Cancel", PropertyDialogTitle).Invoke();
+            session.Settle("closing the project property dialog", PropertyDialogTitle);
+
+            var differences = expected.Where(entry => shown[entry.Key] != entry.Value)
+                .Select(entry => $"{entry.Key}: expected '{entry.Value}', shown '{shown[entry.Key]}'")
+                .ToList();
+            if (differences.Count > 0) {
+                session.Fail($"checking the project properties {when}", "Project property setting shows other values:" + System.Environment.NewLine + string.Join(System.Environment.NewLine, differences));
+            }
+        }
+
+        private static void EditInPropertyDialog(MsdialSession session, Metadata values, bool finish) {
+            var dialog = OpenPropertyDialog(session);
+            foreach (var entry in values) {
+                session.ById(dialog, entry.Key, PropertyDialogTitle).AsTextBox().Enter(entry.Value);
+            }
+            session.ButtonNamed(dialog, finish ? "Finish" : "Cancel", PropertyDialogTitle).Invoke();
+            session.Settle(finish ? "finishing the project property dialog" : "cancelling the project property dialog", PropertyDialogTitle);
+        }
+
+        /// <summary>
+        /// Turns on "Constrain to MassBank format": the saved instrument type selects its MassBank
+        /// parts (the preview shows the composed value) and the other saved values are valid, so
+        /// Finish stays enabled. The contributor ID saved here fills the MassBank export dialog.
+        /// </summary>
+        private static void ConstrainToMassBankFormat(MsdialSession session, Metadata expected) {
+            var dialog = OpenPropertyDialog(session);
+            session.ById(dialog, "CheckBox_ConstrainToMassBankFormat", PropertyDialogTitle).AsCheckBox().IsChecked = true;
+            session.Settle("constraining the project to MassBank format", PropertyDialogTitle);
+            var preview = session.ById(dialog, "TextBlock_InstrumentTypePreview", PropertyDialogTitle).Name;
+            session.ById(dialog, "TextBox_MassBankContributorID", PropertyDialogTitle).AsTextBox().Enter(ProjectContributor);
+            session.Settle("entering the project's MassBank contributor ID", PropertyDialogTitle);
+            var finish = session.ButtonNamed(dialog, "Finish", PropertyDialogTitle);
+            var canFinish = finish.IsEnabled;
+            session.ButtonNamed(dialog, canFinish ? "Finish" : "Cancel", PropertyDialogTitle).Invoke();
+            session.Settle(canFinish ? "finishing the project property dialog" : "cancelling the project property dialog", PropertyDialogTitle);
+
+            var wanted = "AC$INSTRUMENT_TYPE: " + expected["TextBox_InstrumentType"];
+            if (preview != wanted || !canFinish) {
+                session.Fail("constraining the project to MassBank format",
+                    $"Expected the preview '{wanted}' and Finish enabled; the dialog showed '{preview}' and Finish {(canFinish ? "enabled" : "disabled")}.");
+            }
+        }
+
+        private static void ChooseMassBankRecords(MsdialSession session, Window dialog) {
+            var massBank = session.WaitFor("finding the MassBank export option",
+                () => dialog.FindFirstDescendant(cf => cf.ByName("MassBank").And(cf.ByClassName("Expander"))),
+                Controls.FindTimeout,
+                title => title == Workflow.ExportDialogTitle);
+            massBank.Patterns.ExpandCollapse.Pattern.Expand();
+            session.Settle("opening the MassBank export option", Workflow.ExportDialogTitle);
+            var record = session.WaitFor("finding the MassBank record check box",
+                () => massBank.FindFirstDescendant(cf => cf.ByName("Record").And(cf.ByControlType(ControlType.CheckBox)))?.AsCheckBox(),
+                Controls.FindTimeout,
+                title => title == Workflow.ExportDialogTitle);
+            record.IsChecked = true;
+            // The dialog starts from the contributor ID saved in Project property setting.
+            var contributor = session.ById(massBank, "TextBox_MassBankContributorID", Workflow.ExportDialogTitle).AsTextBox().Text;
+            if (contributor != ProjectContributor) {
+                session.Fail("choosing the MassBank export", $"The contributor ID shows '{contributor}', not the project's '{ProjectContributor}'.");
+            }
+            // The project is processed without an annotation library, so no spot is reference-matched, and by
+            // default only reference-matched spots are exported: ask for the unknowns and suggestions too.
+            foreach (var option in new[] { "Include suggested annotations", "Include unknowns", }) {
+                session.WaitFor($"finding the '{option}' check box",
+                    () => massBank.FindFirstDescendant(cf => cf.ByName(option).And(cf.ByControlType(ControlType.CheckBox)))?.AsCheckBox(),
+                    Controls.FindTimeout,
+                    title => title == Workflow.ExportDialogTitle).IsChecked = true;
+            }
+        }
+
+        /// <summary>
+        /// MassBank records carry all six fields: AUTHORS, LICENSE, AC$INSTRUMENT, AC$INSTRUMENT_TYPE,
+        /// AC$MASS_SPECTROMETRY: COLLISION_ENERGY and COMMENT.
+        /// </summary>
+        private static void AssertMassBankRecordsCarry(string exportDirectory, Metadata expected) {
+            var records = Directory.EnumerateFiles(exportDirectory, "*.txt", SearchOption.AllDirectories)
+                .Where(file => File.ReadLines(file).Any(line => line.StartsWith("ACCESSION:")))
+                .ToList();
+            Assert.IsTrue(records.Count > 0, $"No MassBank record was exported to {exportDirectory}.");
+
+            // Each line prefix, up to and including the separator before the value.
+            var wanted = new Dictionary<string, string> {
+                ["AUTHORS: "] = expected["TextBox_Authors"],
+                ["LICENSE: "] = expected["TextBox_License"],
+                ["AC$INSTRUMENT: "] = expected["TextBox_Instrument"],
+                ["AC$INSTRUMENT_TYPE: "] = expected["TextBox_InstrumentType"],
+                ["AC$MASS_SPECTROMETRY: COLLISION_ENERGY "] = expected["TextBox_CollisionEnergy"],
+                ["COMMENT: "] = expected["TextBox_Comment"],
+            };
+            var lines = File.ReadAllLines(records[0]);
+            var problems = wanted
+                .Select(entry => (Key: entry.Key.TrimEnd(':', ' '), Expected: entry.Value, Found: lines.FirstOrDefault(line => line.StartsWith(entry.Key))?.Substring(entry.Key.Length)))
+                .Where(field => field.Found != field.Expected)
+                .Select(field => $"{field.Key}: expected '{field.Expected}', found '{field.Found ?? "(missing)"}'")
+                .ToList();
+            Assert.IsTrue(problems.Count == 0, $"The MassBank record {records[0]} does not carry the project metadata:{System.Environment.NewLine}{string.Join(System.Environment.NewLine, problems)}");
+        }
+
+        private sealed class Metadata : Dictionary<string, string> { }
+    }
+}

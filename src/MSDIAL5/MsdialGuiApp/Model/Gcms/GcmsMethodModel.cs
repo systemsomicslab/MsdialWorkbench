@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Gcms
         private readonly ChromatogramSerializer<ChromatogramSpotInfo>? _chromatogramSpotSerializer;
         private readonly MsfinderSearcherFactory _msfinderSearcherFactory;
 
-        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties) {
+        public GcmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, AlignmentFileBeanModelCollection alignmentFiles, IMsdialDataStorage<MsdialGcmsParameter> storage, FilePropertiesModel fileProperties, StudyContextModel studyContext, IMessageBroker broker) : base(analysisFileBeanModelCollection, alignmentFiles, fileProperties, broker) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _fileProperties = fileProperties;
             _studyContext = studyContext;
@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Gcms
                 ExportIndividually = true,
             };
 
-            var currentAlignmentFile = this.ObserveProperty(m => (IAlignmentModel)m.AlignmentModelBase).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var currentAlignmentFile = this.ObserveProperty(m => m.AlignmentModelBase).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             _msfinderSearcherFactory = new MsfinderSearcherFactory(storage.DataBases, storage.DataBaseMapper, storage.Parameter, "MS-FINDER").AddTo(Disposables);
 
             MsfinderSettingParameter = MsfinderParameterSetting.CreateSetting(storage.Parameter.ProjectParam);
@@ -181,8 +181,9 @@ namespace CompMs.App.Msdial.Model.Gcms
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
             if (option.HasFlag(ProcessOption.Identification)) {
-                var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault());
-                var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
+                var numParallel = Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2);
+                var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault(), numParallel, _storage.AnalysisFiles.Count);
+                var runner = new ProcessRunner(processor, numParallel);
                 if (!RunFileProcess(runner, option)) {
                     return;
                 }
@@ -239,11 +240,15 @@ namespace CompMs.App.Msdial.Model.Gcms
         }
 
         protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBeanModel alignmentFileModel) {
+            // The previous result goes first, as in the other method types: if the next one cannot be built,
+            // nothing is left on screen that the project would no longer save.
+            SelectedAlignmentModel = null;
             var factory = new GcmsAlignmentProcessFactory(_storage);
             return SelectedAlignmentModel = new GcmsAlignmentModel(alignmentFileModel, _evaluator, _storage.DataBases, _peakSpotFiltering, _peakFilterModel, _storage.DataBaseMapper, _storage.Parameter, _fileProperties, _storage.AnalysisFiles, AnalysisFileModelCollection, _calculateMatchScores.FirstOrDefault(), factory.CreatePeakQuantCalculation(_providerFactory), _msfinderSearcherFactory, _broker);
         }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
+            SelectedAnalysisModel = null;
             var providerFactory = _providerFactory.ContraMap((AnalysisFileBeanModel fileModel) => fileModel.File);
             return SelectedAnalysisModel = new GcmsAnalysisModel(analysisFile, providerFactory, _storage.Parameter, _storage.DataBaseMapper, _storage.DataBases, _fileProperties, _peakFilterModel, _calculateMatchScores.FirstOrDefault(), _msfinderSearcherFactory, _broker);
         }

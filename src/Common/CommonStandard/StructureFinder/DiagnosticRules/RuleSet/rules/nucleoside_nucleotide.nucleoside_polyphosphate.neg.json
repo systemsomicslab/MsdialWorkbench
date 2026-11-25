@@ -1,0 +1,249 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "hp2o6",
+   "h3p2o7",
+   "sugar_diphosphate",
+   "base_anion"
+  ],
+  "motif_id": "nucleoside_polyphosphate",
+  "negative_examples": [
+   {
+    "pubchem_cid": 159296,
+    "smiles": "C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)O)OP(=O)(O)O)O)N"
+   }
+  ],
+  "non_claims": [
+   "Diphosphate versus triphosphate is read from the precursor composition hypothesis; trimetaphosphate is reported only.",
+   "Ribose versus 2'-deoxyribose is read from the precursor composition hypothesis.",
+   "The position of the diphosphate on the sugar is not resolved."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 6022,
+    "smiles": "C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)O)O)O)N"
+   },
+   {
+    "pubchem_cid": 135398633,
+    "smiles": "C1=NC2=C(N1[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N=C(NC2=O)N"
+   },
+   {
+    "pubchem_cid": 6031,
+    "smiles": "C1=CN(C(=O)NC1=O)[C@H]2[C@@H]([C@@H]([C@H](O2)COP(=O)(O)OP(=O)(O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5957,
+    "smiles": "C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "any": [
+     {
+      "term": "hp2o6"
+     },
+     {
+      "term": "h3p2o7"
+     }
+    ]
+   },
+   {
+    "any": [
+     {
+      "term": "sugar_diphosphate"
+     },
+     {
+      "term": "base_anion"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Nucleoside di- and triphosphate [M-H]- give the diphosphate ions HP2O6- and H3P2O7- with the dehydrated pentose diphosphate (273 ribo, 257 deoxy) or the base anion (Strzelecka 2017; Beres 2010).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "nucleotide",
+    "note": "Nucleoside bisphosphates such as pAp are isomers of NDPs without a P-O-P bond."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "nucleoside_nucleotide_nucleobases",
+   "unit_totals": {
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Pen": [
+     0,
+     1
+    ],
+    "dPen": [
+     0,
+     1
+    ],
+    "phosphate": [
+     2,
+     3
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Nucleoside triphosphates fragment like diphosphates after loss of the gamma-phosphate.",
+    "source": "src:1"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "nucleoside_nucleotide.nucleoside_polyphosphate.neg",
+ "source": [
+  {
+   "doi": "10.1038/s41598-017-09416-6",
+   "locator": "Results (NDP section); Fig. S6; Conclusions"
+  },
+  {
+   "doi": "10.1038/s41598-017-09416-6",
+   "locator": "Results (NTP section)"
+  },
+  {
+   "doi": "10.1007/s00216-010-4126-5",
+   "locator": "Results and discussion; Fig. 2b,c,e,f"
+  },
+  {
+   "doi": "10.1007/s00216-010-4126-5",
+   "locator": "Fig. 2b,c,e,f (iPDP 494 to 396; iPTP 574 to 476)"
+  },
+  {
+   "doi": "10.1007/s00216-010-4126-5",
+   "locator": "Fig. 2c,f"
+  },
+  {
+   "doi": "10.3390/foods13182959",
+   "locator": "Section 5 (JiuKeng tea discussion)"
+  },
+  {
+   "doi": "10.1007/s00216-010-4126-5",
+   "locator": "Results and discussion; Fig. 2"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": false,
+ "terms": [
+  {
+   "floor_source": "src:7",
+   "formula": "HO6P2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Dehydrated diphosphate HP2O6- (158.9254), the major phosphate ion of NDPs.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "hp2o6",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "formula": "H3O7P2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Diphosphate H3P2O7- (176.9360).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "h3p2o7",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Dehydrated pentose diphosphate: C5H7O9P2- 272.9571 (ribose) or C5H7O8P2- 256.9622 (deoxyribose).",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "sugar_diphosphate",
+   "term_source": "src:0",
+   "than": null,
+   "unit": {
+    "class": "sugar",
+    "minus": "H",
+    "plus": "O5P2"
+   }
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:7",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Deprotonated base [B-H]- (the base peak for the isopentenyladenosine diphosphate standard).",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "base_anion",
+   "term_source": "src:6",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "formula": "H2O9P3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Cyclic trimetaphosphate H2P3O9- (238.8917), reported as unique to triphosphates.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "trimetaphosphate",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "formula": "H3O4P",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Loss of H3PO4 (97.9769) from [M-H]-; printed as nominal 98 losses (494 to 396, 574 to 476), formula inferred.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "loss_h3po4",
+   "term_source": "src:3",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 drafting from the normalised candidates (candidates-20261118), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

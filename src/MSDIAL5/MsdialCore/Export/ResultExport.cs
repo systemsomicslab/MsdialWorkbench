@@ -75,9 +75,12 @@ namespace CompMs.MsdialCore.Export {
             sw.WriteLine(String.Join("\t", header));
         }
 
-        public static void WriteChromPeakFeatureMetadata(StreamWriter sw, AnalysisFileBean file, ChromatogramPeakFeature feature,
+        public static void WriteChromPeakFeatureMetadata(StreamWriter sw, AnalysisFileBean file, ChromatogramPeakFeature? feature,
             MSDecResult msdec, List<RawSpectrum> spectrumList, ParameterBase param, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB) {
             var category = param.MachineCategory;
+            if (category != MachineCategory.GCMS && feature is null) {
+                throw new ArgumentNullException(nameof(feature));
+            }
             var type = param.ExportSpectraType;
             var ms1tol = param.CentroidMs1Tolerance;
             var isotopes = category != MachineCategory.GCMS ? DataAccess.GetIsotopicPeaks(spectrumList, feature.MS1RawSpectrumIdTop, (float)feature.PrecursorMz, ms1tol, param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum) : new List<IsotopicPeak>();

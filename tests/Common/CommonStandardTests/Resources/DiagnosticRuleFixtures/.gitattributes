@@ -1,0 +1,5 @@
+# cjson-vectors.json is copied byte for byte from the MS-DIAL spectrum catalog (tools/ws8_p3/cjson_vectors.py);
+# its sha256 is named in SOURCE.md. engine/, rules/, masses.json and manifest.json are generated here by the
+# CommonStandardTests (see engine/SOURCE.md and rules/SOURCE.md) and pinned by sha256 in manifest.json.
+# Every file is pinned byte for byte, so git must not convert line endings.
+* -text

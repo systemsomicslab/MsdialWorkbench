@@ -38,15 +38,15 @@ namespace CompMs.MsdialCore.Parser
          *         Intensity: 4 byte
          */
 
-        public static ChromatogramSerializer<ChromatogramSpotInfo>? CreateSpotSerializer(string version, ChromXType mainType = ChromXType.RT) {
-            ChromatogramSerializer<ChromatogramSpotInfo> result = null;
-            if (version == "CSS1") {
-                var ps = new PeakInfoSerializer(mainType);
-                var ss = new SpotInfoSerializer(ps);
-                var ads = new ChromatogramAccessDecorator<ChromatogramSpotInfo>(ss);
-                result = new ChromatogramVersionDecorator<ChromatogramSpotInfo>(ads, version);
+        /// <exception cref="ArgumentOutOfRangeException">The spot format version is unsupported.</exception>
+        public static ChromatogramSerializer<ChromatogramSpotInfo> CreateSpotSerializer(string version, ChromXType mainType = ChromXType.RT) {
+            if (version != "CSS1") {
+                throw new ArgumentOutOfRangeException(nameof(version), version, "Unsupported chromatogram spot format version.");
             }
-            return result;
+            var ps = new PeakInfoSerializer(mainType);
+            var ss = new SpotInfoSerializer(ps);
+            var ads = new ChromatogramAccessDecorator<ChromatogramSpotInfo>(ss);
+            return new ChromatogramVersionDecorator<ChromatogramSpotInfo>(ads, version);
         }
 
         /*

@@ -1,0 +1,77 @@
+{
+ "entries": [
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C10H12O5",
+   "ions": {},
+   "name": "geniposidic acid type (incl. gardoside)",
+   "origin": "as_published",
+   "scaffold_id": "geniposidic_acid_aglycone",
+   "source": [
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1800, Fragmentation of geniposidic acid; p. 1802, summary rule 3; Figure 4a (p. 1801)"
+    },
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1802, Identification of peak 3 (gardoside); Figure 5"
+    }
+   ]
+  },
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C10H14O5",
+   "ions": {},
+   "name": "loganic acid type (incl. mussaenosidic acid, dihydrocornic acid)",
+   "origin": "as_published",
+   "scaffold_id": "loganic_acid_aglycone",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3189",
+     "locator": "pp. 3047-3048, dihydrocornic acid; Fig. 6; Scheme 4"
+    },
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1803, Identification of peaks 2, 6, 7 and 8 (peak 7, mussaenosidic acid); Table 1 (p. 1799)"
+    },
+    {
+     "doi": "10.1039/d1np00014d",
+     "locator": "p.13, Fig. 5"
+    }
+   ]
+  },
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C10H14O6",
+   "ions": {},
+   "name": "shanzhiside type",
+   "origin": "as_published",
+   "scaffold_id": "shanzhiside_aglycone",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3189",
+     "locator": "pp. 3048-3049, crude extract peak 1 (shanzhiside); Table 1 (p. 3049)"
+    },
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1803, Identification of peaks 2, 6, 7 and 8 (peak 2); Table 1 (p. 1799)"
+    }
+   ]
+  },
+  {
+   "class": "carbocyclic_iridoid",
+   "formula": "C10H12O6",
+   "ions": {},
+   "name": "deacetylasperulosidic acid type (incl. scandoside)",
+   "origin": "as_published",
+   "scaffold_id": "deacetylasperulosidic_acid_aglycone",
+   "source": [
+    {
+     "doi": "10.1002/bmc.3223",
+     "locator": "p. 1803, Identification of peaks 2, 6, 7 and 8 (peak 6); Table 1 (p. 1799)"
+    }
+   ]
+  }
+ ],
+ "list_id": "iridoid_c4_carboxy_aglycones"
+}

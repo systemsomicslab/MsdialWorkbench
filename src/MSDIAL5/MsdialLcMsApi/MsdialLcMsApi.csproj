@@ -12,4 +12,8 @@
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="MsdialLcMsApiTests" />
+  </ItemGroup>
 </Project>

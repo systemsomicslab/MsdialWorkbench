@@ -1,0 +1,147 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_c2h4o",
+   "loss_ch3",
+   "loss_ch4"
+  ],
+  "motif_id": "benzophenanthridine_quaternary",
+  "negative_examples": [
+   {
+    "pubchem_cid": 2353,
+    "smiles": "COC1=C(C2=C[N+]3=C(C=C2C=C1)C4=CC5=C(C=C4CC3)OCO5)OC"
+   }
+  ],
+  "non_claims": [
+   "chelerythrine-type versus nitidine-type methoxy positions are not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 2703,
+    "smiles": "C[N+]1=C2C(=C3C=CC(=C(C3=C1)OC)OC)C=CC4=CC5=C(C=C42)OCO5"
+   },
+   {
+    "pubchem_cid": 4501,
+    "smiles": "C[N+]1=CC2=CC(=C(C=C2C3=C1C4=CC5=C(C=C4C=C3)OCO5)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_c2h4o"
+   },
+   {
+    "any": [
+     {
+      "term": "loss_ch3"
+     },
+     {
+      "term": "loss_ch4"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured: the only study giving the CH4 and C2H4O losses of the m/z 348 benzophenanthridines reports them at MS3 and MS4 of an ion trap, so one-stage MS/MS support rests on the CH3 loss alone.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "protoberberine_quaternary",
+    "note": "methoxylated quaternary protoberberines lose CH3, CH4 and C2H4O within one MS/MS stage (doi:10.1016/j.jpba.2004.11.026)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_benzylisoquinoline_benzophenanthridinium",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_benzylisoquinoline.benzophenanthridine_quaternary.pos",
+ "source": [
+  {
+   "doi": "10.1002/rcm.3045",
+   "locator": "Results, pp. 1932-1935; Table 1 (p. 1934); Table 2 (p. 1935); Schemes 1-2"
+  },
+  {
+   "doi": "10.1002/rcm.3045",
+   "locator": "Results, p. 1934; Tables 1-2; Figs. 2b, 3b (p. 1933)"
+  },
+  {
+   "doi": "10.1038/s41598-019-57406-7",
+   "locator": "Results, common pathways (alkaloids 61, 63, 65); Fig. 10; Summary rule (5)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C2H4O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "m/z 304 from 348, reached only at MS3 (via 333) and MS4 (via 332) in the cited ion-trap study",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_c2h4o",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "CH3",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "m/z 333 from 348 at MS2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch3",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "CH4",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "m/z 332 from 348, reached at MS3 in the cited ion-trap study",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ch4",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18; family alkaloid_benzylisoquinoline)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

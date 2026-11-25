@@ -1,0 +1,141 @@
+{
+ "entries": [
+  {
+   "class": "anthocyanidin",
+   "formula": "C15H10O5",
+   "ions": {
+    "b02": {
+     "neg": [],
+     "pos": [
+      "C7H5O2"
+     ]
+    }
+   },
+   "name": "pelargonidin (quinoidal base; the flavylium C15H11O5+ is [M+H]+)",
+   "origin": "as_published",
+   "scaffold_id": "pelargonidin",
+   "source": [
+    {
+     "doi": "10.1021/jf048068b",
+     "locator": "Figure 1 (p. 2589); Tables 1-3 (pp. 2591-2593)"
+    },
+    {
+     "doi": "10.1002/rcm.6209",
+     "locator": "Results and discussion, full scan MS characteristics of anthocyanidin glycosides in negative mode (pp. 1124-1126); Figure 3 (p. 1126)"
+    },
+    {
+     "doi": "10.1002/jms.3474",
+     "locator": "Results and discussion, Selection of diagnostic product ions (p. 74); Table 1 (p. 75); Fragmentation of in-source formed aglycone fragment ions, Fig. 3 (pp. 75-76)"
+    },
+    {
+     "locator": "WS8-P3 anthocyanin drafting guidance (follow-up to P3-Q17)",
+     "reference": "Author decision 2026-11-18: the anthocyanin M is the quinoidal base, so the flavylium cation is [M+H]+"
+    }
+   ]
+  },
+  {
+   "class": "anthocyanidin",
+   "formula": "C15H10O6",
+   "ions": {
+    "b02": {
+     "neg": [],
+     "pos": [
+      "C7H5O3"
+     ]
+    }
+   },
+   "name": "cyanidin (quinoidal base; the flavylium C15H11O6+ is [M+H]+)",
+   "origin": "as_published",
+   "scaffold_id": "cyanidin",
+   "source": [
+    {
+     "doi": "10.1021/jf048068b",
+     "locator": "Figure 1 (p. 2589); Tables 1-3 (pp. 2591-2593)"
+    },
+    {
+     "doi": "10.1002/rcm.6209",
+     "locator": "Results and discussion, full scan MS characteristics of anthocyanidin glycosides in negative mode (pp. 1124-1126); Figure 3 (p. 1126)"
+    },
+    {
+     "doi": "10.1002/jms.3474",
+     "locator": "Results and discussion, Selection of diagnostic product ions (p. 74); Fig. 2 and Table 1 (p. 75); Fig. 3 (p. 76)"
+    },
+    {
+     "doi": "10.1002/rcm.400",
+     "locator": "Results and discussion, Fragmentation of anthocyanidins (pp. 1527-1528); Table 1 (p. 1528); Table 2 (p. 1530)"
+    },
+    {
+     "locator": "WS8-P3 anthocyanin drafting guidance (follow-up to P3-Q17)",
+     "reference": "Author decision 2026-11-18: the anthocyanin M is the quinoidal base, so the flavylium cation is [M+H]+"
+    }
+   ]
+  },
+  {
+   "class": "anthocyanidin",
+   "formula": "C16H12O6",
+   "ions": {
+    "b02": {
+     "neg": [],
+     "pos": [
+      "C8H7O3"
+     ]
+    }
+   },
+   "name": "peonidin (quinoidal base; the flavylium C16H13O6+ is [M+H]+)",
+   "origin": "as_published",
+   "scaffold_id": "peonidin",
+   "source": [
+    {
+     "doi": "10.1021/jf048068b",
+     "locator": "Figure 1 (p. 2589); Tables 1-3 (pp. 2591-2593)"
+    },
+    {
+     "doi": "10.1002/rcm.6209",
+     "locator": "Results and discussion, full scan MS characteristics of anthocyanidin glycosides in negative mode (pp. 1124-1126); Figure 3 (p. 1126)"
+    },
+    {
+     "doi": "10.1002/rcm.400",
+     "locator": "Results and discussion, Fragmentation of anthocyanidins (pp. 1527-1528); Table 1 (p. 1528); Table 2 (p. 1530)"
+    },
+    {
+     "locator": "WS8-P3 anthocyanin drafting guidance (follow-up to P3-Q17)",
+     "reference": "Author decision 2026-11-18: the anthocyanin M is the quinoidal base, so the flavylium cation is [M+H]+"
+    }
+   ]
+  },
+  {
+   "class": "anthocyanidin",
+   "formula": "C17H14O7",
+   "ions": {
+    "b02": {
+     "neg": [],
+     "pos": [
+      "C9H9O4"
+     ]
+    }
+   },
+   "name": "malvidin (quinoidal base; the flavylium C17H15O7+ is [M+H]+)",
+   "origin": "as_published",
+   "scaffold_id": "malvidin",
+   "source": [
+    {
+     "doi": "10.1021/jf048068b",
+     "locator": "Figure 1 (p. 2589); Tables 1-3 (pp. 2591-2593)"
+    },
+    {
+     "doi": "10.1002/rcm.6209",
+     "locator": "Results and discussion, full scan MS characteristics of anthocyanidin glycosides in negative mode (pp. 1124-1126); Figure 3 (p. 1126)"
+    },
+    {
+     "doi": "10.1002/rcm.400",
+     "locator": "Results and discussion, Fragmentation of anthocyanidins (pp. 1527-1528); Table 1 (p. 1528); Table 2 (p. 1530)"
+    },
+    {
+     "locator": "WS8-P3 anthocyanin drafting guidance (follow-up to P3-Q17)",
+     "reference": "Author decision 2026-11-18: the anthocyanin M is the quinoidal base, so the flavylium cation is [M+H]+"
+    }
+   ]
+  }
+ ],
+ "list_id": "anthocyanin_anthocyanidins"
+}

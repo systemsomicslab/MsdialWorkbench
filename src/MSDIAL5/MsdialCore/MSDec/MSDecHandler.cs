@@ -40,6 +40,13 @@ namespace CompMs.MsdialCore.MSDec {
 
     public class MsDecBin {
         public double TotalSharpnessValue { get; set; }
+        /// <summary>
+        /// GC-MS MS1Dec: the position of this bin's MS1 spectrum in the spectrum list given to
+        /// <see cref="MSDecHandler.GetMSDecResults"/>. That position is the spectrum's <see cref="RawSpectrum.Index"/>
+        /// (the raw data readers number <see cref="RawMeasurement.SpectrumList"/> that way), and it is the key that
+        /// <see cref="ChromatogramPeakFeature.MS1RawSpectrumIdTop"/> holds. It is not <see cref="RawSpectrum.ScanNumber"/>.
+        /// The MS/MS deconvolution does not set it.
+        /// </summary>
         public int RdamScanNumber { get; set; }
         public float RetentionTime { get; set; }
         public List<PeakSpot> PeakSpots { get; set; }
@@ -66,6 +73,7 @@ namespace CompMs.MsdialCore.MSDec {
     public class ModelChromatogram {
         public List<ChromatogramPeak> Peaks { get; set; }
 
+        /// <summary>Position in the spectrum list (= <see cref="RawSpectrum.Index"/>) of the MS1 spectrum at the model peak top; see <see cref="MsDecBin.RdamScanNumber"/>.</summary>
         public int RdamScanOfPeakTop { get; set; }
         public int ChromScanOfPeakTop { get; set; }
         public int ChromScanOfPeakLeft { get; set; }
@@ -153,6 +161,7 @@ namespace CompMs.MsdialCore.MSDec {
         public int TargetScanRightInModelChromVector { get; set; }
 
         public List<int> ChromScanList { get; set; }
+        /// <summary>Spectrum-list positions (= <see cref="RawSpectrum.Index"/>) of the scans in <see cref="ChromScanList"/>; see <see cref="MsDecBin.RdamScanNumber"/>.</summary>
         public List<int> RdamScanList { get; set; }
         public List<float> RtArray { get; set; }
         public List<float> TargetIntensityArray { get; set; }
@@ -190,12 +199,14 @@ namespace CompMs.MsdialCore.MSDec {
 
             //Get scan ID dictionary between RDAM scan ID and MS1 chromatogram scan ID.
             //note that there is a possibility that raw data contains MS/MS information as well.
+            //The RDAM scan ID is the position in spectrumList, which is RawSpectrum.Index and what the peak features'
+            //MS1RawSpectrumIdTop holds; RawSpectrum.ScanNumber is not used, because it need not equal that position.
             var rdamToChromDict = getRdamAndMs1chromatogramScanDictionary(spectrumList, param.IonMode);
             //var ticPeaklist = DataAccessGcUtility.GetTicPeaklist(spectrumList, param.IonMode); //delete this after figure prepared (hiroshi)
 
             //Maps the values of peak shape, symmetry, and qualiy of detected peaks into the array 
             //where the length is equal to the scan number
-            var gcmsDecBinArray = getMsdecBinArray(spectrumList, chromPeakFeatures, rdamToChromDict, param.IonMode);
+            var gcmsDecBinArray = getMsdecBinArray(spectrumList, chromPeakFeatures, rdamToChromDict);
 
             //apply matched filter to extract 'metabolite components' 
             //where EIC peaks having slightly (1-2 scan point diff) different retention times are merged. 
@@ -225,6 +236,8 @@ namespace CompMs.MsdialCore.MSDec {
 
                 if (msdecResult != null && msdecResult.Spectrum.Count > 0) {
                     msdecResult.ScanID = counter;
+                    // The position in spectrumList (= RawSpectrum.Index) of the MS1 spectrum at the model peak top, as
+                    // MS2Dec stores the position of its product-ion spectrum; the exports read it back as a position.
                     msdecResult.RawSpectrumID = modelChromatograms[i].RdamScanOfPeakTop;
                     msdecResult.Spectrum = getRefinedMsDecSpectrum(msdecResult.Spectrum, param);
                     if (!msdecResult.Spectrum.IsEmptyOrNull()) {
@@ -243,19 +256,58 @@ namespace CompMs.MsdialCore.MSDec {
             foreach (var ms1DecResult in msdecResults) {
                 ms1DecResult.AmplitudeScore = (float)((ms1DecResult.ModelPeakHeight - minIntensity) / (maxIntensity - minIntensity));
 
-                //calculating purity
-                //Debug.WriteLine("tic count: " + spectrumList.FindAll(sp => sp.ScanNum == ms1DecResult.ScanNumber).Count);
-                //Debug.WriteLine("deconv count: " + ms1DecResult.Spectrum.Count);
-                var tic = spectrumList.FirstOrDefault(sp => sp.ScanNumber == ms1DecResult.ScanID)?.TotalIonCurrent ?? 1d;
-                //Debug.WriteLine("TIC: " + tic + " -- RT: " + spectrumList.Find(sp => sp.ScanNum == ms1DecResult.ScanNumber).RTmin);
-
+                // Purity: deconvoluted intensity over the positive ion current of the peak-top raw spectrum, in [0, 1].
+                // The file's stored TotalIonCurrent is deliberately not used; see CalculateModelPeakPurity.
+                // RawSpectrumID is the spectrumList position of that spectrum (ScanID is only the result counter).
+                var peakTopPosition = ms1DecResult.RawSpectrumID;
+                var peakTopSpectrum = peakTopPosition >= 0 && peakTopPosition < spectrumList.Count ? spectrumList[peakTopPosition] : null;
                 var eic = ms1DecResult.Spectrum.Sum(s => s.Intensity);
-                ms1DecResult.ModelPeakPurity = (float)(eic / tic);
-                //Debug.WriteLine("EIC: " + ms1DecResult.Spectrum.Sum(s => s.Intensity) + " -- RT: " + ms1DecResult.Spectrum.Average(s => s.RetentionTime));
-                //Debug.WriteLine("purity: " + ms1DecResult.ModelPeakPurity.ToString() + " \n");
-
+                ms1DecResult.ModelPeakPurity = CalculateModelPeakPurity(eic, peakTopSpectrum);
             }
             return msdecResults;
+        }
+
+        /// <summary>
+        /// GC-MS MS1Dec model-peak purity: the fraction of the ion current of the raw spectrum at the model peak top
+        /// that the deconvoluted spectrum accounts for. Always in [0, 1].
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The denominator is the sum of the positive intensities of the peak-top raw spectrum. It replaces the
+        /// <see cref="RawSpectrum.TotalIonCurrent"/> stored in the file, which earlier versions divided by.
+        /// Ion intensities cannot be negative, but some files store background-subtracted signal with the noise
+        /// left on both sides of zero: the GC-MS ABF files of the Kovats demo store every nominal m/z bin in every
+        /// scan, and 14-24% of the stored values are negative. Their stored TIC is the signed sum, which is near
+        /// zero or negative where there is little real signal, and dividing by it gave purities below 0 or far
+        /// above 1. Negative stored values are treated as zero (subtraction noise, not ions).
+        /// </para>
+        /// <para>
+        /// For a spectrum without negative values the denominator is the plain sum of its stored intensities. That
+        /// equals the stored TIC when the file's TIC is the sum of the stored peaks; a file whose TIC was computed
+        /// differently (for example over a wider m/z range than the stored peaks) gives a different denominator.
+        /// </para>
+        /// <para>
+        /// The ratio is clamped to [0, 1] because the deconvoluted (model) intensities are not bounded by the raw
+        /// ones. A missing spectrum, or one with no positive intensity, gives 0.
+        /// </para>
+        /// </remarks>
+        internal static float CalculateModelPeakPurity(double deconvolutedIntensitySum, RawSpectrum? peakTopSpectrum) {
+            var positiveIonCurrent = 0d;
+            if (peakTopSpectrum?.Spectrum is RawPeakElement[] peaks) {
+                foreach (var peak in peaks) {
+                    if (peak.Intensity > 0d) {
+                        positiveIonCurrent += peak.Intensity;
+                    }
+                }
+            }
+            if (positiveIonCurrent <= 0d) {
+                return 0f;
+            }
+            var purity = deconvolutedIntensitySum / positiveIonCurrent;
+            if (!(purity > 0d)) { // also maps NaN to 0
+                return 0f;
+            }
+            return purity >= 1d ? 1f : (float)purity;
         }
 
         public static QuantifiedChromatogramPeak? GetChromatogramQuantInformation(RawSpectra spectra, MSDecResult result, double targetMz, ParameterBase param) {
@@ -280,13 +332,13 @@ namespace CompMs.MsdialCore.MSDec {
             return QuantifiedChromatogramPeak.RecalculatedFromChromatogram(peak, peakShape, peakResult, smoothedchrom);
         }
 
-        private static MsDecBin[] getMsdecBinArray(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, Dictionary<int, int> rdamScanDict, IonMode ionMode) {
-            var ms1SpectrumList = getMs1SpectrumList(spectrumList, ionMode);
-            var msdecBins = new MsDecBin[ms1SpectrumList.Count];
-            for (int i = 0; i < msdecBins.Length; i++) {
-                msdecBins[i] = new MsDecBin();
-                msdecBins[i].RdamScanNumber = ms1SpectrumList[i].ScanNumber;
-                msdecBins[i].RetentionTime = (float)ms1SpectrumList[i].ScanStartTime;
+        private static MsDecBin[] getMsdecBinArray(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, Dictionary<int, int> rdamScanDict) {
+            // rdamScanDict maps each MS1 spectrum's position in spectrumList to its MS1 chromatogram scan (0, 1, 2, ...).
+            var msdecBins = new MsDecBin[rdamScanDict.Count];
+            foreach (var pair in rdamScanDict) {
+                msdecBins[pair.Value] = new MsDecBin();
+                msdecBins[pair.Value].RdamScanNumber = pair.Key;
+                msdecBins[pair.Value].RetentionTime = (float)spectrumList[pair.Key].ScanStartTime;
                 //Debug.WriteLine("GCMS Bins\tID\t{0}\tRT\t{1}", i, gcmsDecBins[i].RetentionTime);
             }
 
@@ -360,8 +412,12 @@ namespace CompMs.MsdialCore.MSDec {
                 if (firstFlg == false) {
                     modelChrom.RdamScanOfPeakTop = peak.MS1RawSpectrumIdTop;
                     modelChrom.ChromScanOfPeakTop = rdamToChromDict[modelChrom.RdamScanOfPeakTop];
-                    modelChrom.ChromScanOfPeakLeft = modelChrom.ChromScanOfPeakTop - (peak.PeakFeature.ChromScanIdTop - peak.PeakFeature.ChromScanIdLeft);
-                    modelChrom.ChromScanOfPeakRight = modelChrom.ChromScanOfPeakTop + (peak.PeakFeature.ChromScanIdRight - peak.PeakFeature.ChromScanIdTop);
+                    // The feature's edges are spectrum-list positions too (peak spotting sets ChromScanId* and
+                    // MS1RawSpectrumId* to the EIC peaks' spectrum Index), so they are mapped to MS1 chromatogram scans
+                    // like the top. Their difference counts the scans in between of every kind, which is not the width in
+                    // MS1 scans when product-ion or other-polarity scans lie between the MS1 scans.
+                    modelChrom.ChromScanOfPeakLeft = rdamToChromDict[peak.MS1RawSpectrumIdLeft];
+                    modelChrom.ChromScanOfPeakRight = rdamToChromDict[peak.MS1RawSpectrumIdRight];
                     modelChrom.SharpnessValue = peak.PeakShape.ShapenessValue;
                     modelChrom.EstimatedNoise = peak.PeakShape.EstimatedNoise;
                     modelChrom.SignalToNoise = peak.PeakShape.SignalToNoise;
@@ -1036,6 +1092,8 @@ namespace CompMs.MsdialCore.MSDec {
         }
         #endregion
 
+        internal static string CalculateSplash(List<SpectrumPeak> peaks) => calculateSplash(peaks);
+
         private static string calculateSplash(List<SpectrumPeak> peaks) {
             var ions = new List<Ion>();
             peaks.ForEach(it => ions.Add(new Ion(it.Mass, it.Intensity)));
@@ -1044,6 +1102,12 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
         private static List<ModelChromatogram> getRefinedModelChromatograms(List<ModelChromatogram> modelChromatograms) {
+            // A file in which no peak passes the detection settings (a blank, or a minimum peak
+            // height above every signal) has no model chromatogram. It has nothing to deconvolute,
+            // and reading [0] here used to abort the whole GC-MS run.
+            if (modelChromatograms.Count == 0) {
+                return new List<ModelChromatogram>();
+            }
             modelChromatograms = modelChromatograms.OrderBy(n => n.ChromScanOfPeakTop).ToList();
 
             var chromatograms = new List<ModelChromatogram>() { modelChromatograms[0] };
@@ -1440,6 +1504,12 @@ namespace CompMs.MsdialCore.MSDec {
             return regionMarkers;
         }
 
+        /// <summary>
+        /// Maps the position in <paramref name="spectrumList"/> of each MS1 spectrum of the ion mode to its scan number in
+        /// the MS1 chromatogram (0, 1, 2, ... over those spectra only). The position is the spectrum's
+        /// <see cref="RawSpectrum.Index"/>, the key of <see cref="ChromatogramPeakFeature.MS1RawSpectrumIdTop"/>;
+        /// <see cref="RawSpectrum.ScanNumber"/> is not used.
+        /// </summary>
         private static Dictionary<int, int> getRdamAndMs1chromatogramScanDictionary(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode) {
             var rdamToChromDictionary = new Dictionary<int, int>();
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -1448,7 +1518,7 @@ namespace CompMs.MsdialCore.MSDec {
             for (int i = 0; i < spectrumList.Count; i++) {
                 if (spectrumList[i].MsLevel > 1) continue;
                 if (spectrumList[i].ScanPolarity != scanPolarity) continue;
-                rdamToChromDictionary[spectrumList[i].ScanNumber] = counter;
+                rdamToChromDictionary[i] = counter;
 
                 counter++;
             }
@@ -1476,21 +1546,6 @@ namespace CompMs.MsdialCore.MSDec {
             }
 
             return matchedFilterArray;
-        }
-
-        
-        private static List<RawSpectrum> getMs1SpectrumList(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionMode) {
-            var ms1SpectrumList = new List<RawSpectrum>();
-            var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
-
-            for (int i = 0; i < spectrumList.Count; i++) {
-                var spectrum = spectrumList[i];
-
-                if (spectrum.MsLevel > 1) continue;
-                if (spectrum.ScanPolarity != scanPolarity) continue;
-                ms1SpectrumList.Add(spectrum);
-            }
-            return ms1SpectrumList;
         }
     }
 }

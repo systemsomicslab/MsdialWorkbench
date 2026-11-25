@@ -230,7 +230,11 @@ namespace CompMs.App.Msdial.Model.Gcms
             if (parameter.ProjectParam.TargetOmics == TargetOmics.Metabolomics || parameter.ProjectParam.TargetOmics == TargetOmics.Lipidomics) {
                 var moleculeStructureModel = new MoleculeStructureModel().AddTo(_disposables);
                 MoleculeStructureModel = moleculeStructureModel;
-                selectedSpectrum.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.GetCurrentSpectrumFeature().AnnotatedMSDecResult.Molecule)).AddTo(_disposables);
+                selectedSpectrum
+                    .SelectSwitch(t => t is null ? Observable.Return(string.Empty) : t.Molecule.ObserveProperty(m => m.SMILES))
+                    .DistinctUntilChanged()
+                    .Subscribe(smiles => moleculeStructureModel.UpdateMolecule(string.IsNullOrEmpty(smiles) ? null : new MoleculeProperty { SMILES = smiles }))
+                    .AddTo(_disposables);
             }
 
             PeakTableModel = new GcmsAnalysisPeakTableModel(_spectrumFeatures.Items, selectedSpectrum, PeakSpotNavigatorModel, UndoManager);

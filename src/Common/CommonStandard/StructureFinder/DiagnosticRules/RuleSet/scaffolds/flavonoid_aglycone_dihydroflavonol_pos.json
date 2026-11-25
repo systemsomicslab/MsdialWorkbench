@@ -1,0 +1,41 @@
+{
+ "entries": [
+  {
+   "class": "dihydroflavonol",
+   "formula": "C15H12O7",
+   "ions": {},
+   "name": "taxifolin",
+   "origin": "as_published",
+   "scaffold_id": "taxifolin",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2; Table 3 (peak A)"
+    },
+    {
+     "doi": "10.1016/j.jchromb.2026.125348",
+     "locator": "Sec. 3.8 (p. 9); Fig. 8 (p. 10); Table 1 (p. 4)"
+    }
+   ]
+  },
+  {
+   "class": "dihydroflavonol",
+   "formula": "C15H12O6",
+   "ions": {},
+   "name": "aromadendrin",
+   "origin": "as_published",
+   "scaffold_id": "aromadendrin",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 3 (peak B, assigned without a standard)"
+    },
+    {
+     "doi": "10.3390/plants12193388",
+     "locator": "Sec. 2.1, third paragraph (MS2 ions of compounds 1-3, printed in the text only); Table 1 (precursor ions only)"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_dihydroflavonol_pos"
+}

@@ -44,9 +44,13 @@ namespace CompMs.App.MsdialConsole.Casmi {
             var inchi2rt = new Dictionary<string, double>();
             using (var sr = new StreamReader(inputLib, Encoding.ASCII)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var wkstr = sr.ReadLine();
+                var lineNumber = 1;
+                while (sr.ReadLine() is string wkstr) {
+                    lineNumber++;
                     var wArray = wkstr.Split('\t');
+                    if (wArray.Length < 2) {
+                        throw new InvalidDataException($"Expected at least 2 columns in '{inputLib}', line {lineNumber}.");
+                    }
                     inchi2rt[wArray[0]] = double.Parse(wArray[1]);
 
                 }
@@ -95,9 +99,13 @@ namespace CompMs.App.MsdialConsole.Casmi {
             var inchi2smiles = new Dictionary<string, string>();
             using (var sr = new StreamReader(inputmsfinderlib, Encoding.ASCII)) {
                 sr.ReadLine();
-                while (sr.Peek() > -1) {
-                    var wkstr = sr.ReadLine();
+                var lineNumber = 1;
+                while (sr.ReadLine() is string wkstr) {
+                    lineNumber++;
                     var wArray = wkstr.Split('\t');
+                    if (wArray.Length < 7) {
+                        throw new InvalidDataException($"Expected at least 7 columns in '{inputmsfinderlib}', line {lineNumber}.");
+                    }
                     inchi2smiles[wArray[1]] = wArray[6];
 
                 }

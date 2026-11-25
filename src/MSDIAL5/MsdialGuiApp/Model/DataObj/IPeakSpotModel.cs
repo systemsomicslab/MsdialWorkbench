@@ -1,9 +1,8 @@
 ﻿using CompMs.Common.Interfaces;
-using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.DataObj;
 
-internal interface IPeakSpotModel : INotifyPropertyChanged
+internal interface IPeakSpotModel
 {
     IMSIonProperty MSIon { get; }
     IMoleculeProperty Molecule { get; }

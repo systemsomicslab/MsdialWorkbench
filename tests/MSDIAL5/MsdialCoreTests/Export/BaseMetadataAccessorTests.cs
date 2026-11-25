@@ -188,7 +188,7 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("DDD", dict["INCHIKEY"]);
             Assert.AreEqual("EEE", dict["SMILES"]);
             Assert.AreEqual(DataAccess.GetAnnotationCode(spot.MatchResults.Representative, parameter).ToString(), dict["Annotation tag (VS1.0)"]);
-            Assert.AreEqual($"{spot.Comment}; Normalized unit: {spot.IonAbundanceUnit}; Annotation method: {matchResult.AnnotatorID}", dict["Comment"]);
+            Assert.AreEqual($"{spot.Comment}; Annotation method: {matchResult.AnnotatorID}", dict["Comment"]);
             Assert.AreEqual("True", dict["Manually modified for quantification"]);
             Assert.AreEqual("True", dict["Manually modified for annotation"]);
             Assert.AreEqual("200", dict["Isotope tracking parent ID"]);
@@ -211,7 +211,23 @@ namespace CompMs.MsdialCore.Export.Tests
             IMetadataAccessor accessor = new TestMetadataAccessor(refer, new ParameterBase { MachineCategory = MachineCategory.LCMS });
             var spot = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.pmol_per_mg_tissue, };
             var dict = accessor.GetContent(spot, null);
-            Assert.AreEqual($"Normalized unit: {spot.IonAbundanceUnit}", dict["Comment"]);
+            Assert.AreEqual(string.Empty, dict["Comment"], "the normalized unit belongs to normalized exports only");
+        }
+
+        /// <summary>
+        /// A Confirmed tag the lipid RT check set reads in the Comment column exactly as a person's does: the source
+        /// lives in the tag file, not in the exported text.
+        /// </summary>
+        [TestMethod()]
+        public void GetContentWritesAToolsTagAsTag() {
+            IMetadataAccessor accessor = new TestMetadataAccessor(new MockRefer(), new ParameterBase { MachineCategory = MachineCategory.LCMS });
+            var spot = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.Height, };
+            spot.TagCollection.Select(PeakSpotTag.CONFIRMED, "MsdialLipidRtCheck/1.0");
+            var suppressedOnly = new AlignmentSpotProperty { Comment = string.Empty, IonAbundanceUnit = IonAbundanceUnit.Height, };
+            suppressedOnly.TagCollection.Suppress(PeakSpotTag.CONFIRMED);
+
+            Assert.AreEqual("Tag: Confirmed", accessor.GetContent(spot, null)["Comment"]);
+            Assert.AreEqual(string.Empty, accessor.GetContent(suppressedOnly, null)["Comment"], "a suppression is not a tag");
         }
 
         [TestMethod()]

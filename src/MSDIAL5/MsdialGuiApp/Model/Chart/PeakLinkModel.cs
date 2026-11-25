@@ -53,6 +53,9 @@ internal sealed class PeakLinkModel(ObservableCollection<SpotLinker> links, IBru
                         case PeakLinkFeatureEnum.FoundInUpperMsMs:
                             links.Add(new SpotLinker(from, spot, "Found in upper MS/MS", (int)peakLink.Character) { ArrowVerticalOffset = 10d, ArrowHorizontalOffset = 30d, LabelHorizontalOffset = -3d, LabelVerticalOffset = -30d, Placement = LinkerLabelPlacementMode.MiddleRight, });
                             break;
+                        case PeakLinkFeatureEnum.CorrelSimilar:
+                            links.Add(new SpotLinker(from, spot, "Ion correlated in samples", (int)peakLink.Character) { ArrowVerticalOffset = 10d, ArrowHorizontalOffset = 30d, LabelHorizontalOffset = -3d, LabelVerticalOffset = 30d, Placement = LinkerLabelPlacementMode.MiddleRight, });
+                            break;
                     }
                 }
             }
@@ -66,6 +69,7 @@ internal sealed class PeakLinkModel(ObservableCollection<SpotLinker> links, IBru
             { (int)PeakLinkFeatureEnum.Adduct, Brushes.Blue },
             { (int)PeakLinkFeatureEnum.ChromSimilar, Brushes.Green },
             { (int)PeakLinkFeatureEnum.FoundInUpperMsMs, Brushes.Pink },
+            { (int)PeakLinkFeatureEnum.CorrelSimilar, Brushes.Orange },
         },
         linker => linker.Type,
         Brushes.Gray);

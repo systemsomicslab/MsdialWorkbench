@@ -57,7 +57,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonStandard\CommonStandard.csproj"/>
     <ProjectReference Include="..\..\MSDIAL4\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj"/>
-    <ProjectReference Include="..\..\MSDIAL4\MolViewer\MolViewer.csproj"/>
+    <ProjectReference Include="..\..\Common\NCDK\NCDK.csproj"/>
+    <ProjectReference Include="..\..\Common\NCDK.Display\NCDK.Display.csproj"/>
     <ProjectReference Include="..\..\MSDIAL4\StructureFinderStandard\StructureFinderStandard.csproj"/>
   </ItemGroup>
 </Project>

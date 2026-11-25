@@ -36,13 +36,38 @@ namespace CompMs.MsdialLcMsApi.Process
                     var results = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, token, targetCE);
                     mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
                 }
+                if (mSDecREsultCollections.Count == 0) {
+                    // Without one deconvolution there is no .dcl, and the run would otherwise go on to
+                    // fail later, at the first reader of it, with an error that names neither cause.
+                    throw new InvalidOperationException(
+                        $"AIF file {analysisFile.AnalysisFileName}: no MS2 scan carries a collision energy above 0 " +
+                        $"(collision-energy targets read: [{string.Join(", ", ceList)}]), so no AIF deconvolution was made.");
+                }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
                 var results = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(analysisFile, provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, progress, token);
                 mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
             }
+            CleanByEntropy(mSDecREsultCollections, analysisFile);
             return mSDecREsultCollections;
+        }
+
+        /// <summary>
+        /// The optional MS/MS entropy cleanup, on the deconvoluted spectra before they are annotated and saved, so the
+        /// library search, the alignment, the exports and the viewers all see the same spectra. DDA and DIA alike. Off,
+        /// it does nothing at all.
+        /// </summary>
+        private void CleanByEntropy(IReadOnlyList<MSDecResultCollection> collections, AnalysisFileBean analysisFile) {
+            var parameter = _storage.Parameter.ChromDecBaseParam;
+            if (!parameter.IsDoMsmsEntropyCleanup) {
+                return;
+            }
+            foreach (var collection in collections) {
+                var summary = MsmsEntropyCleanup.Apply(collection.MSDecResults, parameter.MsmsMaxSpectralEntropy, parameter.MsmsEntropyCleanupProtectedPercentOfBasePeak);
+                var energy = collections.Count > 1 ? $", CE {collection.CollisionEnergy}" : string.Empty;
+                Console.WriteLine($"MS/MS entropy cleanup ({analysisFile.AnalysisFileName}{energy}, maximum entropy {parameter.MsmsMaxSpectralEntropy}): {summary}");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
@@ -50,15 +51,45 @@ namespace CompMs.App.Msdial.Model.Loader
 
             return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector.Where(item => item is not null).Select(item => item!.Id), (msSpectra, ms2Id) =>
             {
-                var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[ms2Id], _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
-                if (_parameter.RemoveAfterPrecursor) {
-                    spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
+                // No such scan, as when the raw data file is missing: the scan list above still comes from the peak list.
+                if (ms2Id < 0 || ms2Id >= msSpectra.Count) {
+                    return (IMSScanProperty?)null;
                 }
-                return new MSScanProperty(target.MS2RawSpectrumId, target.Mass, target.InnerModel.ChromXs.GetRepresentativeXAxis(), target.InnerModel.IonMode)
+                return (IMSScanProperty?)new MSScanProperty(target.MS2RawSpectrumId, target.Mass, target.InnerModel.ChromXs.GetRepresentativeXAxis(), target.InnerModel.IonMode)
                 {
-                    Spectrum = spectra,
+                    Spectrum = GetSpectrum(msSpectra[ms2Id], target),
                 };
             });
+        }
+
+        private List<SpectrumPeak> GetSpectrum(RawSpectrum rawSpectrum, ChromatogramPeakFeatureModel target) {
+            var spectra = DataAccess.GetCentroidMassSpectra(rawSpectrum, _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
+            if (_parameter.RemoveAfterPrecursor) {
+                spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
+            }
+            return spectra;
+        }
+
+        /// <summary>
+        /// Every MS2 scan acquired over the peak, in scan order, as drawn in the MS2 spectrum list.
+        /// A scan the raw data does not have, as when the raw data file is missing, is listed with no spectrum.
+        /// </summary>
+        public async Task<IReadOnlyList<Ms2SpectrumListItem>> LoadMs2SpectrumListAsync(ChromatogramPeakFeatureModel target) {
+            if (target is null || target.InnerModel.MS2RawSpectrumID2CE.Count == 0) {
+                return [];
+            }
+            var msSpectra = await _msSpectra.ConfigureAwait(false);
+            var scans = target.InnerModel.MS2RawSpectrumID2CE
+                .OrderBy(pair => pair.Key)
+                .Select(pair => {
+                    if (pair.Key < 0 || pair.Key >= msSpectra.Count) {
+                        return new PeakMs2Scan(pair.Key, pair.Value, null, null, null);
+                    }
+                    var raw = msSpectra[pair.Key];
+                    return new PeakMs2Scan(pair.Key, pair.Value, raw.ScanStartTime, raw.Precursor?.SelectedIonMz, GetSpectrum(raw, target));
+                })
+                .ToList();
+            return Ms2SpectrumList.FromPeakScans(scans, target.MS2RawSpectrumId);
         }
 
         public IObservable<IMSScanProperty?> LoadScanAsObservable(ChromatogramPeakFeatureModel target) {

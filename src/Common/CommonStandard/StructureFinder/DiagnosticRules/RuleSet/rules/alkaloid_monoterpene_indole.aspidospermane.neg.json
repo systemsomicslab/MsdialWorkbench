@@ -1,0 +1,180 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_C11H14N",
+   "ion_C13H17N2",
+   "ion_C8H15N",
+   "ion_C2H6N"
+  ],
+  "motif_id": "aspidospermane",
+  "negative_examples": [
+   {
+    "pubchem_cid": 92990,
+    "smiles": "CC[C@]12CCCN(C1)CCC3=C(CC2)NC4=CC=CC=C34"
+   }
+  ],
+  "non_claims": [
+   "the N-1 acyl group and ring-A substitution are not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 6857472,
+    "smiles": "CC[C@]12CCCN3[C@H]1[C@@]4(CC3)[C@@H](CC2)NC5=CC=CC=C45"
+   },
+   {
+    "pubchem_cid": 579957,
+    "smiles": "CCC(=O)N1C2CCC3(CCCN4C3C2(CC4)C5=CC=CC=C51)CC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_C11H14N"
+   },
+   {
+    "k_of": {
+     "k": 1,
+     "k_source": "src:3",
+     "of": [
+      {
+       "term": "ion_C13H17N2"
+      },
+      {
+       "term": "ion_C8H15N"
+      },
+      {
+       "term": "ion_C2H6N"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19) pending the author: the P3 proposal makes every monoterpene indole alkaloid rule report-only, so this rule is kept but not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "quebrachamine_skeleton",
+    "note": "Quebrachamine (C19H26N2) has the formula of aspidospermidine and the same C20-ethyl piperidine ring, so its aliphatic ions may coincide with these terms (not checked against a source)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_monoterpene_indole_aspidosperma_ring_a_unsubstituted",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_monoterpene_indole.aspidospermane.neg",
+ "source": [
+  {
+   "doi": "10.21577/0100-4042.20250138",
+   "locator": "p. 4 Table 1 (compounds 1 and 2); p. 5 Results text; Scheme 3; Figure 2a"
+  },
+  {
+   "doi": "10.21577/0100-4042.20250138",
+   "locator": "p. 4 Table 1 (compounds 2 and 3); Schemes 1, 4, 5"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "WS8-P3 in silico directive 2026-11-18, Standing decisions",
+   "reference": "WS8-P3 standing decision: a class claim needs two or three diagnostic ions jointly (author, 2026-11-15); k is the smallest value that makes two ions"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:2",
+   "formula": "C11H14N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Base peak of compound 1 (160.1135) and 49 % for compound 2 (160.1142); required, so the small anions C8H15N and C2H6N cannot claim on their own.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_C11H14N",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "C13H17N2",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_C13H17N2",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "C8H15N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Odd-electron anion.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_C8H15N",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "C2H6N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Most intense ion of compound 1 above Elab 35 eV; m/z 44 lies below the MS2 scan start of many acquisitions.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_C2H6N",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:2",
+   "formula": "C3H4O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "Methylketene loss from [M-H]- of the N-propionyl compounds 2 and 3; reported only.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "loss_C3H4O",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 draft from LLM-extracted candidates, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

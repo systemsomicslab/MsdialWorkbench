@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
 namespace CompMs.App.RawDataViewer.ViewModel
@@ -58,8 +59,12 @@ namespace CompMs.App.RawDataViewer.ViewModel
             .Subscribe(ionMode => model.IonMode = ionMode)
             .AddTo(Disposables);
 
+            // Immediately, not on the default scheduler: on the UI thread that one posts each change to the dispatcher, so
+            // right after Load added a model its view model was not yet in this collection, the selection below found
+            // none, and LoadAnalysisData published null, which neither opened the summary window nor selected the file.
+            // The models are only ever added and removed by the commands, which run on the UI thread.
             SummarizedDataViewModels = model.SummarizedDataModels
-                .ToReadOnlyReactiveCollection(m => new SummarizedDataViewModel(m))
+                .ToReadOnlyReactiveCollection(m => new SummarizedDataViewModel(m), ImmediateScheduler.Instance)
                 .AddTo(Disposables);
             SelectedSummarizedDataViewModel = model
                 .ToReactivePropertySlimAsSynchronized(

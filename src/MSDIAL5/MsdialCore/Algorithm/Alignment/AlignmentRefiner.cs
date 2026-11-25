@@ -26,17 +26,40 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected abstract List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments);
         protected abstract void SetLinks(List<AlignmentSpotProperty> alignments);
 
+        private readonly List<AlignmentSpotProperty> _removedAsIsotopes = new List<AlignmentSpotProperty>();
+
         public AlignmentRefiner(ParameterBase param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             _param = param;
             _iupac = iupac;
             this.evaluator = evaluator;
         }
 
+        /// <summary>
+        /// The spots that the last <see cref="Refine"/> removed as isotopes, or null when this refiner does not
+        /// remove isotope spots (it never calls <see cref="RecordRemovedAsIsotope"/>).
+        /// </summary>
+        public IReadOnlyList<RemovedIsotopeSpot>? RemovedIsotopeSpots { get; private set; }
+
+        protected virtual bool RemovesIsotopeSpots => false;
+
+        /// <summary>Called by <see cref="GetCleanedSpots"/> for every spot it leaves out because it is an isotope.</summary>
+        protected void RecordRemovedAsIsotope(AlignmentSpotProperty spot) {
+            _removedAsIsotopes.Add(spot);
+        }
+
         public (List<AlignmentSpotProperty>, List<int>) Refine(IList<AlignmentSpotProperty> alignments) {
             var spots = alignments.ToList();
 
             Deduplicate(spots);
+            _removedAsIsotopes.Clear();
             var cleaned = GetCleanedSpots(spots);
+            RemovedIsotopeSpots = RemovesIsotopeSpots
+                ? RemovedIsotopeSpot.Collect(
+                    _removedAsIsotopes,
+                    RemovedIsotopeSpot.RepresentativeAmongAlignedPeaks,
+                    spots.SelectMany(spot => spot.AlignedPeakProperties ?? Enumerable.Empty<AlignmentChromPeakFeature>()))
+                : null;
+            _removedAsIsotopes.Clear();
             var filtered = FilterByBlank(cleaned);
             var ids = SetAlignmentID(filtered);
             IsotopeAnalysis(filtered);

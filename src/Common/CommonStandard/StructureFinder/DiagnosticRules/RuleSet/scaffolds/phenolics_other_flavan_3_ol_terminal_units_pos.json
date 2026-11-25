@@ -1,0 +1,23 @@
+{
+ "entries": [
+  {
+   "class": "flavan_3_ol",
+   "formula": "C15H14O6",
+   "ions": {},
+   "name": "(epi)catechin terminal unit",
+   "origin": "as_published",
+   "scaffold_id": "epicatechin_catechin",
+   "source": [
+    {
+     "doi": "10.1021/ac061823v",
+     "locator": "Li 2007: Table 2 (p. 1742; every dimer has an (epi)catechin terminal unit, QM 291); Table 3 (p. 1745)"
+    },
+    {
+     "doi": "10.1002/jms.1044",
+     "locator": "Pati 2006: p. 868 (catechin or epicatechin units; 579 to 291)"
+    }
+   ]
+  }
+ ],
+ "list_id": "phenolics_other_flavan_3_ol_terminal_units_pos"
+}

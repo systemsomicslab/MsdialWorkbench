@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Mathematics.Basic;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,7 +29,8 @@ public readonly struct AlignmentLightPeakRow {
         int ms2RawSpectrumID,
         int representativeLibraryID,
         bool isMsmsAssigned,
-        bool isReferenceMatched) {
+        bool isReferenceMatched,
+        bool isInSilicoMatched = false) {
         FileID = fileID;
         FileName = fileName;
         MasterPeakID = masterPeakID;
@@ -48,6 +50,7 @@ public readonly struct AlignmentLightPeakRow {
         RepresentativeLibraryID = representativeLibraryID;
         IsMsmsAssigned = isMsmsAssigned;
         IsReferenceMatched = isReferenceMatched;
+        IsInSilicoMatched = isInSilicoMatched;
     }
 
     public int FileID { get; }
@@ -75,13 +78,27 @@ public readonly struct AlignmentLightPeakRow {
     /// deriving it would count a precursor-only or low-score suggestion as a reference match.
     /// </summary>
     public bool IsReferenceMatched { get; }
+
+    /// <summary>
+    /// Whether the representative match result is an in-silico match
+    /// (<see cref="DataAccess.IsInSilicoMsmsMatch"/>). The QA matrix marks a reference-matched peak
+    /// with one "In-silico matched" and not "Reference matched", as the non-light path does
+    /// (<see cref="DataAccess.IsQaReferenceMatched"/>).
+    /// </summary>
+    public bool IsInSilicoMatched { get; }
+
+    /// <summary>The QA matrix's "Reference matched": a reference match that is not an in-silico one.</summary>
+    public bool IsQaReferenceMatched => IsReferenceMatched && !IsInSilicoMatched;
+
+    /// <summary>The QA matrix's "In-silico matched": a reference match that is an in-silico one.</summary>
+    public bool IsQaInSilicoMatched => IsReferenceMatched && IsInSilicoMatched;
 }
 
 public sealed class AlignmentLightPeakStore : IDisposable {
-    // 18 fields plus the reference-matched flag. The file is a per-run temporary spill
-    // (CreateTemp uses Path.GetTempFileName and Dispose closes it), so the layout carries no
-    // compatibility obligation across versions.
-    private const int RecordSize = 103;
+    // 18 fields plus the reference-matched and in-silico flags. The file is a per-run temporary spill
+    // (CreateTemp creates it beside the alignment result, or in %TEMP% when given no result path, and
+    // Dispose deletes it), so the layout carries no compatibility obligation across versions.
+    private const int RecordSize = 104;
 
     private readonly string _filePath;
     private readonly FileStream _stream;
@@ -99,8 +116,23 @@ public sealed class AlignmentLightPeakStore : IDisposable {
         _writer = new BinaryWriter(_stream);
     }
 
-    public static AlignmentLightPeakStore CreateTemp() {
-        return new AlignmentLightPeakStore(Path.GetTempFileName());
+    /// <summary>
+    /// Creates the store in a new temporary file beside <paramref name="besideFilePath"/>, a file of the
+    /// alignment result being written (see <see cref="AlignmentTemporaryFile.CreateBeside"/>). The file
+    /// holds one record per spot and analysis file, so it grows with the batch; without a result path,
+    /// or when that file's folder does not exist, it is created in %TEMP% as before.
+    /// </summary>
+    public static AlignmentLightPeakStore CreateTemp(string? besideFilePath = null) {
+        var path = AlignmentTemporaryFile.CreateBeside(besideFilePath);
+        try {
+            return new AlignmentLightPeakStore(path);
+        }
+        catch {
+            if (File.Exists(path)) {
+                File.Delete(path);
+            }
+            throw;
+        }
     }
 
     public void Initialize(int spotCount, IReadOnlyList<AnalysisFileBean> files) {
@@ -198,7 +230,9 @@ public sealed class AlignmentLightPeakStore : IDisposable {
         _writer.Write(peak.MS2RawSpectrumID);
         _writer.Write(peak.MatchResults?.Representative?.LibraryID ?? -1);
         _writer.Write(peak.IsMsmsAssigned);
-        _writer.Write(peak.MatchResults?.Representative?.IsReferenceMatched ?? false);
+        var representative = peak.MatchResults?.Representative;
+        _writer.Write(representative?.IsReferenceMatched ?? false);
+        _writer.Write(DataAccess.IsInSilicoMsmsMatch(representative));
     }
 
     private static AlignmentLightPeakRow ReadPeak(BinaryReader reader, AnalysisFileBean file) {
@@ -225,6 +259,7 @@ public sealed class AlignmentLightPeakStore : IDisposable {
             reader.ReadInt32(),
             reader.ReadInt32(),
             reader.ReadInt32(),
+            reader.ReadBoolean(),
             reader.ReadBoolean(),
             reader.ReadBoolean());
     }
@@ -375,7 +410,8 @@ public sealed class AlignmentLightQuantValueAccessor : IQuantValueAccessor {
             case "MZ": return Math.Round(peak.Mass, 5).ToString();
             case "SN": return Math.Round(peak.SignalToNoise, 1).ToString();
             case "MSMS": return peak.MS2RawSpectrumID >= 0 ? "TRUE" : "FALSE";
-            case "Reference matched": return peak.IsReferenceMatched ? "TRUE" : "FALSE";
+            case "Reference matched": return peak.IsQaReferenceMatched ? "TRUE" : "FALSE";
+            case DataAccess.QaInSilicoMatchedColumn: return peak.IsQaInSilicoMatched ? "TRUE" : "FALSE";
             default: return string.Empty;
         }
     }
@@ -394,7 +430,8 @@ public sealed class AlignmentLightQuantValueAccessor : IQuantValueAccessor {
             case "MZ": return peak.Mass;
             case "SN": return peak.SignalToNoise;
             case "MSMS": return peak.MS2RawSpectrumID;
-            case "Reference matched": return peak.IsReferenceMatched ? 1d : 0d;
+            case "Reference matched": return peak.IsQaReferenceMatched ? 1d : 0d;
+            case DataAccess.QaInSilicoMatchedColumn: return peak.IsQaInSilicoMatched ? 1d : 0d;
             default: return -1;
         }
     }

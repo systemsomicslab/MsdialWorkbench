@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace CompMs.MsdialLcMsApi.Process;
 
-internal sealed class PeakPickProcess
+public sealed class PeakPickProcess
 {
     private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
 

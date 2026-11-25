@@ -1,0 +1,188 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "y0",
+   "y_series"
+  ],
+  "motif_id": "triterpenoid_saponin",
+  "negative_examples": [
+   {
+    "pubchem_cid": 119245,
+    "smiles": "C[C@@H]1CC[C@@]2([C@H]([C@H]3[C@@H](O2)C[C@@H]4[C@@]3(CC[C@H]5[C@H]4CC=C6[C@@]5(CC[C@@H](C6)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO)O[C@H]8[C@@H]([C@@H]([C@H]([C@@H](O8)C)O)O)O)O)O[C@H]9[C@@H]([C@@H]([C@H]([C@@H](O9)C)O)O)O)C)C)C)OC1"
+   },
+   {
+    "pubchem_cid": 442089,
+    "smiles": "C[C@@]12CCC[C@@]([C@H]1CC[C@]34[C@H]2CC[C@](C3)(C(=C)C4)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O[C@H]6[C@@H]([C@H]([C@@H]([C@H](O6)CO)O)O)O)(C)C(=O)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "The sapogenin is not claimed: isobaric sapogenins (for example hederagenin and echinocystic acid) give the same ions, and the chosen scaffold entry is a hypothesis detail.",
+   "Sugar identity, sequence, branching, linkage and glycosylation site (C-3 ether or C-28 ester) are not resolved; unit counts are hypothesis details."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 122097,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)O[C@@H]2[C@H]([C@H]([C@H](O[C@H]2O[C@@H]3[C@H]([C@@H]([C@H](O[C@H]3O[C@H]4CC[C@]5([C@H]([C@@]4(C)CO)CC[C@@]6([C@@H]5CC=C7[C@]6(CC[C@@]8([C@H]7CC(C[C@H]8O)(C)C)C)C)C)C)C(=O)O)O)O)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 73296,
+    "smiles": "C[C@H]1[C@@H]([C@H]([C@H]([C@@H](O1)O[C@@H]2[C@H]([C@H](CO[C@H]2O[C@H]3CC[C@]4([C@H]([C@]3(C)CO)CC[C@@]5([C@@H]4CC=C6[C@]5(CC[C@@]7([C@H]6CC(CC7)(C)C)C(=O)O)C)C)C)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 167928,
+    "smiles": "C[C@@H]1[C@@H]([C@@H]([C@H]([C@@H](O1)O[C@H]2CC[C@]3([C@H]([C@]2(C)CO)CC[C@@]4([C@@H]3C=C[C@@]56[C@]4(C[C@@H]([C@@]7([C@H]5CC(CC7)(C)C)CO6)O)C)C)C)O)O[C@H]8[C@@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 14982,
+    "smiles": "C[C@]12CC[C@](C[C@H]1C3=CC(=O)[C@@H]4[C@]5(CC[C@@H](C([C@@H]5CC[C@]4([C@@]3(CC2)C)C)(C)C)O[C@@H]6[C@@H]([C@H]([C@@H]([C@H](O6)C(=O)O)O)O)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)C(=O)O)O)O)O)C)(C)C(=O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "y0"
+   },
+   {
+    "k_of": {
+     "k": 1,
+     "k_source": "src:2",
+     "of": [
+      {
+       "term": "y_series"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Protonated triterpenoid saponins lose their sugars stepwise as protonated Y ions down to the protonated sapogenin and its dehydrated ions; the floor is the protocol default.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "steroid",
+    "note": "Steroidal saponins and steryl glycosides lose the same sugars, but C-4 of their ring A carries no carbon substituent."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "triterpenoid_saponin_sapogenins_pos",
+   "unit_totals": {
+    "sugar": [
+     2,
+     6
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     6
+    ],
+    "HexA": [
+     0,
+     2
+    ],
+    "Pen": [
+     0,
+     6
+    ],
+    "dHex": [
+     0,
+     6
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "triterpenoid_saponin.triterpenoid_saponin.pos",
+ "source": [
+  {
+   "doi": "10.1016/j.jasms.2006.02.013",
+   "locator": "pp. 799-801 (Results, Assignment and Fragmentation of Reported Saponins); Figure 4 (p. 802)"
+  },
+  {
+   "doi": "10.1016/j.jasms.2006.02.013",
+   "locator": "Results; Table 1 (p. 799); Table 2 (p. 800); Figures 4-5 (pp. 802-803)"
+  },
+  {
+   "doi": "10.1016/j.jasms.2006.02.013",
+   "locator": "p. 799 (Y-type product ion series; Table 1 columns I-IV); Table 2 (p. 800); Figure 4 (p. 802)"
+  },
+  {
+   "doi": "10.1038/s41592-019-0358-2",
+   "locator": "Fig. 2b (triterpene saponin entry)"
+  },
+  {
+   "doi": "10.1002/rcm.8415",
+   "locator": "Sec. 3.1 (positive full scan, in-source ions from [M+H]+); Fig. 2D, 2I; Fig. 3B-C"
+  },
+  {
+   "doi": "10.1002/jms.3806",
+   "locator": "Results (peak 14 and peak 12 sections); Figures 4C, 5B"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Protonated sapogenin [Agly+H]+ and its dehydrated ions [Agly+H-H2O]+ and [Agly+H-2H2O]+, per scaffold entry.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "y0",
+   "term_id": "y0",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:6",
+   "form": "even",
+   "kind": "ion_series",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Protonated Y ions that keep part of the sugar chain, from successive glycosidic cleavages.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "y_series",
+   "term_source": "src:2",
+   "than": null,
+   "unit_classes": [
+    "sugar"
+   ]
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18; LLM-extracted candidates)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

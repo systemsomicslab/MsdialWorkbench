@@ -1,0 +1,148 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "scaffold",
+  "claim_term_ids": [
+   "ion_c23h27o7",
+   "ion_c21h23o6"
+  ],
+  "motif_id": "dibenzocyclooctadiene_benzylic_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 3001664,
+    "smiles": "C[C@H]1CC2=CC(=C(C(=C2C3=C(C(=C(C=C3C[C@]1(C)O)OC)OC)OC)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 14992069,
+    "smiles": "C[C@H]1CC2=CC(=C(C(=C2C3=C(C(=C(C=C3C[C@]1(C)O)OC)OC)OC)OC(=O)C4=CC=CC=C4)OC)OC"
+   }
+  ],
+  "non_claims": [
+   "the acyl group (benzoyl versus angeloyl or tigloyl) is decided by the precursor composition, not by these ions",
+   "positional isomers such as schisantherin A and gomisin G, and angeloyl versus tigloyl esters, are not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 151529,
+    "smiles": "C[C@H]1CC2=CC3=C(C(=C2C4=C(C(=C(C=C4[C@@H]([C@@]1(C)O)OC(=O)C5=CC=CC=C5)OC)OC)OC)OC)OCO3"
+   },
+   {
+    "pubchem_cid": 6443826,
+    "smiles": "C/C=C(\\C)/C(=O)O[C@H]1C2=CC(=C(C(=C2C3=C(C4=C(C=C3C[C@@H]([C@]1(C)O)C)OCO4)OC)OC)OC)OC"
+   },
+   {
+    "pubchem_cid": 14992067,
+    "smiles": "C[C@H]1CC2=CC(=C(C(=C2C3=C(C4=C(C=C3[C@@H]([C@@]1(C)O)OC(=O)C5=CC=CC=C5)OCO4)OC)OC)OC)OC"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "ion_c23h27o7"
+   },
+   {
+    "term": "ion_c21h23o6"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Ion-trap MS2 of [M+H]+ or [M+NH4]+ of C6-acyloxy dibenzocyclooctadienes gives only [M+H-acid]+ 415; 371 (-C2H4O) is seen only on MS3 or the in-source 415 ion (Huang 2007, Shi 2009), so one MS2 ion is shown and the rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+",
+   "[M+NH4]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "dibenzocyclooctadiene_lignan",
+    "note": "Schisandrin [M+H-H2O]+ is a nominal 415 ion of another formula (C24H31O6+, 36 mDa away) that loses a methoxyl radical rather than C2H4O (jms.1246)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "lignan_dibenzocyclooctadiene_c6_esters",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "The C6 esters were fragmented from [M+NH4]+ in one paper and from [M+H]+ in the other; both give the [M+H-acid]+ ion.",
+    "source": "src:4"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "lignan.dibenzocyclooctadiene_ester.pos",
+ "source": [
+  {
+   "doi": "10.1002/jms.1246",
+   "locator": "Huang 2007: Results, schisantherin A (p. 1151); Results, peak 8 (p. 1154); Results, peaks 7 and 10 (p. 1160); Table 3, peaks 7, 8, 10 (p. 1159)"
+  },
+  {
+   "doi": "10.1002/jms.1246",
+   "locator": "Huang 2007: Table 1, schisantherin A rows (p. 1153); Results, schisantherin A (p. 1151); Table 3, peaks 7, 8, 10 (p. 1159); Scheme 2 (p. 1155)"
+  },
+  {
+   "doi": "10.1002/pca.1115",
+   "locator": "Shi 2009: Table 2 (p. 199); Results, gomisin B, schisantherin C and schisantherin A (pp. 199-200); closing paragraph (pp. 203-204)"
+  },
+  {
+   "doi": "10.1002/pca.1115",
+   "locator": "Shi 2009: Table 2 (p. 199); Table 4, peaks 10, 12-16, 19 (p. 204); Results, MW 514 isomers (pp. 200-201)"
+  },
+  {
+   "doi": "10.1002/pca.1115",
+   "locator": "Shi 2009: Results and Discussion, first paragraphs (pp. 198-199); Table 1 (p. 199); Table 3 (p. 203)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": false,
+ "terms": [
+  {
+   "floor_source": "src:5",
+   "formula": "C23H27O7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[M+H-acid]+ 415.1751 after loss of benzoic (122) or angelic/tiglic acid (100) from the C6 ester.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c23h27o7",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:5",
+   "formula": "C21H23O6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "415 minus C2H4O, 371.1489, the base product of the 415 ion; shown only on MS3 of 415 or on the in-source 415 ion, never in MS2 of the intact precursor.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "ion_c21h23o6",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

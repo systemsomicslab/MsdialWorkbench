@@ -1,0 +1,242 @@
+{
+ "entries": [
+  {
+   "class": "spirostanol",
+   "formula": "C27H42O3",
+   "ions": {
+    "skel": {
+     "neg": [],
+     "pos": [
+      "C19H27O"
+     ]
+    },
+    "skel_h2o": {
+     "neg": [],
+     "pos": [
+      "C19H25"
+     ]
+    }
+   },
+   "name": "diosgenin type (spirost-5-en-3-ol, incl. yamogenin)",
+   "origin": "as_published",
+   "scaffold_id": "diosgenin_type",
+   "source": [
+    {
+     "doi": "10.3390/ijms241411487",
+     "locator": "Sec. 2.2.2 (compounds 17-19)"
+    },
+    {
+     "doi": "10.1002/jms.988",
+     "locator": "Abstract; Table 2; Scheme 2 (pathways a and c)"
+    },
+    {
+     "doi": "10.1007/s00216-009-2987-2",
+     "locator": "Results; Fig. 6"
+    },
+    {
+     "doi": "10.1016/j.steroids.2014.12.023",
+     "locator": "Sec. 3.1.2; Scheme 5"
+    },
+    {
+     "doi": "10.1002/pca.2876",
+     "locator": "Sec. 3.1; Table 2; Fig. 3"
+    }
+   ]
+  },
+  {
+   "class": "spirostanol",
+   "formula": "C27H44O3",
+   "ions": {
+    "skel": {
+     "neg": [],
+     "pos": [
+      "C19H29O"
+     ]
+    },
+    "skel_h2o": {
+     "neg": [],
+     "pos": [
+      "C19H27"
+     ]
+    }
+   },
+   "name": "tigogenin type (spirostan-3-ol, incl. sarsasapogenin, smilagenin; furost-20(22)-ene-3,26-diol)",
+   "origin": "as_published",
+   "scaffold_id": "tigogenin_type",
+   "source": [
+    {
+     "doi": "10.3390/molecules25173848",
+     "locator": "Table 1 (24 compounds between 68 and 110, e.g. 68, 71, 105)"
+    },
+    {
+     "doi": "10.3390/ijms241411487",
+     "locator": "Table 1 (compounds 23-33); Sec. 2.1"
+    },
+    {
+     "doi": "10.1002/rcm.690",
+     "locator": "Results; Figs. 4-5; Scheme 3"
+    },
+    {
+     "doi": "10.1002/rcm.1310",
+     "locator": "Scheme 2; Results p. 236"
+    },
+    {
+     "doi": "10.1007/978-1-4939-0606-2_12",
+     "locator": "Sec. 3.4 step 7; Fig. 2g; Fig. 3"
+    }
+   ]
+  },
+  {
+   "class": "spirostanol",
+   "formula": "C27H42O3",
+   "ions": {
+    "skel": {
+     "neg": [],
+     "pos": [
+      "C19H29O"
+     ]
+    },
+    "skel_h2o": {
+     "neg": [],
+     "pos": [
+      "C19H27"
+     ]
+    }
+   },
+   "name": "5beta-spirost-25(27)-en-3beta-ol type",
+   "origin": "as_published",
+   "scaffold_id": "spirost_25_27_ene_type",
+   "source": [
+    {
+     "doi": "10.3390/molecules25173848",
+     "locator": "Table 1; Section 'Study on MS/MS Cleavage Pattern'; Figure 3"
+    },
+    {
+     "doi": "10.1007/978-1-4939-0606-2_12",
+     "locator": "Sec. 3.4 step 7; Fig. 2h; Fig. 3 (spirostanol branch 435/415/273)"
+    }
+   ]
+  },
+  {
+   "class": "spirostanol",
+   "formula": "C27H42O4",
+   "ions": {
+    "skel": {
+     "neg": [],
+     "pos": [
+      "C19H27O2"
+     ]
+    },
+    "skel_h2o": {
+     "neg": [],
+     "pos": [
+      "C19H25O"
+     ]
+    }
+   },
+   "name": "laxogenin (6-oxo), pennogenin (17-OH) and solagenin (3-oxo, 6-OH) types",
+   "origin": "as_published",
+   "scaffold_id": "oxo_hydroxy_spirostanol_type",
+   "source": [
+    {
+     "doi": "10.3390/ijms241411487",
+     "locator": "Sec. 2.2.1; Table 1 (compound 1)"
+    },
+    {
+     "doi": "10.1007/s00216-009-2987-2",
+     "locator": "Results; Fig. 7"
+    },
+    {
+     "doi": "10.1002/rcm.3630",
+     "locator": "Results; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "spirostanol",
+   "formula": "C27H42O4",
+   "ions": {
+    "skel": {
+     "neg": [],
+     "pos": [
+      "C21H31O"
+     ]
+    },
+    "skel_h2o": {
+     "neg": [],
+     "pos": [
+      "C21H29"
+     ]
+    }
+   },
+   "name": "spirostan-3beta-ol-12-one type (YS-8 type)",
+   "origin": "as_published",
+   "scaffold_id": "spirostan_12_one_type",
+   "source": [
+    {
+     "doi": "10.3390/molecules25173848",
+     "locator": "Sec. 2.2.3 (peaks 27, 38, 51); Table 1"
+    }
+   ]
+  },
+  {
+   "class": "spirostanol",
+   "formula": "C27H40O4",
+   "ions": {
+    "skel": {
+     "neg": [],
+     "pos": [
+      "C21H31O"
+     ]
+    },
+    "skel_h2o": {
+     "neg": [],
+     "pos": [
+      "C21H29"
+     ]
+    }
+   },
+   "name": "5beta-spirost-25(27)-en-3beta-ol-12-one type",
+   "origin": "as_published",
+   "scaffold_id": "spirost_25_27_en_12_one_type",
+   "source": [
+    {
+     "doi": "10.3390/molecules25173848",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "spirostanol",
+   "formula": "C27H44O4",
+   "ions": {
+    "skel": {
+     "neg": [],
+     "pos": [
+      "C19H29O2"
+     ]
+    },
+    "skel_h2o": {
+     "neg": [],
+     "pos": [
+      "C19H27O"
+     ]
+    }
+   },
+   "name": "spirostan-3,6-diol and 3,12-diol types (neochlorogenin; YS-7/YS-9 type)",
+   "origin": "as_published",
+   "scaffold_id": "dihydroxy_spirostane_type",
+   "source": [
+    {
+     "doi": "10.3390/molecules25173848",
+     "locator": "Sec. 2.2.3 (peaks 14, 15, 34, 36, 40, 41); Table 1"
+    },
+    {
+     "doi": "10.1002/rcm.3630",
+     "locator": "Results; Table 1; Fig. 3; Scheme 1"
+    }
+   ]
+  }
+ ],
+ "list_id": "steroidal_glycoside_sapogenins"
+}

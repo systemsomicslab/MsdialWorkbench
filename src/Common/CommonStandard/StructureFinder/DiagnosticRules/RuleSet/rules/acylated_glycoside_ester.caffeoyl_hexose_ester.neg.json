@@ -1,0 +1,235 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "ion_281",
+   "ion_251",
+   "ion_221",
+   "ion_161"
+  ],
+  "motif_id": "hydroxycinnamoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 14825516,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281759,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the acylated hexose position (1-, 2-, 3-, 4- or 6-O) and the anomer are not resolved",
+   "the hexose identity is not resolved"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5281761,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 10427456,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)OC[C@@H]2[C@H]([C@@H]([C@H](C(O2)O)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:7",
+   "of": [
+    {
+     "term": "ion_281"
+    },
+    {
+     "term": "ion_251"
+    },
+    {
+     "term": "ion_221"
+    },
+    {
+     "term": "ion_233"
+    },
+    {
+     "term": "ion_203"
+    },
+    {
+     "term": "ion_161"
+    }
+   ]
+  }
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): m/z 233 and 203 are the H2O daughters of 251 and 221, so the two-of-six count can rest on one parent-daughter channel; 281, 251, 221 and 161 remain claim ions.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hydroxycinnamic_acid_o_glycoside",
+    "note": "caffeic acid 3-O- and 4-O-glucosides (kiwi extract, assigned by elution order) share the precursor and give only caffeate and its decarboxylation ion (src:5)"
+   }
+  ],
+  "composition": {
+   "core": "H2O",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     1
+    ],
+    "caffeoyl": [
+     1,
+     1
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.caffeoyl_hexose_ester.neg",
+ "source": [
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Fragmentation of 6-Caffeoylglucoses (9 and 10); Figs. 6-7; Tables 1-2"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Fragmentation of 3-Caffeoylglucoses (5 and 6); Figs. 6, 9; Tables 1-2"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Fragmentation of 2-Caffeoylglucoses (3 and 4); Figs. 6, 8; Tables 1-2"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Fragmentation of 4-Caffeoylglucoses (7 and 8); Figs. 6, 10; Tables 1-2"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Fragmentation of 1-Caffeoylglucoses (1 and 2); Figs. 6, 11; Tables 1-2"
+  },
+  {
+   "doi": "10.1021/jf501210s",
+   "locator": "Results and Discussion, Tandem Mass Spectra of O-Caffeoyl Glycosides (11 and 12); Fig. 13"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions; P3 proposal, Author input 2026-11-15, Q6 principle 1",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision: a class claim needs two or three diagnostic ions jointly (author, 2026-11-15)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "formula": "C13H13O7",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[M-H-C2H4O2]- cross-ring ion, base peak of 6-O esters; also src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_281",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C12H11O6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[M-H-C3H6O3]-; also src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_251",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C11H9O5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[M-H-C4H8O4]-",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_221",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C12H9O5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[M-H-H2O-C3H6O3]-; strong for 3-O and 4-O esters (src:3)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_233",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C11H7O4",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[M-H-H2O-C4H8O4]-, base peak of 2-O and 4-O esters (src:2, src:3)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_203",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C9H5O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "[caffeic acid-H-H2O]- C9H5O3-, distinct from the hexose ion C6H9O5- 161.045; also src:3",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "ion_161",
+   "term_source": "src:4",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18) from the LLM-extracted candidate records of candidates-20261118; source-checked 2026-11-18, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

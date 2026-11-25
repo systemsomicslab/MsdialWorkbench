@@ -1,0 +1,564 @@
+{
+ "cases": [
+  {
+   "description": "h* = campesterol|Hex1|[M+NH4]+, precursor at its oracle m/z; one peak per support member: sterol_cation:A",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": "campesterol|Hex1|[M+NH4]+",
+      "fired": true,
+      "matched": [
+       "sterol_cation:A@0",
+       "loss_hex_nh3:C6H15NO6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "campesterol|Hex1|[M+NH4]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.367228",
+      "500.0"
+     ],
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steryl_hexoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"0d7af0575f65c103c9b3af06ee98364574d621b8a45affc0f656099148c0cb99\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"steryl_hexoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+NH4]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"campesterol|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"campesterol|Hex1|[M+NH4]+\",\"hypothesis_mz\":580.457165,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C28H47\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":383.367228,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"sterol_cation\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H15NO6\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H15NO6\",\"peak_index\":0,\"peak_mz\":383.367228,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"loss_hex_nh3\",\"unit_id\":0}],\"neutral_formula\":\"C34H58O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"campesterol\",\"score\":1.000000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"campesterol|Hex1|[M+NH4]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f7b8eb85dfd9269411f73b6a4979747bc0f8055f182f2aa6e17cea0a1c544d62"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ without the peaks of required term sterol_cation; the removed peaks also match loss_hex_nh3, which lose them too; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "drop_sterol_cation",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":null,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"407e13862c5b2e723a4a832edaedd58d610bc300df00db69bc2c6c4c69d75266\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":1,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "739c862f19de172e0748628327f55831631b9ec6c4471b237175edcd0b935834"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ without the peaks of required term loss_hex_nh3; the removed peaks also match sterol_cation, which lose them too; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "drop_loss_hex_nh3",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":null,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"407e13862c5b2e723a4a832edaedd58d610bc300df00db69bc2c6c4c69d75266\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":1,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "739c862f19de172e0748628327f55831631b9ec6c4471b237175edcd0b935834"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with sterol_cation:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": "campesterol|Hex1|[M+NH4]+",
+      "fired": true,
+      "matched": [
+       "sterol_cation:A@0",
+       "loss_hex_nh3:C6H15NO6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "campesterol|Hex1|[M+NH4]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.372218",
+      "500.0"
+     ],
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steryl_hexoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"9e09daa0cae6803d2c2631a85fcd42eb4b26204c9dd4fc26f752b586aeb8a71c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"steryl_hexoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+NH4]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"campesterol|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"campesterol|Hex1|[M+NH4]+\",\"hypothesis_mz\":580.457165,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":13.018,\"ion_formula\":\"C28H47\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":383.372218,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"sterol_cation\",\"unit_id\":0},{\"error_da\":0.004990,\"error_ppm\":13.018,\"ion_formula\":\"C6H15NO6\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H15NO6\",\"peak_index\":0,\"peak_mz\":383.372218,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"loss_hex_nh3\",\"unit_id\":0}],\"neutral_formula\":\"C34H58O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"campesterol\",\"score\":1.000000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"campesterol|Hex1|[M+NH4]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b45b2ff5bd58120c97adcc81b99b1f3bf233d531c653568f5d3b05084ffbff0a"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with sterol_cation:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.372238",
+      "500.0"
+     ],
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"a18ba60a550308c99bd505ec15ec50a008db2bb4ccc2f12af5de78dd7a93e208\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bd6507e53be08a7d864881d41b7f92f6b43aba5851925693367c5018fd49c629"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with sterol_cation:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": "campesterol|Hex1|[M+NH4]+",
+      "fired": true,
+      "matched": [
+       "sterol_cation:A@0",
+       "loss_hex_nh3:C6H15NO6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "campesterol|Hex1|[M+NH4]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.362238",
+      "500.0"
+     ],
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steryl_hexoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"cf778b4ec57d12a22af4674980c14bbd015573484f6074985682cac92508210a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"steryl_hexoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+NH4]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"campesterol|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"campesterol|Hex1|[M+NH4]+\",\"hypothesis_mz\":580.457165,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-13.015,\"ion_formula\":\"C28H47\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":383.362238,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"sterol_cation\",\"unit_id\":0},{\"error_da\":-0.004990,\"error_ppm\":-13.015,\"ion_formula\":\"C6H15NO6\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H15NO6\",\"peak_index\":0,\"peak_mz\":383.362238,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"loss_hex_nh3\",\"unit_id\":0}],\"neutral_formula\":\"C34H58O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"campesterol\",\"score\":1.000000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"campesterol|Hex1|[M+NH4]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7106af92401c2becb2414175d7541e1a711401126b6718e512bd9a2345b6e73b"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with sterol_cation:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.362218",
+      "500.0"
+     ],
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"571163323204eb3d76c96bbf2c1bea91e33f47b2de29564c06ca62555c54cc21\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5a0b8594bf28505351c147b902321b71a06bb0f7409c5d455e4bcd621207889a"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": "campesterol|Hex1|[M+NH4]+",
+      "fired": true,
+      "matched": [
+       "sterol_cation:A@0",
+       "loss_hex_nh3:C6H15NO6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "campesterol|Hex1|[M+NH4]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.367228",
+      "500.0"
+     ],
+     [
+      "580.467155",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.467155"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steryl_hexoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"11c25c1629a574cca5cd285b5957211a33ffb13e9429928ed835d4171f993c0a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"steryl_hexoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+NH4]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"campesterol|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"campesterol|Hex1|[M+NH4]+\",\"hypothesis_mz\":580.457165,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C28H47\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":383.367228,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"sterol_cation\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H15NO6\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H15NO6\",\"peak_index\":0,\"peak_mz\":383.367228,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"loss_hex_nh3\",\"unit_id\":0}],\"neutral_formula\":\"C34H58O6\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"campesterol\",\"score\":1.000000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"campesterol|Hex1|[M+NH4]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.467155,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "370f87bc1196fc93417885871186f5c17e1d92e7138cb89672726944285072bb"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.367228",
+      "500.0"
+     ],
+     [
+      "580.467175",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.467175"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"d2acc53d253938443c69c3d5df44d0c5a0f98d45ec508f84cd64bc13e087cd3b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.467175,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5995892bb693d4f71f4fa07ac7c59e72b2c084aed7145547ef964b974e9ec1f9"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": "campesterol|Hex1|[M+NH4]+",
+      "fired": true,
+      "matched": [
+       "sterol_cation:A@0",
+       "loss_hex_nh3:C6H15NO6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "campesterol|Hex1|[M+NH4]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.367228",
+      "500.0"
+     ],
+     [
+      "580.447175",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.447175"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"steryl_hexoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"e7b9d89d9b7a7c6cfc123cf81d8e81fe550a15394430794b3acc424312cdf804\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[\"steryl_hexoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+NH4]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"campesterol|Hex1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"campesterol|Hex1|[M+NH4]+\",\"hypothesis_mz\":580.457165,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C28H47\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":0,\"peak_mz\":383.367228,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"sterol_cation\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.001,\"ion_formula\":\"C6H15NO6\",\"kind\":\"loss_from_precursor\",\"member_key\":\"C6H15NO6\",\"peak_index\":0,\"peak_mz\":383.367228,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":383.367228,\"term_id\":\"loss_hex_nh3\",\"unit_id\":0}],\"neutral_formula\":\"C34H58O6\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"campesterol\",\"score\":1.000000,\"units\":{\"Hex\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"campesterol|Hex1|[M+NH4]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.447175,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "938843914830431cd865396ac41ad11af276bf47d4f370423650ea2291ca25e0"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.367228",
+      "500.0"
+     ],
+     [
+      "580.447155",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.447155"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"cd66c822ca29392354a79f2587c190a573d3264779c1c1d2ad43fa03345ce586\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.447155,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cfd250a3f276a3ee0cfb439ea287a7af0b26251ed228b55653bd9334c7178365"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "383.367228",
+      "500.0"
+     ],
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"d501845d6d7870b6d583793e70ce82702cc63a5dae6c3e2322d810d00e179b14\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "efee31531d4628b20df2a4e081edc41ad12b74c82c57d37485f55ddb6c63c4b5"
+  },
+  {
+   "description": "the positive spectrum of campesterol|Hex1|[M+NH4]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.steryl_hexoside.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "383.367228",
+      "500.0"
+     ],
+     [
+      "580.457165",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "580.457165"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"input_sha256\":\"0d7af0575f65c103c9b3af06ee98364574d621b8a45affc0f656099148c0cb99\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"steryl_hexoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.steryl_hexoside.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":580.457165,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"fb315dfbd7e1e9b9bb0efed33b7b3edda032341e76689cdb26098c4d08b0792f\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f972e2d6d4353cf5c1c9aa24ebfeaf6c02401ce6755254f74e4a8499cc08a8be"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

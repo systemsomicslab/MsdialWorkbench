@@ -181,7 +181,7 @@ public class RetentionTimeCorrectionPeakSelectorTests {
         return new ChromatogramPeakFeature {
             PrecursorMz = mass,
             ChromXs = new ChromXs(rt, ChromXType.RT, ChromXUnit.Min),
-            PeakHeightTop = height,
+            PeakFeature = { PeakHeightTop = height, },
         };
     }
 }

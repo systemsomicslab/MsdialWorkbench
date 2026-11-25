@@ -1,0 +1,162 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "a13",
+   "b12",
+   "b14"
+  ],
+  "motif_id": "flavan_3_ol_core",
+  "negative_examples": [
+   {
+    "pubchem_cid": 11778945,
+    "smiles": "C1=CC(=C(C=C1CCC(=O)C2=C(C=C(C=C2O)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Hydroxyl and methoxyl positions beyond the hypothesis scaffold are not resolved",
+   "Free aglycone versus an in-source aglycone ion of a conjugate is not decided by this rule",
+   "Catechin versus epicatechin is not resolved (van der Hooft 2011)",
+   "Precursors at the other common positive adducts tried under adduct_ambiguous ([M+NH4]+, [M+Na]+, [M+K]+) are not described by the cited [M+H]+ fragmentation"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 9064,
+    "smiles": "C1[C@@H]([C@H](OC2=CC(=CC(=C21)O)O)C3=CC(=C(C=C3)O)O)O"
+   },
+   {
+    "pubchem_cid": 72276,
+    "smiles": "C1[C@H]([C@H](OC2=CC(=CC(=C21)O)O)C3=CC(=C(C=C3)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "a13"
+   },
+   {
+    "any": [
+     {
+      "term": "b12"
+     },
+     {
+      "term": "b14"
+     }
+    ]
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Flavan-3-ol aglycone [M+H]+: the A-ring ion C7H7O3+ of a C ring without 4-keto with one B-ring ion (1,2B+ or 1,4B+), from Tsimogiannis 2007; the nominal-only C8H7O3+ marker of Jiang 2024 is reported as an upgrade only.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "dihydrochalcone_core",
+    "note": "3-hydroxyphloretin shares C15H14O6 with catechin; alpha cleavage of its dihydrocaffeoyl unit could give the 1,2B+ and 1,4B+ formulas, and its protonated trihydroxyacetophenone unit minus H2O the upgrade formula C8H7O3+ (inference, not from a source)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "flavonoid_aglycone_flavan_3_ol_pos",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "flavonoid_aglycone.flavan_3_ol.pos",
+ "source": [
+  {
+   "doi": "10.3390/12030593",
+   "locator": "Table 2"
+  },
+  {
+   "doi": "10.3390/molecules29225246",
+   "locator": "Table 2 (m/z 151, flavanols)"
+  },
+  {
+   "doi": "10.1002/jms.585",
+   "locator": "p. 6, Flavonoid aglycone, Positive ion mode"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C7H7O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,3A+ of a C ring without 4-keto (base peak); Cuyckens 2004 give 139 for flavanols",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "a13",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C8H7O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "A-ring ion that Jiang 2024 present as the flavanol marker (4 standards, nominal m/z only; C8H7O3+ by calculation); an upgrade only, because the formula is inferred and a dihydrochalcone could also reach it",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "a151",
+   "term_source": "src:1",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,2B+ (91-93 %)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_12b",
+   "term_id": "b12",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "1,4B+ (77.5-79 %)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "rda_14b",
+   "term_id": "b14",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

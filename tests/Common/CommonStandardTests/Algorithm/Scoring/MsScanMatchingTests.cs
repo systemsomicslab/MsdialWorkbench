@@ -1,5 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Components.Tests;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -161,6 +163,168 @@ public class MsScanMatchingTests
                 }
             }
         }
+    }
+
+    [TestMethod()]
+    public void GetLipidomicsMatchedPeaksScores_UnparsedLipidName_ReturnsMatchedPeaksScores() {
+        var reference = CreateUnparsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var expected = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [TestMethod()]
+    public void GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO_UnparsedLipidName_ReturnsMatchedPeaksScores() {
+        var reference = CreateUnparsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var expected = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForEIEIO(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [TestMethod()]
+    public void GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForOAD_UnparsedLipidName_ReturnsMatchedPeaksScores() {
+        var reference = CreateUnparsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var expected = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMoleculerSpeciesLevelAnnotationPeaksScoresForOAD(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [TestMethod()]
+    public void GetRefinedLipidAnnotationLevel_UnparsedLipidName_ReturnsReferenceNameAsOthers() {
+        var reference = CreateUnparsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var actual = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, _mzTolerance,
+            out var isLipidClassMatched, out var isLipidChainMatched, out var isLipidPositionMatched, out var isOthers);
+        AssertReturnedAsOthers(reference, actual, isLipidClassMatched, isLipidChainMatched, isLipidPositionMatched, isOthers);
+    }
+
+    [TestMethod()]
+    public void GetRefinedLipidAnnotationLevelForEIEIO_UnparsedLipidName_ReturnsReferenceNameAsOthers() {
+        var reference = CreateUnparsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var actual = MsScanMatching.GetRefinedLipidAnnotationLevelForEIEIO(scan, reference, _mzTolerance,
+            out var isLipidClassMatched, out var isLipidChainMatched, out var isLipidPositionMatched, out var isOthers);
+        AssertReturnedAsOthers(reference, actual, isLipidClassMatched, isLipidChainMatched, isLipidPositionMatched, isOthers);
+    }
+
+    [TestMethod()]
+    public void GetRefinedLipidAnnotationLevelForOAD_UnparsedLipidName_ReturnsReferenceNameAsOthers() {
+        var reference = CreateUnparsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var actual = MsScanMatching.GetRefinedLipidAnnotationLevelForOAD(scan, reference, _mzTolerance,
+            out var isLipidClassMatched, out var isLipidChainMatched, out var isLipidPositionMatched, out var isOthers);
+        AssertReturnedAsOthers(reference, actual, isLipidClassMatched, isLipidChainMatched, isLipidPositionMatched, isOthers);
+    }
+
+    [TestMethod()]
+    public void GetLipidNameFromReference_UnparsedLipidName_ReturnsReferenceName() {
+        var reference = CreateUnparsedLipidReference();
+        Assert.AreEqual(reference.Name, MsScanMatching.GetLipidNameFromReference(reference));
+    }
+
+    [TestMethod()]
+    public void GetLipidomicsMatchedPeaksScores_ParsedLipidName_KeepsLipidBonus() {
+        var reference = CreateParsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var plain = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        Assert.AreEqual(1d, plain[0]);
+        CollectionAssert.AreEqual(new[] { 2d, plain[1], }, actual);
+    }
+
+    [TestMethod()]
+    public void GetRefinedLipidAnnotationLevel_ParsedLipidName_MatchesClassAndChain() {
+        var reference = CreateParsedLipidReference();
+        var scan = CreateQueryScan(reference);
+        var actual = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, _mzTolerance,
+            out var isLipidClassMatched, out var isLipidChainMatched, out var isLipidPositionMatched, out var isOthers);
+        Assert.AreEqual("PC 34:1|PC 16:0_18:1", actual);
+        Assert.IsTrue(isLipidClassMatched);
+        Assert.IsTrue(isLipidChainMatched);
+        Assert.IsFalse(isLipidPositionMatched);
+        Assert.IsFalse(isOthers);
+    }
+
+    [TestMethod()]
+    public void GetLipidomicsMatchedPeaksScores_ChainWithoutColon_ReturnsMatchedPeaksScores() {
+        var reference = CreateUnparsedLipidReference();
+        reference.Name = "Cholesterol d7";
+        reference.CompoundClass = "ST";
+        var scan = CreateQueryScan(reference);
+        var expected = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        CollectionAssert.AreEqual(expected, actual);
+    }
+
+    [TestMethod()]
+    public void GetLipidomicsMatchedPeaksScores_NullFormula_KeepsLipidBonus() {
+        var reference = CreateParsedLipidReference();
+        reference.Formula = null;
+        var scan = CreateQueryScan(reference);
+        var plain = MsScanMatching.GetMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        var actual = MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, _mzTolerance, _mzMin, _mzMax);
+        CollectionAssert.AreEqual(new[] { 2d, plain[1], }, actual);
+    }
+
+    private static void AssertReturnedAsOthers(MoleculeMsReference reference, string actual,
+        bool isLipidClassMatched, bool isLipidChainMatched, bool isLipidPositionMatched, bool isOthers) {
+        Assert.AreEqual(reference.Name, actual);
+        Assert.IsFalse(isLipidClassMatched);
+        Assert.IsFalse(isLipidChainMatched);
+        Assert.IsFalse(isLipidPositionMatched);
+        Assert.IsTrue(isOthers);
+    }
+
+    // The CE record "Cholesterol(d7)" [M+NH4]+ of MSDIAL-TandemMassSpectralAtlas-VS69-Pos.msp.
+    // LipidomicsConverter does not parse its name, so the lipid molecule has no LipidName.
+    private static MoleculeMsReference CreateUnparsedLipidReference() {
+        return new MoleculeMsReference
+        {
+            Name = "Cholesterol(d7)",
+            CompoundClass = "CE",
+            AdductType = AdductIon.GetAdductIon("[M+NH4]+"),
+            PrecursorMz = 411.43259,
+            IonMode = IonMode.Positive,
+            Spectrum = [
+                new() { Mass = 142.1612, Intensity = 200, },
+                new() { Mass = 154.1612, Intensity = 200, },
+                new() { Mass = 168.1768, Intensity = 200, },
+                new() { Mass = 182.1926, Intensity = 200, },
+                new() { Mass = 376.3949, Intensity = 999, },
+                new() { Mass = 393.422, Intensity = 50, },
+                new() { Mass = 411.4326, Intensity = 100, },
+            ],
+        };
+    }
+
+    // A PC whose name parses, with the m/z 184.0733 head group fragment and both acyl fragments.
+    private static MoleculeMsReference CreateParsedLipidReference() {
+        return new MoleculeMsReference
+        {
+            Name = "PC 16:0_18:1",
+            CompoundClass = "PC",
+            AdductType = AdductIon.GetAdductIon("[M+H]+"),
+            PrecursorMz = 760.58508,
+            IonMode = IonMode.Positive,
+            Spectrum = [
+                new() { Mass = 184.0733, Intensity = 999, },
+                new() { Mass = 496.3398, Intensity = 50, },
+                new() { Mass = 522.3554, Intensity = 50, },
+                new() { Mass = 760.5851, Intensity = 100, },
+            ],
+        };
+    }
+
+    private static IMSScanProperty CreateQueryScan(MoleculeMsReference reference) {
+        return new MSScanProperty
+        {
+            PrecursorMz = reference.PrecursorMz,
+            IonMode = reference.IonMode,
+            Spectrum = reference.Spectrum.Select(p => new SpectrumPeak { Mass = p.Mass, Intensity = p.Intensity, }).ToList(),
+        };
     }
 
     private IMSScanProperty CreateScan(int size, double mzScale, int seed) {

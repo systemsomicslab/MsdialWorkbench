@@ -148,5 +148,20 @@ namespace CompMs.Common.Enum
 
     public enum SearchType { ProductIon, NeutralLoss }
     public enum AndOr { AND, OR }
-    public enum MsmsSimilarityCalc { ModDot, Bonanza, Cosine, All }
+    /// <summary>
+    /// The spectral similarity of molecular networking. The values are persisted as integers
+    /// (MessagePack), so they never change: a project saved with ModDot (0) opens as ModDotLegacy.
+    /// </summary>
+    public enum MsmsSimilarityCalc {
+        /// <summary>The matched-peaks-only modified dot product, <c>msdial.moddot.legacy</c>. Kept for reproducibility; it scores 1.0 for a single matched pair.</summary>
+        ModDotLegacy = 0,
+        /// <summary><c>msdial.bonanza.v1</c>, the default.</summary>
+        Bonanza = 1,
+        /// <summary>MS-DIAL's simple dot product over the product-ion range; exported squared. Not a registered kernel identity.</summary>
+        Cosine = 2,
+        /// <summary>Bonanza, the matched-only modified dot product and the matched-only product-ion cosine of one matching.</summary>
+        All = 3,
+        /// <summary>The GNPS-normalised modified cosine, <c>gnps.modified_cosine</c>.</summary>
+        ModifiedCosine = 4,
+    }
 }

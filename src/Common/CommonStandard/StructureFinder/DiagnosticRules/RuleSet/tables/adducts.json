@@ -1,0 +1,225 @@
+{
+ "adducts": [
+  {
+   "add": "H",
+   "adduct": "[M+H]+",
+   "aliases": [
+    "M+H"
+   ],
+   "charge": 1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "locator": "line 2 ([M+H]+)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Positive.txt"
+    }
+   ]
+  },
+  {
+   "add": "H4N",
+   "adduct": "[M+NH4]+",
+   "aliases": [
+    "M+NH4"
+   ],
+   "charge": 1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "locator": "line 3 ([M+NH4]+)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Positive.txt"
+    }
+   ]
+  },
+  {
+   "add": "Na",
+   "adduct": "[M+Na]+",
+   "aliases": [
+    "M+Na"
+   ],
+   "charge": 1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "locator": "line 4 ([M+Na]+)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Positive.txt"
+    }
+   ]
+  },
+  {
+   "add": "K",
+   "adduct": "[M+K]+",
+   "aliases": [
+    "M+K"
+   ],
+   "charge": 1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "locator": "line 6 ([M+K]+)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Positive.txt"
+    }
+   ]
+  },
+  {
+   "add": "H",
+   "adduct": "[M+H-H2O]+",
+   "aliases": [
+    "[M-H2O+H]+",
+    "M+H-H2O",
+    "M-H2O+H"
+   ],
+   "charge": 1,
+   "common": false,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": "H2O",
+   "source": [
+    {
+     "locator": "line 9 ([M+H-H2O]+)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Positive.txt"
+    }
+   ]
+  },
+  {
+   "add": null,
+   "adduct": "[M]+",
+   "aliases": [
+    "[M+]+",
+    "M+"
+   ],
+   "charge": 1,
+   "common": false,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "doi": "10.1021/jf981242+",
+     "locator": "Results, ES-MS Anthocyanin Profile"
+    },
+    {
+     "doi": "10.1016/j.chroma.2005.07.036",
+     "locator": "Sec. 3; Figures 2B-C, 3B-C, 4B-F, 6B-G"
+    }
+   ]
+  },
+  {
+   "add": null,
+   "adduct": "[M-H]-",
+   "aliases": [
+    "M-H"
+   ],
+   "charge": -1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": "H",
+   "source": [
+    {
+     "locator": "line 2 ([M-H]-)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Negative.txt"
+    }
+   ]
+  },
+  {
+   "add": "Cl",
+   "adduct": "[M+Cl]-",
+   "aliases": [
+    "M+Cl"
+   ],
+   "charge": -1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "locator": "line 5 ([M+Cl]-)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Negative.txt"
+    }
+   ]
+  },
+  {
+   "add": "CHO2",
+   "adduct": "[M+HCOO]-",
+   "aliases": [
+    "[M+FA-H]-",
+    "[M-H+HCOOH]-",
+    "[M+HCOOH-H]-",
+    "M+FA-H",
+    "M+HCOO"
+   ],
+   "charge": -1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "locator": "line 7 ([M+FA-H]-)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Negative.txt"
+    }
+   ]
+  },
+  {
+   "add": "C2H3O2",
+   "adduct": "[M+CH3COO]-",
+   "aliases": [
+    "[M+Hac-H]-",
+    "[M-H+CH3COOH]-",
+    "[M+CH3COOH-H]-",
+    "M+Hac-H",
+    "M+CH3COO"
+   ],
+   "charge": -1,
+   "common": true,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": null,
+   "source": [
+    {
+     "locator": "line 8 ([M+Hac-H]-)",
+     "reference": "MsdialWorkbench 563cc1c86 src/Common/CommonStandard/Resources/AdductIonResource_Negative.txt"
+    }
+   ]
+  },
+  {
+   "add": "H",
+   "adduct": "[M+H-2H2O]+",
+   "aliases": [
+    "[M-2H2O+H]+",
+    "M+H-2H2O",
+    "M-2H2O+H"
+   ],
+   "charge": 1,
+   "common": false,
+   "multiplier": 1,
+   "origin": "as_published",
+   "remove": "H4O2",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.1c05648",
+     "locator": "Results and Discussion, Ionization of Bile Acids in Positive and Negative ESI Modes"
+    },
+    {
+     "doi": "10.3390/metabo12010049",
+     "locator": "Section 2.1.1; Section 2.1.2; Figure 5"
+    }
+   ]
+  }
+ ],
+ "format": "msfinder-diagnostic-adducts",
+ "format_version": 1
+}

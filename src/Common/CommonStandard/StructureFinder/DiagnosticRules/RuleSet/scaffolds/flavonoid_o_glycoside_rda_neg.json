@@ -1,0 +1,263 @@
+{
+ "entries": [
+  {
+   "class": "flavone",
+   "formula": "C15H10O5",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O4"
+     ],
+     "pos": [
+      "C7H5O4"
+     ]
+    }
+   },
+   "name": "apigenin",
+   "origin": "as_published",
+   "scaffold_id": "apigenin",
+   "source": [
+    {
+     "doi": "10.3390/plants12193388",
+     "locator": "Sec. 2.1"
+    },
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "flavone",
+   "formula": "C15H10O6",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O4"
+     ],
+     "pos": [
+      "C7H5O4"
+     ]
+    }
+   },
+   "name": "luteolin",
+   "origin": "as_published",
+   "scaffold_id": "luteolin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7202",
+     "locator": "Results, ESI-MS/MS of pure standards; Fig. 1; Table 1 (peaks 27-29)"
+    },
+    {
+     "doi": "10.1016/j.ijms.2005.09.011",
+     "locator": "Sec. 4.2.2.2; Fig. 2d"
+    },
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 1"
+    }
+   ]
+  },
+  {
+   "class": "flavonol",
+   "formula": "C15H10O6",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O4"
+     ],
+     "pos": [
+      "C7H5O4"
+     ]
+    }
+   },
+   "name": "kaempferol",
+   "origin": "as_published",
+   "scaffold_id": "kaempferol",
+   "source": [
+    {
+     "doi": "10.1016/j.ijms.2005.09.011",
+     "locator": "Sec. 4.2.2.2; Fig. 2c; Table 6"
+    },
+    {
+     "doi": "10.1002/rcm.7202",
+     "locator": "Results, ESI-MS/MS of pure standards; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "flavonol",
+   "formula": "C15H10O7",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O4"
+     ],
+     "pos": [
+      "C7H5O4"
+     ]
+    }
+   },
+   "name": "quercetin",
+   "origin": "as_published",
+   "scaffold_id": "quercetin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.7202",
+     "locator": "Results, ESI-MS/MS of pure standards; Fig. 1; Fig. 7; Table 1"
+    },
+    {
+     "doi": "10.1016/j.ijms.2005.09.011",
+     "locator": "Sec. 4.1.2; Scheme 6"
+    },
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "flavanone",
+   "formula": "C15H12O5",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O4"
+     ],
+     "pos": [
+      "C7H5O4"
+     ]
+    }
+   },
+   "name": "naringenin",
+   "origin": "as_published",
+   "scaffold_id": "naringenin",
+   "source": [
+    {
+     "doi": "10.3390/plants12193388",
+     "locator": "Sec. 2.1"
+    },
+    {
+     "doi": "10.1016/j.ijms.2005.09.011",
+     "locator": "Sec. 4.2.2.2; Table 6"
+    },
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 3; Results, flavanones"
+    }
+   ]
+  },
+  {
+   "class": "flavanone",
+   "formula": "C15H12O6",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O4"
+     ],
+     "pos": [
+      "C7H5O4"
+     ]
+    }
+   },
+   "name": "eriodictyol",
+   "origin": "as_published",
+   "scaffold_id": "eriodictyol",
+   "source": [
+    {
+     "doi": "10.1016/s1044-0305(01)00226-4",
+     "locator": "Table 3; Results, flavanones"
+    }
+   ]
+  },
+  {
+   "class": "flavanone",
+   "formula": "C15H12O4",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O3"
+     ],
+     "pos": [
+      "C7H5O3"
+     ]
+    }
+   },
+   "name": "liquiritigenin",
+   "origin": "as_published",
+   "scaffold_id": "liquiritigenin",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5; CID of flavanones and chalcones"
+    }
+   ]
+  },
+  {
+   "class": "dihydroflavonol",
+   "formula": "C15H12O6",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O4"
+     ],
+     "pos": [
+      "C7H5O4"
+     ]
+    }
+   },
+   "name": "aromadendrin",
+   "origin": "as_published",
+   "scaffold_id": "aromadendrin",
+   "source": [
+    {
+     "doi": "10.3390/plants12193388",
+     "locator": "Sec. 2.1"
+    }
+   ]
+  },
+  {
+   "class": "chalcone",
+   "formula": "C15H12O4",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O3"
+     ],
+     "pos": []
+    }
+   },
+   "name": "isoliquiritigenin",
+   "origin": "as_published",
+   "scaffold_id": "isoliquiritigenin",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5; Scheme 1; CID of flavanones and chalcones"
+    }
+   ]
+  },
+  {
+   "class": "chalcone",
+   "formula": "C15H12O5",
+   "ions": {
+    "rda_13a": {
+     "neg": [
+      "C7H3O3"
+     ],
+     "pos": []
+    }
+   },
+   "name": "butein",
+   "origin": "as_published",
+   "scaffold_id": "butein",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5; CID of flavanones and chalcones"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_o_glycoside_rda_neg"
+}

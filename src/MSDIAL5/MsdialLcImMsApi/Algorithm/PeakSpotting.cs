@@ -53,45 +53,39 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             }
         }
 
+        // The single-thread path visits exactly the mass slices of the multi-thread path
+        // (GetMassSlices: end of the MS1 range included, a step of 1 for nominal-mass data) and
+        // finalizes them with the same FinalizePeakSpottingResult, so NumThreads = 1 gives the same
+        // peak list as any other thread count. It used to stop at 'focusedMass < endMass', dropping
+        // the last slice, and to step by MassSliceWidth even for nominal-mass data.
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalMode(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, IProgress<int>? progress) {
-            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
-            var mzRange = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
-            float startMass = Math.Max(mzRange.Min, _parameter.MassRangeBegin);
-            float endMass = Math.Min(mzRange.Max, _parameter.MassRangeEnd);
-            float massStep = _parameter.MassSliceWidth;
-
+            var (targetMasses, massStep) = GetMassSlices(accSpectrumProvider);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             ReportProgress reporter = ReportProgress.FromLength(progress, InitialProgress, ProgressMax);
-            for (var focusedMass = startMass; focusedMass < endMass; reporter.Report(focusedMass += massStep, endMass)) {
-                var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, focusedMass, chromatogramRange, peakDetector);
-                if (chromPeakFeatures.IsEmptyOrNull()) {
-                    continue;
-                }
-
-                //removing peak spot redundancies among slices
-                chromPeakFeatures = _peakSpottingCore.RemovePeakAreaBeanRedundancy(chromPeakFeaturesList, chromPeakFeatures, massStep);
-                if (chromPeakFeatures.IsEmptyOrNull()) {
-                    continue;
-                }
-
-                chromPeakFeaturesList.Add(chromPeakFeatures);
+            var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
+            for (int i = 0; i < targetMasses.Count; i++) {
+                chromPeakFeaturesArray[i] = GetChromatogramPeakFeatures(rawSpectra, accSpectra, accSpectrumProvider, (float)targetMasses[i], chromatogramRange, peakDetector);
+                reporter.Report(i + 1, targetMasses.Count);
             }
-            return _peakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, file.AcquisitionType);
+            return _peakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider, file.AcquisitionType);
         }
 
-        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token) {
+        private (List<double> TargetMasses, float MassStep) GetMassSlices(IDataProvider accSpectrumProvider) {
             var (mzMin, mzMax) = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
             float startMass = mzMin < _parameter.MassRangeBegin ? _parameter.MassRangeBegin : mzMin;
             float endMass = mzMax > _parameter.MassRangeEnd ? _parameter.MassRangeEnd : mzMax;
-            float focusedMass = startMass, massStep = _parameter.MassSliceWidth;
+            float massStep = _parameter.MassSliceWidth;
             if (_parameter.AccuracyType == AccuracyType.IsNominal) {
                 massStep = 1.0F;
             }
+            return (_peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep), massStep);
+        }
 
-            var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep);
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, IProgress<int>? progress, CancellationToken token) {
+            var (targetMasses, massStep) = GetMassSlices(accSpectrumProvider);
             var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, file.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);

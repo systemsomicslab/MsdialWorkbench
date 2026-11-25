@@ -1,0 +1,35 @@
+[
+  {
+    "name": "thermo_dda",
+    "mode": "lcms",
+    "ionMode": "Negative",
+    "rawData": [ "thermo\\dda\\sample_1.raw", "thermo\\dda\\sample_2.raw" ]
+  },
+  {
+    "name": "sciex_swath",
+    "mode": "lcms",
+    "ionMode": "Positive",
+    "rawData": [ "sciex\\swath\\sample.wiff", "sciex\\swath\\sample.wiff.scan" ],
+    "method": { "Acquisition type": "SWATH", "Minimum peak height": "100" }
+  },
+  {
+    "name": "gcms_cdf_ri",
+    "mode": "gcms",
+    "ionMode": "Positive",
+    "rawData": [ "gcms\\sample_1.cdf", "gcms\\sample_2.cdf" ],
+    "method": {
+      "Accuracy type": "IsNominal",
+      "Retention type": "RI",
+      "RI compound type": "Fames",
+      "MSP file path": "{DemoDataDir}\\gcms\\library.msp"
+    },
+    "riCompoundFile": "gcms\\fames.txt"
+  },
+  {
+    "name": "abf",
+    "mode": "gcms",
+    "ionMode": "Positive",
+    "rawData": [ "abf\\sample.abf" ],
+    "knownIssue": "Why this case is expected to fail; it then reports Inconclusive instead of running."
+  }
+]

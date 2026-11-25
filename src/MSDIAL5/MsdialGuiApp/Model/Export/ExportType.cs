@@ -44,6 +44,19 @@ namespace CompMs.App.Msdial.Model.Export
         public string Label { get; }
 
         public IQuantValueAccessor QuantValueAccessor { get; }
+
+        /// <summary>
+        /// Whether this type writes normalized values, whose unit the "Comment" column then reports.
+        /// </summary>
+        public bool IsNormalized => QuantValueAccessor is LegacyQuantValueAccessor { IsNormalized: true };
+
+        /// <summary>
+        /// The metadata accessor to write alongside this type's values: with the normalized unit in
+        /// "Comment" for normalized values, unchanged otherwise.
+        /// </summary>
+        public IMetadataAccessor DecorateMetadata(IMetadataAccessor accessor) {
+            return IsNormalized ? new NormalizedUnitCommentMetadataAccessorDecorator(accessor) : accessor;
+        }
         public bool IsSelected {
             get => _isSelected;
             set => SetProperty(ref _isSelected, value);

@@ -35,35 +35,79 @@ namespace Rfx.Riken.OsakaUniv
 
         public static bool Check(Formula formula, bool isValenceCheck, CoverRange coverRange, bool isElementProbabilityCheck, AdductIon adduct)
         {
-            if (adduct.AdductIonName == "[M]+" || adduct.AdductIonName == "[M]-" || adduct.AdductIonName == "[M-2H]-") {
-                if (isValenceCheck && !ValenceCheckByHydrogenShift(formula)) return false;
+            return Check(formula.Cnum, formula.Hnum, formula.Nnum, formula.Onum, formula.Pnum, formula.Snum,
+                formula.Fnum, formula.Clnum, formula.Brnum, formula.Inum, formula.Sinum,
+                isValenceCheck, coverRange, isElementProbabilityCheck, IsHydrogenShiftAdduct(adduct));
+        }
+
+        /// <summary>
+        /// True for the adducts whose valence check allows a hydrogen shift ([M]+, [M]- and [M-2H]-).
+        /// </summary>
+        public static bool IsHydrogenShiftAdduct(AdductIon adduct)
+        {
+            return adduct.AdductIonName == "[M]+" || adduct.AdductIonName == "[M]-" || adduct.AdductIonName == "[M-2H]-";
+        }
+
+        /// <summary>
+        /// The same rules as <see cref="Check(Formula, bool, CoverRange, bool, AdductIon)"/>, applied to element counts,
+        /// so that formula enumeration can reject a candidate before it builds a <see cref="Formula"/>.
+        /// </summary>
+        public static bool Check(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
+            bool isValenceCheck, CoverRange coverRange, bool isElementProbabilityCheck, bool isHydrogenShiftAdduct)
+        {
+            if (isHydrogenShiftAdduct) {
+                if (isValenceCheck && !ValenceCheckByHydrogenShift(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum)) return false;
             }
             else {
-                if (isValenceCheck && !ValenceCheck(formula)) return false;
+                if (isValenceCheck && !ValenceCheck(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum)) return false;
             }
 
+            if (!HeteroAtomCheck(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, coverRange)) return false;
+            if (isElementProbabilityCheck && !ProbabilityCheck(nnum, onum, pnum, snum)) return false;
 
-            if (!HeteroAtomCheck(formula, coverRange)) return false;
-            if (isElementProbabilityCheck && !ProbabilityCheck(formula)) return false;
-            
             return true;
+        }
+
+        // The valences of ValenceDictionary.ValenceDict, read once: the checks below run for every enumerated formula,
+        // and eleven dictionary lookups per call were a measurable part of formula enumeration.
+        private static readonly int brValence = ValenceDictionary.ValenceDict["Br"];
+        private static readonly int clValence = ValenceDictionary.ValenceDict["Cl"];
+        private static readonly int cValence = ValenceDictionary.ValenceDict["C"];
+        private static readonly int fValence = ValenceDictionary.ValenceDict["F"];
+        private static readonly int hValence = ValenceDictionary.ValenceDict["H"];
+        private static readonly int iValence = ValenceDictionary.ValenceDict["I"];
+        private static readonly int nValence = ValenceDictionary.ValenceDict["N"];
+        private static readonly int oValence = ValenceDictionary.ValenceDict["O"];
+        private static readonly int pValence = ValenceDictionary.ValenceDict["P"];
+        private static readonly int siValence = ValenceDictionary.ValenceDict["Si"];
+        private static readonly int sValence = ValenceDictionary.ValenceDict["S"];
+
+        private static int getValenceTotal(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum)
+        {
+            return brValence * brnum
+                + clValence * clnum
+                + cValence * cnum
+                + fValence * fnum
+                + hValence * hnum
+                + iValence * inum
+                + nValence * nnum
+                + oValence * onum
+                + pValence * pnum
+                + siValence * sinum
+                + sValence * snum;
         }
 
         public static bool ValenceCheck(Formula formula)
         {
-            int atomTotal = formula.Brnum + formula.Clnum + formula.Cnum + formula.Fnum + formula.Hnum + formula.Inum + formula.Nnum + formula.Onum + formula.Pnum + formula.Sinum + formula.Snum;
-            int oddValenceAtomTotal = formula.Brnum + formula.Clnum + formula.Fnum + formula.Hnum + formula.Inum + formula.Nnum + formula.Pnum;
-            int valenceTotal = ValenceDictionary.ValenceDict["Br"] * formula.Brnum
-                + ValenceDictionary.ValenceDict["Cl"] * formula.Clnum
-                + ValenceDictionary.ValenceDict["C"] * formula.Cnum
-                + ValenceDictionary.ValenceDict["F"] * formula.Fnum
-                + ValenceDictionary.ValenceDict["H"] * formula.Hnum
-                + ValenceDictionary.ValenceDict["I"] * formula.Inum
-                + ValenceDictionary.ValenceDict["N"] * formula.Nnum
-                + ValenceDictionary.ValenceDict["O"] * formula.Onum
-                + ValenceDictionary.ValenceDict["P"] * formula.Pnum
-                + ValenceDictionary.ValenceDict["Si"] * formula.Sinum
-                + ValenceDictionary.ValenceDict["S"] * formula.Snum;
+            return ValenceCheck(formula.Cnum, formula.Hnum, formula.Nnum, formula.Onum, formula.Pnum, formula.Snum,
+                formula.Fnum, formula.Clnum, formula.Brnum, formula.Inum, formula.Sinum);
+        }
+
+        public static bool ValenceCheck(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum)
+        {
+            int atomTotal = brnum + clnum + cnum + fnum + hnum + inum + nnum + onum + pnum + sinum + snum;
+            int oddValenceAtomTotal = brnum + clnum + fnum + hnum + inum + nnum + pnum;
+            int valenceTotal = getValenceTotal(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum);
 
             if (oddValenceAtomTotal % 2 == 1 && valenceTotal % 2 == 1) return false;
             if (valenceTotal < 2 * (atomTotal - 1)) return false;
@@ -73,19 +117,15 @@ namespace Rfx.Riken.OsakaUniv
 
         public static bool ValenceCheckByHydrogenShift(Formula formula)
         {
-            int atomTotal = formula.Brnum + formula.Clnum + formula.Cnum + formula.Fnum + formula.Hnum + formula.Inum + formula.Nnum + formula.Onum + formula.Pnum + formula.Sinum + formula.Snum;
-            int oddValenceAtomTotal = formula.Brnum + formula.Clnum + formula.Fnum + formula.Hnum + formula.Inum + formula.Nnum + formula.Pnum;
-            int valenceTotal = ValenceDictionary.ValenceDict["Br"] * formula.Brnum
-                + ValenceDictionary.ValenceDict["Cl"] * formula.Clnum
-                + ValenceDictionary.ValenceDict["C"] * formula.Cnum
-                + ValenceDictionary.ValenceDict["F"] * formula.Fnum
-                + ValenceDictionary.ValenceDict["H"] * formula.Hnum
-                + ValenceDictionary.ValenceDict["I"] * formula.Inum
-                + ValenceDictionary.ValenceDict["N"] * formula.Nnum
-                + ValenceDictionary.ValenceDict["O"] * formula.Onum
-                + ValenceDictionary.ValenceDict["P"] * formula.Pnum
-                + ValenceDictionary.ValenceDict["Si"] * formula.Sinum
-                + ValenceDictionary.ValenceDict["S"] * formula.Snum;
+            return ValenceCheckByHydrogenShift(formula.Cnum, formula.Hnum, formula.Nnum, formula.Onum, formula.Pnum, formula.Snum,
+                formula.Fnum, formula.Clnum, formula.Brnum, formula.Inum, formula.Sinum);
+        }
+
+        public static bool ValenceCheckByHydrogenShift(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum)
+        {
+            int atomTotal = brnum + clnum + cnum + fnum + hnum + inum + nnum + onum + pnum + sinum + snum;
+            int oddValenceAtomTotal = brnum + clnum + fnum + hnum + inum + nnum + pnum;
+            int valenceTotal = getValenceTotal(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum);
 
             int shiftMinus = -1, shiftPlus = 1; 
             
@@ -176,7 +216,14 @@ namespace Rfx.Riken.OsakaUniv
 
         public static bool HeteroAtomCheck(Formula formula, CoverRange coverRange)
         {
-            double cnum = formula.Cnum, nnum = formula.Nnum, onum = formula.Onum, pnum = formula.Pnum, snum = formula.Snum, hnum = formula.Hnum, fnum = formula.Fnum, clnum = formula.Clnum, brnum = formula.Brnum, inum = formula.Inum, sinum = formula.Sinum;
+            return HeteroAtomCheck(formula.Cnum, formula.Hnum, formula.Nnum, formula.Onum, formula.Pnum, formula.Snum,
+                formula.Fnum, formula.Clnum, formula.Brnum, formula.Inum, formula.Sinum, coverRange);
+        }
+
+        public static bool HeteroAtomCheck(int cCount, int hCount, int nCount, int oCount, int pCount, int sCount,
+            int fCount, int clCount, int brCount, int iCount, int siCount, CoverRange coverRange)
+        {
+            double cnum = cCount, nnum = nCount, onum = oCount, pnum = pCount, snum = sCount, hnum = hCount, fnum = fCount, clnum = clCount, brnum = brCount, inum = iCount, sinum = siCount;
             double n_c = nnum / cnum, o_c = onum / cnum, p_c = pnum / cnum, s_c = snum / cnum, h_c = hnum / cnum, f_c = fnum / cnum, cl_c = clnum / cnum, br_c = brnum / cnum, i_c = inum / cnum, si_c = sinum / cnum;
             double o_p;
             if (pnum > 0) o_p = onum / pnum; else o_p = 4;
@@ -197,29 +244,34 @@ namespace Rfx.Riken.OsakaUniv
 
         public static bool ProbabilityCheck(Formula formula)
         {
-            if (formula.Nnum > 1 && formula.Onum > 1 && formula.Pnum > 1 && formula.Snum > 1)
+            return ProbabilityCheck(formula.Nnum, formula.Onum, formula.Pnum, formula.Snum);
+        }
+
+        public static bool ProbabilityCheck(int nnum, int onum, int pnum, int snum)
+        {
+            if (nnum > 1 && onum > 1 && pnum > 1 && snum > 1)
             {
-                if (formula.Nnum >= 10 || formula.Onum >= 20 || formula.Pnum >= 4 || formula.Snum >= 3) return false;
+                if (nnum >= 10 || onum >= 20 || pnum >= 4 || snum >= 3) return false;
             }
 
-            if (formula.Nnum > 3 && formula.Onum > 3 && formula.Pnum > 3)
+            if (nnum > 3 && onum > 3 && pnum > 3)
             {
-                if (formula.Nnum >= 11 || formula.Onum >= 22 || formula.Pnum >= 6) return false;
+                if (nnum >= 11 || onum >= 22 || pnum >= 6) return false;
             }
 
-            if (formula.Onum > 1 && formula.Pnum > 1 && formula.Snum > 1)
+            if (onum > 1 && pnum > 1 && snum > 1)
             {
-                if (formula.Onum >= 14 || formula.Pnum >= 3 || formula.Snum >= 3) return false;
+                if (onum >= 14 || pnum >= 3 || snum >= 3) return false;
             }
 
-            if (formula.Nnum > 1 && formula.Pnum > 1 && formula.Snum > 1)
+            if (nnum > 1 && pnum > 1 && snum > 1)
             {
-                if (formula.Nnum >= 4 || formula.Pnum >= 3 || formula.Snum >= 3) return false;
+                if (nnum >= 4 || pnum >= 3 || snum >= 3) return false;
             }
 
-            if (formula.Nnum > 6 && formula.Onum > 6 && formula.Snum > 6)
+            if (nnum > 6 && onum > 6 && snum > 6)
             {
-                if (formula.Nnum >= 19 || formula.Onum >= 14 || formula.Snum >= 8) return false;
+                if (nnum >= 19 || onum >= 14 || snum >= 8) return false;
             }
 
             return true;

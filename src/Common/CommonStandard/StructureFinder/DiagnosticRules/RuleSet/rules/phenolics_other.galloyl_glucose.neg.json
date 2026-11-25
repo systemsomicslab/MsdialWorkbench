@@ -1,0 +1,169 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_galloyl",
+   "gallate"
+  ],
+  "motif_id": "galloyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 442688,
+    "smiles": "C1[C@@H]2[C@H]([C@H]3[C@H](C(O2)O)OC(=O)C4=CC(=C(C(=C4C5=C(C(=C(C=C5C(=O)O3)O)O)O)O)O)O)OC(=O)C6=CC(=C(C(=C6C7=C(C(=C(C=C7C(=O)O1)O)O)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Galloyl positions on the glucose and ester versus depside linkage are not resolved",
+   "The polyol (glucose) and the galloyl count are decided by the precursor composition",
+   "Monogalloyl glucoses are outside the series: their MS2 shows 169 and cross-ring ions but no 152 or 170 loss (Bai 2022 Table 1; Tan 2011 compound 8)"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 65238,
+    "smiles": "C1=C(C=C(C(=C1O)O)O)C(=O)OC[C@@H]2[C@H]([C@@H]([C@H]([C@@H](O2)OC(=O)C3=CC(=C(C(=C3)O)O)O)OC(=O)C4=CC(=C(C(=C4)O)O)O)OC(=O)C5=CC(=C(C(=C5)O)O)O)OC(=O)C6=CC(=C(C(=C6)O)O)O"
+   },
+   {
+    "pubchem_cid": 124021,
+    "smiles": "C1=C(C=C(C(=C1O)O)O)C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "k_of": {
+   "k": 2,
+   "k_source": "src:4",
+   "of": [
+    {
+     "term": "loss_gallic_acid"
+    },
+    {
+     "term": "loss_galloyl"
+    },
+    {
+     "term": "gallate"
+    }
+   ]
+  }
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): the gallic acid loss (170) is the galloyl loss (152) plus H2O, so two of the three counted ions can be one parent-daughter channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hydroxybenzoyl_ester",
+    "note": "other hydroxybenzoyl hexose esters lose their acid but give no gallate ion"
+   }
+  ],
+  "composition": {
+   "core": "C6H12O6",
+   "scaffold_list": null,
+   "unit_totals": {},
+   "units": {
+    "galloyl": [
+     2,
+     5
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "phenolics_other.galloyl_glucose.neg",
+ "source": [
+  {
+   "doi": "10.3390/metabo12040326",
+   "locator": "Bai 2022: Section 2.1 and Figure 2 (PGG standard MS2, losses of 152 and 170); Section 3.6 (neutral-loss 170 scan, QTRAP 5500); Table 1 (product ions incl. 169 and 125)"
+  },
+  {
+   "doi": "10.1002/pca.1312",
+   "locator": "Tan 2011: Table 1 compounds 8-14 (pp. 518-519); Results, Gallotannins (pp. 521-522); Fig. 2B (p. 520); Fig. 4 (p. 522)"
+  },
+  {
+   "doi": "10.1021/acs.jafc.5b00595",
+   "locator": "Engstrom 2015: Table 3 (p. 4073; pentagalloylglucose 939 to 169); Fig. 2B (p. 4071); p. 4068 (169 parent-ion scan of galloyl glucoses)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "locator": "Standing decisions this work must respect",
+   "reference": "WS8-P3 directive 2026-11-18, standing decision that a class claim needs two or three diagnostic ions jointly (author, 2026-11-15)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C7H6O5",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "gallic acid loss C7H6O5 170 (PGG 939 to 769; 483 to 313; Bai 2022 neutral-loss scan; Tan 2011)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_gallic_acid",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C7H4O4",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "galloyl loss C7H4O4 152 (PGG 939 to 787; 483 to 331; Bai 2022; Tan 2011)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "loss_galloyl",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C7H5O5",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "gallate anion C7H5O5- 169 (Bai 2022 Table 1; Tan 2011 di- and trigalloylglucoses; Engstrom 2015 PGG MRM)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "counted",
+   "term_id": "gallate",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C6H5O3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "gallate minus CO2, C6H5O3- 125 (Bai 2022 Table 1); shared with phloroglucinol-type ions, so report only",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "gallate_co2",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

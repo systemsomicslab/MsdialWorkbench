@@ -1,0 +1,69 @@
+<Window x:Class="Rfx.Riken.OsakaUniv.MassBankExportWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Export MassBank records" Width="680" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="0,0,0,8"
+                   Text="Each query becomes one MassBank record, with the formulas MS-FINDER assigned to its product ions. The values below are written into every record; they start with what the queries agree on." />
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Contributor ID:" VerticalAlignment="Center" />
+        <TextBox Grid.Row="1" Grid.Column="1" Height="25" VerticalContentAlignment="Center" Margin="0,2"
+                 Text="{Binding ContributorId, UpdateSourceTrigger=PropertyChanged}"
+                 ToolTip="The ID MassBank assigned to you: 1 to 32 of A-Z, 0-9 and _." />
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Authors:" VerticalAlignment="Center" />
+        <TextBox Grid.Row="2" Grid.Column="1" Height="25" VerticalContentAlignment="Center" Margin="0,2"
+                 Text="{Binding Authors, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Label Grid.Row="3" Grid.Column="0" Content="License:" VerticalAlignment="Center" />
+        <ComboBox Grid.Row="3" Grid.Column="1" Height="25" Width="200" HorizontalAlignment="Left" Margin="0,2"
+                  ItemsSource="{Binding Licenses}" SelectedItem="{Binding License}" />
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Instrument:" VerticalAlignment="Center" />
+        <TextBox Grid.Row="4" Grid.Column="1" Height="25" VerticalContentAlignment="Center" Margin="0,2"
+                 Text="{Binding Instrument, UpdateSourceTrigger=PropertyChanged}"
+                 ToolTip="The instrument model and maker, e.g. TripleTOF 6600, SCIEX." />
+
+        <Label Grid.Row="5" Grid.Column="0" Content="Instrument type:" VerticalAlignment="Center" />
+        <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Margin="0,2">
+            <ComboBox Width="80" Height="25" ItemsSource="{Binding Separations}" SelectedItem="{Binding Separation}" ToolTip="Separation" />
+            <TextBlock Text=" - " VerticalAlignment="Center" />
+            <ComboBox Width="80" Height="25" ItemsSource="{Binding Ionisations}" SelectedItem="{Binding Ionisation}" ToolTip="Ionisation" />
+            <TextBlock Text=" - " VerticalAlignment="Center" />
+            <ComboBox Width="150" Height="25" IsEditable="True" ItemsSource="{Binding AnalyzerPresets}" TextSearch.TextPath="Analyzer"
+                      Text="{Binding Analyzer, UpdateSourceTrigger=PropertyChanged}"
+                      ToolTip="Analyzer: a preset, or MassBank's tokens Q, TOF, IT, FT, B and E joined, e.g. QTOF; an Orbitrap is FT (QFT, ITFT)." />
+            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding InstrumentTypePreview}" />
+        </StackPanel>
+
+        <Label Grid.Row="6" Grid.Column="0" Content="Export folder:" VerticalAlignment="Center" />
+        <DockPanel Grid.Row="6" Grid.Column="1" Margin="0,2">
+            <Button DockPanel.Dock="Right" Content="Browse" Width="80" Height="25" Margin="5,0,0,0" Click="Button_Browse_Click" />
+            <TextBox Height="25" VerticalContentAlignment="Center" Text="{Binding ExportFolder, UpdateSourceTrigger=PropertyChanged}" />
+        </DockPanel>
+
+        <TextBlock Grid.Row="7" Grid.ColumnSpan="2" Margin="0,8,0,0" TextWrapping="Wrap" Foreground="Firebrick" Text="{Binding Problems}" />
+
+        <StackPanel Grid.Row="8" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Export" Width="80" Height="25" IsDefault="True" IsEnabled="{Binding CanExport}" Click="Button_Export_Click" />
+            <Button Content="Cancel" Width="80" Height="25" Margin="5,0,0,0" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>

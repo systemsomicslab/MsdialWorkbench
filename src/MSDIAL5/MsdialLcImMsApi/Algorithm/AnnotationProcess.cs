@@ -41,7 +41,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
         private void LcImMsMsMatchMethod(ChromatogramPeakFeature chromPeak, List<MSDecResult> msdecResults, List<RawSpectrum> spectrumList, List<RawSpectrum> accumulatedSpecList,
             List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, MsdialLcImMsParameter param) {
-            var isotopes = DataAccess.GetIsotopicPeaks(accumulatedSpecList, chromPeak.MS1AccumulatedMs1RawSpectrumIdTop, (float)chromPeak.Mass, param.CentroidMs1Tolerance, param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
+            var isotopes = DataAccess.GetIsotopicPeaks(accumulatedSpecList, chromPeak.MS1AccumulatedMs1RawSpectrumIdTop, (float)chromPeak.PeakFeature.Mass, param.CentroidMs1Tolerance, param.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
 
             var maxMspMatchedDriftSpotID = -1;
             var maxMspMatchedScore = -1.0;
@@ -82,7 +82,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             List<IsotopicPeak> isotopes, List<MoleculeMsReference> mspDB, List<MoleculeMsReference> textDB, MsdialLcImMsParameter param) {
             var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(chromPeak, msdecResult, param);
 
-            var mz = chromPeak.Mass;
+            var mz = chromPeak.PeakFeature.Mass;
             var ccs = driftPeak.CollisionCrossSection;
             var ms1Tol = param.MspSearchParam.Ms1Tolerance;
             var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms1Tol));
@@ -92,7 +92,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
             if (!mspDB.IsEmptyOrNull()) {
                 var startID = SearchCollection.LowerBound(mspDB,
-                    new MoleculeMsReference() { PrecursorMz = chromPeak.Mass - ms1Tol },
+                    new MoleculeMsReference() { PrecursorMz = chromPeak.PeakFeature.Mass - ms1Tol },
                     (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
                 var candidates = new List<MsScanMatchResult>();
                 for (int i = startID; i < mspDB.Count; i++) {
@@ -129,7 +129,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
             if (!textDB.IsEmptyOrNull()) {
                 var startID = SearchCollection.LowerBound(textDB,
-                    new MoleculeMsReference() { PrecursorMz = chromPeak.Mass - ms1Tol },
+                    new MoleculeMsReference() { PrecursorMz = chromPeak.PeakFeature.Mass - ms1Tol },
                     (a, b) => a.PrecursorMz.CompareTo(b.PrecursorMz));
                 var candidates = new List<MsScanMatchResult>();
                 for (int i = startID; i < textDB.Count; i++) {

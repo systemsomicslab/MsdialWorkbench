@@ -27,13 +27,20 @@ namespace CompMs.MsdialCore.MSDec
             return Task.Run(() => MsdecResultsWriter.Write(analysisFile.DeconvolutionFilePath, _mSDecResults), token);
         }
 
+        public string GetDeconvolutionFilePathWithCE(AnalysisFileBean analysisFile) {
+            var dclfile = analysisFile.DeconvolutionFilePath;
+            var suffix = Math.Round(_collisionEnergy * 100, 0); // CE 34.50 -> 3450
+            return Path.Combine(Path.GetDirectoryName(dclfile), $"{Path.GetFileNameWithoutExtension(dclfile)}_{suffix}.dcl");
+        }
+
         public Task SerializeWithCEAsync(AnalysisFileBean analysisFile, CancellationToken token = default) {
             return Task.Run(() => {
-                var dclfile = analysisFile.DeconvolutionFilePath;
-                var suffix = Math.Round(_collisionEnergy * 100, 0); // CE 34.50 -> 3450
-                var dclfile_suffix = Path.Combine(Path.GetDirectoryName(dclfile),  $"{Path.GetFileNameWithoutExtension(dclfile)}_{suffix}.dcl");
+                var dclfile_suffix = GetDeconvolutionFilePathWithCE(analysisFile);
                 MsdecResultsWriter.Write(dclfile_suffix, _mSDecResults);
-                analysisFile.DeconvolutionFilePathList.Add(dclfile_suffix);
+                // Several of these run at once for one file: List<T>.Add is not thread-safe.
+                lock (analysisFile.DeconvolutionFilePathList) {
+                    analysisFile.DeconvolutionFilePathList.Add(dclfile_suffix);
+                }
             }, token);
         }
 

@@ -1,0 +1,151 @@
+{
+ "entries": [
+  {
+   "class": "methylsulfinylalkenyl",
+   "formula": "C5H9OS",
+   "ions": {},
+   "name": "4-methylsulfinyl-3-butenyl (glucoraphenin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoraphenin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3669",
+     "locator": "p. 2830, Table 2; p. 2832, Fig. 3C; p. 2833, Results"
+    },
+    {
+     "doi": "10.3390/metabo16040274",
+     "locator": "Sec. 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C4H9OS",
+   "ions": {},
+   "name": "3-methylsulfinylpropyl (glucoiberin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoiberin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/jms.1711",
+     "locator": "p. 282, Table 1"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C5H11OS",
+   "ions": {},
+   "name": "4-methylsulfinylbutyl (glucoraphanin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoraphanin",
+   "source": [
+    {
+     "doi": "10.1002/pca.983",
+     "locator": "p. 308, Table 1; p. 311, Table 2"
+    },
+    {
+     "doi": "10.1021/ac100703w",
+     "locator": "p. 5691, Results and Fig. 5; p. 5692, Table 2"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C6H13OS",
+   "ions": {},
+   "name": "5-methylsulfinylpentyl (glucoalyssin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoalyssin",
+   "source": [
+    {
+     "doi": "10.1002/rcm.3101",
+     "locator": "p. 2383, Table 4"
+    },
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C7H15OS",
+   "ions": {},
+   "name": "6-methylsulfinylhexyl (glucohesperin)",
+   "origin": "as_published",
+   "scaffold_id": "glucohesperin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C8H17OS",
+   "ions": {},
+   "name": "7-methylsulfinylheptyl (glucoibarin)",
+   "origin": "as_published",
+   "scaffold_id": "glucoibarin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  },
+  {
+   "class": "methylsulfinylalkyl",
+   "formula": "C9H19OS",
+   "ions": {},
+   "name": "8-methylsulfinyloctyl (glucohirsutin)",
+   "origin": "as_published",
+   "scaffold_id": "glucohirsutin",
+   "source": [
+    {
+     "doi": "10.3390/metabo11010047",
+     "locator": "Section 2.4; Table 4"
+    },
+    {
+     "doi": "10.1002/pca.2350",
+     "locator": "p. 524, Table 2"
+    }
+   ]
+  }
+ ],
+ "list_id": "glucosinolate_sidechains_methylsulfinyl"
+}

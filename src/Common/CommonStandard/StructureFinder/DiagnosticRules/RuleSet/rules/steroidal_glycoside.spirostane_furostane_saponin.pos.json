@@ -1,0 +1,224 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "y0",
+   "skel"
+  ],
+  "motif_id": "spirostane_furostane_glycoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 119247,
+    "smiles": "C[C@@H]1CC[C@@]2([C@H]([C@H]3[C@@H](O2)C[C@@H]4[C@@]3(CC[C@H]5[C@H]4CC=C6[C@@]5(CC[C@@H](C6)O[C@H]7[C@@H]([C@H]([C@H]([C@H](O7)CO)O)O[C@H]8[C@@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)O[C@H]9[C@@H]([C@@H]([C@H]([C@@H](O9)C)O)O)O)C)C)C)NC1"
+   },
+   {
+    "pubchem_cid": 9898279,
+    "smiles": "CC(=CCC[C@@](C)([C@H]1CC[C@@]2([C@@H]1[C@@H](C[C@H]3[C@]2(CC[C@@H]4[C@@]3(CC[C@@H](C4(C)C)O[C@H]5[C@@H]([C@H]([C@@H]([C@H](O5)CO)O)O)O[C@H]6[C@@H]([C@H]([C@@H]([C@H](O6)CO)O)O)O)C)C)O)C)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO[C@H]8[C@@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)O)O)O)C"
+   }
+  ],
+  "non_claims": [
+   "Spirostanol versus furostanol type is not resolved; 22-OH or 22-OMe furostanol glycosides observed as [M+H-H2O]+ or [M+H-CH3OH]+ match the spirostanol-equivalent composition of the list.",
+   "Aglycone isomers of one formula (diosgenin vs yamogenin, tigogenin vs sarsasapogenin vs smilagenin, 25R/25S, A/B ring fusion) are not resolved.",
+   "Sugar identity, sequence, linkage and attachment position are not claimed; unit counts are hypotheses.",
+   "Spirosolane glycoalkaloids give the same A-D ring ions; the class rests on the precursor matching an N-free sapogenin composition of the list."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 119245,
+    "smiles": "C[C@@H]1CC[C@@]2([C@H]([C@H]3[C@@H](O2)C[C@@H]4[C@@]3(CC[C@H]5[C@H]4CC=C6[C@@]5(CC[C@@H](C6)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO)O[C@H]8[C@@H]([C@@H]([C@H]([C@@H](O8)C)O)O)O)O)O[C@H]9[C@@H]([C@@H]([C@H]([C@@H](O9)C)O)O)O)C)C)C)OC1"
+   },
+   {
+    "pubchem_cid": 441891,
+    "smiles": "C[C@H]1[C@H]2[C@H](C[C@@H]3[C@@]2(CC[C@H]4[C@H]3CC=C5[C@@]4(CC[C@@H](C5)O[C@H]6[C@@H]([C@H]([C@@H]([C@H](O6)CO)O[C@H]7[C@@H]([C@@H]([C@H]([C@@H](O7)C)O)O)O)O)O[C@H]8[C@@H]([C@@H]([C@H]([C@@H](O8)C)O)O)O)C)C)O[C@@]1(CC[C@@H](C)CO[C@H]9[C@@H]([C@H]([C@@H]([C@H](O9)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 159861,
+    "smiles": "C[C@@H]1CC[C@@]2([C@H]([C@H]3[C@@H](O2)C[C@@H]4[C@@]3(CC[C@H]5[C@H]4CC=C6[C@@]5(CC[C@@H](C6)O[C@H]7[C@@H]([C@H]([C@@H]([C@H](O7)CO)O)O[C@H]8[C@@H]([C@H]([C@@H]([C@H](O8)CO)O)O)O)O[C@H]9[C@@H]([C@@H]([C@H]([C@@H](O9)C)O)O)O)C)C)C)OC1"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "y0"
+   },
+   {
+    "term": "skel"
+   },
+   {
+    "term": "skel_h2o"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Protonated sapogenin with its E-ring-cleavage A-D ring ion and that ion's water loss mark spirostanol and furostanol glycosides (Heinig 2014); the water-loss ion is support only, provisional (WS0 2026-11-19, pending the author).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "steroidal_glycoalkaloid",
+    "note": "Spirosolane glycoalkaloids share the A-D ring ions (271/253, 273/255)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "steroidal_glycoside_sapogenins",
+   "unit_totals": {
+    "sugar": [
+     1,
+     5
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     4
+    ],
+    "Pen": [
+     0,
+     2
+    ],
+    "dHex": [
+     0,
+     3
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Furostanol glycosides carry a C-3 chain and a C-26 glucose, four sugars in protodioscin (two hexoses, two deoxyhexoses).",
+    "source": "src:6"
+   },
+   {
+    "note": "Branched pentasaccharide chains occur on steroidal saponins; five sugars is the upper bound used here.",
+    "source": "src:10"
+   },
+   {
+    "note": "Sodiated precursors give sugar losses without aglycone fission ions, so the rule lists [M+H]+ only.",
+    "source": "src:12"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "steroidal_glycoside.spirostane_furostane_saponin.pos",
+ "source": [
+  {
+   "doi": "10.1002/jms.988",
+   "locator": "Abstract; Table 2; Scheme 2 (pathway a)"
+  },
+  {
+   "doi": "10.3390/ijms241411487",
+   "locator": "Sec. 2.2.1-2.2.2; Table 1"
+  },
+  {
+   "doi": "10.3390/molecules25173848",
+   "locator": "Section 'Study on MS/MS Cleavage Pattern'; Table 1"
+  },
+  {
+   "doi": "10.1002/pca.2876",
+   "locator": "Sec. 3.1; Table 2; Fig. 3"
+  },
+  {
+   "doi": "10.1007/978-1-4939-0606-2_12",
+   "locator": "Sec. 3.4 steps 7-8; Fig. 2g; Fig. 3"
+  },
+  {
+   "doi": "10.1007/s00216-009-2987-2",
+   "locator": "Results; Figs. 6-7"
+  },
+  {
+   "doi": "10.1016/j.steroids.2014.12.023",
+   "locator": "Sec. 3.1.1; Scheme 1; Table 2"
+  },
+  {
+   "doi": "10.1002/rcm.690",
+   "locator": "Results; Figs. 4-5; Scheme 3"
+  },
+  {
+   "doi": "10.1002/rcm.1310",
+   "locator": "Scheme 2; Results p. 236"
+  },
+  {
+   "doi": "10.1002/rcm.3630",
+   "locator": "Results; Table 1; Scheme 1"
+  },
+  {
+   "doi": "10.1016/j.jasms.2003.09.013",
+   "locator": "Fig. 3; Scheme 1a"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.1002/jms.988",
+   "locator": "Results, ESI-QqTOF-MS/MS of standard samples"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:11",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Y0, the protonated sapogenin of the hypothesis.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "y0",
+   "term_source": "src:3",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "A-D ring ion after E-ring cleavage, per scaffold entry.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "skel",
+   "term_id": "skel",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:11",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Water-loss form of the A-D ring ion, per scaffold entry.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "skel_h2o",
+   "term_id": "skel_h2o",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting, steroidal_glycoside family), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

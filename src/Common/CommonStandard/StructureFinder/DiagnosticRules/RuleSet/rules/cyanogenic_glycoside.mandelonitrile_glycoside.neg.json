@@ -1,0 +1,113 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_C8H7NO"
+  ],
+  "motif_id": "mandelonitrile_glycoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 11128,
+    "smiles": "CC(C)(C#N)O[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 161355,
+    "smiles": "C1=CC(=CC=C1[C@@H](C#N)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "R versus S mandelonitrile (prunasin versus sambunigrin, amygdalin versus neoamygdalin) is not resolved",
+   "the sugar and galloyl substitution are decided by the precursor composition"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 656516,
+    "smiles": "C1=CC=C(C=C1)[C@H](C#N)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO[C@H]3[C@@H]([C@H]([C@@H]([C@H](O3)CO)O)O)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 119033,
+    "smiles": "C1=CC=C(C=C1)[C@H](C#N)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 91434,
+    "smiles": "C1=CC=C(C=C1)[C@@H](C#N)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_C8H7NO"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "The mandelonitrile loss is the only aglycone-specific feature in both papers; the other ions are sugar or galloyl ions shared with other glycosides and gallotannins, so this single-ion rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloids_misc_and_other_mandelonitrile_glycosides",
+   "unit_totals": {},
+   "units": {
+    "galloyl": [
+     0,
+     4
+    ]
+   }
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "cyanogenic_glycoside.mandelonitrile_glycoside.neg",
+ "source": [
+  {
+   "doi": "10.3390/molecules22091425",
+   "locator": "Sec. 2.1; Table 1; Scheme 1"
+  },
+  {
+   "doi": "10.1002/pca.1312",
+   "locator": "Results, Galloylated cyanogenic glucosides (p. 521); Fig. 2A (p. 520); Fig. 3 (p. 521); Table 1 (pp. 518-519)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:2",
+   "formula": "C8H7NO",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "133.0528, mandelonitrile (named cyanohydrin in src:1); src:0 prints the amygdalin 456 to 323 step as a 133 loss but calls it a disaccharide loss",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_C8H7NO",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

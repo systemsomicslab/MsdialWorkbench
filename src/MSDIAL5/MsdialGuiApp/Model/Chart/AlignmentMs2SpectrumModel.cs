@@ -5,6 +5,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
@@ -101,11 +102,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 lowerHueItem,
                 labels).AddTo(Disposables);
             HorizontalAxis = Observable.Return(horizontalAxis);
-
-            UpperVerticalAxisItem = upperVerticalAxisSelectors.AxisItemSelector.ToReactivePropertySlimAsSynchronized(m => m.SelectedAxisItem).AddTo(Disposables);
-            UpperVerticalAxisItemCollection = upperVerticalAxisSelectors.AxisItemSelector.AxisItems;
-            LowerVerticalAxisItem = lowerVerticalAxisSelectors.AxisItemSelector.ToReactivePropertySlimAsSynchronized(m => m.SelectedAxisItem).AddTo(Disposables);
-            LowerVerticalAxisItemCollection = lowerVerticalAxisSelectors.AxisItemSelector.AxisItems;
+            // The axis titles follow the chosen axis types, as in the other MS/MS views.
+            VerticalTitles = UpperVerticalAxisSelector.GetAxisItemAsObservable()
+                .CombineLatest(LowerVerticalAxisSelector.GetAxisItemAsObservable(),
+                    (upper, lower) => new AxisTitles { Titles = upper.GraphLabel == lower.GraphLabel ? [upper.GraphLabel] : [upper.GraphLabel, lower.GraphLabel] })
+                .ToReadOnlyReactivePropertySlim(AxisTitles.Empty).AddTo(Disposables);
 
             GraphLabels = labels;
             ReferenceHasSpectrumInformation = spectraManager.ReferenceSpectrum.Select(spectrum => spectrum?.Spectrum.Any() ?? false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -113,13 +114,14 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public ReactiveCollection<SingleSpectrumModel> UpperSpectraModel { get; }
+        public SingleSpectrumModel UpperSpectrumModel => _upperSpectrumModel;
         public SingleSpectrumModel LowerSpectrumModel { get; }
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
-        public ReactivePropertySlim<AxisItemModel<double>?> LowerVerticalAxisItem { get; }
-        public ObservableCollection<AxisItemModel<double>> LowerVerticalAxisItemCollection { get; }
-        public ReactivePropertySlim<AxisItemModel<double>?> UpperVerticalAxisItem { get; }
-        public ObservableCollection<AxisItemModel<double>> UpperVerticalAxisItemCollection { get; }
+        /// <summary>The vertical titles of the upper and the lower spectrum, one title when both are drawn the same way.</summary>
+        public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles { get; }
+        public AxisItemSelector<double> LowerVerticalAxisSelector => LowerSpectrumModel.VerticalAxisItemSelector;
+        public AxisItemSelector<double> UpperVerticalAxisSelector => UpperSpectrumModel.VerticalAxisItemSelector;
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _spectraManager.Files;
         public ReactiveProperty<AnalysisFileBeanModel?> SelectedFile => _spectraManager.SelectedFile;
 
@@ -147,6 +149,26 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public void SaveLowerSpectrum(Stream stream) {
             LowerSpectrumModel.Save(stream);
+        }
+
+        /// <summary>
+        /// The MS2 spectra of every sample of the selected spot, the representative sample first.
+        /// It follows the selected spot until it is disposed.
+        /// </summary>
+        public Ms2SpectrumListModel CreateMs2SpectrumListModel() {
+            return Ms2SpectrumListModel.Create(
+                "MS2 spectrum list of the alignment spot",
+                "samples",
+                _target,
+                DescribeSpot,
+                _loader.LoadMs2SpectrumListAsync,
+                _spectraManager.ReferenceSpectrum,
+                UpperVerticalAxisSelector.GetAxisItemAsObservable().Select(item => (string?)item?.Label));
+        }
+
+        private static string DescribeSpot(AlignmentSpotPropertyModel spot) {
+            var header = string.Format(System.Globalization.CultureInfo.InvariantCulture, "Alignment spot ID {0}, m/z {1:F4}", spot.MasterAlignmentID, spot.Mass);
+            return string.IsNullOrWhiteSpace(spot.Name) ? header : $"{header}, {spot.Name}";
         }
 
         public void SwitchViewToAllSpectrum() {

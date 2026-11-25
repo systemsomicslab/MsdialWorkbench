@@ -25,6 +25,41 @@ namespace Rfx.Riken.OsakaUniv
             get { return fragmenterResult; }
         } 
 
+        private double? rankingScore;
+        private int? ruleTerm;
+        private string matchedMotifs;
+        private string ruleAgreement;
+
+        /// <summary>TotalScore + w * term when diagnostic-rule ranking is on (w &gt; 0), else null. Not capped; the
+        /// displayed TotalScore keeps its cap.</summary>
+        public double? RankingScore
+        {
+            get { return rankingScore; }
+            set { rankingScore = value; OnPropertyChanged("RankingScore"); }
+        }
+
+        /// <summary>The diagnostic-rule term (-1, 0 or +1) when ranking is on, else null.</summary>
+        public int? RuleTerm
+        {
+            get { return ruleTerm; }
+            set { ruleTerm = value; OnPropertyChanged("RuleTerm"); }
+        }
+
+        /// <summary>The fired or vetoed motifs this structure has (';'-joined) when ranking is on, else null.</summary>
+        public string MatchedMotifs
+        {
+            get { return matchedMotifs; }
+            set { matchedMotifs = value; OnPropertyChanged("MatchedMotifs"); }
+        }
+
+        /// <summary>The display-only agreement with the diagnostic-ion rules, with the matched motifs in brackets, while
+        /// rule evaluation is on (whatever the weight), else null. It never changes the order.</summary>
+        public string RuleAgreement
+        {
+            get { return ruleAgreement; }
+            set { ruleAgreement = value; OnPropertyChanged("RuleAgreement"); }
+        }
+
         public double TotalScore
         {
             get 

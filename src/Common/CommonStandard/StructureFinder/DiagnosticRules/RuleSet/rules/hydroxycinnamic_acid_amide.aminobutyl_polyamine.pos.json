@@ -1,0 +1,192 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "acylium",
+   "aminobutyl_ion"
+  ],
+  "motif_id": "hcaa_aminobutyl_amide",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5280537,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)NCCC2=CC=C(C=C2)O)O"
+   },
+   {
+    "pubchem_cid": 1794427,
+    "smiles": "C1[C@H]([C@H]([C@@H](C[C@@]1(C(=O)O)O)OC(=O)/C=C/C2=CC(=C(C=C2)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "Putrescine, agmatine and spermidine are told apart by the precursor composition, not by this rule's ions.",
+   "Acyl positions and E/Z isomers of the hydroxycinnamoyl residues are not resolved.",
+   "The number and identity of acyl residues, and any hexose, are composition hypotheses, not claims."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 6439562,
+    "smiles": "C1=CC(=CC=C1/C=C/C(=O)NCCCCN)O"
+   },
+   {
+    "pubchem_cid": 46173376,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)NCCCCN=C(N)N)O"
+   },
+   {
+    "pubchem_cid": 15270795,
+    "smiles": "C1=CC(=CC=C1/C=C/C(=O)NCCCCNCCCNC(=O)/C=C/C2=CC=C(C=C2)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "acylium"
+   },
+   {
+    "term": "aminobutyl_ion"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "C4H10N+ (aminobutyl part) occurs with the acylium in Orbitrap MS2 of putrescine, spermidine and agmatine amides (doi:10.1016/j.foodchem.2023.136402), QTOF MS2 of putrescine amides (doi:10.1002/jssc.201801201) and QqQ MS2 of synthetic coumaroylspermidines (doi:10.1002/hlca.19960790809).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "hcaa_cinnamoyl_amide",
+    "note": "Aromatic monoamine amides (tyramine, dopamine, tryptamine) give the same acyliums without an aminobutyl unit."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "hydroxycinnamic_acid_amide_polyamines",
+   "unit_totals": {
+    "acyl": [
+     1,
+     3
+    ]
+   },
+   "units": {
+    "Hex": [
+     0,
+     1
+    ],
+    "caffeoyl": [
+     0,
+     3
+    ],
+    "coumaroyl": [
+     0,
+     3
+    ],
+    "feruloyl": [
+     0,
+     3
+    ],
+    "sinapoyl": [
+     0,
+     3
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Putrescine, spermidine and agmatine amides with up to three hydroxycinnamoyl residues are the scope in which C4H10N+ was reported.",
+    "source": "src:0"
+   },
+   {
+    "note": "At most one hexose on an acyl phenol; its loss precedes the amide cleavages that give the acylium.",
+    "source": "src:5"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "hydroxycinnamic_acid_amide.aminobutyl_polyamine.pos",
+ "source": [
+  {
+   "doi": "10.1016/j.foodchem.2023.136402",
+   "locator": "Sec. 3.2 (p. 4); Sec. 3.3, Fig. 2a-b; Sec. 3.4, Fig. 3a; Table 1"
+  },
+  {
+   "doi": "10.1007/978-1-4939-7398-9_9",
+   "locator": "Sec. 3.2.2; Sec. 3.3.1; Table 1 (pp. 98-100)"
+  },
+  {
+   "doi": "10.1002/jssc.201801201",
+   "locator": "Sec. 3.2; Figure 3A; Table 1 (compounds 6-9); Table 2"
+  },
+  {
+   "doi": "10.1016/j.foodchem.2023.136402",
+   "locator": "Sec. 3.5 (p. 8); Fig. S27"
+  },
+  {
+   "doi": "10.1021/acs.jafc.5c04844",
+   "locator": "Section 3.1; Figure 1A, 1C"
+  },
+  {
+   "doi": "10.1021/acs.analchem.8b03654",
+   "locator": "Results, characteristic MS/MS patterns (pp. 14326-14327); Fig. 4D"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  },
+  {
+   "doi": "10.1002/hlca.19960790809",
+   "locator": "Results (pp. 2138-2146); Scheme 1; Figs 1a, 2a, 4a"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:6",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Hydroxycinnamoyl acylium (residue + H), formed by amide cleavage.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acylium",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "class": "acyl",
+    "minus": null,
+    "plus": "H"
+   }
+  },
+  {
+   "floor_source": "src:6",
+   "formula": "C4H10N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "C4H10N+ from the aminobutyl part of the amine.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "aminobutyl_ion",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting subagent, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

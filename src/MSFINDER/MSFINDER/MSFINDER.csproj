@@ -148,7 +148,6 @@
     <ProjectReference Include="..\\MassSpectrogramMsfinder\MassSpectrogramMsfinder.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MathematicsStandard\MathematicsStandard.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
-    <ProjectReference Include="..\..\MSDIAL4\MolViewer\MolViewer.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj" />
     <ProjectReference Include="..\..\MSDIAL4\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
     <ProjectReference Include="..\MsfinderCommonStandard\MsfinderCommonStandard.csproj" />
@@ -180,6 +179,12 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- PK$SPLASH of MassBank records, the code MS-DIAL uses. Linked rather than referenced: MsdialCore would bring
+         RawDataHandler and SQLite into MS-FINDER for this one class. -->
+    <Compile Include="..\..\MSDIAL5\MsdialCore\Export\MassBankSplash.cs" Link="Export\MassBankSplash.cs" />
   </ItemGroup>
 
   <ItemGroup>

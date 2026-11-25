@@ -24,9 +24,7 @@ namespace CompMs.MsdialCore.Algorithm
             _spectraTask = Task.Run(() => {
                 var result = (spectrums as IList<RawSpectrum>) ?? spectrums.ToList();
                 foreach (var s in result) {
-                    if (s.MsLevel == 0) {
-                        s.MsLevel = 1;
-                    }
+                    Normalize(s);
                 }
                 return result;
             });
@@ -41,12 +39,26 @@ namespace CompMs.MsdialCore.Algorithm
             {
                 var measurement = await measurementTask.ConfigureAwait(false);
                 foreach (var s in measurement.SpectrumList) {
-                    if (s.MsLevel == 0) {
-                        s.MsLevel = 1;
-                    }
+                    Normalize(s);
                 }
                 return measurement.SpectrumList;
             });
+        }
+
+        // mzML records the collision energy under precursor/activation, which is where the PSI-MS
+        // mapping rules put it, and RawDataHandler's mzML reader copies it to Precursor only:
+        // RawSpectrum.CollisionEnergy is set from a spectrum-level cvParam that a conforming file
+        // does not have. Every consumer here (the AIF CE targets, the per-feature MS2 scan per CE,
+        // the AIF MS2 chromatogram filter) reads RawSpectrum.CollisionEnergy, so an AIF mzML file
+        // presented every MS2 scan as CE 0, was skipped as "No correct CE information", and left no
+        // .dcl behind. A product-ion scan whose own field is unset takes its precursor's energy.
+        private static void Normalize(RawSpectrum s) {
+            if (s.MsLevel == 0) {
+                s.MsLevel = 1;
+            }
+            if (s.MsLevel > 1 && s.CollisionEnergy <= 0 && s.Precursor is { CollisionEnergy: > 0 } precursor) {
+                s.CollisionEnergy = precursor.CollisionEnergy;
+            }
         }
 
         protected static async Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry, bool ignoreRtCorrection, CancellationToken token) {

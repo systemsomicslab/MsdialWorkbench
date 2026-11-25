@@ -13,10 +13,15 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class SurveyScanModel : DisposableModelBase
     {
+        /// <param name="unavailableTitle">
+        /// The fixed title of a panel that cannot show the spectrum, saying why (the raw data are missing).
+        /// Null to title the panel with the spectrum's maximum intensity and splash key.
+        /// </param>
         public SurveyScanModel(
             SurveyScanSpectrum surveyScanSpectrum,
             Func<SpectrumPeakWrapper, double> horizontalSelector,
-            Func<SpectrumPeakWrapper, double> verticalSelector) {
+            Func<SpectrumPeakWrapper, double> verticalSelector,
+            string? unavailableTitle = null) {
 
             SurveyScanLoaded = surveyScanSpectrum.Loaded;
             SpectrumSource = surveyScanSpectrum.Spectrum;
@@ -42,10 +47,15 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(spectrum => spectrum.CalculateSplashKey())
                 .Merge(nospec.ToConstant("N/A"));
 
-            maxIntensitySource
-                .Zip(splashKey, (intensity, key) => string.Format("MS1 spectra max intensity: {0}\n{1}", intensity, key))
-                .Subscribe(title => Elements.GraphTitle = title)
-                .AddTo(Disposables);
+            if (unavailableTitle is null) {
+                maxIntensitySource
+                    .Zip(splashKey, (intensity, key) => string.Format("MS1 spectra max intensity: {0}\n{1}", intensity, key))
+                    .Subscribe(title => Elements.GraphTitle = title)
+                    .AddTo(Disposables);
+            }
+            else {
+                Elements.GraphTitle = unavailableTitle;
+            }
 
             Disposables.Add(nospec.Connect());
             Disposables.Add(anyspec.Connect());

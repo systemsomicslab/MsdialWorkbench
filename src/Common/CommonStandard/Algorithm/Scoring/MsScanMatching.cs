@@ -22,13 +22,53 @@ namespace CompMs.Common.Algorithm.Scoring {
         public double Intensity { get; set; }
         public double MatchedIntensity { get; set; }
     }
+
+    /// <summary>One pair of <see cref="MsScanMatching.MatchLegacy"/>: indices into r and e, and whether it is a product-ion match.</summary>
+    public readonly struct LegacyMatchedPair {
+        public LegacyMatchedPair(int rIndex, int eIndex, bool isProductIonMatched) {
+            RIndex = rIndex;
+            EIndex = eIndex;
+            IsProductIonMatched = isProductIonMatched;
+        }
+
+        public int RIndex { get; }
+        public int EIndex { get; }
+        public bool IsProductIonMatched { get; }
+    }
+
+    /// <summary>The result of <see cref="MsScanMatching.MatchLegacy"/>. The used flags are its own arrays, never the peaks'.</summary>
+    public sealed class LegacyMatch {
+        private readonly IReadOnlyList<SpectrumPeak> _e;
+
+        internal LegacyMatch(IReadOnlyList<SpectrumPeak> e, bool[] eUsed, bool[] rUsed, List<MatchedPeak> matchedPeaks, List<LegacyMatchedPair> pairs) {
+            _e = e;
+            EUsed = eUsed;
+            RUsed = rUsed;
+            MatchedPeaks = matchedPeaks;
+            Pairs = pairs;
+        }
+
+        /// <summary>Whether each e peak was used, in list order.</summary>
+        public bool[] EUsed { get; }
+        /// <summary>Whether each r peak was used, in list order. The same array as <see cref="EUsed"/> when e and r are one list.</summary>
+        public bool[] RUsed { get; }
+        /// <summary>The matched pairs in r order, as the kernels sum them.</summary>
+        public List<MatchedPeak> MatchedPeaks { get; }
+        /// <summary>The matched pairs as indices, in r order.</summary>
+        public IReadOnlyList<LegacyMatchedPair> Pairs { get; }
+
+        // The used flags of whichever list the scan's spectrum is.
+        internal bool[] UsedOf(IMSScanProperty prop) {
+            return ReferenceEquals(prop.Spectrum, _e) ? EUsed : RUsed;
+        }
+    }
     public static class MsScanMatching {
         private static bool IsComparedAvailable<T>(IReadOnlyCollection<T> obj1, IReadOnlyCollection<T> obj2) {
             return obj1 is not null && obj2 is not null && obj1.Count != 0 && obj2.Count != 0;
         }
 
         private static bool IsComparedAvailable(IMSScanProperty obj1, IMSScanProperty obj2) {
-            return obj1.Spectrum is not null && obj2.Spectrum is not null && obj1.Spectrum.Count != 0 && obj2.Spectrum.Count != 0;
+            return SpectrumPeakData.From(obj1).Count != 0 && SpectrumPeakData.From(obj2).Count != 0;
         }
 
         private static bool IsAvailableSpectrum(IMSScanProperty? obj) {
@@ -764,40 +804,38 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// </returns>
         public static double[] GetMatchedPeaksScores(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
             double massBegin, double massEnd) {
-            if (!IsComparedAvailable(prop1, prop2)) return new double[2] { -1, -1 };
-
-            var peaks1 = prop1.Spectrum;
-            var peaks2 = prop2.Spectrum;
-
-            return GetMatchedPeaksScores(peaks1, peaks2, bin, massBegin, massEnd);
+            return GetMatchedPeaksScores(SpectrumPeakData.From(prop1), SpectrumPeakData.From(prop2), bin, massBegin, massEnd);
         }
 
         public static double[] GetMatchedPeaksScores(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin,
+            double massBegin, double massEnd) => GetMatchedPeaksScores(new SpectrumPeakData(peaks1), new SpectrumPeakData(peaks2), bin, massBegin, massEnd);
+
+        private static double[] GetMatchedPeaksScores(SpectrumPeakData peaks1, SpectrumPeakData peaks2, double bin,
             double massBegin, double massEnd) {
-            if (!IsComparedAvailable(peaks1, peaks2)) return new double[2] { -1, -1 };
+            var count1 = peaks1.Count;
+            var count2 = peaks2.Count;
+            if (count1 == 0 || count2 == 0) return new double[2] { -1, -1 };
 
             double sumM = 0, sumL = 0;
-            double minMz = peaks2[0].Mass;
-            double maxMz = peaks2[peaks2.Count - 1].Mass;
+            double minMz = peaks2.MassAt(0);
+            double maxMz = peaks2.MassAt(count2 - 1);
 
             if (massBegin > minMz) minMz = massBegin;
             if (maxMz > massEnd) maxMz = massEnd;
 
             double focusedMz = minMz;
-            double maxLibIntensity = peaks2.Max(n => n.Intensity);
+            double maxLibIntensity = peaks2.MaxIntensity();
             int remaindIndexM = 0, remaindIndexL = 0;
             int counter = 0;
             int libCounter = 0;
 
-            List<double[]> measuredMassList = new List<double[]>();
-            List<double[]> referenceMassList = new List<double[]>();
-
             while (focusedMz <= maxMz) {
                 sumL = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
-                    if (peaks2[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
-                        sumL += peaks2[i].Intensity;
+                for (int i = remaindIndexL; i < count2; i++) {
+                    var mass = peaks2.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumL += peaks2.IntensityAt(i);
                     else { remaindIndexL = i; break; }
                 }
 
@@ -806,10 +844,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
-                    if (peaks1[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin)
-                        sumM += peaks1[i].Intensity;
+                for (int i = remaindIndexM; i < count1; i++) {
+                    var mass = peaks1.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumM += peaks1.IntensityAt(i);
                     else { remaindIndexM = i; break; }
                 }
 
@@ -817,8 +856,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                     counter++;
                 }
 
-                if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
-                focusedMz = peaks2[remaindIndexL].Mass;
+                if (focusedMz + bin > peaks2.MassAt(count2 - 1)) break;
+                focusedMz = peaks2.MassAt(remaindIndexL);
             }
 
             if (libCounter == 0) return new double[2] { 0, 0 };
@@ -827,35 +866,81 @@ namespace CompMs.Common.Algorithm.Scoring {
         }
 
         public static double GetSpectralEntropySimilarity(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin) {
-            if (!IsComparedAvailable(peaks1, peaks2)) return -1d;
+            return GetSpectralEntropySimilarity(new SpectrumPeakData(peaks1), new SpectrumPeakData(peaks2), bin);
+        }
 
-            var combinedSpectrum = SpectrumHandler.GetCombinedSpectrum(SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks1), SpectrumHandler.GetNormalizedByTotalIntensityPeaks(peaks2), bin);
-            var entropy12 = GetSpectralEntropy(combinedSpectrum);
-            var entropy1 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks1, bin));
-            var entropy2 = GetSpectralEntropy(SpectrumHandler.GetBinnedSpectrum(peaks2, bin));
+        public static double GetSpectralEntropySimilarity(SpectrumPeakData peaks1, SpectrumPeakData peaks2, double bin) {
+            if (peaks1.Count == 0 || peaks2.Count == 0) return -1d;
 
-            return 1 - (2 * entropy12 - entropy1 - entropy2) * 0.5;
+            var p = FrameBinnedSpectrum.Create(peaks1, bin);
+            var q = FrameBinnedSpectrum.Create(peaks2, bin);
+            var totalP = NonNegativeTotal(p);
+            var totalQ = NonNegativeTotal(q);
+
+            // With p and q the frame intensities scaled to a unit total, the similarity is
+            // 1 - (2 H(m) - H(p) - H(q)) / 2 with m = (p + q) / 2. A frame held by
+            // only one spectrum, say p, contributes exactly p to 2 H(m) - H(p) - H(q), and p and q
+            // each total 1, so everything outside the shared frames cancels against the leading 1:
+            //   similarity = sum over shared frames of ((p + q) log2 (p + q) - p log2 p - q log2 q) / 2
+            // (Li et al., Nat. Methods 18, 1524 (2021); Li & Fiehn, Nat. Methods 20, 1475 (2023)).
+            var similarity = 0d;
+            int i = 0, j = 0;
+            while (i < p.Count && j < q.Count) {
+                if (p.Frames[i] < q.Frames[j]) {
+                    i++;
+                }
+                else if (q.Frames[j] < p.Frames[i]) {
+                    j++;
+                }
+                else {
+                    var pi = NonNegative(p.Intensities[i++]) / totalP;
+                    var qj = NonNegative(q.Intensities[j++]) / totalQ;
+                    similarity += XLog2X(pi + qj) - XLog2X(pi) - XLog2X(qj);
+                }
+            }
+            return similarity * .5;
         }
 
         public static double GetSpectralEntropy(
             List<SpectrumPeak> peaks) {
-            var sumIntensity = peaks.Sum(n => n.Intensity);
-            return -1 * peaks.Sum(n => n.Intensity / sumIntensity * Math.Log(n.Intensity / sumIntensity, 2));
+            var sumIntensity = peaks.Sum(n => NonNegative(n.Intensity));
+            return -1 * peaks.Sum(n => XLog2X(NonNegative(n.Intensity) / sumIntensity));
         }
 
+        // x log2 x, taking 0 log 0 as its limit 0 rather than the NaN that 0 * -Infinity evaluates to.
+        private static double XLog2X(double x) => x > 0d ? x * Math.Log(x, 2) : 0d;
+
+        // A negative intensity is not a valid peak and has no probability to give; it is counted as 0,
+        // not as NaN. In the similarity this applies to a frame's summed intensity.
+        private static double NonNegative(double intensity) => Math.Max(intensity, 0d);
+
+        private static double NonNegativeTotal(FrameBinnedSpectrum spectrum) {
+            var total = 0d;
+            for (int i = 0; i < spectrum.Count; i++) {
+                total += NonNegative(spectrum.Intensities[i]);
+            }
+            return total;
+        }
+
+        /// <summary>
+        /// The matched-peaks-only "modified dot product" of molecular networking, identity
+        /// <c>msdial.moddot.legacy</c>: <c>Σ I_r·I_e / (√Σ I_r² · √Σ I_e²)</c> summed over the matched
+        /// pairs only.
+        /// </summary>
+        /// <remarks>
+        /// This is not the GNPS modified cosine. Unmatched intensity never lowers it, so a single matched
+        /// pair scores 1.0. It is kept unchanged for reproducibility. The matching is
+        /// <see cref="MatchLegacy"/>'s, and the input spectra are never written to.
+        /// Returns <c>[score, matched peak count]</c>.
+        /// </remarks>
         public static double[] GetModifiedDotProductScore(
             IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da
             ) {
-            var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
-            else {
-                SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
+            var match = MatchLegacyByPrecursor(prop1, prop2, massTolerance, massToleranceType);
+            var matchedPeaks = match.MatchedPeaks;
 
             if (matchedPeaks.Count == 0) {
                 return new double[] { 0, 0 };
@@ -867,41 +952,43 @@ namespace CompMs.Common.Algorithm.Scoring {
             return new double[] { product / (Math.Sqrt(scaler1) * Math.Sqrt(scaler2)), matchedPeaks.Count };
         }
 
+        /// <summary>
+        /// The Bonanza score of molecular networking, identity <c>msdial.bonanza.v1</c>:
+        /// <c>P / (P + Σ_unmatched I1² + Σ_unmatched I2²)</c> with <c>P = Σ_matched I_r·I_e</c>.
+        /// </summary>
+        /// <remarks>
+        /// The input spectra are never written to. Returns <c>[score, matched peak count]</c>.
+        /// </remarks>
         public static double[] GetBonanzaScore(
             IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da) {
-            var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
-            else {
-                SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
+            var match = MatchLegacyByPrecursor(prop1, prop2, massTolerance, massToleranceType);
+            var matchedPeaks = match.MatchedPeaks;
 
             if (matchedPeaks.Count == 0) {
                 return new double[] { 0, 0 };
             }
 
             var product = matchedPeaks.Sum(n => n.Intensity * n.MatchedIntensity);
-            var scaler1 = prop1.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
-            var scaler2 = prop2.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
+            var scaler1 = UnmatchedSquareSum(prop1.Spectrum, match.UsedOf(prop1));
+            var scaler2 = UnmatchedSquareSum(prop2.Spectrum, match.UsedOf(prop2));
             return new double[] { product / (product + scaler1 + scaler2), matchedPeaks.Count };
         }
 
+        /// <summary>
+        /// Bonanza, matched count, the matched-only modified dot product and the matched-only
+        /// product-ion cosine of one legacy matching: <c>[bonanza, matched, moddot, cosine]</c>.
+        /// </summary>
+        /// <remarks>The input spectra are never written to.</remarks>
         public static double[] GetBonanzaModifiedDotCosineScores(
             IMSScanProperty prop1,
             IMSScanProperty prop2,
             double massTolerance = 0.05,
             MassToleranceType massToleranceType = MassToleranceType.Da) {
-            var matchedPeaks = new List<MatchedPeak>();
-            if (prop1.PrecursorMz < prop2.PrecursorMz) {
-                SearchMatchedPeaks(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
-            else {
-                SearchMatchedPeaks(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType, out matchedPeaks);
-            }
+            var match = MatchLegacyByPrecursor(prop1, prop2, massTolerance, massToleranceType);
+            var matchedPeaks = match.MatchedPeaks;
 
             if (matchedPeaks.Count == 0) {
                 return new double[] { 0, 0, 0, 0 };
@@ -909,8 +996,8 @@ namespace CompMs.Common.Algorithm.Scoring {
 
             // bonanza
             var product = matchedPeaks.Sum(n => n.Intensity * n.MatchedIntensity);
-            var scaler1 = prop1.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
-            var scaler2 = prop2.Spectrum.Where(n => n.IsMatched == false).Sum(n => Math.Pow(n.Intensity, 2));
+            var scaler1 = UnmatchedSquareSum(prop1.Spectrum, match.UsedOf(prop1));
+            var scaler2 = UnmatchedSquareSum(prop2.Spectrum, match.UsedOf(prop2));
             var bonanza = product / (product + scaler1 + scaler2);
 
             // modified dot
@@ -925,6 +1012,23 @@ namespace CompMs.Common.Algorithm.Scoring {
             var cosine = scaler1 == 0 || scaler2 == 0 ? 0.0 : product / (Math.Sqrt(scaler1) * Math.Sqrt(scaler2));
 
             return new double[] { bonanza, matchedPeaks.Count, modifieddot, cosine };
+        }
+
+        // The sum of squared intensities of the peaks the matching did not use, in list order and as the
+        // same LINQ expression the kernels always used, so that the floating-point summation order, and
+        // therefore every bit of the result, is unchanged.
+        private static double UnmatchedSquareSum(List<SpectrumPeak> peaks, bool[] used) {
+            return peaks.Where((n, index) => !used[index]).Sum(n => Math.Pow(n.Intensity, 2));
+        }
+
+        // The spectrum with the smaller precursor takes the e role; on equal precursors, prop2 does.
+        private static LegacyMatch MatchLegacyByPrecursor(IMSScanProperty prop1, IMSScanProperty prop2, double massTolerance, MassToleranceType massToleranceType) {
+            if (prop1.PrecursorMz < prop2.PrecursorMz) {
+                return MatchLegacy(prop1.Spectrum, prop1.PrecursorMz, prop2.Spectrum, prop2.PrecursorMz, massTolerance, massToleranceType);
+            }
+            else {
+                return MatchLegacy(prop2.Spectrum, prop2.PrecursorMz, prop1.Spectrum, prop1.PrecursorMz, massTolerance, massToleranceType);
+            }
         }
 
         public static double[] GetCosineScore(
@@ -952,6 +1056,14 @@ namespace CompMs.Common.Algorithm.Scoring {
             return new double[] { sqscore, matched };
         }
 
+        /// <summary>
+        /// Match two spectra the way molecular networking always has, and set the
+        /// <see cref="SpectrumPeak.IsMatched"/> flags of both lists to the result.
+        /// </summary>
+        /// <remarks>
+        /// Kept for compatibility. It writes to its inputs, so it must not be called on spectra another
+        /// thread may be reading; no networking kernel calls it any more. Use <see cref="MatchLegacy"/>.
+        /// </remarks>
         public static void SearchMatchedPeaks(
             List<SpectrumPeak> ePeaks,
             double ePrecursor, // small precursor
@@ -960,9 +1072,37 @@ namespace CompMs.Common.Algorithm.Scoring {
             double massTolerance,
             MassToleranceType massTolType,
             out List<MatchedPeak> matchedPeaks) {
-            matchedPeaks = new List<MatchedPeak>();
-            foreach (var e in ePeaks) e.IsMatched = false;
-            foreach (var e in rPeaks) e.IsMatched = false;
+            var match = MatchLegacy(ePeaks, ePrecursor, rPeaks, rPrecursor, massTolerance, massTolType);
+            for (int j = 0; j < ePeaks.Count; j++) ePeaks[j].IsMatched = match.EUsed[j];
+            for (int i = 0; i < rPeaks.Count; i++) rPeaks[i].IsMatched = match.RUsed[i];
+            matchedPeaks = match.MatchedPeaks;
+        }
+
+        /// <summary>
+        /// The peak matching of the molecular-networking kernels. It writes nothing to its inputs.
+        /// </summary>
+        /// <remarks>
+        /// <para>e is the spectrum with the smaller precursor and r the one with the larger. For each r
+        /// peak in list order, every e peak not yet used is a candidate when it lies within the tolerance
+        /// of the r peak (a product-ion match, tested first) or, shifted by the precursor difference
+        /// rPrecursor − ePrecursor, within the tolerance of it (a neutral-loss match). Both tests are
+        /// strict (<c>&lt;</c>). The candidate with the smallest |I_e − I_r| wins, the first one on a tie,
+        /// and both peaks are then used.</para>
+        /// <para>This is the loop SearchMatchedPeaks always ran, with the used flags held in local
+        /// arrays instead of <see cref="SpectrumPeak.IsMatched"/>. When e and r are the same list the
+        /// two arrays are one array, exactly as the shared flags were.</para>
+        /// </remarks>
+        public static LegacyMatch MatchLegacy(
+            IReadOnlyList<SpectrumPeak> ePeaks,
+            double ePrecursor,
+            IReadOnlyList<SpectrumPeak> rPeaks,
+            double rPrecursor,
+            double massTolerance,
+            MassToleranceType massTolType) {
+            var eUsed = new bool[ePeaks.Count];
+            var rUsed = ReferenceEquals(ePeaks, rPeaks) ? eUsed : new bool[rPeaks.Count];
+            var matchedPeaks = new List<MatchedPeak>();
+            var pairs = new List<LegacyMatchedPair>();
 
             //match definition: if product ion or neutral loss are within the mass tolerance, it will be recognized as MATCH.
             //The smallest intensity difference will be recognized as highest match.
@@ -975,7 +1115,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 var isProduct = false;
                 for (int j = 0; j < ePeaks.Count; j++) {
                     var ePeak = ePeaks[j];
-                    if (ePeak.IsMatched == true) continue;
+                    if (eUsed[j]) continue;
                     if (Math.Abs(ePeak.Mass - rPeak.Mass) < massTol) {
                         var intensityDiff = Math.Abs(ePeak.Intensity - rPeak.Intensity);
                         if (intensityDiff < minIntensityDiff) {
@@ -995,8 +1135,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 if (minPeakID >= 0) {
-                    rPeak.IsMatched = true;
-                    ePeaks[minPeakID].IsMatched = true;
+                    rUsed[i] = true;
+                    eUsed[minPeakID] = true;
+                    pairs.Add(new LegacyMatchedPair(i, minPeakID, isProduct));
                     matchedPeaks.Add(
                         new MatchedPeak() {
                             Mass = rPeak.Mass,
@@ -1007,6 +1148,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                         });
                 }
             }
+            return new LegacyMatch(ePeaks, eUsed, rUsed, matchedPeaks, pairs);
         }
 
         public static List<SpectrumPeak> GetProcessedSpectrum(
@@ -1215,8 +1357,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) return resultArray;
-                if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
+                if (molecule == null || !molecule.IsValidatedFormat) return resultArray;
+                if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.GetSpectrumPeakData().Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
                 if (result != null) {
@@ -1261,7 +1403,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) return resultArray;
+                if (molecule == null || !molecule.IsValidatedFormat) return resultArray;
                 //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculerSpeciesLevelAnnotationResultForEIEIO(msScanProp, molecule, bin);
@@ -1308,7 +1450,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = molMsRef.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) return resultArray;
+                if (molecule == null || !molecule.IsValidatedFormat) return resultArray;
                 //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculerSpeciesLevelAnnotationResultForOAD(msScanProp, molecule, bin);
@@ -1342,7 +1484,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var comment = reference.Comment;
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     return reference.Name;
                 }
                 var refinedName = string.Empty;
@@ -1386,7 +1528,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     isOthers = true;
                     return molMsRef.Name;
                 }
@@ -1454,7 +1596,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     isOthers = true;
                     return molMsRef.Name;
                 }
@@ -2343,7 +2485,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
-                if (molecule == null || molecule.Adduct == null) {
+                if (molecule == null || !molecule.IsValidatedFormat) {
                     isOthers = true;
                     return molMsRef.Name;
                 }
@@ -3993,13 +4135,14 @@ namespace CompMs.Common.Algorithm.Scoring {
             double massBegin, double massEnd) {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumL = 0;
-            if (!IsComparedAvailable(prop1, prop2)) return -1;
+            var peaks1 = SpectrumPeakData.From(prop1);
+            var peaks2 = SpectrumPeakData.From(prop2);
+            var count1 = peaks1.Count;
+            var count2 = peaks2.Count;
+            if (count1 == 0 || count2 == 0) return -1;
 
-            var peaks1 = prop1.Spectrum;
-            var peaks2 = prop2.Spectrum;
-
-            double minMz = peaks2[0].Mass;
-            double maxMz = peaks2[peaks2.Count - 1].Mass;
+            double minMz = peaks2.MassAt(0);
+            double maxMz = peaks2.MassAt(count2 - 1);
 
             if (massBegin > minMz) minMz = massBegin;
             if (maxMz > massEnd) maxMz = massEnd;
@@ -4008,26 +4151,28 @@ namespace CompMs.Common.Algorithm.Scoring {
             int remaindIndexM = 0, remaindIndexL = 0;
             int counter = 0;
 
-            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
-            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
             int size = 0;
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
             while (focusedMz <= maxMz) {
                 sumL = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
-                    if (peaks2[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
-                        sumL += peaks2[i].Intensity;
+                for (int i = remaindIndexL; i < count2; i++) {
+                    var mass = peaks2.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumL += peaks2.IntensityAt(i);
                     else { remaindIndexL = i; break; }
                 }
 
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
-                    if (peaks1[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin)
-                        sumM += peaks1[i].Intensity;
+                for (int i = remaindIndexM; i < count1; i++) {
+                    var mass = peaks1.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumM += peaks1.IntensityAt(i);
                     else { remaindIndexM = i; break; }
                 }
 
@@ -4049,8 +4194,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
                 size++;
 
-                if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
-                focusedMz = peaks2[remaindIndexL].Mass;
+                if (focusedMz + bin > peaks2.MassAt(count2 - 1)) break;
+                focusedMz = peaks2.MassAt(remaindIndexL);
             }
 
             if (baseM == 0 || baseR == 0) {
@@ -4139,41 +4284,41 @@ namespace CompMs.Common.Algorithm.Scoring {
             double massBegin, double massEnd, double penalty) {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumL = 0;
-            if (!IsComparedAvailable(prop1, prop2))
-            {
-                return -1;
-            }
+            var peaks1 = SpectrumPeakData.From(prop1);
+            var peaks2 = SpectrumPeakData.From(prop2);
+            var count1 = peaks1.Count;
+            var count2 = peaks2.Count;
+            if (count1 == 0 || count2 == 0) return -1;
 
-            var peaks1 = prop1.Spectrum;
-            var peaks2 = prop2.Spectrum;
-
-            double minMz = Math.Max(massBegin, Math.Min(peaks1[0].Mass, peaks2[0].Mass));
-            double maxMz = Math.Min(massEnd, Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass));
+            double minMz = Math.Max(massBegin, Math.Min(peaks1.MassAt(0), peaks2.MassAt(0)));
+            double maxMz = Math.Min(massEnd, Math.Max(peaks1.MassAt(count1 - 1), peaks2.MassAt(count2 - 1)));
 
             double focusedMz = minMz;
             int remaindIndexM = 0, remaindIndexL = 0;
             int counter = 0;
 
-            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
-            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
             int size = 0;
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
             while (focusedMz <= maxMz) {
                 sumL = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
-                    if (peaks2[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
-                        sumL += peaks2[i].Intensity;
+                for (int i = remaindIndexL; i < count2; i++) {
+                    var mass = peaks2.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumL += peaks2.IntensityAt(i);
                     else { remaindIndexL = i; break; }
                 }
 
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
-                    if (peaks1[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin)
-                        sumM += peaks1[i].Intensity;
+                for (int i = remaindIndexM; i < count1; i++) {
+                    var mass = peaks1.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumM += peaks1.IntensityAt(i);
                     else { remaindIndexM = i; break; }
                 }
 
@@ -4195,13 +4340,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
                 size++;
 
-                if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
-                if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
-                    focusedMz = peaks1[remaindIndexM].Mass;
-                else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass)
-                    focusedMz = peaks2[remaindIndexL].Mass;
+                if (focusedMz + bin > Math.Max(peaks1.MassAt(count1 - 1), peaks2.MassAt(count2 - 1))) break;
+                if (focusedMz + bin > peaks2.MassAt(remaindIndexL) && focusedMz + bin <= peaks1.MassAt(remaindIndexM))
+                    focusedMz = peaks1.MassAt(remaindIndexM);
+                else if (focusedMz + bin <= peaks2.MassAt(remaindIndexL) && focusedMz + bin > peaks1.MassAt(remaindIndexM))
+                    focusedMz = peaks2.MassAt(remaindIndexL);
                 else
-                    focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
+                    focusedMz = Math.Min(peaks1.MassAt(remaindIndexM), peaks2.MassAt(remaindIndexL));
             }
 
             if (baseM == 0 || baseR == 0) {
@@ -4280,13 +4425,14 @@ namespace CompMs.Common.Algorithm.Scoring {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
 
-            if (!IsComparedAvailable(prop1, prop2)) return -1;
+            var peaks1 = SpectrumPeakData.From(prop1);
+            var peaks2 = SpectrumPeakData.From(prop2);
+            var count1 = peaks1.Count;
+            var count2 = peaks2.Count;
+            if (count1 == 0 || count2 == 0) return -1;
 
-            var peaks1 = prop1.Spectrum;
-            var peaks2 = prop2.Spectrum;
-
-            double minMz = Math.Min(peaks1[0].Mass, peaks2[0].Mass);
-            double maxMz = Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass);
+            double minMz = Math.Min(peaks1.MassAt(0), peaks2.MassAt(0));
+            double maxMz = Math.Max(peaks1.MassAt(count1 - 1), peaks2.MassAt(count2 - 1));
 
             if (massBegin > minMz) minMz = massBegin;
             if (maxMz > massEnd) maxMz = massEnd;
@@ -4294,25 +4440,27 @@ namespace CompMs.Common.Algorithm.Scoring {
             double focusedMz = minMz;
             int remaindIndexM = 0, remaindIndexL = 0;
 
-            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
-            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
             int size = 0;
 
             double sumMeasure = 0, sumReference = 0, baseM = double.MinValue, baseR = double.MinValue;
 
             while (focusedMz <= maxMz) {
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
-                    if (peaks1[i].Mass < focusedMz - bin) { continue; }
-                    else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin) sumM += peaks1[i].Intensity;
+                for (int i = remaindIndexM; i < count1; i++) {
+                    var mass = peaks1.MassAt(i);
+                    if (mass < focusedMz - bin) { continue; }
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin) sumM += peaks1.IntensityAt(i);
                     else { remaindIndexM = i; break; }
                 }
 
                 sumR = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
-                    if (peaks2[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
-                        sumR += peaks2[i].Intensity;
+                for (int i = remaindIndexL; i < count2; i++) {
+                    var mass = peaks2.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumR += peaks2.IntensityAt(i);
                     else { remaindIndexL = i; break; }
                 }
 
@@ -4332,13 +4480,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
                 size++;
 
-                if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
-                if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
-                    focusedMz = peaks1[remaindIndexM].Mass;
-                else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass)
-                    focusedMz = peaks2[remaindIndexL].Mass;
+                if (focusedMz + bin > Math.Max(peaks1.MassAt(count1 - 1), peaks2.MassAt(count2 - 1))) break;
+                if (focusedMz + bin > peaks2.MassAt(remaindIndexL) && focusedMz + bin <= peaks1.MassAt(remaindIndexM))
+                    focusedMz = peaks1.MassAt(remaindIndexM);
+                else if (focusedMz + bin <= peaks2.MassAt(remaindIndexL) && focusedMz + bin > peaks1.MassAt(remaindIndexM))
+                    focusedMz = peaks2.MassAt(remaindIndexL);
                 else
-                    focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
+                    focusedMz = Math.Min(peaks1.MassAt(remaindIndexM), peaks2.MassAt(remaindIndexL));
             }
 
             if (baseM == 0 || baseR == 0) {
@@ -4400,44 +4548,47 @@ namespace CompMs.Common.Algorithm.Scoring {
             double scalarM = 0, scalarR = 0, covariance = 0;
             double sumM = 0, sumR = 0;
 
-            if (!IsComparedAvailable(prop1, prop2)) return -1;
+            var peaks1 = SpectrumPeakData.From(prop1);
+            var peaks2 = SpectrumPeakData.From(prop2);
+            var count1 = peaks1.Count;
+            var count2 = peaks2.Count;
+            if (count1 == 0 || count2 == 0) return -1;
 
-            var peaks1 = prop1.Spectrum;
-            var peaks2 = prop2.Spectrum;
-
-            double maxMz = Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass);
+            double maxMz = Math.Max(peaks1.MassAt(count1 - 1), peaks2.MassAt(count2 - 1));
             if (maxMz > massEnd) maxMz = massEnd;
             int remaindIndexM = 0, remaindIndexL = 0;
-            while (remaindIndexM < peaks1.Count && peaks1[remaindIndexM].Mass < massBegin - bin) {
+            while (remaindIndexM < count1 && peaks1.MassAt(remaindIndexM) < massBegin - bin) {
                 ++remaindIndexM;
             }
-            while (remaindIndexL < peaks2.Count && peaks2[remaindIndexL].Mass < massBegin - bin) {
+            while (remaindIndexL < count2 && peaks2.MassAt(remaindIndexL) < massBegin - bin) {
                 ++remaindIndexL;
             }
 
             double focusedMz = Math.Min(
-                peaks1.ElementAtOrDefault(remaindIndexM)?.Mass ?? double.MaxValue,
-                peaks2.ElementAtOrDefault(remaindIndexL)?.Mass ?? double.MaxValue);
+                remaindIndexM < count1 ? peaks1.MassAt(remaindIndexM) : double.MaxValue,
+                remaindIndexL < count2 ? peaks2.MassAt(remaindIndexL) : double.MaxValue);
 
-            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
-            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(peaks1.Count + peaks2.Count);
+            SummedPeak[] measuredMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
+            SummedPeak[] referenceMassBuffer = ArrayPool<SummedPeak>.Shared.Rent(count1 + count2);
             int size = 0;
 
             double baseM = double.MinValue, baseR = double.MinValue;
 
             while (focusedMz <= maxMz) {
                 sumM = 0;
-                for (int i = remaindIndexM; i < peaks1.Count; remaindIndexM = ++i) {
-                    if (peaks1[i].Mass < focusedMz - bin) { continue; }
-                    else if (focusedMz - bin <= peaks1[i].Mass && peaks1[i].Mass < focusedMz + bin) sumM += peaks1[i].Intensity;
+                for (int i = remaindIndexM; i < count1; remaindIndexM = ++i) {
+                    var mass = peaks1.MassAt(i);
+                    if (mass < focusedMz - bin) { continue; }
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin) sumM += peaks1.IntensityAt(i);
                     else { break; }
                 }
 
                 sumR = 0;
-                for (int i = remaindIndexL; i < peaks2.Count; remaindIndexL = ++i) {
-                    if (peaks2[i].Mass < focusedMz - bin) continue;
-                    else if (focusedMz - bin <= peaks2[i].Mass && peaks2[i].Mass < focusedMz + bin)
-                        sumR += peaks2[i].Intensity;
+                for (int i = remaindIndexL; i < count2; remaindIndexL = ++i) {
+                    var mass = peaks2.MassAt(i);
+                    if (mass < focusedMz - bin) continue;
+                    else if (focusedMz - bin <= mass && mass < focusedMz + bin)
+                        sumR += peaks2.IntensityAt(i);
                     else { break; }
                 }
 
@@ -4448,19 +4599,19 @@ namespace CompMs.Common.Algorithm.Scoring {
                 if (sumR > baseR) baseR = sumR;
                 size++;
 
-                if (focusedMz + bin > Math.Max(peaks1[peaks1.Count - 1].Mass, peaks2[peaks2.Count - 1].Mass)) break;
-                if (remaindIndexM >= peaks1.Count || remaindIndexL >= peaks2.Count) {
-                    focusedMz = remaindIndexL >= peaks2.Count
-                        ? peaks1[remaindIndexM].Mass
-                        : peaks2[remaindIndexL].Mass;
+                if (focusedMz + bin > Math.Max(peaks1.MassAt(count1 - 1), peaks2.MassAt(count2 - 1))) break;
+                if (remaindIndexM >= count1 || remaindIndexL >= count2) {
+                    focusedMz = remaindIndexL >= count2
+                        ? peaks1.MassAt(remaindIndexM)
+                        : peaks2.MassAt(remaindIndexL);
                     continue;
                 }
-                if (focusedMz + bin > peaks2[remaindIndexL].Mass && focusedMz + bin <= peaks1[remaindIndexM].Mass)
-                    focusedMz = peaks1[remaindIndexM].Mass;
-                else if (focusedMz + bin <= peaks2[remaindIndexL].Mass && focusedMz + bin > peaks1[remaindIndexM].Mass)
-                    focusedMz = peaks2[remaindIndexL].Mass;
+                if (focusedMz + bin > peaks2.MassAt(remaindIndexL) && focusedMz + bin <= peaks1.MassAt(remaindIndexM))
+                    focusedMz = peaks1.MassAt(remaindIndexM);
+                else if (focusedMz + bin <= peaks2.MassAt(remaindIndexL) && focusedMz + bin > peaks1.MassAt(remaindIndexM))
+                    focusedMz = peaks2.MassAt(remaindIndexL);
                 else
-                    focusedMz = Math.Min(peaks1[remaindIndexM].Mass, peaks2[remaindIndexL].Mass);
+                    focusedMz = Math.Min(peaks1.MassAt(remaindIndexM), peaks2.MassAt(remaindIndexL));
             }
 
             if (baseM == 0 || baseR == 0) {

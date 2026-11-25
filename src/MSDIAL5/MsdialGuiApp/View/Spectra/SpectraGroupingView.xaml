@@ -16,7 +16,12 @@
              d:DataContext="{d:DesignInstance Type={x:Type vm:SpectraGroupingViewModel}}"
              d:DesignHeight="800" d:DesignWidth="1200">
     <UserControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -200,7 +205,8 @@
                                      VerticalPropertyName="Intensity"
                                      LabelPropertyName="Mass"
                                      OrderingPropertyName="Intensity"
-                                     Overlap="Direct,Horizontal"/>
+                                     MinimumRelativeOrder="0.01"
+                                     LabelPlacement="{StaticResource SpectrumLabelPlacement}"/>
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>
@@ -245,7 +251,8 @@
                                      VerticalPropertyName="Intensity"
                                      LabelPropertyName="Mass"
                                      OrderingPropertyName="Intensity"
-                                     Overlap="Direct,Horizontal"/>
+                                     MinimumRelativeOrder="0.01"
+                                     LabelPlacement="{StaticResource SpectrumLabelPlacement}"/>
                 </Grid>
                 <chart:SimpleChartControl.ContextMenu>
                     <ContextMenu>

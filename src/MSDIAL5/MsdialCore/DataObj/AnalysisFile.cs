@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -62,7 +63,15 @@ namespace CompMs.MsdialCore.DataObj {
         public string ProteinAssembledResultFilePath { get; set; } // *.prf
         [Key(18)]
         public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.None;
-       
+        /// <summary>
+        /// The format of the raw data file, recorded while the file was present (see <see cref="RawFileFormatClassifier"/>),
+        /// so that it can still be named after the raw data are deleted or moved. <see cref="RawFileFormat.Unknown"/> when
+        /// it was never seen, which is also what a project written before this member existed reads as.
+        /// </summary>
+        /// <remarks>No initializer: a key missing from an older project is read as default(T), not as an initializer's value.</remarks>
+        [Key(19)]
+        public RawFileFormat RawFileFormat { get; set; }
+
 
         [IgnoreMember]
         public bool IsDoMs2ChromDeconvolution => AcquisitionType != AcquisitionType.DDA;

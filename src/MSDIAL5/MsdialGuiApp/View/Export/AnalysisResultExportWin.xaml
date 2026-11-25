@@ -101,11 +101,68 @@
                 <DataTemplate DataType="{x:Type vm:MsdialAnalysisMassBankRecordExportViewModel}">
                     <StackPanel Margin="4">
                         <CheckBox Content="{Binding Label, Mode=OneTime}"
-                                  IsChecked="{Binding ShouldExport.Value}"/>
-                        <StackPanel Orientation="Horizontal" Margin="16,0,0,0">
-                            <TextBlock Text="ContributorID:" Margin="0,0,4,0"/>
-                            <TextBox Text="{Binding ContributorID.Value}" Width="128"/>
+                                  IsChecked="{Binding ShouldExport.Value}"
+                                  ToolTip="One MassBank record per reference-matched peak with MS/MS peaks."/>
+                        <StackPanel Orientation="Vertical" Margin="16,0,0,0"
+                                    IsEnabled="{Binding ShouldExport.Value}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Contributor ID:" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="ContributorIdBox"
+                                         Text="{Binding ContributorID.Value, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.AutomationId="TextBox_MassBankContributorID"
+                                         ToolTip="The contributor ID MassBank assigned to you (1 to 32 of A-Z, 0-9 and _). It is the second block of every accession. Saved in Option &gt; Project property setting, it is filled in here."
+                                         Width="160">
+                                    <!-- The message is drawn in the layout below, not in the adorner layer, so it never covers the check boxes. -->
+                                    <Validation.ErrorTemplate>
+                                        <ControlTemplate>
+                                            <DockPanel>
+                                                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                                                <AdornedElementPlaceholder/>
+                                            </DockPanel>
+                                        </ControlTemplate>
+                                    </Validation.ErrorTemplate>
+                                </TextBox>
+                            </StackPanel>
+                            <TextBlock Text="{Binding (Validation.Errors)/ErrorContent, ElementName=ContributorIdBox}"
+                                       AutomationProperties.AutomationId="TextBlock_MassBankContributorIDError"
+                                       Foreground="Red" TextWrapping="Wrap" MaxWidth="360" HorizontalAlignment="Left"
+                                       Margin="0,2,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding (Validation.HasError), ElementName=ContributorIdBox}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </StackPanel>
+                        <StackPanel Orientation="Vertical" Margin="16,0,0,0"
+                                    IsEnabled="{Binding ShouldExport.Value}">
+                            <CheckBox Content="Include suggested annotations"
+                                      IsChecked="{Binding IncludeSuggested.Value, Mode=TwoWay}"
+                                      ToolTip="Also export peaks annotated only as a suggestion (low score, no MS2, Unsettled, Putative). Their records keep the reference structure and say &quot;MS-DIAL annotation level: suggested&quot;."
+                                      Margin="0,4,0,0"/>
+                            <CheckBox Content="Include unknowns"
+                                      IsChecked="{Binding IncludeUnknowns.Value, Mode=TwoWay}"
+                                      ToolTip="Also export unannotated peaks, named Unknown and with no structure (CH$SMILES and CH$IUPAC N/A)."
+                                      Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding ProjectMetadataProblems, Mode=OneTime}"
+                                   Foreground="Red" TextWrapping="Wrap" MaxWidth="400" HorizontalAlignment="Left"
+                                   Margin="16,4,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ShowProjectMetadataProblems.Value}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:SpectraTypeSelectableMsdialAnalysisExportViewModel}">

@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -48,7 +49,11 @@ namespace CompMs.App.Msdial.Model.Setting
             UseRefMatchedPeaksOnly = parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly;
             ShouldRunAlignment = AnalysisFiles.Count > 1 && !IsReadOnly;
             this.parameter = parameter;
+            AutomaticRtCorrection = new AutomaticRtCorrectionSettingModel(parameter, files, IsReadOnly);
         }
+
+        /// <summary>The automatic alignment RT correction's settings; shown for LC-MS projects only.</summary>
+        public AutomaticRtCorrectionSettingModel AutomaticRtCorrection { get; }
 
         private readonly ParameterBase parameter;
         private readonly AlignmentFileBeanModelCollection _alignmentFiles;
@@ -163,6 +168,17 @@ namespace CompMs.App.Msdial.Model.Setting
                 }
                 IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = false;
             }
+            // Checked before anything is committed, by the code the Console checks it with, so that a
+            // run the alignment would refuse is refused here, while the person can still change it.
+            if (AutomaticRtCorrection.Validate(parameter.AlignmentBaseParam.Ms1AlignmentTolerance) is string rtCorrectionProblem) {
+                MessageBroker.Default.Publish(new MessageRequest
+                {
+                    Caption = "Automatic alignment RT correction",
+                    Content = rtCorrectionProblem,
+                    Severity = MessageSeverity.Error,
+                });
+                return false;
+            }
 
             parameter.ProcessBaseParam.ProcessOption |= ProcessOption.Alignment;
             var projectFolder = parameter.ProjectParam.ProjectFolderPath;
@@ -190,6 +206,7 @@ namespace CompMs.App.Msdial.Model.Setting
             foreach (var s in EqualityParameterSettings) {
                 s.Commit();
             }
+            AutomaticRtCorrection.Commit();
             IsCompleted = true;
             return true;
         }
@@ -211,6 +228,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsKeepRemovableFeaturesAndAssignedTagForChecking = parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking;
             IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
             UseRefMatchedPeaksOnly = parameter.AlignmentBaseParam.UseRefMatchedPeaksOnly;
+            AutomaticRtCorrection.LoadParameter(parameter);
         }
 
         private static List<IPeakEqualityParameterSetting> PrepareEqualityParameterSettings(ParameterBase parameter) {

@@ -1,0 +1,616 @@
+{
+ "cases": [
+  {
+   "description": "h* = core|Hex1,caffeoyl1|[M+Na]+, precursor at its oracle m/z; one peak per support member: na_hexose:C6H12NaO6, na_caffeoyl:C9H6NaO3",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": "core|Hex1,caffeoyl1|[M+Na]+",
+      "fired": true,
+      "matched": [
+       "na_hexose:C6H12NaO6@1",
+       "na_caffeoyl:C9H6NaO3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1|[M+Na]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"4348cffb137d54e3f03545072c726a60afe1f7c87c511a950c0925e8ba18a5bb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+Na]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|Hex1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1|[M+Na]+\",\"hypothesis_mz\":365.084302,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H12NaO6\",\"kind\":\"product_ion\",\"member_key\":\"C6H12NaO6\",\"peak_index\":1,\"peak_mz\":203.052608,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.052608,\"term_id\":\"na_hexose\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C9H6NaO3\",\"kind\":\"product_ion\",\"member_key\":\"C9H6NaO3\",\"peak_index\":0,\"peak_mz\":185.020914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":185.020914,\"term_id\":\"na_caffeoyl\",\"unit_id\":1}],\"neutral_formula\":\"C15H18O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1|[M+Na]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "11f892d432a7088dae23772b7286cf0b3529c9853379c97413701a84cfd77686"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ without the peaks of required term na_hexose; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "drop_na_hexose",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"ef61fda75d80f4607af605ac46220cefb50705f229d8ac4dc1b4259b671a0538\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d32481d0a352ae55ad59b08f5ad7902449cceb795d79dd1a44b4bb069e2bb888"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ without the peaks of required term na_caffeoyl; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "drop_na_caffeoyl",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"75d48b7e23ee60dd23956746ae725004641b0a7515ed26126b089f6aa416cd8d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "be889614cf6fdd8182013b1e0508cfe71a7f76bb3b8b074ed5ef36330085b756"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with na_hexose:C6H12NaO6 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": "core|Hex1,caffeoyl1|[M+Na]+",
+      "fired": true,
+      "matched": [
+       "na_hexose:C6H12NaO6@1",
+       "na_caffeoyl:C9H6NaO3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1|[M+Na]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.057598",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"991b17a23b75f967643707832fb1aeb98df3732770c8df9052367a008c1459e4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+Na]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|Hex1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1|[M+Na]+\",\"hypothesis_mz\":365.084302,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":24.573,\"ion_formula\":\"C6H12NaO6\",\"kind\":\"product_ion\",\"member_key\":\"C6H12NaO6\",\"peak_index\":1,\"peak_mz\":203.057598,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.052608,\"term_id\":\"na_hexose\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C9H6NaO3\",\"kind\":\"product_ion\",\"member_key\":\"C9H6NaO3\",\"peak_index\":0,\"peak_mz\":185.020914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":185.020914,\"term_id\":\"na_caffeoyl\",\"unit_id\":1}],\"neutral_formula\":\"C15H18O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1|[M+Na]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "767e4cdb67c6bd02b07a414e06dfb524245be44ea58ddc359607031cd7f17cde"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with na_hexose:C6H12NaO6 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.057618",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"9177aa9a82acfa65c7645d51c76ec30e7ff1ca465432723c62def600ff769ab4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cb373183ed367a83ed5280824aaec898830fa3e257555d0a2938437121516582"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with na_hexose:C6H12NaO6 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": "core|Hex1,caffeoyl1|[M+Na]+",
+      "fired": true,
+      "matched": [
+       "na_hexose:C6H12NaO6@1",
+       "na_caffeoyl:C9H6NaO3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1|[M+Na]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.047618",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"1144397b22ff1408ee3dbfc0eb45b9c720a3cb2630e929fe928bad81c7a586ed\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+Na]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|Hex1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1|[M+Na]+\",\"hypothesis_mz\":365.084302,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-24.577,\"ion_formula\":\"C6H12NaO6\",\"kind\":\"product_ion\",\"member_key\":\"C6H12NaO6\",\"peak_index\":1,\"peak_mz\":203.047618,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.052608,\"term_id\":\"na_hexose\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C9H6NaO3\",\"kind\":\"product_ion\",\"member_key\":\"C9H6NaO3\",\"peak_index\":0,\"peak_mz\":185.020914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":185.020914,\"term_id\":\"na_caffeoyl\",\"unit_id\":1}],\"neutral_formula\":\"C15H18O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1|[M+Na]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4a394fd7be57dfb437a303e1f4444a839317b728f678cd07798c51d837f51361"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with na_hexose:C6H12NaO6 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.047598",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"a82b49f96190d2d094ea374198d00523bc081a0eaaac855c47945e57e78a6974\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6f78370dd140251e9311421ff8ef84b2379893c04625c5ce707585c0d17d66a8"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": "core|Hex1,caffeoyl1|[M+Na]+",
+      "fired": true,
+      "matched": [
+       "na_hexose:C6H12NaO6@1",
+       "na_caffeoyl:C9H6NaO3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1|[M+Na]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.094292",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.094292"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"18420deac69c0ec966f12cd2273a4f2d09b6d69f71e794b5f02a8570f5761d8b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+Na]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|Hex1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1|[M+Na]+\",\"hypothesis_mz\":365.084302,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H12NaO6\",\"kind\":\"product_ion\",\"member_key\":\"C6H12NaO6\",\"peak_index\":1,\"peak_mz\":203.052608,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.052608,\"term_id\":\"na_hexose\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C9H6NaO3\",\"kind\":\"product_ion\",\"member_key\":\"C9H6NaO3\",\"peak_index\":0,\"peak_mz\":185.020914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":185.020914,\"term_id\":\"na_caffeoyl\",\"unit_id\":1}],\"neutral_formula\":\"C15H18O9\",\"precursor_error_da\":0.009990,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1|[M+Na]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.094292,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "67b0889b64c16c60ac90b5434979c0b88c487b28fb7620c31670234c3140ec90"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.094312",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.094312"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"5325b76537e232d3256c2c9cbcf5b2bcc6907c3ac758b8a07dc7154128298bc4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.094312,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "b1f5d7a45c4eb5c99288b129cfdd6f12300f8f7095dac27b91881c1319cf0c13"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": "core|Hex1,caffeoyl1|[M+Na]+",
+      "fired": true,
+      "matched": [
+       "na_hexose:C6H12NaO6@1",
+       "na_caffeoyl:C9H6NaO3@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "core|Hex1,caffeoyl1|[M+Na]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.074312",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.074312"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hydroxycinnamoyl_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"d1abd1902b45a75cf56fffc7df30ba2be5e36a1e0c924809d6d7dfa828bdc71b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"hydroxycinnamoyl_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+Na]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"core|Hex1,caffeoyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"core|Hex1,caffeoyl1|[M+Na]+\",\"hypothesis_mz\":365.084302,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C6H12NaO6\",\"kind\":\"product_ion\",\"member_key\":\"C6H12NaO6\",\"peak_index\":1,\"peak_mz\":203.052608,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":203.052608,\"term_id\":\"na_hexose\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.002,\"ion_formula\":\"C9H6NaO3\",\"kind\":\"product_ion\",\"member_key\":\"C9H6NaO3\",\"peak_index\":0,\"peak_mz\":185.020914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":185.020914,\"term_id\":\"na_caffeoyl\",\"unit_id\":1}],\"neutral_formula\":\"C15H18O9\",\"precursor_error_da\":-0.009990,\"scaffold_id\":null,\"score\":2.000000,\"units\":{\"Hex\":1,\"caffeoyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"core|Hex1,caffeoyl1|[M+Na]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.074312,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f2f6ad347452f71ac6b972990958e08f71f4a3761096aa71e5be225869c35634"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.074292",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.074292"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"a540462635d0c1865347ae40c67501ab5e997c518ee49b3f137bf4807a2ab843\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.074292,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d001193aaac23d1951866bd1baab9e1e9039fedc3af05c89006882bd6ab0fe47"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"5d19f830b4f9037355402f8e7b24843b28529e1f73664b8ad51f7782ab63a34f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8e4f2abb0f34edd0dccc4965c2286c253b45c864cbae020f2651b44cfd4641a0"
+  },
+  {
+   "description": "the positive spectrum of core|Hex1,caffeoyl1|[M+Na]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos"
+    ],
+    "outcomes": {
+     "acylated_glycoside_ester.caffeoyl_hexose_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "185.020914",
+      "500.0"
+     ],
+     [
+      "203.052608",
+      "500.0"
+     ],
+     [
+      "365.084302",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "365.084302"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"input_sha256\":\"4348cffb137d54e3f03545072c726a60afe1f7c87c511a950c0925e8ba18a5bb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"precondition_mode\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hydroxycinnamoyl_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"acylated_glycoside_ester.caffeoyl_hexose_ester.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":365.084302,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"9a95e87e9b780ccc8df571a49ee6208ced960b303ad99e139eee616cbf258e1b\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "348e2258b9f6e308b93ab571aaa7fc2d2a3f5524073de25eac532eaf1f6b6c48"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

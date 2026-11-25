@@ -1,0 +1,45 @@
+{
+ "entries": [
+  {
+   "class": "flavan_3_ol",
+   "formula": "C15H14O6",
+   "ions": {},
+   "name": "(epi)catechin terminal unit",
+   "origin": "as_published",
+   "scaffold_id": "epicatechin_catechin",
+   "source": [
+    {
+     "doi": "10.1021/jf034815d",
+     "locator": "Gu 2003: p. 7516 and Table 3 (p. 7519); (epi)catechin terminal unit, QM ion 289 in the MS2 of dimers 561 and 593"
+    },
+    {
+     "doi": "10.3390/molecules26071873",
+     "locator": "Karonen 2021: Results 2.1; Figure 3 (QM 289)"
+    },
+    {
+     "doi": "10.1021/jf500745y",
+     "locator": "Engstrom 2014: Fig. 3B-C (p. 3393; PC terminal unit 289 by in-source fragmentation)"
+    }
+   ]
+  },
+  {
+   "class": "flavan_3_ol",
+   "formula": "C15H14O7",
+   "ions": {},
+   "name": "(epi)gallocatechin terminal unit",
+   "origin": "as_published",
+   "scaffold_id": "epigallocatechin_gallocatechin",
+   "source": [
+    {
+     "doi": "10.1021/jf500745y",
+     "locator": "Engstrom 2014: Fig. 3F-G (p. 3393; PD terminal unit 305 by in-source fragmentation); pp. 3392-3393"
+    },
+    {
+     "doi": "10.3390/molecules27092684",
+     "locator": "Qian 2022: Table 1 peak 3 ((E)GC + (E)GCG dimer 761, QTOF MS/MS 305 QM)"
+    }
+   ]
+  }
+ ],
+ "list_id": "phenolics_other_flavan_3_ol_terminal_units"
+}

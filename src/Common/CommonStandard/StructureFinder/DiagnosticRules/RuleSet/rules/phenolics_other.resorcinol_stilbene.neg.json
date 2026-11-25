@@ -1,0 +1,122 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_ketene",
+   "loss_two_ketene"
+  ],
+  "motif_id": "resorcinol_stilbene",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5281727,
+    "smiles": "COC1=CC(=CC(=C1)/C=C/C2=CC=C(C=C2)O)OC"
+   }
+  ],
+  "non_claims": [
+   "cis versus trans configuration is not resolved",
+   "The substitution of the second aryl ring is decided by the precursor composition"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 445154,
+    "smiles": "C1=CC(=CC=C1/C=C/C2=CC(=CC(=C2)O)O)O"
+   },
+   {
+    "pubchem_cid": 667639,
+    "smiles": "C1=CC(=C(C=C1/C=C/C2=CC(=CC(=C2)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "loss_ketene"
+   },
+   {
+    "term": "loss_two_ketene"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": true,
+ "notes": "Resorcinol-ring stilbene [M-H]-: one and two ketene losses (42 and 84 Da); Jiang 2010 calls the 42 Da loss specific for the resorcinol ring (Besrukow 2026 with standards; Goufo 2020).",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M-H]-"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": null,
+   "scaffold_list": "phenolics_other_resorcinol_stilbenes",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "neg",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "phenolics_other.resorcinol_stilbene.neg",
+ "source": [
+  {
+   "doi": "10.1002/rcm.70074",
+   "locator": "Besrukow 2026: Section 3.1 ((E)-resveratrol, (E)-piceatannol); Table 1 rows A0 and C0 (authentic standards, TIMS-QTOF MS/MS)"
+  },
+  {
+   "doi": "10.3390/antiox9050398",
+   "locator": "Goufo 2020: Table 2 IDs 123, 128 (resveratrol 227 to 185 and 143; compiled)"
+  },
+  {
+   "doi": "10.1021/jf102005z",
+   "locator": "Jiang 2010: Results, resveratrol MS2 (p. 9022; 227 to 185 and 143, C2H2O loss called resorcinol-specific); HPLC-ESI-MS2 methods (p. 9021, Esquire 3000plus ion trap)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "formula": "C2H2O",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "ketene loss C2H2O from the resorcinol ring (227 to 185; 243 to 201; Besrukow 2026; Jiang 2010)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_ketene",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C4H4O2",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "second ketene loss, C4H4O2 in total (227 to 143; 243 to 159), in the same MS2 as the first (Besrukow 2026; Jiang 2010)",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_two_ketene",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 drafting agent), from the normalised candidates of 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

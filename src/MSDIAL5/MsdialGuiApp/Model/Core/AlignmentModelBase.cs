@@ -66,6 +66,8 @@ namespace CompMs.App.Msdial.Model.Core
                     spots = _filter.Filter(spots).ToList();
                 }
                 var peaks = _alignmentFileModel.LoadMSDecResults();
+                // The builder pairs spots and scans by position, so a filtered spot list needs its own scans.
+                var scans = spots.Select(spot => peaks[spot.MasterAlignmentID]).ToList();
 
                 void notify(double progressRate) {
                     publisher.Progress(progressRate, $"Exporting MN results in {parameter.ExportFolderPath}");
@@ -73,7 +75,7 @@ namespace CompMs.App.Msdial.Model.Core
 
                 var query = CytoscapejsModel.ConvertToMolecularNetworkingQuery(parameter);
                 var builder = new MoleculerNetworkingBase();
-                var network = builder.GetMolecularNetworkInstance(spots, peaks, query, notify);
+                var network = builder.GetMolecularNetworkInstance(spots, scans, query, notify);
                 var rootObj = network.Root;
 
                 var ionfeature_edges = MolecularNetworking.GenerateFeatureLinkedEdges(spots, spots.ToDictionary(s => s.MasterAlignmentID, s => s.innerModel.PeakCharacter));

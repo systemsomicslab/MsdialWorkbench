@@ -1,0 +1,268 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "base_ion",
+   "base_frag"
+  ],
+  "motif_id": "nucleoside",
+  "negative_examples": [
+   {
+    "pubchem_cid": 15047,
+    "smiles": "C1=C(C(=O)NC(=O)N1)[C@H]2[C@@H]([C@@H]([C@H](O2)CO)O)O"
+   },
+   {
+    "pubchem_cid": 190,
+    "smiles": "C1=NC2=NC=NC(=C2N1)N"
+   }
+  ],
+  "non_claims": [
+   "Ribose versus arabinose or xylose, the anomeric configuration and the sugar ring size are not resolved.",
+   "Ribose, 2'-deoxyribose and 2'-O-methylribose are told apart by the precursor composition hypothesis, not by these ions.",
+   "Positional isomers of methylated bases (for example m1A versus m6A, m3C versus m5C) are not resolved."
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 60961,
+    "smiles": "C1=NC(=C2C(=N1)N(C=N2)[C@H]3[C@@H]([C@@H]([C@H](O3)CO)O)O)N"
+   },
+   {
+    "pubchem_cid": 135398592,
+    "smiles": "C1[C@@H]([C@H](O[C@H]1N2C=NC3=C2N=C(NC3=O)N)CO)O"
+   },
+   {
+    "pubchem_cid": 92918,
+    "smiles": "CC1=CN(C(=O)N=C1N)[C@H]2[C@@H]([C@@H]([C@H](O2)CO)O)O"
+   },
+   {
+    "pubchem_cid": 102212,
+    "smiles": "CO[C@@H]1[C@@H]([C@H](O[C@H]1N2C=CC(=O)NC2=O)CO)O"
+   },
+   {
+    "pubchem_cid": 5789,
+    "smiles": "CC1=CN(C(=O)NC1=O)[C@H]2C[C@@H]([C@H](O2)CO)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "base_ion"
+   },
+   {
+    "term": "base_frag"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "measure:false, provisional (WS0 2026-11-19, pending the author): in the 5-methylcytosine entries (12 of 156 hypotheses) the fragment C4H5N2+ is [B+H]+ minus NH3 and CO, so base ion and fragment can be one channel.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "c_glycosyl_pyrimidine",
+    "note": "Pseudouridine, a C-glycoside isomer of uridine, generally gives no protonated base ion and loses water and part of the sugar instead (Dudley 2005; Giessing 2011)."
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "nucleoside_nucleotide_nucleobases",
+   "unit_totals": {
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "MePen": [
+     0,
+     1
+    ],
+    "Pen": [
+     0,
+     1
+    ],
+    "dPen": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": [
+   {
+    "note": "Loss of ribose (132 Da) to the protonated base is the rule for N-glycosidic nucleosides; any other sugar loss points to a modified sugar.",
+    "source": "src:1"
+   },
+   {
+    "note": "Almost all stable modified 2'-deoxyribonucleosides lose 2'-deoxyribose (116 Da) to the base ion.",
+    "source": "src:4"
+   },
+   {
+    "note": "2'-O-methylated nucleosides lose 146 Da and give the unmodified base ion.",
+    "source": "src:5"
+   }
+  ]
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "nucleoside_nucleotide.nucleoside.pos",
+ "source": [
+  {
+   "doi": "10.1007/s00216-005-3232-2",
+   "locator": "Results (nucleoside vs base decay); Tables 3-4; Fig. 4b"
+  },
+  {
+   "doi": "10.1002/mas.21388",
+   "locator": "Sec. II; Sec. IV.E-F; Figs. 3 and 14"
+  },
+  {
+   "doi": "10.1002/mas.21388",
+   "locator": "Sec. VII.D; Sec. VII.F"
+  },
+  {
+   "doi": "10.1093/nar/gkag155",
+   "locator": "Methods ('Nucleic acid modification analysis'; 'LC-HR-MS/MS analysis using SWATH and IDA'); Results ('Dual neutral loss scanning')"
+  },
+  {
+   "doi": "10.1021/acs.analchem.7b03208",
+   "locator": "Introduction; Results; Experiment (MS parameters); Table 1"
+  },
+  {
+   "doi": "10.1007/s13361-018-1999-6",
+   "locator": "Introduction; Results (section 'HCD Fingerprinting of Additional Methylated or Other Positional Isomers', 2'-O-methyl paragraph)"
+  },
+  {
+   "doi": "10.1007/s13361-011-0126-8",
+   "locator": "Table 1; Table 2; Results"
+  },
+  {
+   "doi": "10.1255/ejms.538",
+   "locator": "Fig. 1; Table 3; Results (positive ions)"
+  },
+  {
+   "doi": "10.1255/ejms.538",
+   "locator": "Table 2; Table 3; Fig. 2c; Scheme 2"
+  },
+  {
+   "doi": "10.1255/ejms.538",
+   "locator": "Fig. 3; Table 3; Schemes 3-4"
+  },
+  {
+   "doi": "10.1007/s00216-005-3232-2",
+   "locator": "Results (MSn experiments on nucleosides); Table 4"
+  },
+  {
+   "doi": "10.1007/s13361-018-1999-6",
+   "locator": "Table 1; Table 2; Fig. 1; Results (section 'Model Isomeric Nucleoside Fragmentation in CID and HCD')"
+  },
+  {
+   "doi": "10.1002/rcm.5086",
+   "locator": "Introduction; Experimental (LC/MS/MS); Fig. 1; Table 2"
+  },
+  {
+   "doi": "10.3390/foods13182959",
+   "locator": "Section 2 (fragmentation principles); Fig. 2; Fig. 4"
+  },
+  {
+   "doi": "10.1002/mas.21388",
+   "locator": "Sec. II; Fig. 3"
+  },
+  {
+   "doi": "10.1255/ejms.538",
+   "locator": "Results (CID of protonated vidarabine and of vidarabine monophosphate); Table 2; Table 3; Schemes 1a and 5b"
+  },
+  {
+   "doi": "10.1002/rcm.2151",
+   "locator": "Introduction; Results; Discussion (comparison with uridine)"
+  },
+  {
+   "doi": "10.1007/s00216-005-3232-2",
+   "locator": "Introduction (last paragraphs); Tables 3-4"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "charge_carrier": "proton",
+   "floor_source": "src:18",
+   "form": "even",
+   "kind": "aglycone_ion",
+   "min_rel_intensity": 0.01,
+   "minus": null,
+   "note": "Protonated base [B+H]+ after loss of the whole sugar (132, 116 or 146 Da) from [M+H]+.",
+   "plus": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "base_ion",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:18",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Base fragment from HCN, NH2CN, HNCO, CH3CN, methylamine or ketene loss of [B+H]+; ion traps show it only at MS3.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "scaffold_ions": "frag",
+   "term_id": "base_frag",
+   "term_source": "src:11",
+   "than": null
+  },
+  {
+   "floor_source": "src:18",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "NH3 or H2O loss from [B+H]+; a generic loss, reported only.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "scaffold_ions": "nh3_h2o",
+   "term_id": "base_nh3_h2o",
+   "term_source": "src:10",
+   "than": null
+  },
+  {
+   "floor_source": "src:18",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "Protonated pentose ion C5H9O4+ (133); weak, mainly for less basic nucleosides such as uridine; no deoxy or 2'-O-methyl sugar ion is printed.",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "upgrade",
+   "term_id": "sugar_ion",
+   "term_source": "src:14",
+   "than": null,
+   "unit": {
+    "minus": null,
+    "name": "Pen",
+    "plus": "H"
+   }
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5, WS8-P3 drafting from the normalised candidates (candidates-20261118), 2026-11-18",
+ "version": 1,
+ "veto_excludes_motif": false
+}

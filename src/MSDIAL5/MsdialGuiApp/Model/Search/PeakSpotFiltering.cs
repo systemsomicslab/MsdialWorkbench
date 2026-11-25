@@ -44,7 +44,7 @@ namespace CompMs.App.Msdial.Model.Search
                 keywordFilterManagers.Add(new KeywordFilterManager<T>(ProteinFilterModel, FilterEnableStatus.Protein, obj => ((IFilterable)obj).Protein));
             }
             if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
-                var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.ExactMatch);
+                var OntologyFilterModel = new KeywordFilterModel("Ontology filter", KeywordFilteringType.WholeValueMatchIgnoreCase);
                 keywordFilterManagers.Add(new KeywordFilterManager<T>(OntologyFilterModel, FilterEnableStatus.Ontology, obj => ((IMoleculeProperty)obj).Ontology));
             }
             if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
@@ -90,6 +90,8 @@ namespace CompMs.App.Msdial.Model.Search
             foreach (var keywordFilterManager in KeywordFilterManagers) {
                 keywordFilterManager.TryAttachFilter(this, view, status);
             }
+            // Filters already switched on (e.g. keywords typed while another file was open) apply from the start.
+            view.Refresh();
         }
 
         public void AttachFilter(ValueFilterModel filterModel, Func<T, double> convert, ICollectionView view) {

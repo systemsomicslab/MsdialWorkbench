@@ -17,6 +17,14 @@ public sealed class AlignmentCSVExporter
 
     public string Separator { get; }
 
+    /// <summary>
+    /// When set, written into the first header line's first cell, which is otherwise empty: which RT
+    /// axis the RTs of the table are on, for an alignment the automatic RT correction moved onto a
+    /// reference file's axis. Nothing else moves, so a reader that finds the "Class" cell or skips
+    /// the header lines reads the table as before. Null, the default, writes nothing.
+    /// </summary>
+    public string? RetentionTimeAxisNote { get; set; }
+
     public void Export(
         Stream stream,
         IReadOnlyList<AlignmentSpotProperty> spots,
@@ -64,10 +72,13 @@ public sealed class AlignmentCSVExporter
             IEnumerable<string> statsFeilds = i == header.Count - 1
                 ? stats.SelectMany(stat => Enumerable.Repeat(stat.ToString(), classHeaders.Count))
                 : [naStrig];
+            var margin = i == 0 && metaHeaders.Count > 1 && !string.IsNullOrEmpty(RetentionTimeAxisNote)
+                ? RetentionTimeAxisNote!.Replace(Separator, " ") + marginString
+                : marginString;
             sw.WriteLine(
                 string.Join(Separator,
                 [
-                    marginString,
+                    margin,
                     header[i],
                     ..contents.Select(c => c[i]),
                     ..statsFeilds,

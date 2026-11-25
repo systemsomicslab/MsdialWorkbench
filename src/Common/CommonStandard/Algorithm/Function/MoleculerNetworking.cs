@@ -22,9 +22,17 @@ namespace CompMs.Common.Algorithm.Function
         public double MaxEdgeNumberPerNode { get; set; }
         public double MaxPrecursorDifference { get; set; }
         public double MaxPrecursorDifferenceAsPercent { get; set; }
+        /// <summary>ModifiedCosine only: peaks within this many Da of the precursor are removed (inclusive); 0 keeps them.</summary>
+        public double PrecursorWindow { get; set; } = 17d;
+        /// <summary>ModifiedCosine only: the intensity power of its preprocessing.</summary>
+        public double IntensityPower { get; set; } = 1d;
     }
 
     public sealed class MoleculerNetworkingBase {
+        /// <remarks>
+        /// <paramref name="spots"/> and <paramref name="scans"/> are paired BY POSITION: scans[i] must be
+        /// the spectrum of spots[i]. A caller that filters the spots must select their scans too.
+        /// </remarks>
         public MolecularNetworkInstance GetMolecularNetworkInstance<T>(IReadOnlyList<T> spots, IReadOnlyList<IMSScanProperty> scans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             List<PeakScanPair<T>> peakScans = spots.Zip(scans, (spot, scan) => new PeakScanPair<T>(spot, scan)).ToList();
             var nodes = GetSimpleNodes(peakScans);
@@ -92,12 +100,21 @@ namespace CompMs.Common.Algorithm.Function
         }
 
         private static void RefineScans(IEnumerable<IMSScanProperty> scans, MolecularNetworkingQuery query) {
+            if (!IsKnown(query.MsmsSimilarityCalc)) {
+                return;
+            }
+            // The preprocessing of the chosen kernel; for the legacy kernels this is GetProcessedSpectrum
+            // with the query's abundance cutoffs, exactly as before.
+            var preprocess = MsmsSimilarityKernelFactory.CreatePreprocessor(query.MsmsSimilarityCalc, query);
             foreach (var scan in scans) {
                 if (scan.Spectrum.Count > 0) {
-                    scan.Spectrum = MsScanMatching.GetProcessedSpectrum(scan.Spectrum, scan.PrecursorMz, absoluteAbundanceCutOff: query.AbsoluteAbundanceCutOff, relativeAbundanceCutOff: query.RelativeAbundanceCutOff);
+                    scan.Spectrum = preprocess(scan.Spectrum, scan.PrecursorMz);
                 }
             }
         }
+
+        // A value an older or newer build may have saved; such a setting gives no spectral edges.
+        private static bool IsKnown(MsmsSimilarityCalc calc) => System.Enum.IsDefined(typeof(MsmsSimilarityCalc), calc);
 
         private static List<Edge> GenerateEdgesBySpectralSimilarity<T>(List<PeakScanPair<T>> peakScans, MolecularNetworkingQuery query, Action<double> report) where T:IMoleculeProperty, IChromatogramPeak {
             var edges = GenerateEdges(peakScans, peakScans, query, report);
@@ -128,23 +145,32 @@ namespace CompMs.Common.Algorithm.Function
 
         private static List<EdgeData> GenerateEdges<T>(List<PeakScanPair<T>> srcPeakScans, List<PeakScanPair<T>> dstPeakScans, MolecularNetworkingQuery query, Action<double> report) where T : IMoleculeProperty, IChromatogramPeak {
             var counter = 0;
-            var max = srcPeakScans.Count * dstPeakScans.Count;
+            var isSelfComparison = ReferenceEquals(srcPeakScans, dstPeakScans);
+            var max = isSelfComparison
+                ? srcPeakScans.Count * (srcPeakScans.Count - 1) / 2
+                : srcPeakScans.Count * dstPeakScans.Count;
             var edges = new List<EdgeData>();
+            if (!IsKnown(query.MsmsSimilarityCalc)) {
+                return edges;
+            }
+            var identity = MsmsSimilarityKernelFactory.EdgeIdentity(query.MsmsSimilarityCalc, query);
             var checkedPeaks = new HashSet<int>[new[] { srcPeakScans, dstPeakScans }.SelectMany(pss => pss, (_, ps) => ps.Peak.ID).DefaultIfEmpty().Max() + 1];
             for (int i = 0; i < srcPeakScans.Count; i++) {
                 var srcPeakScan = srcPeakScans[i];
+                var firstDestinationIndex = isSelfComparison ? i + 1 : 0;
+                var destinationCount = dstPeakScans.Count - firstDestinationIndex;
 
                 if (srcPeakScan.Scan.Spectrum.Count <= 0) {
-                    counter += dstPeakScans.Count;
-                    report?.Invoke(counter / (double)max);
+                    counter += destinationCount;
+                    report?.Invoke(max == 0 ? 1d : counter / (double)max);
                     continue;
                 }
                 var srcCheckedPeaks = checkedPeaks[srcPeakScan.Peak.ID] ?? (checkedPeaks[srcPeakScan.Peak.ID] = new HashSet<int>());
 
-                for (int j = 0; j < dstPeakScans.Count; j++) {
+                for (int j = firstDestinationIndex; j < dstPeakScans.Count; j++) {
                     PeakScanPair<T> dstPeakScan = dstPeakScans[j];
                     counter++;
-                    report?.Invoke(counter / (double)max);
+                    report?.Invoke(max == 0 ? 1d : counter / (double)max);
                     if (dstPeakScan.Scan.Spectrum.Count <= 0) continue;
 
                     var dstCheckedPeaks = checkedPeaks[dstPeakScan.Peak.ID] ?? (checkedPeaks[dstPeakScan.Peak.ID] = new HashSet<int>());
@@ -163,6 +189,7 @@ namespace CompMs.Common.Algorithm.Function
                         source = srcPeakScan.Peak.ID,
                         target = dstPeakScan.Peak.ID,
                         linecolor = "red",
+                        comment = identity,
                     });
                 }
             }
@@ -172,25 +199,23 @@ namespace CompMs.Common.Algorithm.Function
         private static double[] CalculateEdgeScore(IMSScanProperty prop1, IMSScanProperty prop2, MolecularNetworkingQuery query) {
             var massDiff = Math.Abs(prop1.PrecursorMz - prop2.PrecursorMz);
             if (massDiff > query.MaxPrecursorDifference) return null;
+            // TODO: MaxPrecursorDifferenceAsPercent is shown in the GUI settings and passed in everywhere, but no
+            // networking path applies it. The disabled check below drops a pair when the smaller precursor is
+            // MORE than the given percent of the larger, so at the default 50 it would drop the closest pairs;
+            // the comparison looks inverted. Decide whether to fix and enable it or remove the parameter.
             // if (Math.Max(prop1.PrecursorMz, prop2.PrecursorMz) * maxPrecursorDiff_Percent * 0.01 - Math.Min(prop1.PrecursorMz, prop2.PrecursorMz) < 0) continue;
-            double[] scoreitem = new double[2];
-            switch (query.MsmsSimilarityCalc) {
-                case MsmsSimilarityCalc.Bonanza:
-                    scoreitem = MsScanMatching.GetBonanzaScore(prop1, prop2, query.MassTolerance);
-                    break;
-                case MsmsSimilarityCalc.ModDot:
-                    scoreitem = MsScanMatching.GetModifiedDotProductScore(prop1, prop2, query.MassTolerance);
-                    break;
-            }
+            // Every setting is scored; ModifiedCosine, Cosine and All used to give [0, 0] and so no edge.
+            var scoreitem = MsmsSimilarityKernelFactory.ScoreItems(query.MsmsSimilarityCalc, prop1, prop2, query.MassTolerance);
             if (scoreitem[1] < query.MinimumPeakMatch) return null; 
-            if (scoreitem[0] < query.SpectrumSimilarityCutOff * 0.01) return null;
+            // Written so that a NaN score fails: NaN < cutoff is false.
+            if (!(scoreitem[0] >= query.SpectrumSimilarityCutOff * 0.01)) return null;
 
             return scoreitem;
         }
 
         public static EdgeData GetEdge(
-           IMoleculeMsProperty peak1,
-           IMoleculeMsProperty peak2,
+           IMSScanProperty peak1,
+           IMSScanProperty peak2,
            double massTolerance,
            double minimumPeakMatch,
            double matchThreshold,
@@ -205,7 +230,7 @@ namespace CompMs.Common.Algorithm.Function
             var scoreitem = GetMsnScoreItems(peak1, peak2, massTolerance, msmsSimilarityCalc);
             if (scoreitem == null) return null;
             if (scoreitem[1] < minimumPeakMatch) return null;
-            if (scoreitem[0] < matchThreshold * 0.01) return null;
+            if (!(scoreitem[0] >= matchThreshold * 0.01)) return null; // a NaN score fails
 
             var edge = new EdgeData() {
                 score = scoreitem[0], matchpeakcount = scoreitem[1], source = peak1.ScanID, target = peak2.ScanID,
@@ -224,7 +249,7 @@ namespace CompMs.Common.Algorithm.Function
            double maxPrecursorDiff,
            double maxPrecursorDiff_Percent,
            MsmsSimilarityCalc msmsSimilarityCalc,
-           Action<double> report) {
+           Action<double>? report) {
 
             var edges = new List<EdgeData>();
             var counter = 0;
@@ -245,7 +270,7 @@ namespace CompMs.Common.Algorithm.Function
                     scoreitem = GetMsnScoreItems(prop1, prop2, massTolerance, msmsSimilarityCalc);
                     if (scoreitem == null) continue;
                     if (scoreitem[1] < minimumPeakMatch) continue;
-                    if (scoreitem[0] < matchThreshold * 0.01) continue;
+                    if (!(scoreitem[0] >= matchThreshold * 0.01)) continue; // a NaN score fails
 
                     if (node2links.ContainsKey(i)) {
                         node2links[i].Add(new LinkNode() { Score = scoreitem, Node = peaks2[j], Index = j });
@@ -293,7 +318,7 @@ namespace CompMs.Common.Algorithm.Function
           double maxPrecursorDiff,
           double maxPrecursorDiff_Percent,
           MsmsSimilarityCalc msmsSimilarityCalc,
-          Action<double> report) {
+          Action<double>? report) {
             var counter = 0;
             var max = peaks1.Count;
             using (var sw = new StreamWriter(outputfile, false)) {
@@ -338,20 +363,12 @@ namespace CompMs.Common.Algorithm.Function
             }
         }
 
-        private static List<double> GetMsnScoreItems(IMoleculeMsProperty prop1, IMoleculeMsProperty prop2, double massTolerance, MsmsSimilarityCalc msmsSimilarityCalc) {
-            if (msmsSimilarityCalc == MsmsSimilarityCalc.Bonanza) {
-                return MsScanMatching.GetBonanzaScore(prop1, prop2, massTolerance).ToList();
+        // The spectra must already carry the kernel's preprocessing (MsmsSimilarityKernelFactory.CreatePreprocessor).
+        private static List<double> GetMsnScoreItems(IMSScanProperty prop1, IMSScanProperty prop2, double massTolerance, MsmsSimilarityCalc msmsSimilarityCalc) {
+            if (!IsKnown(msmsSimilarityCalc)) {
+                return null;
             }
-            else if (msmsSimilarityCalc == MsmsSimilarityCalc.ModDot) {
-                return MsScanMatching.GetModifiedDotProductScore(prop1, prop2, massTolerance).ToList();
-            }
-            else if (msmsSimilarityCalc == MsmsSimilarityCalc.Cosine) {
-                return MsScanMatching.GetCosineScore(prop1, prop2, massTolerance).ToList();
-            }
-            else if (msmsSimilarityCalc == MsmsSimilarityCalc.All) {
-                return MsScanMatching.GetBonanzaModifiedDotCosineScores(prop1, prop2, massTolerance).ToList();
-            }
-            return null;
+            return MsmsSimilarityKernelFactory.ScoreItems(msmsSimilarityCalc, prop1, prop2, massTolerance).ToList();
         }
 
         class PeakScanPair<T> {

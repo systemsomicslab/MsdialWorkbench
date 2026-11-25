@@ -1,0 +1,132 @@
+{
+ "entries": [
+  {
+   "class": "flavone",
+   "formula": "C15H10O5",
+   "ions": {
+    "rda_04b": {
+     "neg": [],
+     "pos": [
+      "C9H7O3"
+     ]
+    },
+    "rda_04b_mh2o": {
+     "neg": [],
+     "pos": [
+      "C9H5O2"
+     ]
+    },
+    "rda_13b": {
+     "neg": [],
+     "pos": [
+      "C8H7O"
+     ]
+    }
+   },
+   "name": "apigenin",
+   "origin": "as_published",
+   "scaffold_id": "apigenin",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1358-1360, Results, pathway I; Scheme 1a (p. 1358); Table 1 (p. 1360)"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "p. 1360, Results, pathway III; Table 1 and Scheme 4 (p. 1360)"
+    },
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    }
+   ]
+  },
+  {
+   "class": "flavone",
+   "formula": "C15H10O6",
+   "ions": {
+    "rda_04b": {
+     "neg": [],
+     "pos": [
+      "C9H7O4"
+     ]
+    },
+    "rda_04b_mh2o": {
+     "neg": [],
+     "pos": [
+      "C9H5O3"
+     ]
+    },
+    "rda_13b": {
+     "neg": [],
+     "pos": [
+      "C8H7O2"
+     ]
+    }
+   },
+   "name": "luteolin",
+   "origin": "as_published",
+   "scaffold_id": "luteolin",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1358-1360, Results, pathway I; Scheme 1a (p. 1358); Table 1 (p. 1360)"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "p. 1360, Results, pathway III; Table 1 and Scheme 4 (p. 1360)"
+    },
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    },
+    {
+     "doi": "10.1016/j.jchromb.2026.125348",
+     "locator": "Sec. 3.4.3 (pp. 5-6); Secs. 3.9-3.10 (pp. 9-11); Table 1 (pp. 4-5)"
+    }
+   ]
+  },
+  {
+   "class": "flavone",
+   "formula": "C16H12O5",
+   "ions": {
+    "rda_04b": {
+     "neg": [],
+     "pos": [
+      "C10H9O3"
+     ]
+    },
+    "rda_04b_mh2o": {
+     "neg": [],
+     "pos": [
+      "C10H7O2"
+     ]
+    },
+    "rda_13b": {
+     "neg": [],
+     "pos": [
+      "C9H9O"
+     ]
+    }
+   },
+   "name": "acacetin",
+   "origin": "as_published",
+   "scaffold_id": "acacetin",
+   "source": [
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "pp. 1358-1360, Results, pathway I; Scheme 1a (p. 1358); Table 1 (p. 1360)"
+    },
+    {
+     "doi": "10.1002/(sici)1097-0231(199708)11:12<1357::aid-rcm983>3.0.co;2-9",
+     "locator": "p. 1360, Results, pathway III; Table 1 and Scheme 4 (p. 1360)"
+    },
+    {
+     "doi": "10.1016/j.jchromb.2026.125348",
+     "locator": "Sec. 3.5 (pp. 6-7); Table 3 (p. 7); Fig. 5A (p. 8)"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_flavone_pos"
+}

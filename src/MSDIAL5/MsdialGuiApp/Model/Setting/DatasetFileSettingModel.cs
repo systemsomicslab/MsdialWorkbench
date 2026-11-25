@@ -6,6 +6,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,6 +82,8 @@ namespace CompMs.App.Msdial.Model.Setting
                     ProteinAssembledResultFilePath = Path.Combine(folder, $"{name}_{_dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.prf}"),
                     RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean(Path.Combine(folder, $"{name}_{_dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.rtc}")),
                     AcquisitionType = AcquisitionType.DDA,
+                    // Recorded while the file is present, so mzTab-M can still name its format after the raw data are gone.
+                    RawFileFormat = RawFileFormatClassifier.Classify(file),
                 };
                 FileModels.AddAnalysisFile(bean);
                 checker.CheckFileType(bean.AnalysisFilePath);

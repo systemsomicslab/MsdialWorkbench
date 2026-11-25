@@ -1021,6 +1021,97 @@ public class IsotopeEstimatorTests
         }
     }
 
+    // IsBrClConsideredForIsotopes: an M + 1 much stronger than M is not its isotope
+    [TestMethod()]
+    public void EstimateIsotopes_BrCl_StrongerOddPositionIsRejected() {
+        var iupac = IupacResourceParser.GetIUPACDatabase();
+        var param = new ParameterBase() { IsBrClConsideredForIsotopes = true };
+        var actuals = Spots(500, (0, 100), (MassDiffDictionary.C13_C12, 2000), (MassDiffDictionary.C13_C12 * 2, 200));
+
+        IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+        AssertIsotope(actuals[0], parentId: 1, weight: 0);
+        AssertNotIsotope(actuals[1]);
+        AssertNotIsotope(actuals[2]);
+    }
+
+    // IsBrClConsideredForIsotopes: a chlorine pattern, M + 2 stronger than M + 1, is kept
+    [TestMethod()]
+    public void EstimateIsotopes_BrCl_ChlorinePatternIsAccepted() {
+        var iupac = IupacResourceParser.GetIUPACDatabase();
+        var param = new ParameterBase() { IsBrClConsideredForIsotopes = true };
+        var actuals = Spots(500, (0, 1000000), (MassDiffDictionary.C13_C12, 200000), (MassDiffDictionary.C13_C12 * 2, 320000), (MassDiffDictionary.C13_C12 * 3, 60000));
+
+        IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+        AssertIsotope(actuals[1], parentId: 1, weight: 1);
+        AssertIsotope(actuals[2], parentId: 1, weight: 2);
+        AssertIsotope(actuals[3], parentId: 1, weight: 3);
+    }
+
+    // IsBrClConsideredForIsotopes: a dibromine pattern without M + 1, M : M + 2 : M + 4 = 1 : 2 : 1, is kept
+    [TestMethod()]
+    public void EstimateIsotopes_BrCl_DibrominePatternIsAccepted() {
+        var iupac = IupacResourceParser.GetIUPACDatabase();
+        var param = new ParameterBase() { IsBrClConsideredForIsotopes = true };
+        var actuals = Spots(500, (0, 500000), (MassDiffDictionary.C13_C12 * 2, 1000000), (MassDiffDictionary.C13_C12 * 4, 500000));
+
+        IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+        AssertIsotope(actuals[1], parentId: 1, weight: 2);
+        AssertIsotope(actuals[2], parentId: 1, weight: 4);
+    }
+
+    // IsBrClConsideredForIsotopes: an M + 2 more than MaxClBrIsotopeStepRatio times M is not its isotope
+    [TestMethod()]
+    public void EstimateIsotopes_BrCl_EvenPositionAboveRatioIsRejected() {
+        var iupac = IupacResourceParser.GetIUPACDatabase();
+        var param = new ParameterBase() { IsBrClConsideredForIsotopes = true };
+        var actuals = Spots(500, (0, 100000), (MassDiffDictionary.C13_C12, 20000), (MassDiffDictionary.C13_C12 * 2, 1000000));
+
+        IsotopeEstimator.EstimateIsotopes(actuals, param, iupac);
+
+        AssertIsotope(actuals[1], parentId: 1, weight: 1);
+        AssertNotIsotope(actuals[2]);
+    }
+
+    // IsBrClConsideredForIsotopes: the same bounds apply to spectrum peaks
+    [TestMethod()]
+    public void EstimateIsotopes_SpectrumPeaks_BrCl_StrongerOddPositionIsRejected() {
+        var iupac = IupacResourceParser.GetIUPACDatabase();
+        var param = new ParameterBase() { IsBrClConsideredForIsotopes = true };
+        var peaks = new List<SpectrumPeak> {
+            new SpectrumPeak { Mass = 300, Intensity = 100 },
+            new SpectrumPeak { Mass = 300 + MassDiffDictionary.C13_C12, Intensity = 2000 },
+            new SpectrumPeak { Mass = 300 + MassDiffDictionary.C13_C12 * 2, Intensity = 200 },
+        };
+
+        IsotopeEstimator.EstimateIsotopes(peaks, param, iupac, 0.01);
+
+        Assert.AreEqual(0, peaks[1].IsotopeWeightNumber);
+        Assert.AreEqual(1, peaks[1].IsotopeParentPeakID);
+        Assert.AreEqual(1, peaks[2].IsotopeWeightNumber);
+        Assert.AreEqual(1, peaks[2].IsotopeParentPeakID);
+    }
+
+    static List<AlignmentSpotProperty> Spots(double mass, params (double Offset, double Height)[] spots) {
+        return spots.Select((s, i) => new AlignmentSpotProperty {
+            AlignmentID = i + 1, MassCenter = mass + s.Offset, HeightAverage = (float)s.Height,
+            PeakCharacter = new IonFeatureCharacter { IsotopeParentPeakID = 0, IsotopeWeightNumber = 0, Charge = i == 0 ? 1 : 0 },
+        }).ToList();
+    }
+
+    static void AssertIsotope(AlignmentSpotProperty spot, int parentId, int weight) {
+        Assert.AreEqual(parentId, spot.PeakCharacter.IsotopeParentPeakID, $"IsotopeParentPeakID of spot {spot.AlignmentID}");
+        Assert.AreEqual(weight, spot.PeakCharacter.IsotopeWeightNumber, $"IsotopeWeightNumber of spot {spot.AlignmentID}");
+    }
+
+    static void AssertNotIsotope(AlignmentSpotProperty spot) {
+        Assert.AreEqual(0, spot.PeakCharacter.IsotopeParentPeakID, $"IsotopeParentPeakID of spot {spot.AlignmentID}");
+        Assert.AreEqual(0, spot.PeakCharacter.IsotopeWeightNumber, $"IsotopeWeightNumber of spot {spot.AlignmentID}");
+        Assert.AreEqual(0, spot.PeakCharacter.Charge, $"Charge of spot {spot.AlignmentID}");
+    }
+
     void AreEqual(AlignmentSpotProperty expect, AlignmentSpotProperty actual) {
         Assert.AreEqual(expect.AlignmentID, actual.AlignmentID,
                         $"Error AlignmentID | expect {expect.AlignmentID}, actual {actual.AlignmentID}");

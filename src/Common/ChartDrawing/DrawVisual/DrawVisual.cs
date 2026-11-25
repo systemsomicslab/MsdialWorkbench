@@ -35,6 +35,8 @@ namespace CompMs.Graphics.Core.Base
     {
         public DrawingContext drawingContext;
 
+        public double PixelsPerDip { get; set; } = 1d;
+
         public Area Area { get; set; }
         public SeriesList SeriesList { get; set; }
         public Title Title { get; set; }
@@ -153,7 +155,7 @@ namespace CompMs.Graphics.Core.Base
 
         #region Graph Titile
         protected void drawGraphTitle() {
-            var formattedText = new FormattedText(Title.Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Title.FontType, Title.FontSize, Title.FontColor);
+            var formattedText = new FormattedText(Title.Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Title.FontType, Title.FontSize, Title.FontColor, PixelsPerDip);
             formattedText.TextAlignment = TextAlignment.Left;
             this.drawingContext.DrawText(formattedText, new Point(Area.Margin.Left, Area.Margin.Top - (Title.FontSize + Offset)));
         }
@@ -286,7 +288,7 @@ namespace CompMs.Graphics.Core.Base
             var textHeight = 0.0;
             var formattedTextList = new List<FormattedText>();
             foreach (var s in targetSeries) {
-                var formattedText = new FormattedText(LineMarker + s.Legend.Text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.Legend.FontSize, s.Brush);
+                var formattedText = new FormattedText(LineMarker + s.Legend.Text, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.Legend.FontSize, s.Brush, PixelsPerDip);
                 formattedText.TextAlignment = TextAlignment.Left;
                 formattedText.MaxTextWidth = maxWidth;
                 formattedText.MaxLineCount = 1;
@@ -334,7 +336,7 @@ namespace CompMs.Graphics.Core.Base
                 else if (figure < -1)
                     axisXLabel = axisXLabel + " (1e" + figure + ")";
 
-                var formattedText = new FormattedText(axisXLabel, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Area.AxisX.FontColor);
+                var formattedText = new FormattedText(axisXLabel, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Area.AxisX.FontColor, PixelsPerDip);
                 formattedText.TextAlignment = TextAlignment.Center;
                 if(Area.AxisX.IsItalicLabel)
                     formattedText.SetFontStyle(FontStyles.Italic);
@@ -361,7 +363,7 @@ namespace CompMs.Graphics.Core.Base
                     axisYLabel = axisYLabel + " (1e" + figure + ")";
 
 
-                var formattedText = new FormattedText(axisYLabel, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Area.AxisX.FontColor);
+                var formattedText = new FormattedText(axisYLabel, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Area.AxisX.FontColor, PixelsPerDip);
                 formattedText.TextAlignment = TextAlignment.Center;
                 if (Area.AxisY.IsItalicLabel)
                     formattedText.SetFontStyle(FontStyles.Italic);
@@ -426,7 +428,7 @@ namespace CompMs.Graphics.Core.Base
                         }
                     }
                     this.drawingContext.DrawLine(Area.AxisY.Pen, new Point(Area.Margin.Left - Area.AxisY.MajorScaleSize, yPixelValue), new Point(Area.Margin.Left, yPixelValue));
-                    var formattedText = new FormattedText(yString, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisY.FontType, Area.AxisY.FontSize, Area.AxisY.FontColor);
+                    var formattedText = new FormattedText(yString, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisY.FontType, Area.AxisY.FontSize, Area.AxisY.FontColor, PixelsPerDip);
                     formattedText.TextAlignment = TextAlignment.Right;
                     this.drawingContext.DrawText(formattedText, new Point(Area.Margin.Left - Area.AxisY.MajorScaleSize - Area.AxisY.Pen.Thickness - 1, yPixelValue - formattedText.Height * 0.5));
                 }
@@ -459,7 +461,7 @@ namespace CompMs.Graphics.Core.Base
                 yStart = (int)(min / yScale) - 1;
                 yEnd = (int)(max / yScale) + 1;
 
-                formattedText = new FormattedText(yScale.ToString("f0"), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisY.FontType, Area.AxisY.FontSize, Brushes.Black);
+                formattedText = new FormattedText(yScale.ToString("f0"), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisY.FontType, Area.AxisY.FontSize, Brushes.Black, PixelsPerDip);
 
                 yScaleHeight = formattedText.Height * 0.5;
                 totalPixelWidth = yScaleHeight * (yEnd - yStart + 1);
@@ -510,7 +512,7 @@ namespace CompMs.Graphics.Core.Base
                         else xString = xAxisValue.ToString("f1");
                     }
                     this.drawingContext.DrawLine(Area.AxisX.Pen, new Point(xPixelValue, Area.Height - Area.Margin.Bottom), new Point(xPixelValue, Area.Height - Area.Margin.Bottom + Area.AxisX.MajorScaleSize));
-                    formattedText = new FormattedText(xString, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Area.AxisX.FontColor);
+                    formattedText = new FormattedText(xString, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Area.AxisX.FontColor, PixelsPerDip);
                     formattedText.TextAlignment = TextAlignment.Center;
                     drawingContext.DrawText(formattedText, new Point(xPixelValue, Area.Height - Area.Margin.Bottom + Area.AxisX.MajorScaleSize + 1));
                 }
@@ -548,7 +550,7 @@ namespace CompMs.Graphics.Core.Base
                 xStart = (int)(min / xScale) - 1;
                 xEnd = (int)(max / xScale) + 1;
 
-                formattedText = new FormattedText(xScale.ToString("f3"), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Brushes.Black);
+                formattedText = new FormattedText(xScale.ToString("f3"), CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, Area.AxisX.FontType, Area.AxisX.FontSize, Brushes.Black, PixelsPerDip);
 
                 xScaleWidth = formattedText.Width;
                 totalPixelWidth = xScaleWidth * (xEnd - xStart + 1);
@@ -572,7 +574,7 @@ namespace CompMs.Graphics.Core.Base
 
                 var label = series.Points[l].Label;
                 var formattedText = new FormattedText(label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight,
-                    series.FontType, series.FontSize, series.Brush);
+                    series.FontType, series.FontSize, series.Brush, PixelsPerDip);
                 formattedText.TextAlignment = TextAlignment.Center;
                 drawingContext.DrawText(formattedText, new Point(xs, ys - series.FontSize - Offset * 2));
 
@@ -593,7 +595,7 @@ namespace CompMs.Graphics.Core.Base
 
             if (s.IsLabelVisible == true && s.Points.Count != 0) {
                 var LabelList = new List<XY>();
-                var formattedText = new FormattedText("@@@.@@@", CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, Brushes.Black);
+                var formattedText = new FormattedText("@@@.@@@", CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, Brushes.Black, PixelsPerDip);
                 double textWidth = formattedText.Width;
                 int maxLabelNumber = (int)((Area.ActualGraphWidth) / textWidth);
 
@@ -622,7 +624,7 @@ namespace CompMs.Graphics.Core.Base
                     for (int i = 0; i < s_ordered.Count; i++) {
                         if (counter > maxLabelNumber) break;
 
-                        formattedText = new FormattedText(s_ordered[i].Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush);
+                        formattedText = new FormattedText(s_ordered[i].Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush, PixelsPerDip);
                         formattedText.TextAlignment = TextAlignment.Center;
                         textWidth = formattedText.Width;
 
@@ -660,7 +662,7 @@ namespace CompMs.Graphics.Core.Base
             
             if (s.IsLabelVisible == true && s.Points.Count != 0) {
                 var LabelList = new List<XY>();
-                var formattedText = new FormattedText("@@@.@@@", CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, Brushes.Black);
+                var formattedText = new FormattedText("@@@.@@@", CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, Brushes.Black, PixelsPerDip);
                 double textWidth = formattedText.Width;
                 int maxLabelNumber = (int)((Area.ActualGraphWidth) / textWidth);
 
@@ -689,7 +691,7 @@ namespace CompMs.Graphics.Core.Base
                     for (int i = 0; i < s_ordered.Count; i++) {
                         if (counter > maxLabelNumber) break;
 
-                        formattedText = new FormattedText(s_ordered[i].Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush);
+                        formattedText = new FormattedText(s_ordered[i].Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush, PixelsPerDip);
                         formattedText.TextAlignment = TextAlignment.Center;
 
                         overlap = false;
@@ -713,7 +715,7 @@ namespace CompMs.Graphics.Core.Base
             s = series[1];
             if (s.IsLabelVisible == true && s.Points.Count != 0) {
                 var LabelList = new List<XY>();
-                var formattedText = new FormattedText("@@@.@@@", CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush);
+                var formattedText = new FormattedText("@@@.@@@", CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush, PixelsPerDip);
                 double textWidth = formattedText.Width;
                 int maxLabelNumber = (int)((Area.ActualGraphWidth) / textWidth);
 
@@ -742,7 +744,7 @@ namespace CompMs.Graphics.Core.Base
                     for (int i = 0; i < s_ordered.Count; i++) {
                         if (counter > maxLabelNumber) break;
 
-                        formattedText = new FormattedText(s_ordered[i].Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush);
+                        formattedText = new FormattedText(s_ordered[i].Label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, s.FontType, s.FontSize, s.Brush, PixelsPerDip);
                         formattedText.TextAlignment = TextAlignment.Center;
 
                         overlap = false;

@@ -62,7 +62,7 @@ public sealed class AnnotationProcess
         IMatchResultEvaluator<MsScanMatchResult> evaluator,
         IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
         MsdialImmsParameter parameter) {
-        var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
+        var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.PeakFeature.Mass, parameter.CentroidMs1Tolerance, parameter.PeakPickBaseParam.MaxIsotopesDetectedInMs1Spectrum);
 
         SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam);
         SetTextDBAnnotationResult(chromPeakFeature, msdecResult, isotopes, textDBAnnotator, parameter.TextDbSearchParam);

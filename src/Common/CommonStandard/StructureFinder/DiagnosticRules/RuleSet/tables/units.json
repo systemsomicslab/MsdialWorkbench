@@ -1,0 +1,550 @@
+{
+ "format": "msfinder-diagnostic-units",
+ "format_version": 1,
+ "units": [
+  {
+   "class": "sugar",
+   "name": "Hex",
+   "origin": "as_published",
+   "residue": "C6H10O5",
+   "source": [
+    {
+     "doi": "10.1016/j.jasms.2003.07.002",
+     "locator": "Sec. Negative Ion Mode; Tables 1-2; Figs 2, 4"
+    },
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides; Fig. 4a"
+    }
+   ]
+  },
+  {
+   "class": "sugar",
+   "name": "dHex",
+   "origin": "as_published",
+   "residue": "C6H10O4",
+   "source": [
+    {
+     "doi": "10.1016/j.chroma.2005.07.036",
+     "locator": "Sec. 3; Figures 2D-F, 3D, 3F, 3H-I"
+    },
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides; Fig. 4a"
+    }
+   ]
+  },
+  {
+   "class": "sugar",
+   "name": "Pen",
+   "origin": "as_published",
+   "residue": "C5H8O4",
+   "source": [
+    {
+     "doi": "10.1016/j.chroma.2005.07.036",
+     "locator": "Sec. 3; Figure 4G-H; Figure 5"
+    },
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides; Fig. 4a"
+    }
+   ]
+  },
+  {
+   "class": "sugar",
+   "name": "HexA",
+   "origin": "as_published",
+   "residue": "C6H8O6",
+   "source": [
+    {
+     "doi": "10.1002/pca.1189",
+     "locator": "Results, fragmentation of flavone di- and triglycosides; Table 2; Figure 2"
+    },
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides; Fig. 4a"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "malonyl",
+   "origin": "as_published",
+   "residue": "C3H2O3",
+   "source": [
+    {
+     "doi": "10.1002/jms.1344",
+     "locator": "Results, malonylated flavonoid glycosides; Table 2; Fig. 3"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "acetyl",
+   "origin": "as_published",
+   "residue": "C2H2O",
+   "source": [
+    {
+     "doi": "10.1002/jms.3413",
+     "locator": "Results (acetylated flavone C-glycosides); Table 4"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "coumaroyl",
+   "origin": "as_published",
+   "residue": "C9H6O2",
+   "source": [
+    {
+     "doi": "10.1021/jf048068b",
+     "locator": "Table 1 (Concord grape peaks 17, 19, 21, 23, 24)"
+    },
+    {
+     "doi": "10.1002/jms.3803",
+     "locator": "Results"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "caffeoyl",
+   "origin": "as_published",
+   "residue": "C9H6O3",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1697",
+     "locator": "Table 2; Fig. 3a, 3c"
+    },
+    {
+     "doi": "10.1021/jf026187q",
+     "locator": "Results, General LC-MS Fragmentation; Table 2"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "feruloyl",
+   "origin": "as_published",
+   "residue": "C10H8O3",
+   "source": [
+    {
+     "doi": "10.1021/jf026187q",
+     "locator": "Results, General LC-MS Fragmentation; Table 2"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "sinapoyl",
+   "origin": "as_published",
+   "residue": "C11H10O4",
+   "source": [
+    {
+     "doi": "10.1002/rcm.4639",
+     "locator": "Table 2; Results; Fig. 5"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "galloyl",
+   "origin": "as_published",
+   "residue": "C7H4O4",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1697",
+     "locator": "Table 2; Table 1; Fig. 4"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "sulfate",
+   "origin": "as_published",
+   "residue": "O3S",
+   "source": [
+    {
+     "doi": "10.1021/acs.analchem.6b03671",
+     "locator": "Results (CID); Table 1; Fig. 3"
+    },
+    {
+     "doi": "10.1002/jms.635",
+     "locator": "Results, CID conditions"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "protocatechuoyl",
+   "origin": "as_published",
+   "residue": "C7H4O3",
+   "source": [
+    {
+     "doi": "10.1002/rcm.1697",
+     "locator": "Results and Discussion, Acylated flavonoid-O-glycosides; Tables 1-2; Fig. 3b, 3d"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "tigloyl",
+   "origin": "as_published",
+   "residue": "C5H6O",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    },
+    {
+     "doi": "10.1021/acs.jnatprod.4c00304",
+     "locator": "Results and Discussion, paragraph 2 (tigloidine named as a standard; the ester acid is not printed)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "benzoyl",
+   "origin": "as_published",
+   "residue": "C7H4O",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "methylpyrrolecarbonyl",
+   "origin": "as_published",
+   "residue": "C6H5NO",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "phenylacetyl",
+   "origin": "as_published",
+   "residue": "C8H6O",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "mandeloyl",
+   "origin": "as_published",
+   "residue": "C8H6O2",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "tropoyl",
+   "origin": "as_published",
+   "residue": "C9H8O2",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    },
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.1 (p. 1165); Figure 2A-D (p. 1165); Table 1 (p. 1166) (tropic acid loss)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "atropoyl",
+   "origin": "as_published",
+   "residue": "C9H6O",
+   "source": [
+    {
+     "doi": "10.1007/s00216-016-0043-6",
+     "locator": "Results, Ionic extraction and identification (p. 1150); Table 1, cpd 11 (p. 1152) (apotropic acid ester)"
+    },
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.4 (p. 1167); Table 2 (p. 1169) (apoatropine)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "veratroyl",
+   "origin": "as_published",
+   "residue": "C9H8O3",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    },
+    {
+     "doi": "10.1002/jssc.201801201",
+     "locator": "Sec. 3.1 (p. 1165); Figure 2E (p. 1165); Table 1 (p. 1166) (anisodic acid loss, same residue formula)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "syringoyl",
+   "origin": "as_published",
+   "residue": "C9H8O4",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "trimethoxybenzoyl",
+   "origin": "as_published",
+   "residue": "C10H10O4",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "trimethoxycinnamoyl",
+   "origin": "as_published",
+   "residue": "C12H12O4",
+   "source": [
+    {
+     "doi": "10.1002/rcm.9629",
+     "locator": "Sec. 3.1 (pp. 6-11); Table 1 (pp. 4-6) (acid losses identifying tropane esters)"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "prenyl",
+   "origin": "as_published",
+   "residue": "C5H8",
+   "source": [
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "p. 6, Flavonoid aglycone, Positive ion mode"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "dimethoxycinnamoyl",
+   "origin": "as_published",
+   "residue": "C11H10O3",
+   "source": [
+    {
+     "doi": "10.1021/jf0601665",
+     "locator": "Table 1; Results and Discussion, Characterization of Putative Dimethoxycinnamoylquinic Acids (7-9)"
+    },
+    {
+     "doi": "10.1007/s00216-016-9450-y",
+     "locator": "Sec. Identification of ECQ and DQA; Table 1"
+    }
+   ]
+  },
+  {
+   "class": "sugar",
+   "name": "dPen",
+   "origin": "as_published",
+   "residue": "C5H8O3",
+   "source": [
+    {
+     "doi": "10.1093/nar/gkag155",
+     "locator": "Methods ('Nucleic acid modification analysis'; 'LC-HR-MS/MS analysis using SWATH and IDA'); Results ('Dual neutral loss scanning')"
+    },
+    {
+     "doi": "10.1021/acs.analchem.7b03208",
+     "locator": "Introduction; Results; Table 1"
+    },
+    {
+     "doi": "10.1002/mas.21388",
+     "locator": "Sec. VII.D; Sec. VII.F"
+    }
+   ]
+  },
+  {
+   "class": "sugar",
+   "name": "MePen",
+   "origin": "as_published",
+   "residue": "C6H10O4",
+   "source": [
+    {
+     "doi": "10.1007/s13361-018-1999-6",
+     "locator": "Introduction; Results (section 'HCD Fingerprinting of Additional Methylated or Other Positional Isomers', 2'-O-methyl paragraph)"
+    },
+    {
+     "doi": "10.1007/s13361-011-0126-8",
+     "locator": "Table 1; Table 2; Results"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "phosphate",
+   "origin": "as_published",
+   "residue": "HO3P",
+   "source": [
+    {
+     "doi": "10.1007/s00216-010-4126-5",
+     "locator": "Fig. 2c,f (loss of 80, HPO3, from the iPTP standard)"
+    },
+    {
+     "doi": "10.1038/s41598-017-09416-6",
+     "locator": "Results (NMP, NDP and NTP sections)"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "procyanidin_ext",
+   "origin": "as_published",
+   "residue": "C15H12O6",
+   "source": [
+    {
+     "doi": "10.3390/molecules26071873",
+     "locator": "Karonen 2021: Results 2.1 ([M-H]- series spaced 288 Da from 289 to 1729; Table S1)"
+    },
+    {
+     "doi": "10.1021/ac061823v",
+     "locator": "Li 2007: p. 1746 and Fig. 5B-C (tetramer 16, upper (epi)catechin unit lost as 288 Da); Table 4"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "prodelphinidin_ext",
+   "origin": "as_published",
+   "residue": "C15H12O7",
+   "source": [
+    {
+     "doi": "10.1021/ac061823v",
+     "locator": "Li 2007: p. 1746 and Fig. 5C (pentamer 21, (epi)gallocatechin unit lost as 304 Da)"
+    },
+    {
+     "doi": "10.3390/molecules27092684",
+     "locator": "Qian 2022: Section 2 (each B-type linkage removes 2 H from the unit sum)"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "propelargonidin_ext",
+   "origin": "as_published",
+   "residue": "C15H12O5",
+   "source": [
+    {
+     "doi": "10.1021/jf034815d",
+     "locator": "Gu 2003: p. 7516 and Table 3 (p. 7519; (epi)afzelechin units, 849 to 577 and 833 versus 561 differ by 272 Da)"
+    },
+    {
+     "doi": "10.3390/molecules27092684",
+     "locator": "Qian 2022: Section 2 (each B-type linkage removes 2 H from the unit sum)"
+    }
+   ]
+  },
+  {
+   "class": "acyl",
+   "name": "HHDP",
+   "origin": "as_published",
+   "residue": "C14H6O8",
+   "source": [
+    {
+     "doi": "10.1002/pca.1312",
+     "locator": "Tan 2011: p. 524 (ellagitannins lose 302, HHDP); Table 1 compounds 16-17 (p. 519; 785 to 483, 937 to 635)"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "Gly",
+   "origin": "as_published",
+   "residue": "C2H3NO",
+   "source": [
+    {
+     "doi": "10.1016/j.cell.2024.02.019",
+     "locator": "Figure 1b legend (glycine delta mass 57.02)"
+    },
+    {
+     "doi": "10.1016/j.steroids.2011.11.008",
+     "locator": "Sec. 3.2; Table 1 (GLCA, GDCA, GCA [M-H]- formulas)"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "Tau",
+   "origin": "as_published",
+   "residue": "C2H5NO2S",
+   "source": [
+    {
+     "doi": "10.1016/j.steroids.2011.11.008",
+     "locator": "Sec. 3.2; Table 1 (TLCA, TDCA, TCA [M-H]- formulas)"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "Abu",
+   "origin": "as_published",
+   "residue": "C4H7NO",
+   "source": [
+    {
+     "doi": "10.1021/acs.jafc.5c03548",
+     "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs); Table 2 (formula column)"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "Val",
+   "origin": "as_published",
+   "residue": "C5H9NO",
+   "source": [
+    {
+     "doi": "10.1021/acs.jafc.5c03548",
+     "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs); Table 2 (formula column)"
+    },
+    {
+     "doi": "10.3390/biom12050687",
+     "locator": "Table 2; Section 3.2"
+    }
+   ]
+  },
+  {
+   "class": "conjugate",
+   "name": "Leu",
+   "origin": "as_published",
+   "residue": "C6H11NO",
+   "source": [
+    {
+     "doi": "10.1021/acs.jafc.5c03548",
+     "locator": "Results, In Vitro Evaluation of the Microbial Production of Reconjugated BAs (MCBAs); Table 2 (formula column)"
+    },
+    {
+     "doi": "10.3390/biom12050687",
+     "locator": "Table 2; Section 3.2"
+    }
+   ]
+  }
+ ]
+}

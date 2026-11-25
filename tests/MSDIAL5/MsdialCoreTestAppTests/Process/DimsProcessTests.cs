@@ -75,7 +75,7 @@ public sealed class DimsProcessTests
 
     private static IAnnotationQueryFactoryGenerationKey<MoleculeDataBase> SingleAnnotatorKey(DataBaseStorage storage)
     {
-        return ((MetabolomicsAnnotatorParameterPair)storage.MetabolomicsDataBases.Single().Pairs.Single()).SerializableAnnotatorKey;
+        return (IAnnotationQueryFactoryGenerationKey<MoleculeDataBase>)((MetabolomicsAnnotatorParameterPair)storage.MetabolomicsDataBases.Single().Pairs.Single()).SerializableAnnotatorKey;
     }
 
     private static MoleculeDataBase CreateDataBase(string id, DataBaseSource source)

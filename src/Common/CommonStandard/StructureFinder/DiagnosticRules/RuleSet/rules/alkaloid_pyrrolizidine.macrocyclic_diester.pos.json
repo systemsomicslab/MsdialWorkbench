@@ -1,0 +1,160 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "QTOF-type",
+  "Orbitrap/FT",
+  "other"
+ ],
+ "claim": {
+  "claim_level": "class",
+  "claim_term_ids": [
+   "loss_CO"
+  ],
+  "motif_id": "pyrrolizidine_retronecine_macrocyclic_diester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 5281735,
+    "smiles": "C/C=C(/C)\\C(=O)O[C@H]1CCN2[C@@H]1C(=CC2)COC(=O)[C@@]([C@H](C)OC)(C(C)(C)O)O"
+   }
+  ],
+  "non_claims": [
+   "ring size and the necic acid are not resolved",
+   "free base versus N-oxide is not resolved",
+   "the motif also covers crotanecine-type (C-6 oxygenated) macrocycles, which no cited source tested"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280906,
+    "smiles": "C/C=C\\1/C[C@H]([C@@](C(=O)OCC2=CCN3[C@H]2[C@@H](CC3)OC1=O)(C)O)C"
+   },
+   {
+    "pubchem_cid": 9415,
+    "smiles": "C[C@H]1C(=O)O[C@@H]2CCN3[C@@H]2C(=CC3)COC(=O)[C@]([C@]1(C)O)(C)O"
+   }
+  ]
+ },
+ "complementary": [],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "C8H10N_120"
+   },
+   {
+    "term": "C8H12NO_138"
+   },
+   {
+    "term": "loss_CO"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Loss of CO from [M+H]+ marks macrocyclic diesters in standards in several papers (These 2013, Avula 2015, Petreska 2022), but CO is a generic loss and no second macrocycle-specific ion is reported, so the rule is not measured.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [
+   {
+    "motif_id": "pyrrolizidine_retronecine_type",
+    "note": "monoesters and open-chain diesters give 120 and 138 without the CO loss (These 2013, Petreska 2022)"
+   }
+  ],
+  "composition": {
+   "core": null,
+   "scaffold_list": "alkaloid_pyrrolizidine_compounds",
+   "unit_totals": {},
+   "units": {}
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "alkaloid_pyrrolizidine.macrocyclic_diester.pos",
+ "source": [
+  {
+   "doi": "10.1007/s00216-013-7365-4",
+   "locator": "Results (p. 9379); Fig. 2e-f (p. 9377); Table 1 (p. 9378); Fig. 3 caption (p. 9379)"
+  },
+  {
+   "doi": "10.1002/jms.2969",
+   "locator": "Fig. 2 A2, B1, B2, E2 (p. 333)"
+  },
+  {
+   "doi": "10.1016/j.foodchem.2015.01.053",
+   "locator": "Sec. 3.3 (p. 143)"
+  },
+  {
+   "doi": "10.20450/mjcce.2022.2491",
+   "locator": "Abstract (p. 99); pp. 107-108; Table 1 rows 25-33"
+  },
+  {
+   "doi": "10.1002/pca.2683",
+   "locator": "Results (p. 367); Table 1 (p. 368)"
+  },
+  {
+   "doi": "10.1002/jssc.201400314",
+   "locator": "Table 1 (p. 2036), compounds 5, 6, 9, 10"
+  },
+  {
+   "doi": "10.1002/(sici)1097-0231(19981030)12:20<1445::aid-rcm356>3.0.co;2-g",
+   "locator": "Results (p. 1447); Table 1 (p. 1448)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": true,
+ "terms": [
+  {
+   "floor_source": "src:7",
+   "formula": "C8H10N",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H10N_120",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "formula": "C8H12NO",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "C8H12NO_138",
+   "term_source": "src:0",
+   "than": null
+  },
+  {
+   "floor_source": "src:7",
+   "formula": "CO",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": null,
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_CO",
+   "term_source": "src:0",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude Opus 5.5 (WS8-P3 rule drafting, 2026-11-18)",
+ "version": 1,
+ "veto_excludes_motif": false
+}

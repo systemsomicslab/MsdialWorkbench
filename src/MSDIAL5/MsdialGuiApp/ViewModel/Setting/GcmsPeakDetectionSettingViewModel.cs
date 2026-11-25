@@ -6,6 +6,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -23,8 +24,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             MinimumAmplitude = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumAmplitude,
-                m => m.ToString(),
-                vm => float.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => double.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumAmplitude).AddTo(Disposables);
 
@@ -35,15 +36,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 
             MassSliceWidth = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MassSliceWidth,
-                m => m.ToString(),
-                vm => float.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => float.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassSliceWidth).AddTo(Disposables);
 
             MassAccuracy = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.CentroidMs1Tolerance,
-                m => m.ToString(),
-                vm => float.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => float.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassAccuracy).AddTo(Disposables);
 
@@ -52,15 +53,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             SmoothingLevel = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.SmoothingLevel,
-                m => m.ToString(),
-                vm => int.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => int.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => SmoothingLevel).AddTo(Disposables);
 
             AveragePeakWidth = model.PeakPickSettingModel.ToReactivePropertyAsSynchronized(
                 m => m.MinimumDatapoints,
-                m => m.ToString(),
-                vm => double.Parse(vm),
+                m => m.ToString(CultureInfo.InvariantCulture),
+                vm => double.Parse(vm, CultureInfo.InvariantCulture),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => AveragePeakWidth).AddTo(Disposables);
 
@@ -72,7 +73,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 this.ObserveProperty(vm => vm.NewMass).ToUnit(),
                 this.ObserveProperty(vm => vm.NewTolerance).ToUnit(),
             }.Merge()
-            .Select(_ => !ContainsError(nameof(NewMass)) && !ContainsError(nameof(NewTolerance)))
+            .Select(_ => CanAddQuery())
             .ToReactiveCommand()
             .WithSubscribe(() => model.PeakPickSettingModel.AddQuery(NewMass, NewTolerance))
             .AddTo(Disposables);
@@ -99,11 +100,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 }.CombineLatestValuesAreAllTrue(),
                 SmoothingLevel.ObserveHasErrors,
                 AveragePeakWidth.ObserveHasErrors,
+                // CombineLatest waits for every source, and the list says nothing until it changes.
                 new[]
                 {
                     ExcludedMassList.ObserveElementPropertyChanged().ToUnit(),
                     ExcludedMassList.CollectionChangedAsObservable().ToUnit(),
                 }.Merge()
+                .StartWith(Unit.Default)
                 .Select(_ => ExcludedMassList.Any(vm => vm.HasValidationErrors)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
@@ -134,9 +137,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public bool IsReadOnly => _model.IsReadOnly;
 
+        // A peak height and a peak width are whole numbers (Hiroshi Tsugawa, 2026-10-21), as the console reads them.
+        // The ranges compare doubles: an int range throws OverflowException for a number past int.MaxValue.
         [Required(ErrorMessage = "Minimum amplitude is required.")]
-        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Amplitude should be positive value.")]
+        [RegularExpression(@"\d+", ErrorMessage = "Amplitude should be zero or a positive whole number.")]
+        [Range(0d, int.MaxValue, ErrorMessage = "Amplitude should be between 0 and 2147483647.")]
         public ReactiveProperty<string> MinimumAmplitude { get; }
 
         public ReactivePropertySlim<bool> IsAccurateMS { get; }
@@ -155,12 +160,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         [Required(ErrorMessage = "Smoothing level is required.")]
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Amplitude should be positive value.")]
+        [Range(0d, int.MaxValue, ErrorMessage = "Smoothing level should be between 0 and 2147483647.")]
         public ReactiveProperty<string> SmoothingLevel { get; }
 
         [Required(ErrorMessage = "Average peak width is required.")]
-        [RegularExpression(@"\d\.?\d*", ErrorMessage = "Invalid character entered.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Data points should be positive value.")]
+        [RegularExpression(@"\d+", ErrorMessage = "Data points should be a positive whole number.")]
+        [Range(1d, int.MaxValue, ErrorMessage = "Data points should be between 1 and 2147483647.")]
         public ReactiveProperty<string> AveragePeakWidth { get; }
 
         public ReadOnlyReactiveCollection<MzSearchQueryViewModel> ExcludedMassList { get; }
@@ -171,21 +176,29 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
         private MzSearchQueryViewModel? _selectedQuery;
 
-        [RegularExpression(@"\d\.?\d*", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Data points should be positive value.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Mass should be zero or positive value.")]
         public double NewMass {
             get => _newMass;
             set => SetProperty(ref _newMass, value);
         }
         private double _newMass;
 
-        [RegularExpression(@"0?\.\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0.0001, int.MaxValue, ErrorMessage = "Width should be positive value.")]
+        [Range(0.0001d, double.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
         public double NewTolerance {
             get => _newTolerance;
             set => SetProperty(ref _newTolerance, value);
         }
         private double _newTolerance;
+
+        // The values are checked rather than their recorded errors: a value nobody has typed has none,
+        // and the tolerance starts at 0, which would add an entry that removes nothing.
+        private bool CanAddQuery() {
+            return IsValidValue(nameof(NewMass), NewMass) && IsValidValue(nameof(NewTolerance), NewTolerance);
+        }
+
+        private bool IsValidValue(string propertyName, double value) {
+            return Validator.TryValidateProperty(value, new ValidationContext(this) { MemberName = propertyName }, null);
+        }
 
         public ReactiveCommand AddCommand { get; }
 

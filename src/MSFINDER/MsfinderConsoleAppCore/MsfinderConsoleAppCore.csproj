@@ -2,10 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.0;net472</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
     <ApplicationIcon>msfinder_icon.ico</ApplicationIcon>
     <AssemblyName>MsfinderConsoleApp</AssemblyName>
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
+    <!-- Formula and structure prediction allocate heavily on all cores; the workstation collector stops every
+         thread for each collection, the server collector does not. Results are unaffected. -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>

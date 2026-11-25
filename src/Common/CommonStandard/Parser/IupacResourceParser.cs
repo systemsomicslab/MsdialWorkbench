@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.DataObj.Database;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -36,32 +37,32 @@ namespace CompMs.Common.Parser {
 
                 var lineArray = line.Split('\t');
 
-                if (iupacID != int.Parse(lineArray[0])) {
+                if (iupacID != int.Parse(lineArray[0], CultureInfo.InvariantCulture)) {
                     if (iupacID != 0) {
                         iupacDB.Id2AtomElementProperties[iupacID] = iupacElementPropertyBeanList;
                         iupacDB.ElementName2AtomElementProperties[elementName] = iupacElementPropertyBeanList; 
                     }
 
                     iupacElementPropertyBeanList = new List<AtomElementProperty>();
-                    iupacID = int.Parse(lineArray[0]);
+                    iupacID = int.Parse(lineArray[0], CultureInfo.InvariantCulture);
                     elementName = lineArray[1];
 
                     iupacElementPropertyBean = new AtomElementProperty();
-                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4]);
+                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4], CultureInfo.InvariantCulture);
                     iupacElementPropertyBean.ElementName = elementName;
                     iupacElementPropertyBean.ID = iupacID;
-                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
-                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
+                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3], CultureInfo.InvariantCulture);
+                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2], CultureInfo.InvariantCulture);
 
                     iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
                 }
                 else {
                     iupacElementPropertyBean = new AtomElementProperty();
-                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4]);
+                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4], CultureInfo.InvariantCulture);
                     iupacElementPropertyBean.ElementName = elementName;
                     iupacElementPropertyBean.ID = iupacID;
-                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
-                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
+                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3], CultureInfo.InvariantCulture);
+                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2], CultureInfo.InvariantCulture);
 
                     iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
                 }
@@ -167,32 +168,32 @@ namespace CompMs.Common.Parser {
 
                 var lineArray = line.Split('\t');
 
-                if (iupacID != int.Parse(lineArray[0])) {
+                if (iupacID != int.Parse(lineArray[0], CultureInfo.InvariantCulture)) {
                     if (iupacID != 0) {
                         iupacReferenceBean.Id2AtomElementProperties[iupacID] = iupacElementPropertyBeanList; 
                         iupacReferenceBean.ElementName2AtomElementProperties[elementName] = iupacElementPropertyBeanList; 
                     }
 
                     iupacElementPropertyBeanList = new List<AtomElementProperty>();
-                    iupacID = int.Parse(lineArray[0]);
+                    iupacID = int.Parse(lineArray[0], CultureInfo.InvariantCulture);
                     elementName = lineArray[1];
 
                     iupacElementPropertyBean = new AtomElementProperty();
-                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4]);
+                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4], CultureInfo.InvariantCulture);
                     iupacElementPropertyBean.ElementName = elementName;
                     iupacElementPropertyBean.ID = iupacID;
-                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
-                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
+                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3], CultureInfo.InvariantCulture);
+                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2], CultureInfo.InvariantCulture);
 
                     iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
                 }
                 else {
                     iupacElementPropertyBean = new AtomElementProperty();
-                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4]);
+                    iupacElementPropertyBean.ExactMass = double.Parse(lineArray[4], CultureInfo.InvariantCulture);
                     iupacElementPropertyBean.ElementName = elementName;
                     iupacElementPropertyBean.ID = iupacID;
-                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3]);
-                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2]);
+                    iupacElementPropertyBean.NaturalRelativeAbundance = double.Parse(lineArray[3], CultureInfo.InvariantCulture);
+                    iupacElementPropertyBean.NominalMass = int.Parse(lineArray[2], CultureInfo.InvariantCulture);
 
                     iupacElementPropertyBeanList.Add(iupacElementPropertyBean);
                 }

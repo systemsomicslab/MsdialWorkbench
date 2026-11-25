@@ -1,0 +1,286 @@
+{
+ "format": "msfinder-diagnostic-motif-nesting",
+ "format_version": 1,
+ "nesting": [
+  {
+   "child": "galloyl_ester",
+   "parent": "hydroxybenzoyl_ester",
+   "source": [
+    {
+     "locator": "compound record, Names and Identifiers, Computed Descriptors, IUPAC Name",
+     "reference": "PubChem CID 370 (gallic acid), IUPAC name 3,4,5-trihydroxybenzoic acid, so a galloyl ester is a hydroxybenzoyl ester"
+    }
+   ]
+  },
+  {
+   "child": "hydroxycinnamoyl_quinate",
+   "parent": "hydroxycinnamoyl_ester",
+   "source": [
+    {
+     "locator": "compound record, Names and Identifiers, Computed Descriptors, IUPAC Name",
+     "reference": "PubChem CID 1794427 (chlorogenic acid), IUPAC name: a 3-(3,4-dihydroxyphenyl)prop-2-enoyl ester of a hydroxylated cyclohexanecarboxylic (quinic) acid"
+    }
+   ]
+  },
+  {
+   "child": "hydroxyacylcarnitine",
+   "parent": "carnitine",
+   "source": [
+    {
+     "locator": "_motifs/acylcarnitine.json, rows hydroxyacylcarnitine and carnitine",
+     "reference": "Definitional: every hydroxyacylcarnitine is an O-acylcarnitine and contains the carnitine backbone"
+    }
+   ]
+  },
+  {
+   "child": "carnitine",
+   "parent": "trimethylammonium",
+   "source": [
+    {
+     "locator": "_motifs/acylcarnitine.json, rows carnitine and trimethylammonium",
+     "reference": "Definitional: the carnitine backbone carries a trimethylammonium group"
+    }
+   ]
+  },
+  {
+   "child": "indole_or_indoline_omethyl",
+   "parent": "indole_or_indoline_ring",
+   "source": [
+    {
+     "locator": "_motifs/alkaloid_monoterpene_indole.json",
+     "reference": "Declared by construction: the child pattern contains the indole_or_indoline_ring pattern (WS8-P3 MIA draft, 2026-11-18)"
+    }
+   ]
+  },
+  {
+   "child": "indole_or_indoline_acetate_or_methyl_ester",
+   "parent": "indole_or_indoline_ring",
+   "source": [
+    {
+     "locator": "_motifs/alkaloid_monoterpene_indole.json",
+     "reference": "Declared by construction: the child pattern contains the indole_or_indoline_ring pattern (WS8-P3 MIA draft, 2026-11-18)"
+    }
+   ]
+  },
+  {
+   "child": "aspidospermane",
+   "parent": "indole_or_indoline_ring",
+   "source": [
+    {
+     "locator": "_motifs/alkaloid_monoterpene_indole.json",
+     "reference": "Declared by construction: the child pattern contains the indole_or_indoline_ring pattern (WS8-P3 MIA draft, 2026-11-18)"
+    }
+   ]
+  },
+  {
+   "child": "beta_carboline_unsaturated_omethyl",
+   "parent": "indole_or_indoline_omethyl",
+   "source": [
+    {
+     "locator": "_motifs/alkaloid_monoterpene_indole.json",
+     "reference": "Declared by construction: the child pattern contains the indole_or_indoline_omethyl pattern (WS8-P3 MIA draft, 2026-11-18; review round 2026-11-19)"
+    }
+   ]
+  },
+  {
+   "child": "pyrrolizidine_retronecine_n_oxide",
+   "parent": "pyrrolizidine_retronecine_type",
+   "source": [
+    {
+     "doi": "10.1002/jms.2969",
+     "locator": "Results (pathway 3); Figure 3"
+    }
+   ]
+  },
+  {
+   "child": "pyrrolizidine_retronecine_macrocyclic_diester",
+   "parent": "pyrrolizidine_retronecine_type",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Results; Figure 2"
+    }
+   ]
+  },
+  {
+   "child": "pyrrolizidine_retronecine_monoester",
+   "parent": "pyrrolizidine_retronecine_type",
+   "source": [
+    {
+     "doi": "10.1007/s00216-013-7365-4",
+     "locator": "Results; Figure 2"
+    }
+   ]
+  },
+  {
+   "child": "anthocyanin",
+   "parent": "flavonoid_o_glycoside",
+   "source": [
+    {
+     "doi": "10.1021/jf048068b",
+     "locator": "Figure 1 (anthocyanins as O-glycosides of anthocyanidins)"
+    }
+   ]
+  },
+  {
+   "child": "flavanone_core",
+   "parent": "flavanone_or_chalcone",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5 (p. 500); CID of flavanones and chalcones (p. 498); Scheme 1 (p. 499)"
+    }
+   ]
+  },
+  {
+   "child": "chalcone_core",
+   "parent": "flavanone_or_chalcone",
+   "source": [
+    {
+     "doi": "10.1255/ejms.1206",
+     "locator": "Table 5 (p. 500); CID of flavanones and chalcones (p. 498); Scheme 1 (p. 499)"
+    }
+   ]
+  },
+  {
+   "child": "flavonoid_o_glycoside",
+   "parent": "o_glycoside",
+   "source": [
+    {
+     "doi": "10.1002/jms.585",
+     "locator": "Flavonoid O-glycosides"
+    }
+   ]
+  },
+  {
+   "child": "glucosinolate_methylsulfinylalkyl",
+   "parent": "glucosinolate",
+   "source": [
+    {
+     "locator": "_motifs/glucosinolate.json",
+     "reference": "WS8-P3 glucosinolate draft: the child SMARTS contains the glucosinolate SMARTS"
+    }
+   ]
+  },
+  {
+   "child": "glucosinolate_n_methoxy",
+   "parent": "glucosinolate",
+   "source": [
+    {
+     "locator": "_motifs/glucosinolate.json",
+     "reference": "WS8-P3 glucosinolate draft: the child SMARTS contains the glucosinolate SMARTS"
+    }
+   ]
+  },
+  {
+   "child": "glucosinolate_2_hydroxyalkyl",
+   "parent": "glucosinolate",
+   "source": [
+    {
+     "locator": "_motifs/glucosinolate.json",
+     "reference": "WS8-P3 glucosinolate draft: the child SMARTS contains the glucosinolate SMARTS"
+    }
+   ]
+  },
+  {
+   "child": "hcaa_spermidine_amide",
+   "parent": "hcaa_aminobutyl_amide",
+   "source": [
+    {
+     "locator": "_motifs/hydroxycinnamic_acid_amide.json",
+     "reference": "By construction: each SMARTS alternative of hcaa_spermidine_amide contains an amide-N path that one alternative of hcaa_aminobutyl_amide requires (spermidine and spermine contain a putrescine unit)"
+    }
+   ]
+  },
+  {
+   "child": "hcaa_aminobutyl_amide",
+   "parent": "hcaa_cinnamoyl_amide",
+   "source": [
+    {
+     "locator": "_motifs/hydroxycinnamic_acid_amide.json",
+     "reference": "By construction: hcaa_aminobutyl_amide is hcaa_cinnamoyl_amide with a recursive condition on the amide N"
+    }
+   ]
+  },
+  {
+   "child": "hcaa_p_hydroxy_secondary_amide",
+   "parent": "hcaa_cinnamoyl_amide",
+   "source": [
+    {
+     "locator": "_motifs/hydroxycinnamic_acid_amide.json",
+     "reference": "By construction: hcaa_p_hydroxy_secondary_amide adds a para-OH and an amide N-H to hcaa_cinnamoyl_amide"
+    }
+   ]
+  },
+  {
+   "child": "hcaa_n_acyl_cyclodopa",
+   "parent": "hcaa_cyclodopa_core",
+   "source": [
+    {
+     "locator": "_motifs/hydroxycinnamic_acid_amide.json",
+     "reference": "By construction: hcaa_n_acyl_cyclodopa is hcaa_cyclodopa_core with an acyl group on the ring N"
+    }
+   ]
+  },
+  {
+   "child": "dibenzocyclooctadiene_benzylic_ester",
+   "parent": "dibenzocyclooctadiene_lignan",
+   "source": [
+    {
+     "doi": "10.1002/pca.1115",
+     "locator": "Shi 2009: Results, gomisin B, schisantherin C and schisantherin A (pp. 199-200); Table 2 (p. 199)"
+    }
+   ]
+  },
+  {
+   "child": "nucleotide",
+   "parent": "nucleoside",
+   "source": [
+    {
+     "locator": "_motifs/nucleoside_nucleotide.json rows nucleotide and nucleoside",
+     "reference": "Definitional: a nucleotide is a phosphate ester of a nucleoside; the nucleotide SMARTS adds a sugar-bound phosphate to the nucleoside SMARTS"
+    }
+   ]
+  },
+  {
+   "child": "nucleoside_polyphosphate",
+   "parent": "nucleotide",
+   "source": [
+    {
+     "locator": "_motifs/nucleoside_nucleotide.json rows nucleoside_polyphosphate and nucleotide",
+     "reference": "Definitional: a nucleoside di- or triphosphate is a nucleotide; the SMARTS extends the sugar-bound phosphate to P-O-P"
+    }
+   ]
+  },
+  {
+   "child": "glycine_conjugated_bile_acid",
+   "parent": "bile_acid_amino_acid_conjugate",
+   "source": [
+    {
+     "locator": "_motifs/steryl_glycoside_bile_acid.json rows glycine_conjugated_bile_acid and bile_acid_amino_acid_conjugate",
+     "reference": "SMARTS containment: the C24 N-glycyl amide and C3-O-glycyl ester alternatives are the one-carbon cases of the amino-acid amide and C3 ester alternatives"
+    }
+   ]
+  },
+  {
+   "child": "aryl_or_vinyl_sulfate",
+   "parent": "organosulfate_monoester",
+   "source": [
+    {
+     "locator": "_motifs/sulfated_metabolite.json rows aryl_or_vinyl_sulfate and organosulfate_monoester",
+     "reference": "SMARTS containment: [#6;X3] lies within [#6,#7], with the same O-SO3H pattern"
+    }
+   ]
+  },
+  {
+   "child": "sulfate_ester",
+   "parent": "organosulfate_monoester",
+   "source": [
+    {
+     "locator": "_motifs/sulfated_metabolite.json rows sulfate_ester and organosulfate_monoester",
+     "reference": "SMARTS containment: [C] lies within [#6,#7], with the same O-SO3H pattern"
+    }
+   ]
+  }
+ ]
+}

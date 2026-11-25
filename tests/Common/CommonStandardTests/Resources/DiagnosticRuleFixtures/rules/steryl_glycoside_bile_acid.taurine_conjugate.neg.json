@@ -1,0 +1,684 @@
+{
+ "cases": [
+  {
+   "description": "h* = dihydroxy_c24_bile_acid|Tau1|[M-H]-, precursor at its oracle m/z; one peak per support member: tau_anion:C2H6NO3S, vinylsulfonate:C2H3O3S, so3_anion:O3S",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "tau_anion:C2H6NO3S@2",
+       "vinylsulfonate:C2H3O3S@1",
+       "so3_anion:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"6b6753585d85cf8826d5ee23eed4c607dc51373b317e2726ddeef819856f7856\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H6NO3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO3S\",\"peak_index\":2,\"peak_mz\":124.007388,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":124.007388,\"term_id\":\"tau_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":1,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":79.957364,\"term_id\":\"so3_anion\",\"unit_id\":2}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "90deb7fa2bbf117f95dc9fa02a0ed1a427af03b521998cd9447da35d79edd2eb"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with 2 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "tau_anion:C2H6NO3S@1",
+       "vinylsulfonate:C2H3O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "k_of0_at_k",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"cd8eb816f67eb64e7dd7133c7cffa43bc936fa4ba86bc338c1f25a11245c76c5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H6NO3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO3S\",\"peak_index\":1,\"peak_mz\":124.007388,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":124.007388,\"term_id\":\"tau_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":0,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":2.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "01ee8f50c7a2951e7bad4e61d6764f406d59f643ef7664c2a6e5c2a190c15e4a"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with 1 of the k = 2 evidence units of k_of node 0 (pre-order) present",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "k_of0_at_k_minus_1",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"4b53a060d8473f9b4f31f376ccfc4642e04bec609169a4e5df9b0fb9cd970fc6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "507e85d648bcddc5f16a89b39af205ab53c98198aaf868330ef289082325d2d5"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with tau_anion:C2H6NO3S moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "tau_anion:C2H6NO3S@2",
+       "vinylsulfonate:C2H3O3S@1",
+       "so3_anion:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.012378",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"d847120c9eeea9d1ece722cf49b43dcfa30e50251516bdae5d769c267d200603\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":40.239,\"ion_formula\":\"C2H6NO3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO3S\",\"peak_index\":2,\"peak_mz\":124.012378,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":124.007388,\"term_id\":\"tau_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":1,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":79.957364,\"term_id\":\"so3_anion\",\"unit_id\":2}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d4b69fa52842cde962090baa98c5dcd231f70c20026c5a806566d054d08511a9"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with tau_anion:C2H6NO3S moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylsulfonate:C2H3O3S@1",
+       "so3_anion:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.012398",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"795d6b4f2f5c91d8beed26a79f7bbf5faf7ea4504dcaf494fb8c16576511d503\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":1,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":79.957364,\"term_id\":\"so3_anion\",\"unit_id\":2}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":2.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d2ca3f585b535b5444ec3fddc19b0711f9a581ed8ab9c2fe002f11e6caadb18f"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with tau_anion:C2H6NO3S moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "tau_anion:C2H6NO3S@2",
+       "vinylsulfonate:C2H3O3S@1",
+       "so3_anion:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.002398",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"fbe667bf428d43229c7a9db906bad97e38f4cf300ac710204b53b8205e948101\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-40.240,\"ion_formula\":\"C2H6NO3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO3S\",\"peak_index\":2,\"peak_mz\":124.002398,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":124.007388,\"term_id\":\"tau_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":1,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":79.957364,\"term_id\":\"so3_anion\",\"unit_id\":2}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9ff019253e71fd559b4d3f5da54aa52c4d34f1b4e7b4d459374a39ee69bcbc74"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with tau_anion:C2H6NO3S moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylsulfonate:C2H3O3S@1",
+       "so3_anion:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.002378",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"0ce8bf789c8f7ac1ad08720b071c7d2276a24bbb19e439d8afa143567d02b859\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":2,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":1,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":79.957364,\"term_id\":\"so3_anion\",\"unit_id\":2}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":2.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6a10176d3836295828739d9e8e3ada86da1fce49394b89cf94940a105d6043ae"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "tau_anion:C2H6NO3S@2",
+       "vinylsulfonate:C2H3O3S@1",
+       "so3_anion:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.299473",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.299473"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"15f73c048e72118e9ff881710b3257cec812aa4d6c0580fa0317d2f0b14fadaf\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H6NO3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO3S\",\"peak_index\":2,\"peak_mz\":124.007388,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":124.007388,\"term_id\":\"tau_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":1,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":79.957364,\"term_id\":\"so3_anion\",\"unit_id\":2}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.299473,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "df78837c6706d444ffeea802f31060a96707f4bdede3d8e4026fb638483abe18"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.299493",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.299493"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"e92ee2fdd9b8fc6a43911b0ec76a99a709021ccf3da0d1a64419d10fde725a1f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.299493,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a423dd29b732544b5992a15b314a1a1f62d541ff70ad2d0532b964c78fb18b15"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": "dihydroxy_c24_bile_acid|Tau1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "tau_anion:C2H6NO3S@2",
+       "vinylsulfonate:C2H3O3S@1",
+       "so3_anion:O3S@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "dihydroxy_c24_bile_acid|Tau1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.279493",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.279493"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"taurine_conjugate\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"bc3e6971c70909641abc5f8164ab4d482a6d47bc798abf4bc020653098025013\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"taurine_conjugate\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"dihydroxy_c24_bile_acid|Tau1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\",\"hypothesis_mz\":498.289483,\"k_of\":[{\"count\":3,\"k\":2,\"pointer\":\"/logic\",\"satisfied\":true}],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H6NO3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H6NO3S\",\"peak_index\":2,\"peak_mz\":124.007388,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":124.007388,\"term_id\":\"tau_anion\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C2H3O3S\",\"kind\":\"product_ion\",\"member_key\":\"C2H3O3S\",\"peak_index\":1,\"peak_mz\":106.980839,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":106.980839,\"term_id\":\"vinylsulfonate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"O3S\",\"kind\":\"product_ion\",\"member_key\":\"O3S\",\"peak_index\":0,\"peak_mz\":79.957364,\"rel_intensity\":1.000000,\"role\":\"counted\",\"target_mz\":79.957364,\"term_id\":\"so3_anion\",\"unit_id\":2}],\"neutral_formula\":\"C26H45NO6S\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"dihydroxy_c24_bile_acid\",\"score\":3.000000,\"units\":{\"Tau\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"dihydroxy_c24_bile_acid|Tau1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.279493,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f8b9e022fd869bb52d5853103a6d5aa808d897b1eef151b5cc52346baecbd982"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.279473",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.279473"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"62f8ecf73465536557c7440543f7bdcf78f3d62082fb987669a3b559cb1c23c6\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.279473,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bc640cc1d89648028fbb485a210e247431111b9ccde406f31f79476006feb000"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"1e3b548437ffce5688bcfb472eed9f5440aed2076e4479b7caed93e5a53535e2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1ddc83986790de7bb6bd9690aee7b5a52a3b4b640da0fe8c7bae9d9b7de590a7"
+  },
+  {
+   "description": "the positive spectrum of dihydroxy_c24_bile_acid|Tau1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg"
+    ],
+    "outcomes": {
+     "steryl_glycoside_bile_acid.taurine_conjugate.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "79.957364",
+      "500.0"
+     ],
+     [
+      "106.980839",
+      "500.0"
+     ],
+     [
+      "124.007388",
+      "500.0"
+     ],
+     [
+      "498.289483",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "498.289483"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"input_sha256\":\"6b6753585d85cf8826d5ee23eed4c607dc51373b317e2726ddeef819856f7856\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"substituent\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"taurine_conjugate\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"steryl_glycoside_bile_acid.taurine_conjugate.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":498.289483,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4df71be502d7a6bb8929780fa06eafabe5c5bceb121ffaaba089a7dfb6b89ac8\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e92da7ced9d2d1e75e8c4ea9faf2c1f9cd257419297ada9c90d552126d5a58ee"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

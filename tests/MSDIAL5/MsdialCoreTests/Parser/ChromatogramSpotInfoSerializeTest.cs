@@ -14,6 +14,16 @@ namespace MsdialCoreTests.Parser
     public class ChromatogramSpotInfoSerializeTest
     {
         [TestMethod]
+        public void CreateSpotSerializerRejectsUnsupportedVersion()
+        {
+            const string version = "CSS2";
+            var error = Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+                ChromatogramSerializerFactory.CreateSpotSerializer(version));
+            Assert.AreEqual("version", error.ParamName);
+            Assert.AreEqual(version, error.ActualValue);
+        }
+
+        [TestMethod]
         public void SerializeAndDeserialize()
         {
             var spotInfo = ChromatogramSerializerTestHelper.CreateChromatogramSpotInfo(5, 100, ChromXType.RT);

@@ -1,0 +1,616 @@
+{
+ "cases": [
+  {
+   "description": "h* = eriodictyol||[M-H]-, precursor at its oracle m/z; one peak per support member: a13:C7H3O4, b13:C8H7O2",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": "eriodictyol||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a13:C7H3O4@1",
+       "b13:C8H7O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "eriodictyol||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavanone_or_chalcone\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"1c6735df10c6b9fa1d5676a5480bbc51e0ec0e165f6fa641890c4932a4401b92\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavanone_or_chalcone\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"eriodictyol|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"eriodictyol||[M-H]-\",\"hypothesis_mz\":287.056112,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C7H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H3O4\",\"peak_index\":1,\"peak_mz\":151.003683,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":151.003683,\"term_id\":\"a13\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C8H7O2\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"b13\",\"unit_id\":1}],\"neutral_formula\":\"C15H12O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"eriodictyol\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"eriodictyol||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8950aec39a8c6d2434256c01856cebf707105ad4f889797b2f2609f3a6f85f87"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- without the peaks of required term a13; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "drop_a13",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"df2bb3e7844b7d0af5fb9ecd052dd2562f4740986f4e7b660e3cec09f7f3c870\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "572878f08a44f3995a59b9ac692442689cc7cb64885c7323631e018bb79a6a0a"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- without the peaks of required term b13; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "drop_b13",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"96c9c35bacc48fe0b248043b995a80457c712ee8ed24539c31c24efbd5b36401\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "f3b04d85f50d87a9af020ab13f8583bd93ec4a5a9132f6db93bab5f3f5d38c64"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with a13:C7H3O4 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": "eriodictyol||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a13:C7H3O4@1",
+       "b13:C8H7O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "eriodictyol||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.008673",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavanone_or_chalcone\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"e20f548c58ae1256bee511bc92bda0ebae4caaf7be52a3b85291d677faad2e8a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavanone_or_chalcone\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"eriodictyol|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"eriodictyol||[M-H]-\",\"hypothesis_mz\":287.056112,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":33.048,\"ion_formula\":\"C7H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H3O4\",\"peak_index\":1,\"peak_mz\":151.008673,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":151.003683,\"term_id\":\"a13\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C8H7O2\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"b13\",\"unit_id\":1}],\"neutral_formula\":\"C15H12O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"eriodictyol\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"eriodictyol||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d5bbb359c27ead6810e35d118e4d2a6a012f6cc843ee2fdf73254269316e2144"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with a13:C7H3O4 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.008693",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"0ff01a3162a1f23d3809b047bdd53a5904b0c1fb7aa34ef482b3e724329d6fd5\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "bc93d8099872737f881c968e47e844e3d16dd867e530ad39bdf8023fd138524b"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with a13:C7H3O4 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": "eriodictyol||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a13:C7H3O4@1",
+       "b13:C8H7O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "eriodictyol||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "150.998693",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavanone_or_chalcone\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"2d6a3f44d2e0b6566fb2c3f34a75586364116098461911d0854b108f3d4f736a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavanone_or_chalcone\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"eriodictyol|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"eriodictyol||[M-H]-\",\"hypothesis_mz\":287.056112,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-33.043,\"ion_formula\":\"C7H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H3O4\",\"peak_index\":1,\"peak_mz\":150.998693,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":151.003683,\"term_id\":\"a13\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C8H7O2\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"b13\",\"unit_id\":1}],\"neutral_formula\":\"C15H12O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"eriodictyol\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"eriodictyol||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ba01d0d8f3474e07e81c448a671322c0f7b2b235af93c53ec3bd52f587fa8993"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with a13:C7H3O4 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "150.998673",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"10b634a54d47332a4cc4cba52be14e4a005ca4238291a07bfbf6842e1bbec6a4\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "35c75d4ce5a7d63c7abd160d4e78c64a430fd40de6ee008a7a5af863600baf0e"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": "eriodictyol||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a13:C7H3O4@1",
+       "b13:C8H7O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "eriodictyol||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.066102",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.066102"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavanone_or_chalcone\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"11526e82d5f68fcbdea3f2c2d4308b0d2efe3f3d932d9b9124982da7100e9af1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavanone_or_chalcone\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"eriodictyol|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"eriodictyol||[M-H]-\",\"hypothesis_mz\":287.056112,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C7H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H3O4\",\"peak_index\":1,\"peak_mz\":151.003683,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":151.003683,\"term_id\":\"a13\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C8H7O2\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"b13\",\"unit_id\":1}],\"neutral_formula\":\"C15H12O6\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"eriodictyol\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"eriodictyol||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.066102,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6321f6017724e9ed9755575dcd716f9b16e1872f42175f539017cdab8676fb6d"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.066122",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.066122"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"cd09ac5b6ac4747caf00d6ee30a5e4fdbf81bd490449496774b366ae4075113f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.066122,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5803ae4d63abc17153a520c714fcd1ff79f4bbdc560e1cc5be966f9044d63f3a"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": "eriodictyol||[M-H]-",
+      "fired": true,
+      "matched": [
+       "a13:C7H3O4@1",
+       "b13:C8H7O2@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "eriodictyol||[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.046122",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.046122"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavanone_or_chalcone\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"f2c223d87087ed9f7892ae7994f5978205557752ff43d63135f325ab154c53de\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavanone_or_chalcone\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"eriodictyol|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"eriodictyol||[M-H]-\",\"hypothesis_mz\":287.056112,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C7H3O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H3O4\",\"peak_index\":1,\"peak_mz\":151.003683,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":151.003683,\"term_id\":\"a13\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"C8H7O2\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"b13\",\"unit_id\":1}],\"neutral_formula\":\"C15H12O6\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"eriodictyol\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"eriodictyol||[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.046122,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "745735c4835f539ae9041adba0bcdcc2754484fab88077ad5ad92c61712d3814"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.046102",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.046102"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"a98d7ca8dbd17e2adc713d7ff7045c92b7f3c88c1655a372edcdb058c7b39b0e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.046102,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "01574a6d6bb520d3119199867cd5dff154f51f92735240c4f28c83d6c091cf54"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"31f498fda73c722e75ccb750787a095b154ed1baf33cc89367a23555315a383c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "8bf17a67d4477edb8848c8cad08b67dc23489c7fc8888288eb570fd17ca7998d"
+  },
+  {
+   "description": "the positive spectrum of eriodictyol||[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_aglycone.flavanone.neg"
+    ],
+    "outcomes": {
+     "flavonoid_aglycone.flavanone.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "151.003683",
+      "500.0"
+     ],
+     [
+      "287.056112",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "287.056112"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"input_sha256\":\"1c6735df10c6b9fa1d5676a5480bbc51e0ec0e165f6fa641890c4932a4401b92\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavanone_or_chalcone\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_aglycone.flavanone.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":287.056112,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"4b53b02d8528138888ea9c07249b6ae756c36b07cc97650b2722ff3fdf2f354c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "970b76dbee64af6017502f90bf8387d7479467bb503ce93f408b85001defb867"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

@@ -1,0 +1,76 @@
+{
+ "entries": [
+  {
+   "class": "flavanone",
+   "formula": "C15H12O5",
+   "ions": {
+    "rda_04b_mh2o": {
+     "neg": [],
+     "pos": [
+      "C9H7O2"
+     ]
+    }
+   },
+   "name": "naringenin",
+   "origin": "as_published",
+   "scaffold_id": "naringenin",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 3 (peak D, naringenin)"
+    },
+    {
+     "doi": "10.3390/plants12193388",
+     "locator": "Sec. 2.1, third paragraph (MS2 ions of compounds 1-3, printed in the text only); Table 1 (precursor ions only)"
+    },
+    {
+     "doi": "10.1002/rcm.7035",
+     "locator": "Table 2 (p. 2366)"
+    }
+   ]
+  },
+  {
+   "class": "flavanone",
+   "formula": "C15H12O6",
+   "ions": {
+    "rda_04b_mh2o": {
+     "neg": [],
+     "pos": [
+      "C9H7O3"
+     ]
+    }
+   },
+   "name": "eriodictyol",
+   "origin": "as_published",
+   "scaffold_id": "eriodictyol",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2; Table 3 (peak C)"
+    }
+   ]
+  },
+  {
+   "class": "flavanone",
+   "formula": "C16H14O6",
+   "ions": {
+    "rda_04b_mh2o": {
+     "neg": [],
+     "pos": [
+      "C10H9O3"
+     ]
+    }
+   },
+   "name": "hesperetin",
+   "origin": "as_published",
+   "scaffold_id": "hesperetin",
+   "source": [
+    {
+     "doi": "10.3390/12030593",
+     "locator": "Table 2"
+    }
+   ]
+  }
+ ],
+ "list_id": "flavonoid_aglycone_flavanone_pos"
+}

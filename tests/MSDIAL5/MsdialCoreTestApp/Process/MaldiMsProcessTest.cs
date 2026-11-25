@@ -270,6 +270,10 @@ namespace CompMs.App.MsdialConsole.Process
                 out var compoundsInTargetMode,
                 out var lbmDB);
 
+            if (txtDB is null) {
+                throw new InvalidDataException($"Text reference library could not be loaded: {reffile}");
+            }
+
             RawMeasurement? rawobj = null;
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
@@ -279,7 +283,7 @@ namespace CompMs.App.MsdialConsole.Process
             var container = new MsdialDimsDataStorage {
                 AnalysisFiles = [file],
                 AlignmentFiles = [],
-                MspDB = [.. mspDB.Database], TextDB = [.. txtDB.Database], IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
+                MspDB = mspDB is null ? [] : [.. mspDB.Database], TextDB = [.. txtDB.Database], IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
             };
 
             var evaluator = new MsScanMatchResultEvaluator(param.TextDbSearchParam);

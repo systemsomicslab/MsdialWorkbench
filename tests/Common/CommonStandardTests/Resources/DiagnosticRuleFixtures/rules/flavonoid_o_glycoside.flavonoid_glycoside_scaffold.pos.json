@@ -1,0 +1,673 @@
+{
+ "cases": [
+  {
+   "description": "h* = acacetin|Hex1,HexA1|[M+H]+, precursor at its oracle m/z; one peak per support member: y0:A, rda:C7H5O4",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": "acacetin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "rda:C7H5O4@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"b5104d8403137a4df663b6229687197977c3ecd47f69e2c540e71de0b04999f8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":623.160661,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O4\",\"peak_index\":0,\"peak_mz\":153.018235,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":153.018235,\"term_id\":\"rda\",\"unit_id\":1}],\"neutral_formula\":\"C28H30O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e7071d2674f4775152c5133d9922776781f0252791d581ed14c032bf23413a50"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ without the peaks of required term y0; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "drop_y0",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"aaf64baf44418ca302de540411cfcb3119e79a33083387d872850e25010a7e3b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "e674b24e11356631828f27ee472f91adea4e8fba00e1125fde4732b5cd2d8062"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ without the peaks of required term rda; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "drop_rda",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"eda053bf9f3b44f59dac2f862139c1a9ca8f022050791ac5506c4f8ad1e4814b\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5fe955db00eba98c085e49ef4411b92e2f9b6bb0974a3f65cd7a48c7537beb2f"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with y0:A moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": "acacetin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "rda:C7H5O4@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.08074",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"eb5e42a7411f8fc001071215e47028f0f86b9ebab64c270769858b14606134fe\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":623.160661,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":17.506,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":285.080740,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O4\",\"peak_index\":0,\"peak_mz\":153.018235,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":153.018235,\"term_id\":\"rda\",\"unit_id\":1}],\"neutral_formula\":\"C28H30O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "93fb7d753047cb423c25741880ec084f604c7b577ead38e797aaa5cf0b7f6a7f"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with y0:A moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.08076",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"48cf0204fc0974eb3b382675587ff54e4333d834b5cc430084c2f6b028c1449e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "452511aa70296a4791f2ce2d003f668cd77f1f746238e22bca50729939b4569b"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with y0:A moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": "acacetin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "rda:C7H5O4@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07076",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"8f5ec48f724cb81c0c23cff8ff366060691ea269f7e0bf56dfd94d1c49b6a561\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":623.160661,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-17.502,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":285.070760,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O4\",\"peak_index\":0,\"peak_mz\":153.018235,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":153.018235,\"term_id\":\"rda\",\"unit_id\":1}],\"neutral_formula\":\"C28H30O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c9144b1ac8e768428d923b6e7d0304e34c5dc9d30080627504b99a8065766846"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with y0:A moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07074",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"9b9423f8eb7d83234486e5caab3f8c4c0edfcc68ce4405128b07e7489319edff\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6d2a1e8282088adf1515229f68d80d59ef7e6ebae2054ba9f9f34a228037a033"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": "acacetin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "rda:C7H5O4@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.170651",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.170651"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"4265f7f4bd3a80805487c26a1495e8add078e6f0d4121af0c801d6e77164a3fc\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":623.160661,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O4\",\"peak_index\":0,\"peak_mz\":153.018235,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":153.018235,\"term_id\":\"rda\",\"unit_id\":1}],\"neutral_formula\":\"C28H30O16\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.170651,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7c7988c6a96e8a6e39c3d1d4e5c14f16a7302676e50ead77bb81e40830f177a7"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.170671",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.170671"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"c34375ed078e90a8ca7aaa93510d1c68ebf15f99c39485d728d70adb61ebdc15\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.170671,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0186689191e179899f61570d8ba8baf389da036eb90705ad12b124c65e74a024"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": "acacetin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@1",
+       "rda:C7H5O4@0"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.150671",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.150671"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"4d716e45e2ce841dbd92a058dafeac6d5afeb57b260dfae95212771ee6d80fcd\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":623.160661,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":1,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O4\",\"peak_index\":0,\"peak_mz\":153.018235,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":153.018235,\"term_id\":\"rda\",\"unit_id\":1}],\"neutral_formula\":\"C28H30O16\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.150671,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5d41f20179534df5fd4dec0b3cdeb0d2cf59bbcb1b735c4782894eaed642af8b"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.150651",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.150651"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"5fd67a5348116518e4c5cdbd7db0fd6a69e1187f7c2d8d0e11a3632a8f9b1285\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.150651,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c8d3595132ca10b718df048a85a96db2eaf6657ff08eb891cfbb4d309cc5bd3e"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"e11fe01a4dab6968e25c0d00c987f267edb7e4438a3ae251d772293b8bbbe2ce\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "1b4dda03217c64ff30b6a02a3a56828633bb0f3d6ed86fd0eeba1858cbe3c1e9"
+  },
+  {
+   "description": "the union of the positive spectra of acacetin|Hex1,HexA1|[M+H]+ and calycosin|Hex1,HexA1|[M+H]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": "acacetin|Hex1,HexA1|[M+H]+",
+      "fired": true,
+      "matched": [
+       "y0:A@2",
+       "rda:C7H5O4@1"
+      ],
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "acacetin|Hex1,HexA1|[M+H]+",
+       "calycosin|Hex1,HexA1|[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "137.02332",
+      "500.0"
+     ],
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"flavonoid_o_glycoside\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"3b7bdd4d10e261b2b28adfcbc67de9dae3e3fbec99cef6c1f09fba9886da6c30\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":4,\"narrowest_motifs\":[\"flavonoid_o_glycoside\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"acacetin|Hex1,HexA1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"acacetin|Hex1,HexA1|[M+H]+\",\"hypothesis_mz\":623.160661,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C16H13O5\",\"kind\":\"aglycone_ion\",\"member_key\":\"A\",\"peak_index\":2,\"peak_mz\":285.075750,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":285.075750,\"term_id\":\"y0\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.002,\"ion_formula\":\"C7H5O4\",\"kind\":\"product_ion\",\"member_key\":\"C7H5O4\",\"peak_index\":1,\"peak_mz\":153.018235,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":153.018235,\"term_id\":\"rda\",\"unit_id\":1}],\"neutral_formula\":\"C28H30O16\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"acacetin\",\"score\":2.000000,\"units\":{\"Hex\":1,\"HexA\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"acacetin|Hex1,HexA1|[M+H]+\",\"calycosin|Hex1,HexA1|[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "cdb1cb50e4b1489bfda5a6ce95aae4bb5c842392a0c0d074dfcf775c724d3cc8"
+  },
+  {
+   "description": "the positive spectrum of acacetin|Hex1,HexA1|[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos"
+    ],
+    "outcomes": {
+     "flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 5,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "153.018235",
+      "500.0"
+     ],
+     [
+      "285.07575",
+      "500.0"
+     ],
+     [
+      "623.160661",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "623.160661"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"input_sha256\":\"b5104d8403137a4df663b6229687197977c3ecd47f69e2c540e71de0b04999f8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"flavonoid_o_glycoside\",\"n_distinct_formulas\":1,\"n_hypotheses\":5,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"flavonoid_o_glycoside.flavonoid_glycoside_scaffold.pos\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":623.160661,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"30a76bfc0c4120055332a332425d102f9383bb6bd8563583e563577170e7de6a\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6f0d0058abb8b3da4b233594ccdeaacb517c9196dbca273317e8601eb98024cb"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

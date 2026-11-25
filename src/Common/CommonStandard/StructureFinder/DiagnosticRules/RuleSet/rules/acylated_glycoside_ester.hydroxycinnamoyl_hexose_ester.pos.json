@@ -1,0 +1,168 @@
+{
+ "author_reviewed": false,
+ "calibrated_on": [
+  "other"
+ ],
+ "claim": {
+  "claim_level": "substituent",
+  "claim_term_ids": [
+   "acylium",
+   "loss_hexose"
+  ],
+  "motif_id": "hydroxycinnamoyl_ester",
+  "negative_examples": [
+   {
+    "pubchem_cid": 14825516,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281759,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O"
+   }
+  ],
+  "non_claims": [
+   "the acylated hexose position and the anomer are not resolved",
+   "the acyl identity comes from the hypothesis and is reported, not claimed"
+  ],
+  "positive_examples": [
+   {
+    "pubchem_cid": 5280406,
+    "smiles": "COC1=CC(=CC(=C1O)OC)/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O"
+   },
+   {
+    "pubchem_cid": 13962928,
+    "smiles": "COC1=C(C=CC(=C1)/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O"
+   },
+   {
+    "pubchem_cid": 5281761,
+    "smiles": "C1=CC(=C(C=C1/C=C/C(=O)O[C@H]2[C@@H]([C@H]([C@@H]([C@H](O2)CO)O)O)O)O)O"
+   }
+  ]
+ },
+ "complementary": [
+  [
+   "acylium",
+   "loss_hexose"
+  ]
+ ],
+ "convention": "p2",
+ "format": "msfinder-diagnostic-rule",
+ "format_version": 1,
+ "logic": {
+  "all": [
+   {
+    "term": "acylium"
+   },
+   {
+    "term": "loss_hexose"
+   }
+  ]
+ },
+ "loss_reference": "hypothesis",
+ "measure": false,
+ "notes": "Not measured: from [M+H]+ the sources give only the acylium ion, which is the same peak as the hexose loss, so one usable ion remains and a single ion may not claim a class.",
+ "parameters_origin": "as_published",
+ "preconditions": {
+  "adducts": [
+   "[M+H]+"
+  ],
+  "competitors": [],
+  "composition": {
+   "core": "H2O",
+   "scaffold_list": null,
+   "unit_totals": {
+    "acyl": [
+     1,
+     1
+    ],
+    "sugar": [
+     1,
+     1
+    ]
+   },
+   "units": {
+    "Hex": [
+     1,
+     1
+    ],
+    "caffeoyl": [
+     0,
+     1
+    ],
+    "coumaroyl": [
+     0,
+     1
+    ],
+    "feruloyl": [
+     0,
+     1
+    ],
+    "sinapoyl": [
+     0,
+     1
+    ]
+   }
+  },
+  "ion_mode": "pos",
+  "precursor_tolerance_da": 0.01,
+  "priors": []
+ },
+ "primary_precondition_mode": "adduct_ambiguous",
+ "product_tolerance": "p2",
+ "review": null,
+ "rule_id": "acylated_glycoside_ester.hydroxycinnamoyl_hexose_ester.pos",
+ "source": [
+  {
+   "doi": "10.1105/tpc.108.058040",
+   "locator": "Results, Peak Annotation by Comparison with Flavonoid Biosynthetic Gene Knockout Mutants; Table 1 (s1, s2)"
+  },
+  {
+   "doi": "10.1002/rcm.3884",
+   "locator": "Results and Discussion, Cinnamoyl glycosides (42-44); Table 6; Table 7"
+  },
+  {
+   "doi": "10.1039/d1np00014d",
+   "locator": "Fig. 5, acylium ions of phenylpropanoid conjugates (PDF p.13)"
+  },
+  {
+   "locator": "Stop A handback",
+   "reference": "WS8-P3 protocol default floor, fixed before any data look (directive 2026-11-18; P2 default 0.01); kept where no paper prints a floor, provisional (WS0 2026-11-19, pending the author)"
+  }
+ ],
+ "source_checked": false,
+ "terms": [
+  {
+   "floor_source": "src:3",
+   "kind": "product_ion",
+   "min_rel_intensity": 0.01,
+   "note": "hydroxycinnamoyl acylium; caffeoyl 163 from a caffeoyl hexose in src:1; src:0 lists m/z 207 from an unassigned sinapoyl derivative at m/z 387; also src:2",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "acylium",
+   "term_source": "src:1",
+   "than": null,
+   "unit": {
+    "class": "acyl",
+    "minus": null,
+    "plus": "H"
+   }
+  },
+  {
+   "floor_source": "src:3",
+   "formula": "C6H12O6",
+   "kind": "loss_from_precursor",
+   "min_rel_intensity": 0.01,
+   "note": "net loss of hexose C6H12O6 from [M+H]+, the same peak as the acylium; src:1 prints the 162 loss from dehydrated or deacylated ions (325 to 163, 353 to 191) and an in-source 343/163 pair",
+   "ratio": null,
+   "ratio_source": null,
+   "role": "required",
+   "term_id": "loss_hexose",
+   "term_source": "src:1",
+   "than": null
+  }
+ ],
+ "transcribed_by": "Claude (WS8-P3 rule drafting, 2026-11-18) from the LLM-extracted candidate records of candidates-20261118; source check 2026-11-18 incomplete, see _audit/acylated_glycoside_ester.json",
+ "version": 1,
+ "veto_excludes_motif": false
+}

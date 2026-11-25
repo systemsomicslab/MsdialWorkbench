@@ -1,12 +1,52 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CompMs.Common.Enum;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj.Tests
 {
     [TestClass()]
     public class AnalysisFileBeanModelCollectionTests
     {
+        [TestMethod()]
+        public void RefreshRawDataAvailabilityReturnsTheMissingSamplesInListOrder() {
+            var folder = Path.Combine(Path.GetTempPath(), $"msdial-collection-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(folder);
+            try {
+                var present = Path.Combine(folder, "present.mzML");
+                File.WriteAllBytes(present, new byte[0]);
+                var goneFolder = Path.Combine(folder, "gone");
+                var models = new[]
+                {
+                    CreateAt(Path.Combine(goneFolder, "a.mzML")),
+                    CreateAt(present),
+                    CreateAt(Path.Combine(folder, "missing.mzML")),
+                    CreateAt(Path.Combine(goneFolder, "b.mzML")),
+                };
+                models[3].AnalysisFileIncluded = false;
+                var collection = new AnalysisFileBeanModelCollection(models);
+
+                var missing = collection.RefreshRawDataAvailability();
+
+                CollectionAssert.AreEqual(new[] { models[0], models[2], models[3] }, missing.ToArray());
+                Assert.IsFalse(models[0].IsRawDataAvailable);
+                Assert.IsTrue(models[1].IsRawDataAvailable);
+                Assert.IsFalse(models[3].IsRawDataAvailable);
+            }
+            finally {
+                Directory.Delete(folder, recursive: true);
+            }
+        }
+
+        private static AnalysisFileBeanModel CreateAt(string path) {
+            var model = AnalysisFileBeanModelTestHelper.Create();
+            model.AnalysisFilePath = path;
+            model.AnalysisFileIncluded = true;
+            return model;
+        }
+
         [TestMethod()]
         [DynamicData(nameof(OrderUniqueTestData), DynamicDataSourceType.Property)]
         public void UniqueAnalyticalOrderTest(bool condition, AnalysisFileBeanModel[] models) {

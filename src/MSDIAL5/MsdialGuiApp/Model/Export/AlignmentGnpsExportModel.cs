@@ -72,7 +72,7 @@ internal sealed class AlignmentGnpsExportModel : BindableBase, IAlignmentResultE
         var files = _files.AnalysisFiles.Select(f => f.File).ToArray();
         var exporter = new AlignmentGnpsExporter(exportDirectory, alignmentFile.FileName);
         foreach (var type in Types.Where(t => t.ShouldExport)) {
-            exporter.Export(container.AlignmentSpotProperties, msdecResults, files, new GnpsFileClassMetaAccessor(), _gnpsMetaDataAccessor, type.QuantValueAccessor);
+            exporter.Export(container.AlignmentSpotProperties, msdecResults, files, new GnpsFileClassMetaAccessor(), type.DecorateMetadata(_gnpsMetaDataAccessor), type.QuantValueAccessor);
         }
         exporter.ExportMgf(container.AlignmentSpotProperties, msdecResults);
 
@@ -104,7 +104,7 @@ internal sealed class AlignmentGnpsExportModel : BindableBase, IAlignmentResultE
         var files = _files.AnalysisFiles.Select(f => f.File).ToArray();
         var exporter = new AlignmentGnpsExporter(exportDirectory, alignmentFile.FileName);
         foreach (var type in Types.Where(t => t.ShouldExport)) {
-            exporter.Export(container.AlignmentSpotProperties, msdecResults, files, _fileClassMetaAccessor, _gnps2MetaDataAccessor, type.QuantValueAccessor);
+            exporter.Export(container.AlignmentSpotProperties, msdecResults, files, _fileClassMetaAccessor, type.DecorateMetadata(_gnps2MetaDataAccessor), type.QuantValueAccessor);
         }
         exporter.ExportMgf(container.AlignmentSpotProperties, msdecResults);
 

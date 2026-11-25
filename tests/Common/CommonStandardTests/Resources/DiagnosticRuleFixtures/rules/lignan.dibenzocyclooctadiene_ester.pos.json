@@ -1,0 +1,669 @@
+{
+ "cases": [
+  {
+   "description": "h* = angeloyl_ester_c28h34o9||[M+H]+, precursor at its oracle m/z; one peak per support member: ion_c23h27o7:C23H27O7, ion_c21h23o6:C21H23O6",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": "angeloyl_ester_c28h34o9||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c23h27o7:C23H27O7@1",
+       "ion_c21h23o6:C21H23O6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "angeloyl_ester_c28h34o9||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"d0551965802c0f587e6a3ff66256535c8a54b76d4ad78b47755ae692e568b923\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"angeloyl_ester_c28h34o9|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"angeloyl_ester_c28h34o9||[M+H]+\",\"hypothesis_mz\":515.227559,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C23H27O7\",\"kind\":\"product_ion\",\"member_key\":\"C23H27O7\",\"peak_index\":1,\"peak_mz\":415.175129,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":415.175129,\"term_id\":\"ion_c23h27o7\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C21H23O6\",\"kind\":\"product_ion\",\"member_key\":\"C21H23O6\",\"peak_index\":0,\"peak_mz\":371.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":371.148914,\"term_id\":\"ion_c21h23o6\",\"unit_id\":1}],\"neutral_formula\":\"C28H34O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"angeloyl_ester_c28h34o9\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"angeloyl_ester_c28h34o9||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a36b5ca40e865d9a08fc445e02fccc048aed8f97de8bd04eb095da79508787bc"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ without the peaks of required term ion_c23h27o7; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "drop_ion_c23h27o7",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"bd5451c45c1cdc28f4a4dd309139d6af912d2f42b6104979b2e3b8daa430fe41\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "23d1d63ce83d2b1504c8b94e1a3484257ccaa7755fe7f0c0be155e466aa45a81"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ without the peaks of required term ion_c21h23o6; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "drop_ion_c21h23o6",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"fc57e8a8bc3aed5606af1201ea0d8828cd3183ccfd7c859a55642ef6f04f5a59\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":2,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9be119654262ffeda89d07de737f2c439653265507dcf7e2bedccba2cf53603e"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with ion_c23h27o7:C23H27O7 moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": "angeloyl_ester_c28h34o9||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c23h27o7:C23H27O7@1",
+       "ion_c21h23o6:C21H23O6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "angeloyl_ester_c28h34o9||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.180119",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"e6f13cd2496d03fb0cf42b4836323f62e0d3de1096b58ea8df71ee244d2ea12c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"angeloyl_ester_c28h34o9|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"angeloyl_ester_c28h34o9||[M+H]+\",\"hypothesis_mz\":515.227559,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":12.019,\"ion_formula\":\"C23H27O7\",\"kind\":\"product_ion\",\"member_key\":\"C23H27O7\",\"peak_index\":1,\"peak_mz\":415.180119,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":415.175129,\"term_id\":\"ion_c23h27o7\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C21H23O6\",\"kind\":\"product_ion\",\"member_key\":\"C21H23O6\",\"peak_index\":0,\"peak_mz\":371.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":371.148914,\"term_id\":\"ion_c21h23o6\",\"unit_id\":1}],\"neutral_formula\":\"C28H34O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"angeloyl_ester_c28h34o9\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"angeloyl_ester_c28h34o9||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a086722d3472ce017b870b4a9290c12368ecdaf89b7ccfbbe42923e69187d414"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with ion_c23h27o7:C23H27O7 moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.180139",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"4c332c28f1405ba8c76a802d67ac1b4ac008fe09f27181b3b278177ded051057\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d7a96cf5d760b90da50efb191f50a2ffc9e2d559b5c91330ae3d422f987c65b0"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with ion_c23h27o7:C23H27O7 moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": "angeloyl_ester_c28h34o9||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c23h27o7:C23H27O7@1",
+       "ion_c21h23o6:C21H23O6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "angeloyl_ester_c28h34o9||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.170139",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"e4da95263c6e521e7ca970af5dd1e0094b38e1a9b680cdbf8002fea239958a3c\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"angeloyl_ester_c28h34o9|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"angeloyl_ester_c28h34o9||[M+H]+\",\"hypothesis_mz\":515.227559,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-12.020,\"ion_formula\":\"C23H27O7\",\"kind\":\"product_ion\",\"member_key\":\"C23H27O7\",\"peak_index\":1,\"peak_mz\":415.170139,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":415.175129,\"term_id\":\"ion_c23h27o7\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C21H23O6\",\"kind\":\"product_ion\",\"member_key\":\"C21H23O6\",\"peak_index\":0,\"peak_mz\":371.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":371.148914,\"term_id\":\"ion_c21h23o6\",\"unit_id\":1}],\"neutral_formula\":\"C28H34O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"angeloyl_ester_c28h34o9\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"angeloyl_ester_c28h34o9||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "fbe3ccbbca6c9fe8f7de14dbff9ee11a42fdef1f6db8b609fdb990b12a7bece2"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with ion_c23h27o7:C23H27O7 moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.170119",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"034b969c609bc82b751368fd21547f465ae5cedabc33596c10ecd211fdf723d7\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "234f172707d9e2a1932eec1c2432c3227d04b9adde3ae47260d499ff940c8514"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": "angeloyl_ester_c28h34o9||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c23h27o7:C23H27O7@1",
+       "ion_c21h23o6:C21H23O6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "angeloyl_ester_c28h34o9||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.237549",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.237549"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"4aab845af76821ea5fdcee9b35bc8dbb2a564632ad8283b1373acf39c7711a6e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"angeloyl_ester_c28h34o9|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"angeloyl_ester_c28h34o9||[M+H]+\",\"hypothesis_mz\":515.227559,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C23H27O7\",\"kind\":\"product_ion\",\"member_key\":\"C23H27O7\",\"peak_index\":1,\"peak_mz\":415.175129,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":415.175129,\"term_id\":\"ion_c23h27o7\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C21H23O6\",\"kind\":\"product_ion\",\"member_key\":\"C21H23O6\",\"peak_index\":0,\"peak_mz\":371.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":371.148914,\"term_id\":\"ion_c21h23o6\",\"unit_id\":1}],\"neutral_formula\":\"C28H34O9\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"angeloyl_ester_c28h34o9\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"angeloyl_ester_c28h34o9||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.237549,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "0c149a409b8f912e5592de67477ed3cbcdfd86f9770c3d6a0acccf748839a850"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.237569",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.237569"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"24b1c8d1b0e920c7da10aef07720fb19c0b276ae396c80ed4f54bfe679879f2a\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.237569,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "13b48b10dd4815c356c42976fe088111620b9800209f8f9352f2317520c54cb2"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": "angeloyl_ester_c28h34o9||[M+H]+",
+      "fired": true,
+      "matched": [
+       "ion_c23h27o7:C23H27O7@1",
+       "ion_c21h23o6:C21H23O6@0"
+      ],
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "angeloyl_ester_c28h34o9||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.217569",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.217569"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"b89762f88e032515e0717c1471c74762e6c6a79a64aa40df6f7b2002f0a66eb9\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+H]+\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"angeloyl_ester_c28h34o9|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"angeloyl_ester_c28h34o9||[M+H]+\",\"hypothesis_mz\":515.227559,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C23H27O7\",\"kind\":\"product_ion\",\"member_key\":\"C23H27O7\",\"peak_index\":1,\"peak_mz\":415.175129,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":415.175129,\"term_id\":\"ion_c23h27o7\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C21H23O6\",\"kind\":\"product_ion\",\"member_key\":\"C21H23O6\",\"peak_index\":0,\"peak_mz\":371.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":371.148914,\"term_id\":\"ion_c21h23o6\",\"unit_id\":1}],\"neutral_formula\":\"C28H34O9\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"angeloyl_ester_c28h34o9\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"angeloyl_ester_c28h34o9||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.217569,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "36b250ab8482c3dce134ed95986e0e6d68821e966d197d8db67dc495d24823ff"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.217549",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.217549"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"9190e8cd44292adb1368f6b99bf5734a86896f57c015eda9d853b222153c3af3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.217549,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "2de4889fb1bde692bedad6fac1fb52e8b4ac4724715b572b4bce36134f3b10ac"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"792371953eea9af9842e137a9d7f6c81b5a5f69fe8447ca2027e5060deee1ef8\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9d29ec063d4f5f1b59743b33c5b1c554651830895f56b522b4f53c4c8dc97f64"
+  },
+  {
+   "description": "the union of the positive spectra of benzoyl_ester_c30h32o9||[M+H]+ and angeloyl_ester_c28h34o9||[M+Na]+ at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": "angeloyl_ester_c28h34o9||[M+Na]+",
+      "fired": true,
+      "matched": [
+       "ion_c23h27o7:C23H27O7@1",
+       "ion_c21h23o6:C21H23O6@0"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "angeloyl_ester_c28h34o9||[M+Na]+",
+       "benzoyl_ester_c30h32o9||[M+H]+"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "537.211909",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "537.211909"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"9f1cb557fcc07c64fa0ecc2513f4204c80da47b20eee7310f59568fa5b47358f\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[\"dibenzocyclooctadiene_benzylic_ester\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M+Na]+\",\"adduct_source\":\"common\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"angeloyl_ester_c28h34o9|\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"angeloyl_ester_c28h34o9||[M+Na]+\",\"hypothesis_mz\":537.209503,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C23H27O7\",\"kind\":\"product_ion\",\"member_key\":\"C23H27O7\",\"peak_index\":1,\"peak_mz\":415.175129,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":415.175129,\"term_id\":\"ion_c23h27o7\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":-0.001,\"ion_formula\":\"C21H23O6\",\"kind\":\"product_ion\",\"member_key\":\"C21H23O6\",\"peak_index\":0,\"peak_mz\":371.148914,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":371.148914,\"term_id\":\"ion_c21h23o6\",\"unit_id\":1}],\"neutral_formula\":\"C28H34O9\",\"precursor_error_da\":0.002406,\"scaffold_id\":\"angeloyl_ester_c28h34o9\",\"score\":2.000000,\"units\":{},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":2,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[\"angeloyl_ester_c28h34o9||[M+Na]+\",\"benzoyl_ester_c30h32o9||[M+H]+\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":537.211909,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "d4aeaa144c4c46a3861cbd484c873f35bf3c59211afa90a5adc7dfc6bf9ab0e5"
+  },
+  {
+   "description": "the positive spectrum of angeloyl_ester_c28h34o9||[M+H]+ under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "lignan.dibenzocyclooctadiene_ester.pos"
+    ],
+    "outcomes": {
+     "lignan.dibenzocyclooctadiene_ester.pos": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 1,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "371.148914",
+      "500.0"
+     ],
+     [
+      "415.175129",
+      "500.0"
+     ],
+     [
+      "515.227559",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "515.227559"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"input_sha256\":\"d0551965802c0f587e6a3ff66256535c8a54b76d4ad78b47755ae692e568b923\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"scaffold\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"dibenzocyclooctadiene_benzylic_ester\",\"n_distinct_formulas\":1,\"n_hypotheses\":1,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"lignan.dibenzocyclooctadiene_ester.pos\",\"source_checked\":false,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":false}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":515.227559,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"5ac5e6bfa0e9df7992c8e52e231dbb5b3abfc076bd7a19527be067939dfd739c\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "94274840df5cc5f6f12e731d72a3b8051689c3cde88061817610cc8116349071"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

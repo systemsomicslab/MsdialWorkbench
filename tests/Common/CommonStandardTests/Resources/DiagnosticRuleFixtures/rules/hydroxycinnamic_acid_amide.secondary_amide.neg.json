@@ -1,0 +1,806 @@
+{
+ "cases": [
+  {
+   "description": "h* = agmatine|caffeoyl1,feruloyl1|[M-H]-, precursor at its oracle m/z; one peak per support member: vinylphenolate:caffeoyl, vinylphenolate:feruloyl, vinylphenol_loss:feruloyl, vinylphenol_loss:caffeoyl",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:caffeoyl@0",
+       "vinylphenolate:feruloyl@1",
+       "vinylphenol_loss:feruloyl@2",
+       "vinylphenol_loss:caffeoyl@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "positive",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"748b946d815ac117823391ea740dee993c138df0e9b498f1542dea5d4ff67a79\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":467.193609,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"vinylphenolate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":317.125529,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.125529,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":331.141179,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":331.141179,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C24H28N4O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"agmatine\",\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "c790d82524684c6b2cc40f648b0f37b568bc51aa77887fc3a49b55273f9a47b3"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- without the peaks of required term vinylphenolate; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "drop_vinylphenolate",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"56d506127bc5267e3992c84b86afebc68d5fe99fda21235f84835107a9a73573\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3db7df349df2f594bca61bc065222379834e253972a53da7c17ab532a972e60c"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- without the peaks of required term vinylphenol_loss; the rule does not fire",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "drop_vinylphenol_loss",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"e4f9844a338a6f91f7e39ac591a066c58f31becedf0d1b1a8ccde56889a9a9d1\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":3,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "025cdd82aaf201a2692ffad694e6a42d078ea4d0ec823bedd3f6b48322dad4b4"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with vinylphenolate:caffeoyl moved +(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:caffeoyl@0",
+       "vinylphenolate:feruloyl@1",
+       "vinylphenol_loss:feruloyl@2",
+       "vinylphenol_loss:caffeoyl@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.050143",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "tolerance_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"a5656327d2f7f037d3cca5048cb93ace0ddcfde2de78d4b28664d3b52f7d9f1d\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":467.193609,\"k_of\":[],\"matched\":[{\"error_da\":0.004990,\"error_ppm\":36.947,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.050143,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"vinylphenolate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":317.125529,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.125529,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":331.141179,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":331.141179,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C24H28N4O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"agmatine\",\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "3308e887812984ce32d5a71f7a576e5415771a4218a620fbe85197e8f762d9ef"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with vinylphenolate:caffeoyl moved +(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:feruloyl@1",
+       "vinylphenol_loss:feruloyl@2",
+       "vinylphenol_loss:caffeoyl@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.050163",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "tolerance_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"fe080ef71b09387611c351544b1a8059f73a7b16ec350aa730f28b46d51419e2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":467.193609,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":317.125529,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.125529,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":331.141179,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":331.141179,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C24H28N4O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"agmatine\",\"score\":3.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "a20a092fbde16326b71806831ed04f5593036db82a2b499f9ca698a9638e8c60"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with vinylphenolate:caffeoyl moved -(tol - 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:caffeoyl@0",
+       "vinylphenolate:feruloyl@1",
+       "vinylphenol_loss:feruloyl@2",
+       "vinylphenol_loss:caffeoyl@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.040163",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "tolerance_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"896590a0a3d979a42f842254a4872806d9331ad7c32d211090eca87d140526bb\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":467.193609,\"k_of\":[],\"matched\":[{\"error_da\":-0.004990,\"error_ppm\":-36.954,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.040163,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"vinylphenolate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":317.125529,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.125529,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":331.141179,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":331.141179,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C24H28N4O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"agmatine\",\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "5fd08a68226bf7af813cceb4fd4c3fc9a407be492aba0e39a46e2d2c56fba8bc"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with vinylphenolate:caffeoyl moved -(tol + 1e-5) Da, tol = max(0.005 Da, 10 ppm)",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:feruloyl@1",
+       "vinylphenol_loss:feruloyl@2",
+       "vinylphenol_loss:caffeoyl@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.040143",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "tolerance_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"a98b1fe267273a2b9e27ea2e36362c514c8fbd3e1eefb4ebdf004bde15366f0e\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":467.193609,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":317.125529,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.125529,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":331.141179,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":331.141179,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C24H28N4O6\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"agmatine\",\"score\":3.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "7a95ecc0adbdf7d584eb376b217d3394722bb9fbebb7fce8284299c8bc56ae38"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with the precursor +(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:caffeoyl@0",
+       "vinylphenolate:feruloyl@1",
+       "vinylphenol_loss:feruloyl@2",
+       "vinylphenol_loss:caffeoyl@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.203599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.203599"
+   },
+   "name": "precursor_in_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"d9dccca1d06c9134e1f8e076e8430f9ca1059ff16ffeb2584db5a78874d98ee2\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":467.193609,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"vinylphenolate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":317.125529,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.125529,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":331.141179,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":331.141179,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C24H28N4O6\",\"precursor_error_da\":0.009990,\"scaffold_id\":\"agmatine\",\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.203599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "21403e500b517c9094ee5b887d764016599d11fa826000b2ff441896b254a464"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with the precursor +(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.203619",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.203619"
+   },
+   "name": "precursor_out_high",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"0570b8720058a9aca7cdca9720cecf2cd389c227d9c584db5dff28d454701a56\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.203619,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "9988726f5bae6514aba6ed45c9f6e97c91254a9b41c56829757617b758b9ab01"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with the precursor -(precursor_tolerance_da - 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl1|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:caffeoyl@0",
+       "vinylphenolate:feruloyl@1",
+       "vinylphenol_loss:feruloyl@2",
+       "vinylphenol_loss:caffeoyl@3"
+      ],
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl1|[M-H]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.183619",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.183619"
+   },
+   "name": "precursor_in_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"703a3ccd15d264e2ff719f69b2c3e36709e26765b8aff1423151b09471328159\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl1\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl1|[M-H]-\",\"hypothesis_mz\":467.193609,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":0,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"vinylphenolate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":1,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":317.125529,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":317.125529,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":3,\"peak_mz\":331.141179,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":331.141179,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C24H28N4O6\",\"precursor_error_da\":-0.009990,\"scaffold_id\":\"agmatine\",\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":1},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":1,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl1|[M-H]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.183619,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6578f62415dbfe93bd5d8ba2ab702aa58db48edf311c9bcf88c392af52c83de0"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- with the precursor -(precursor_tolerance_da + 1e-5) Da from its m/z",
+   "expect": {
+    "outcome_ids": [],
+    "outcomes": {},
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.183599",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.183599"
+   },
+   "name": "precursor_out_low",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"ea06be742e429430c3562dcdd22c464f0bc50b8ee04ebb8f30dc67350c736b96\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.183599,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "4a4f4c7fc0d2b6bb859da76e78cbadae5384249f29a16de5530d5bf72749443f"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- in the other ion mode, verbose so that the outcome with no hypothesis is listed",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 0,
+      "precondition_failure": "ion_mode",
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "pos",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "wrong_mode",
+   "options": {
+    "filter": "all",
+    "verbose": true
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"646629ec9ddd0f535c72812b99e99a8bbbf46520d9f66b3d20f7b0466ea745da\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"filter\":\"all\",\"verbose\":true},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":0,\"n_hypotheses\":0,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":\"ion_mode\",\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "ae9cb1b45152fb021a84592b158ebf57a49914c9449b60cf4e6cdf71ccb5fb7e"
+  },
+  {
+   "description": "the union of the positive spectra of agmatine|caffeoyl1,feruloyl2|[M-H]- and agmatine|coumaroyl2,caffeoyl1|[M+CH3COO]- at the precursor of the first",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": "agmatine|caffeoyl1,feruloyl2|[M-H]-",
+      "fired": true,
+      "matched": [
+       "vinylphenolate:caffeoyl@1",
+       "vinylphenolate:feruloyl@2",
+       "vinylphenol_loss:feruloyl@3",
+       "vinylphenol_loss:caffeoyl@4"
+      ],
+      "n_hypotheses": 3,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [
+       "agmatine|caffeoyl1,feruloyl2|[M-H]-",
+       "agmatine|coumaroyl2,caffeoyl1|[M+CH3COO]-",
+       "agmatine|coumaroyl2,feruloyl1|[M+HCOO]-"
+      ],
+      "upgrades": []
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "119.050239",
+      "500.0"
+     ],
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "493.172873",
+      "500.0"
+     ],
+     [
+      "507.188523",
+      "500.0"
+     ],
+     [
+      "523.183438",
+      "500.0"
+     ],
+     [
+      "643.240953",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "643.240953"
+   },
+   "name": "tie",
+   "options": {
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"identity\":\"msfinder.diagnostic_rules?engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"f07bd374dfa043e54994360e99a745001bc684ed052d4821f3ab3a56286dc5b3\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":7,\"narrowest_motifs\":[\"hcaa_p_hydroxy_secondary_amide\"],\"not_measured\":[],\"options\":{\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":{\"adduct\":\"[M-H]-\",\"adduct_source\":\"rule\",\"adduct_tier\":\"assumed\",\"branches\":[],\"composition_id\":\"agmatine|caffeoyl1,feruloyl2\",\"failure\":null,\"fired\":true,\"fired_ignoring_vetoes\":true,\"hypothesis_id\":\"agmatine|caffeoyl1,feruloyl2|[M-H]-\",\"hypothesis_mz\":643.240953,\"k_of\":[],\"matched\":[{\"error_da\":0.000000,\"error_ppm\":-0.003,\"ion_formula\":\"C8H7O2\",\"kind\":\"product_ion\",\"member_key\":\"caffeoyl\",\"peak_index\":1,\"peak_mz\":135.045153,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":135.045153,\"term_id\":\"vinylphenolate\",\"unit_id\":0},{\"error_da\":0.000000,\"error_ppm\":0.003,\"ion_formula\":\"C9H9O2\",\"kind\":\"product_ion\",\"member_key\":\"feruloyl\",\"peak_index\":2,\"peak_mz\":149.060804,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":149.060804,\"term_id\":\"vinylphenolate\",\"unit_id\":1},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C9H10O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"feruloyl\",\"peak_index\":3,\"peak_mz\":493.172873,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":493.172873,\"term_id\":\"vinylphenol_loss\",\"unit_id\":2},{\"error_da\":0.000000,\"error_ppm\":0.000,\"ion_formula\":\"C8H8O2\",\"kind\":\"loss_from_precursor\",\"member_key\":\"caffeoyl\",\"peak_index\":4,\"peak_mz\":507.188523,\"rel_intensity\":1.000000,\"role\":\"required\",\"target_mz\":507.188523,\"term_id\":\"vinylphenol_loss\",\"unit_id\":3}],\"neutral_formula\":\"C34H36N4O9\",\"precursor_error_da\":0.000000,\"scaffold_id\":\"agmatine\",\"score\":4.000000,\"units\":{\"caffeoyl\":1,\"feruloyl\":2},\"upgrades\":[],\"vetoes\":[]},\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":true,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":3,\"n_hypotheses\":3,\"n_hypotheses_fired\":3,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[\"agmatine|caffeoyl1,feruloyl2|[M-H]-\",\"agmatine|coumaroyl2,caffeoyl1|[M+CH3COO]-\",\"agmatine|coumaroyl2,feruloyl1|[M+HCOO]-\"],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":643.240953,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "41f054be2ee953e97fc08c766eef7edf3a54926c563ed9a1a8fd119eb4be433d"
+  },
+  {
+   "description": "the positive spectrum of agmatine|caffeoyl1,feruloyl1|[M-H]- under the decoy shift +5 Da",
+   "expect": {
+    "outcome_ids": [
+     "hydroxycinnamic_acid_amide.secondary_amide.neg"
+    ],
+    "outcomes": {
+     "hydroxycinnamic_acid_amide.secondary_amide.neg": {
+      "chosen": null,
+      "fired": false,
+      "matched": null,
+      "n_hypotheses": 2,
+      "precondition_failure": null,
+      "tied_hypothesis_ids": [],
+      "upgrades": null
+     }
+    },
+    "refusals": [],
+    "status": "evaluated"
+   },
+   "input": {
+    "adduct_evidence": null,
+    "instrument_type": "QTOF",
+    "ion_mode": "neg",
+    "peaks": [
+     [
+      "135.045153",
+      "500.0"
+     ],
+     [
+      "149.060804",
+      "500.0"
+     ],
+     [
+      "317.125529",
+      "500.0"
+     ],
+     [
+      "331.141179",
+      "500.0"
+     ],
+     [
+      "467.193609",
+      "2000.0"
+     ]
+    ],
+    "precursor_mz": "467.193609"
+   },
+   "name": "decoy_plus_5",
+   "options": {
+    "decoy_shift_da": 5,
+    "filter": "all"
+   },
+   "result": "{\"adduct_tier\":\"assumed\",\"base_intensity\":500.000000,\"eligible_rule_conflict\":false,\"engine_semantics\":\"msfinder-diagnostic-rules/1\",\"fired_motifs\":[],\"identity\":\"msfinder.diagnostic_rules?decoy_shift_da=5&engine=msfinder-diagnostic-rules/1&filter=all&ruleset=0.2.0&ruleset_sha256=19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"input_sha256\":\"748b946d815ac117823391ea740dee993c138df0e9b498f1542dea5d4ff67a79\",\"instrument_class\":\"QTOF-type\",\"instrument_type\":\"QTOF\",\"n_peaks_dropped\":0,\"n_peaks_in\":5,\"narrowest_motifs\":[],\"not_measured\":[],\"options\":{\"decoy_shift_da\":5,\"filter\":\"all\"},\"outcomes\":[{\"all\":[],\"author_reviewed\":false,\"branch_fired\":{},\"chosen\":null,\"claim_eligible\":false,\"claim_ineligible\":[\"not_reviewed\",\"variant_active\"],\"claim_level\":\"class\",\"convention\":\"p2\",\"convention_label\":\"exact\",\"fired\":false,\"loss_reference\":\"hypothesis\",\"motif_id\":\"hcaa_p_hydroxy_secondary_amide\",\"n_distinct_formulas\":2,\"n_hypotheses\":2,\"n_hypotheses_fired\":0,\"parameters_origin\":\"as_published\",\"precondition_failure\":null,\"precursor_tolerance_da\":0.010000,\"product_tolerance\":{\"abs_da\":0.005000,\"ppm\":10.000,\"source\":\"p2\"},\"rule_id\":\"hydroxycinnamic_acid_amide.secondary_amide.neg\",\"source_checked\":true,\"tied_hypothesis_ids\":[],\"variant_single_ion\":false,\"version\":1,\"veto_blocked\":false,\"within_calibration\":true}],\"precondition_mode\":\"adduct_ambiguous\",\"precursor_mz\":467.193609,\"refusals\":[],\"rule_conflict\":false,\"rule_set\":{\"pinned\":false,\"sha256\":\"19235b01189d06297439d74fb895d0b41a66e1db9394ea20d4cffd6df5af72e6\",\"source\":\"inline\",\"version\":\"0.2.0\"},\"rules_evaluated\":1,\"status\":\"evaluated\"}",
+   "result_sha256": "6b71bb2e85e80e97f56c471e34a7ef522567c3b30572387af5553abcc734b69c"
+  }
+ ],
+ "engine_semantics": "msfinder-diagnostic-rules/1",
+ "format": "msfinder-diagnostic-rule-fixtures",
+ "format_version": 1,
+ "kind": "rule",
+ "rule_set_sha256": null,
+ "rule_set_version": "0.2.0"
+}

@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -53,7 +52,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
             
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused, broker).AddTo(Disposables);
 
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
@@ -109,7 +108,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public UndoManagerViewModel UndoManagerViewModel { get; }
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
-        public MsfinderParameterSetting MsfinderParameterSetting { get; }
         public EicViewModel EicViewModel { get; }
 
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
@@ -120,7 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
+        public MoleculeStructureViewModel? MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand GoToMsfinderCommand { get; }
         public ReactiveCommand ShowMsfinderSettingCommand { get; }
