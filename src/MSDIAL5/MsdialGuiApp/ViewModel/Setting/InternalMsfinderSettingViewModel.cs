@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.Common.Enum;
 using CompMs.Graphics.UI;
 using Reactive.Bindings;
@@ -433,8 +432,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 model.Cancel();
             }).AddTo(Disposables);
         }
-
-        public InternalMsFinderViewModel InternalMsFinderViewModel { get; set; }
 
         public FormulaFinderAdductIonSettingViewModel FormulaFinderAdductIonSettingViewModel { get; }
 
