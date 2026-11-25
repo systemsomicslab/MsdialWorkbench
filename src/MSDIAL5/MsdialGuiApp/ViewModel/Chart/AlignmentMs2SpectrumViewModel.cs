@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -40,7 +41,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             GraphTitle = Observable.Return(model.GraphLabels.GraphTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             HorizontalTitle = Observable.Return(model.GraphLabels.HorizontalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            VerticalTitle = Observable.Return(model.GraphLabels.VerticalTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            VerticalTitles = model.VerticalTitles;
 
             SaveMatchedSpectraCommand = model.CanSaveMatchedSpectra.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveMatchedSpectra,  filter: "tab separated values(*.txt)|*.txt"))
@@ -90,7 +91,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<string?> HorizontalTitle { get; }
 
-        public ReadOnlyReactivePropertySlim<string?> VerticalTitle { get; }
+        /// <summary>Follows the axis types chosen for the upper and the lower spectrum.</summary>
+        public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles { get; }
 
         public ReactiveCommand SwitchAllSpectrumCommand { get; }
 

@@ -5,6 +5,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
@@ -101,6 +102,11 @@ namespace CompMs.App.Msdial.Model.Chart
                 lowerHueItem,
                 labels).AddTo(Disposables);
             HorizontalAxis = Observable.Return(horizontalAxis);
+            // The axis titles follow the chosen axis types, as in the other MS/MS views.
+            VerticalTitles = UpperVerticalAxisSelector.GetAxisItemAsObservable()
+                .CombineLatest(LowerVerticalAxisSelector.GetAxisItemAsObservable(),
+                    (upper, lower) => new AxisTitles { Titles = upper.GraphLabel == lower.GraphLabel ? [upper.GraphLabel] : [upper.GraphLabel, lower.GraphLabel] })
+                .ToReadOnlyReactivePropertySlim(AxisTitles.Empty).AddTo(Disposables);
 
             GraphLabels = labels;
             ReferenceHasSpectrumInformation = spectraManager.ReferenceSpectrum.Select(spectrum => spectrum?.Spectrum.Any() ?? false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -112,6 +118,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public SingleSpectrumModel LowerSpectrumModel { get; }
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
+        /// <summary>The vertical titles of the upper and the lower spectrum, one title when both are drawn the same way.</summary>
+        public ReadOnlyReactivePropertySlim<AxisTitles> VerticalTitles { get; }
         public AxisItemSelector<double> LowerVerticalAxisSelector => LowerSpectrumModel.VerticalAxisItemSelector;
         public AxisItemSelector<double> UpperVerticalAxisSelector => UpperSpectrumModel.VerticalAxisItemSelector;
         public ReadOnlyObservableCollection<AnalysisFileBeanModel> Files => _spectraManager.Files;
