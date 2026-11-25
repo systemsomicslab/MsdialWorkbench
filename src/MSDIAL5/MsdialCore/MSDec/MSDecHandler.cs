@@ -1055,6 +1055,12 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
         private static List<ModelChromatogram> getRefinedModelChromatograms(List<ModelChromatogram> modelChromatograms) {
+            // A file in which no peak passes the detection settings (a blank, or a minimum peak
+            // height above every signal) has no model chromatogram. It has nothing to deconvolute,
+            // and reading [0] here used to abort the whole GC-MS run.
+            if (modelChromatograms.Count == 0) {
+                return new List<ModelChromatogram>();
+            }
             modelChromatograms = modelChromatograms.OrderBy(n => n.ChromScanOfPeakTop).ToList();
 
             var chromatograms = new List<ModelChromatogram>() { modelChromatograms[0] };
