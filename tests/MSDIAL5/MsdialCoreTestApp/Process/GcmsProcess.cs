@@ -229,14 +229,11 @@ public sealed class GcmsProcess
         var providerFactory = new StandardDataProviderFactory(isGuiProcess: false);
         // Math.Max(1, UsableNumThreads / 2), as the GUI does (LcmsMethodModel.cs and its four siblings,
         // GcmsMethodModel.cs among them). Without Math.Max "number of threads: 1" -- a value
-        // ConfigParser accepts -- gives 1/2 = 0 workers, ProcessRunner builds an empty Task array,
-        // and RunAllAsync returns having peak-picked nothing. The export stage then either crashes
-        // on a missing .pai or, when the raw data already carries .pai files from an earlier run,
-        // SILENTLY EXPORTS THE PREVIOUS RUN'S PEAKS AND PEAK IDS under this run's parameters,
-        // library list and version string. That is the join-breaking case: the artifacts describe a
-        // run that never happened.
+        // ConfigParser accepts -- gives 1/2 = 0 workers, which ProcessRunner refuses. Its remarks say
+        // why: zero workers peak-picked nothing and then exported the previous run's .pai peaks and
+        // peak IDs under this run's parameters, library list and version string.
         var numParallel = Math.Max(1, storage.MsdialGcmsParameter.ProcessBaseParam.UsableNumThreads / 2);
-        var process = new FileProcess(providerFactory, storage, new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.MsdialGcmsParameter.MspSearchParam, storage.MsdialGcmsParameter.RetentionType, storage.MsdialGcmsParameter.RiCompoundType), FileProcess.ThreadsPerFile(storage.MsdialGcmsParameter.ProcessBaseParam, numParallel, files.Count));
+        var process = new FileProcess(providerFactory, storage, new CalculateMatchScore(storage.DataBases.MetabolomicsDataBases.FirstOrDefault(), storage.MsdialGcmsParameter.MspSearchParam, storage.MsdialGcmsParameter.RetentionType, storage.MsdialGcmsParameter.RiCompoundType), numParallel, files.Count);
         var runner = new ProcessRunner(process, numParallel);
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
 

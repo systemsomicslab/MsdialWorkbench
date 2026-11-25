@@ -16,7 +16,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
 
         /// <param name="numThreads">
         /// The threads this file's peak spotting may use, not the run's "Number of threads": several
-        /// files are spotted at once (see FileProcess.ThreadsPerFile). 1 or less takes the
+        /// files are spotted at once (see FileProcess.PeakSpottingThreadsPerFile). 1 or less takes the
         /// single-thread path of PeakSpottingCore, which yields a different peak list by design.
         /// The multi-thread path writes each mass slice to its own index, so its peaks do not depend
         /// on how many threads it is given.

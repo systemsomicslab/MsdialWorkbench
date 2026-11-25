@@ -182,7 +182,7 @@ namespace CompMs.App.Msdial.Model.Gcms
             var stopwatch = Stopwatch.StartNew();
             if (option.HasFlag(ProcessOption.Identification)) {
                 var numParallel = Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2);
-                var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault(), FileProcess.ThreadsPerFile(_storage.Parameter.ProcessBaseParam, numParallel, _storage.AnalysisFiles.Count));
+                var processor = new FileProcess(_providerFactory, _storage, _calculateMatchScores.FirstOrDefault(), numParallel, _storage.AnalysisFiles.Count);
                 var runner = new ProcessRunner(processor, numParallel);
                 if (!RunFileProcess(runner, option)) {
                     return;

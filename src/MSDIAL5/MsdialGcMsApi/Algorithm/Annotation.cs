@@ -20,8 +20,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm
         private readonly int _numThreads;
 
         /// <param name="numThreads">
-        /// The degree of parallelism of this file's annotation, at least 1. Each peak's matches are
-        /// written to its own index, so the results do not depend on it.
+        /// The degree of parallelism of this file's annotation, at least 1; see
+        /// FileProcess.AnnotationThreadsPerFile. Each peak's matches are written to its own index, so
+        /// the results do not depend on it.
         /// </param>
         public Annotation(CalculateMatchScore calculateMatchScore, MsdialGcmsParameter parameter, int numThreads) {
             _calculateMatchScore = calculateMatchScore;
