@@ -25,6 +25,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         private static readonly (double Mz, double Intensity)[] SpectrumAInPart = [(73d, 1000d), (147d, 600d), (117d, 900d), (191d, 700d), (265d, 400d)];
         // SpectrumA's four peaks with other intensities: the default dot-product cutoffs call it a match.
         private static readonly (double Mz, double Intensity)[] SpectrumAReweighed = [(73d, 1000d), (147d, 250d), (221d, 700d), (295d, 40d)];
+        // Four peaks of equal height, and two spectra that each share two of them and nothing with each other.
+        private static readonly (double Mz, double Intensity)[] SpectrumC = [(73d, 1000d), (147d, 1000d), (221d, 1000d), (295d, 1000d)];
+        private static readonly (double Mz, double Intensity)[] SpectrumCFirstHalf = [(73d, 1000d), (147d, 1000d), (117d, 1000d), (191d, 1000d)];
+        private static readonly (double Mz, double Intensity)[] SpectrumCSecondHalf = [(221d, 1000d), (295d, 1000d), (265d, 1000d), (339d, 1000d)];
 
         private string _directory = string.Empty;
 
@@ -300,6 +304,41 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
 
             Assert.AreEqual(2, spots.Count);
             Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 1));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsWhoseMastersTheJoinerKeptApartWithinTheToleranceAreNotJoined(AlignmentIndexType indexType) {
+            // Two masters 8 RI units (0.08 min) apart, inside the retention tolerance, made two because
+            // their spectra share nothing. The taller peak each takes from another file has the same
+            // spectrum, which matches both masters in part, so the two spots' representative spectra
+            // match. Retention did not keep these spots apart, and they are not joined.
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = .5f, Ms2Tolerance = .5f, MassRangeBegin = 0, MassRangeEnd = 2000, };
+            var isRi = indexType == AlignmentIndexType.RI;
+            CompMs.Common.DataObj.Result.MsScanMatchResult Compare((double, double)[] x, (double, double)[] y) => MsScanMatching.CompareEIMSScanProperties(
+                CreateFeature(scanId: 0, ri: 1000d, height: 1000d, x).AnnotatedMSDecResult.MSDecResult,
+                CreateFeature(scanId: 0, ri: 1000d, height: 1000d, y).AnnotatedMSDecResult.MSDecResult,
+                parameter, rtTol: .1, riTol: RiTolerance, eiFactor: .5, riFactor: .5, isUseRetentionIndex: isRi);
+            var first = MsScanMatching.GetIntegratedSpectraSimilarity(Compare(SpectrumC, SpectrumCFirstHalf));
+            var second = MsScanMatching.GetIntegratedSpectraSimilarity(Compare(SpectrumC, SpectrumCSecondHalf));
+            var halves = Compare(SpectrumCFirstHalf, SpectrumCSecondHalf);
+            Assert.IsTrue(first > .5 && second > .5, $"the full spectrum matches each half: {first}, {second}");
+            Assert.IsTrue(MsScanMatching.GetIntegratedSpectraSimilarity(halves) < .5 && !halves.IsSpectrumMatch, "the halves do not match each other");
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumCFirstHalf), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 999d, height: 5000d, SpectrumC), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1008d, height: 1000d, SpectrumCSecondHalf), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1009d, height: 5000d, SpectrumC), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, spots.Count);
+            var byFirstFile = spots.OrderBy(s => s.AlignedPeakProperties[0].MasterPeakID >= 0 ? 0 : 1).ToArray();
+            CollectionAssert.AreEqual(new[] { 0, 1 }, byFirstFile[0].AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).Select(p => p.FileID).ToArray());
+            CollectionAssert.AreEqual(new[] { 2, 3 }, byFirstFile[1].AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).Select(p => p.FileID).ToArray());
         }
 
         [TestMethod]

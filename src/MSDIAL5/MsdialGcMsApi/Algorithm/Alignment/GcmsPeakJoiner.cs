@@ -82,6 +82,8 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
 
     private double RetentionOf(ChromXs chromXs) => _indextype == AlignmentIndexType.RI ? chromXs.RI.Value : chromXs.RT.Value;
 
+    private double MasterRetention(SpectrumFeature master) => RetentionOf(master.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop);
+
     /// <summary>
     /// Joins the spots of one compound whose retention drifted across the files by more than the
     /// alignment tolerance.
@@ -96,8 +98,10 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     /// </para>
     /// <para>
     /// Two spots are joined when all of these hold:
-    /// their centres (the mean retention of their detected peaks) are within twice the retention
-    /// tolerance; no file has a detected peak in both, so that no file's peak is dropped; the EI
+    /// their masters are more than the retention tolerance apart, so that retention, not spectrum,
+    /// is what kept the joiner from putting their features together; their centres (the mean
+    /// retention of their detected peaks) are within twice the retention tolerance; no file has a
+    /// detected peak in both, so that no file's peak is dropped; the EI
     /// spectra of their representative peaks pass the dot-product cutoffs the joiner's comparison
     /// carries (weighted and simple 0.6, reverse 0.8, matched peaks 25% and at least 3); each is the
     /// other's best such match by the integrated EI similarity; and their masters are not matched to
@@ -109,6 +113,13 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     /// The test is not the joiner's own (<see cref="IsSimilarTo"/>): its spectrum similarity tolerance
     /// (0.5 on the integrated EI similarity for GC-MS) is passed by spectra of two different
     /// compounds, and a pair of such spots, each detected in other files, would be joined into one.
+    /// </para>
+    /// <para>
+    /// Two masters within the tolerance of each other are two masters because the joiner found their
+    /// spectra different. Their spots are left apart even when their representative spectra match:
+    /// on the Kovats demo (RI) such a pair, masters 3 RI units apart, was joined; the quant mass
+    /// chosen over the joined peaks was that of an unannotated spot 1 RI unit away, and the alignment
+    /// refiner removed the joined spot as that spot's duplicate, with all seven of its detected peaks.
     /// </para>
     /// </remarks>
     private List<AlignmentSpotProperty> JoinSpotsSplitByRetentionDrift(List<AlignmentSpotProperty> spots, List<SpectrumFeature> masters, Dictionary<int, MSDecLoader> loaders) {
@@ -137,7 +148,8 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
             for (var a = 0; a < order.Length; a++) {
                 for (var b = a + 1; b < order.Length && centres[order[b]] - centres[order[a]] <= window; b++) {
                     int i = order[a], j = order[b];
-                    if (files[i].Overlaps(files[j]) || !AreSpectraOfOneCompound(representatives[i], representatives[j], alive[i].Master, alive[j].Master, out var similarity)) {
+                    if (Math.Abs(MasterRetention(alive[i].Master) - MasterRetention(alive[j].Master)) <= RetentionTolerance
+                        || files[i].Overlaps(files[j]) || !AreSpectraOfOneCompound(representatives[i], representatives[j], alive[i].Master, alive[j].Master, out var similarity)) {
                         continue;
                     }
                     if (similarity > best[i].Similarity) best[i] = (j, similarity);
