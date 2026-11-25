@@ -140,18 +140,28 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     }
 
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance, 
-            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = CompareSpectra(x, y);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
         return result.IsSpectrumMatch && isRetentionMatch;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
-            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
-        return result.TotalScore;
+        return CompareSpectra(x, y).TotalScore;
+    }
+
+    /// <remarks>
+    /// The EI similarity threshold and weight are the alignment's spectrum similarity settings
+    /// ("Spectrum similarity tolerance / factor for alignment" in a method file, "EI similarity
+    /// tolerance / factor" in the dialog), not its MS1 settings: "MS1 tolerance for alignment" is
+    /// an m/z tolerance (0.015 in a method file written like an LC-MS one), and as a similarity
+    /// threshold it admits almost any spectrum within the retention window. The threshold can only
+    /// grant a match: a pair that passes the dot-product cutoffs of _msMatchParam is a match
+    /// whatever its integrated similarity.
+    /// </remarks>
+    private MsScanMatchResult CompareSpectra(SpectrumFeature x, SpectrumFeature y) {
+        return MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.SpectrumSimilarityAlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
+            _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
     }
 
     protected List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<SpectrumFeature> masters, IEnumerable<AnalysisFileBean> analysisFiles, ChromXType mainType) {

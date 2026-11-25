@@ -244,7 +244,8 @@ namespace CompMs.App.Msdial.Model.Setting
                 parameter.RefSpecMatchBaseParam.FileIdRiInfoDictionary = fileSettingModel.IncludedFileModels.ToDictionary(f => f.AnalysisFileId, _ => new RiDictionaryInfo());
                 parameter.RetentionIndexAlignmentTolerance = 20;
                 parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance = .075f;
-                parameter.AlignmentBaseParam.Ms1AlignmentTolerance = .7f;
+                // The dialog's "EI similarity tolerance" (70%), which GcmsPeakJoiner reads from here.
+                parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .7f;
                 return parameter;
             }
             if (Ionization == Ionization.ESI && SeparationType == SeparationType.Chromatography)
