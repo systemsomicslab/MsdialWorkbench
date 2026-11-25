@@ -299,6 +299,23 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
         }
 
         [TestMethod()]
+        public void TilesAreDrawnLargeAndTheirSizeCanBeChanged() {
+            var target = new ReactivePropertySlim<string?>(null);
+            using var model = Ms2SpectrumListModel.Create("title", "samples", target, t => t,
+                _ => Task.FromResult<IReadOnlyList<Ms2SpectrumListItem>>([]), Observable.Return<MsSpectrum?>(null));
+            using var vm = new Ms2SpectrumListViewModel(model);
+
+            Assert.AreEqual(560d, vm.TileWidth.Value);
+            Assert.AreEqual(350d, vm.TileHeight.Value);
+
+            vm.TileWidth.Value = 1000d;
+            Assert.AreEqual(625d, vm.TileHeight.Value, "The height follows the width.");
+
+            Assert.AreEqual(Ms2SpectrumListViewModel.GetTileHeight(360d), Ms2SpectrumListViewModel.GetTileHeight(10d), "Kept within the slider's ends.");
+            Assert.AreEqual(Ms2SpectrumListViewModel.GetTileHeight(1200d), Ms2SpectrumListViewModel.GetTileHeight(5000d));
+        }
+
+        [TestMethod()]
         public async Task TilesShowTheCollisionEnergyApart() {
             var target = new ReactivePropertySlim<string?>("spot");
             using var model = Ms2SpectrumListModel.Create("title", "samples", target, t => t,

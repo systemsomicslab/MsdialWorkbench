@@ -246,6 +246,13 @@
         <Border BorderBrush="LightGray" BorderThickness="0,0,0,1" Padding="8,6" Grid.Row="0">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Tile size:" VerticalAlignment="Center"/>
+                    <Slider Value="{Binding TileWidth.Value}"
+                            Minimum="360"
+                            Maximum="1200"
+                            SmallChange="20" LargeChange="100"
+                            ToolTip="How large each spectrum is drawn"
+                            Width="140" Margin="4,0,16,0" VerticalAlignment="Center"/>
                     <TextBlock Text="Y axis:" VerticalAlignment="Center"/>
                     <ComboBox ItemsSource="{Binding AxisTypes, Mode=OneTime}"
                               SelectedItem="{Binding AxisType.Value}"
@@ -277,7 +284,9 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:Ms2SpectrumListTileViewModel}">
-                        <Border Width="420" Height="260" Margin="4" Padding="4" Background="White"
+                        <Border Width="{Binding DataContext.TileWidth.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                Height="{Binding DataContext.TileHeight.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                Margin="4" Padding="4" Background="White"
                                 Style="{StaticResource RepresentativeFrame}">
                             <Grid>
                                 <Grid.RowDefinitions>

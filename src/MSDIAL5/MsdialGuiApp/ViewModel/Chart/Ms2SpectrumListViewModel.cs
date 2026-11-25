@@ -38,6 +38,8 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
         HasReference = model.HasReference;
         ShowEmptyLabel = $"Show {model.Unit} without MS2";
         AxisType = model.AxisType;
+        TileWidth.AddTo(Disposables);
+        TileHeight = TileWidth.Select(GetTileHeight).ToReadOnlyReactivePropertySlim(GetTileHeight(DefaultTileWidth)).AddTo(Disposables);
 
         Tiles = model.VisibleItems
             .CombineLatest(model.MassRange, model.Reference, model.ShowReference, model.AxisType, CreateTiles)
@@ -86,8 +88,8 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
 
     public string Title { get; }
     string? IDialogPropertiesViewModel.Title => Title;
-    double? IDialogPropertiesViewModel.Width => 1320d;
-    double? IDialogPropertiesViewModel.Height => 800d;
+    double? IDialogPropertiesViewModel.Width => 1640d;
+    double? IDialogPropertiesViewModel.Height => 900d;
     public string ShowEmptyLabel { get; }
     public ReadOnlyReactivePropertySlim<string> Header { get; }
     public ReadOnlyReactivePropertySlim<string> Summary { get; }
@@ -99,6 +101,16 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
     /// <summary>How the vertical axes are drawn; it follows the main MS/MS view until changed here.</summary>
     public ReactivePropertySlim<Ms2SpectrumAxisType> AxisType { get; }
     public IReadOnlyList<Ms2SpectrumAxisType> AxisTypes { get; } = (Ms2SpectrumAxisType[])Enum.GetValues(typeof(Ms2SpectrumAxisType));
+
+    public const double DefaultTileWidth = 560d;
+    public const double MinimumTileWidth = 360d;
+    public const double MaximumTileWidth = 1200d;
+    /// <summary>Height over width of a tile, enough for the title, the detail and a readable spectrum.</summary>
+    public const double TileAspectRatio = .625d;
+
+    /// <summary>The width of a tile in pixels, set from the slider in the window; the height follows it.</summary>
+    public ReactivePropertySlim<double> TileWidth { get; } = new ReactivePropertySlim<double>(DefaultTileWidth);
+    public ReadOnlyReactivePropertySlim<double> TileHeight { get; }
     public ReadOnlyReactivePropertySlim<IReadOnlyList<Ms2SpectrumListTileViewModel>> Tiles { get; }
     public ReadOnlyReactivePropertySlim<bool> IsEmpty { get; }
     public ReadOnlyReactivePropertySlim<string> EmptyMessage { get; }
@@ -114,6 +126,12 @@ internal sealed class Ms2SpectrumListViewModel : ViewModelBase, IDialogPropertie
     public ReactiveCommand CloseEnlargedCommand { get; }
     public ReactiveCommand ShowNextCommand { get; }
     public ReactiveCommand ShowPreviousCommand { get; }
+
+    /// <summary>The tile height for a width, the width first kept between the slider's ends.</summary>
+    internal static double GetTileHeight(double width) {
+        var clamped = Math.Min(Math.Max(width, MinimumTileWidth), MaximumTileWidth);
+        return Math.Round(clamped * TileAspectRatio);
+    }
 
     private void Enlarge(Ms2SpectrumListTileViewModel? tile) {
         _enlargedTitle = tile?.Title;
