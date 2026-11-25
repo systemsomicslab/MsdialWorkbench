@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Parameter {
     [MessagePackObject]
-    public class MsdialGcmsParameter : ParameterBase {
+    public class MsdialGcmsParameter : ParameterBase, IMessagePackSerializationCallbackReceiver {
 
         public MsdialGcmsParameter(bool isLabUseOnly) : base(isLabUseOnly) {
             this.MachineCategory = MachineCategory.GCMS;
@@ -40,6 +40,36 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         public bool IsReplaceQuantmassByUserDefinedValue { get; set; } = false;
         [Key(156)]
         public bool IsRepresentativeQuantMassBasedOnBasePeakMz { get; set; } = false;
+
+        /// <summary>
+        /// True when this parameter was read from a project or parameter file in which the alignment's
+        /// similarity threshold and EI weight are <see cref="AlignmentBaseParameter.SpectrumSimilarityAlignmentTolerance"/>
+        /// and <see cref="AlignmentBaseParameter.SpectrumSimilarityAlignmentFactor"/>. Every save writes true.
+        /// </summary>
+        /// <remarks>
+        /// Until this key existed GcmsPeakJoiner took the threshold and weight from Ms1AlignmentTolerance and
+        /// Ms1AlignmentFactor, and the GC-MS alignment dialog wrote its "EI similarity tolerance / factor" there,
+        /// while the spectrum similarity settings kept a default nobody saw. A file written then has no element
+        /// for this key; the member has no initializer and no constructor sets it, so it reads false whether
+        /// MessagePack leaves an absent member alone or sets it to default(T). <see cref="OnAfterDeserialize"/>
+        /// then moves the settings that file aligned with into the spectrum similarity settings, so that the
+        /// dialog shows them and the next alignment uses them. A project the Console wrote from a method file
+        /// with "MS1 tolerance for alignment: 0.015" therefore keeps 0.015, which admits any pair, as it did.
+        /// </remarks>
+        [Key(157)]
+        public bool AlignmentEiSimilarityIsSpectrumSimilarity { get; set; }
+
+        void IMessagePackSerializationCallbackReceiver.OnBeforeSerialize() {
+            AlignmentEiSimilarityIsSpectrumSimilarity = true;
+        }
+
+        void IMessagePackSerializationCallbackReceiver.OnAfterDeserialize() {
+            if (!AlignmentEiSimilarityIsSpectrumSimilarity) {
+                AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = AlignmentBaseParam.Ms1AlignmentTolerance;
+                AlignmentBaseParam.SpectrumSimilarityAlignmentFactor = AlignmentBaseParam.Ms1AlignmentFactor;
+                AlignmentEiSimilarityIsSpectrumSimilarity = true;
+            }
+        }
 
         public Dictionary<int, RetentionIndexHandler> GetRIHandlers() {
             return RefSpecMatchBaseParam.FileIdRiInfoDictionary.ToDictionary(kvp => kvp.Key, kvp => new RetentionIndexHandler(RiCompoundType, kvp.Value.RiDictionary));
