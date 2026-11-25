@@ -199,10 +199,12 @@
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Header="Save spectra table as.."
-                          Command="{Binding SaveCommand, FallbackValue={x:Static mvvm:NeverCommand.Instance}}"/>
-                <MenuItem Header="Copy spectrum as table" Command="{Binding CopyAsTableCommand}"/>
-                <MenuItem Header="Save spectrum as table" Command="{Binding SaveAsTableCommand}"/>
+                <MenuItem Header="Spectrum data">
+                    <MenuItem Header="Save spectra table as.."
+                              Command="{Binding SaveCommand, FallbackValue={x:Static mvvm:NeverCommand.Instance}}"/>
+                    <MenuItem Header="Copy spectrum as table" Command="{Binding CopyAsTableCommand}"/>
+                    <MenuItem Header="Save spectrum as table" Command="{Binding SaveAsTableCommand}"/>
+                </MenuItem>
                 <MenuItem Header="Save image as...">
                     <MenuItem Header="Save formatted image"
                               Command="{StaticResource SaveFormattedChartCommand}"

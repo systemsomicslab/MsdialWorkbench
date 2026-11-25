@@ -74,17 +74,18 @@
                               Command="{Binding PlacementTarget.DataContext.SwitchAllSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                     <MenuItem Header="Show matched spectrum peak"
                               Command="{Binding PlacementTarget.DataContext.SwitchCompareSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
-                    <MenuItem Header="Save upper spectrum as nist format"
-                              Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
-                    <MenuItem Header="Save lower spectrum as nist format"
-                              Command="{Binding PlacementTarget.DataContext.SaveLowerSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
-                    <MenuItem Header="Save matched spectrum as table format"
-                              Command="{Binding PlacementTarget.DataContext.SaveMatchedSpectraCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
-                    <Separator/>
-                    <MenuItem Header="Copy upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Save upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Copy lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Save lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Spectrum data">
+                        <MenuItem Header="Save upper spectrum as nist format"
+                                  Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                        <MenuItem Header="Save lower spectrum as nist format"
+                                  Command="{Binding PlacementTarget.DataContext.SaveLowerSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                        <MenuItem Header="Save matched spectrum as table format"
+                                  Command="{Binding PlacementTarget.DataContext.SaveMatchedSpectraCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                        <MenuItem Header="Copy upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
                     <MenuItem Header="Save image as...">
                         <MenuItem Header="Save formatted image"
                                   Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
