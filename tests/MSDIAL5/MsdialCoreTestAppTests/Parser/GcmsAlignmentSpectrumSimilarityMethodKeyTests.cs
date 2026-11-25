@@ -15,7 +15,7 @@ namespace MsdialCoreTestAppTests.Parser;
 [TestClass]
 public sealed class GcmsAlignmentSpectrumSimilarityMethodKeyTests
 {
-    private const string ToleranceLine = "\nSpectrum similarity tolerance for alignment: 0.7\n";
+    private const string ToleranceLine = "\nSpectrum similarity tolerance for alignment: 0.5\n";
     private const string FactorLine = "\nSpectrum similarity factor for alignment: 0.5\n";
 
     [TestMethod]
@@ -23,7 +23,7 @@ public sealed class GcmsAlignmentSpectrumSimilarityMethodKeyTests
     {
         var template = MethodFileTemplate.Create(MethodFileMode.Gcms);
 
-        // 0.7, the GC-MS default, not the 0.8 that the alignment parameter starts with elsewhere.
+        // 0.5, the GC-MS default, not the 0.8 that the alignment parameter starts with elsewhere.
         StringAssert.Contains(template, ToleranceLine);
         StringAssert.Contains(template, FactorLine);
         Assert.IsFalse(template.Contains("MS1 tolerance for alignment"), template);
@@ -48,20 +48,20 @@ public sealed class GcmsAlignmentSpectrumSimilarityMethodKeyTests
     [TestMethod]
     public void AGcmsMethodFileWithoutTheSpectrumSimilarityKeysAlignsWithTheGcmsDefaults()
     {
-        // A method file written from the previous GC-MS template: "MS1 tolerance for alignment: 0.5"
-        // and no spectrum similarity key. The MS1 tolerance is an m/z tolerance by name and is not
-        // read as the similarity threshold.
+        // A method file with no spectrum similarity key and an "MS1 tolerance for alignment", here
+        // 0.015 as in a method file written like an LC-MS one. The MS1 tolerance is an m/z tolerance
+        // by name and is not read as the similarity threshold.
         var template = ReplaceOnce(ReplaceOnce(MethodFileTemplate.Create(MethodFileMode.Gcms),
-            ToleranceLine, "\nMS1 tolerance for alignment: 0.5\n"),
+            ToleranceLine, "\nMS1 tolerance for alignment: 0.015\n"),
             FactorLine, "\n");
         using var directory = new TemporaryDirectory();
         var methodFile = directory.CreateFile("method.txt", template);
 
         var parameter = (MsdialGcmsParameter)ConfigParser.ReadForGcms(methodFile);
 
-        Assert.AreEqual(0.7f, parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
+        Assert.AreEqual(0.5f, parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
         Assert.AreEqual(0.5f, parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor);
-        Assert.AreEqual(0.5f, parameter.AlignmentBaseParam.Ms1AlignmentTolerance);
+        Assert.AreEqual(0.015f, parameter.AlignmentBaseParam.Ms1AlignmentTolerance);
     }
 
     private static string ReplaceOnce(string text, string oldValue, string newValue)

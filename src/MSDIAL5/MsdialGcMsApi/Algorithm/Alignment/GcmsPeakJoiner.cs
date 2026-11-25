@@ -140,18 +140,23 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     }
 
     /// <remarks>
-    /// Two features are similar when they are within the retention tolerance and their total score
-    /// (<see cref="GetSimilality"/>) exceeds the spectrum similarity tolerance, as in MS-DIAL 4, where
-    /// the master list kept rt * RetentionTimeAlignmentFactor + ei * EiSimilarityAlignmentFactor
-    /// at 0.70 or above, and as here before 94659d0a4. The threshold is not applied to the
-    /// integrated EI similarity alone: two spectra of one compound in two files of a GC-MS run
-    /// commonly score 0.6-0.75 on it, because every small peak present in one spectrum only lowers
-    /// the matched-peaks term, so a threshold of 0.7 on it splits most compounds.
+    /// Retention and spectrum are judged separately: two features are similar when they are within
+    /// the retention tolerance and their EI spectra match. The spectra match when the integrated EI
+    /// similarity exceeds the spectrum similarity tolerance, or when the dot-product cutoffs of
+    /// <see cref="_msMatchParam"/> pass (weighted and simple 0.6, reverse 0.8, matched peaks 25% and
+    /// at least 3); a pair that passes those cutoffs has an integrated similarity of at least 0.608,
+    /// so that clause adds nothing at a tolerance of 0.6 or below. The total score only chooses the
+    /// best master (<see cref="GetSimilality"/>). Two spectra of one compound in two files of a
+    /// GC-MS run commonly score 0.6-0.75 on the integrated similarity, because every small peak
+    /// present in one spectrum lowers the matched-peaks term, so a tolerance of 0.7 or more splits
+    /// most compounds; the GC-MS default is 0.5.
     /// </remarks>
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
-        var result = CompareSpectra(x, y);
+        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.SpectrumSimilarityAlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
+            _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
-        return result.TotalScore > _alignmentParameter.SpectrumSimilarityAlignmentTolerance && isRetentionMatch;
+        return result.IsSpectrumMatch && isRetentionMatch;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {

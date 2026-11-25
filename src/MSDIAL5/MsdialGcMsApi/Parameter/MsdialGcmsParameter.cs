@@ -17,11 +17,12 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         } 
 
         /// <summary>
-        /// The GC-MS alignment's threshold on the total score of two features (EI similarity and retention similarity,
-        /// weighed by their factors; see GcmsPeakJoiner): MS-DIAL 4's cutoff of 70 and the GC-MS dialog's 70 %. The 0.8
-        /// that <see cref="AlignmentBaseParameter"/> starts with splits most compounds of a GC-MS run.
+        /// The GC-MS alignment's threshold on the integrated EI similarity of two features (see GcmsPeakJoiner;
+        /// retention is judged separately by its own tolerance). Two spectra of one compound in two files commonly
+        /// score 0.6-0.75 on it, so the 0.8 that <see cref="AlignmentBaseParameter"/> starts with, and 0.7, split
+        /// most compounds of a GC-MS run.
         /// </summary>
-        public const float DefaultSpectrumSimilarityAlignmentTolerance = .7f;
+        public const float DefaultSpectrumSimilarityAlignmentTolerance = .5f;
 
         [SerializationConstructor]
         public MsdialGcmsParameter() : this(isLabUseOnly: false) { }
