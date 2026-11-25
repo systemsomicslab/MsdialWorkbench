@@ -35,16 +35,68 @@ namespace CompMs.MsdialGcMsApi.Process
         private readonly Ms1Dec _ms1Deconvolution;
         private readonly Annotation _annotation;
 
-        public FileProcess(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage, CalculateMatchScore calculateMatchScore) {
+        /// <param name="numParallel">How many files the runner processes at once (its numParallel), at least 1.</param>
+        /// <param name="fileCount">How many files the runner is given.</param>
+        /// <remarks>
+        /// Together they size each file's share of the machine; see <see cref="PeakSpottingThreadsPerFile"/>
+        /// and <see cref="AnnotationThreadsPerFile"/>.
+        /// </remarks>
+        public FileProcess(IDataProviderFactory<AnalysisFileBean> providerFactory, IMsdialDataStorage<MsdialGcmsParameter> storage, CalculateMatchScore calculateMatchScore, int numParallel, int fileCount) {
             if (storage is null || storage.Parameter is null) {
                 throw new ArgumentNullException(nameof(storage));
+            }
+            if (numParallel < 1) {
+                throw new ArgumentOutOfRangeException(nameof(numParallel), numParallel, "At least one worker is required.");
             }
             _riCompoundType = storage.Parameter.RiCompoundType;
             _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _riDictionaryInfo = storage.Parameter.FileIdRiInfoDictionary;
-            _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter);
+            _peakSpotting = new PeakSpotting(storage.IupacDatabase, storage.Parameter, PeakSpottingThreadsPerFile(storage.Parameter.ProcessBaseParam, numParallel, fileCount));
             _ms1Deconvolution = new Ms1Dec(storage.Parameter);
-            _annotation = new Annotation(calculateMatchScore, storage.Parameter);
+            _annotation = new Annotation(calculateMatchScore, storage.Parameter, AnnotationThreadsPerFile(numParallel, fileCount));
+        }
+
+        /// <summary>
+        /// The threads each file's peak spotting may use when <paramref name="numParallel"/> files are
+        /// processed at once, so that together they stay within the usable "Number of threads".
+        /// </summary>
+        /// <remarks>
+        /// Each file used to get the whole NumThreads (one producer plus NumThreads - 1 blocking
+        /// consumers, and the file's own thread blocked in Task.WaitAll) while NumThreads / 2 files ran
+        /// at once: NumThreads / 2 x (NumThreads + 1) pool threads, and thread-pool starvation from about
+        /// NumThreads 16. The multi-thread path writes each mass slice to its own index, so its peaks do
+        /// not depend on this number.
+        ///
+        /// A run of "Number of threads: 1" keeps 1, the single-thread peak-spotting path, which yields a
+        /// different peak list by design. Otherwise at least 2, so a run never falls onto that path. A
+        /// lone file gets min(NumThreads, ProcessorCount), so the GUI's default of 2 stays 2.
+        /// </remarks>
+        public static int PeakSpottingThreadsPerFile(ProcessBaseParameter parameter, int numParallel, int fileCount) {
+            if (parameter.NumThreads <= 1) {
+                return 1;
+            }
+            return Math.Max(2, parameter.UsableNumThreads / ConcurrentFiles(numParallel, fileCount));
+        }
+
+        /// <summary>
+        /// The degree of parallelism of each file's annotation when <paramref name="numParallel"/> files
+        /// are processed at once: the logical processors, shared among those files.
+        /// </summary>
+        /// <remarks>
+        /// Sized from the machine, not from "Number of threads", on purpose. Annotation's Parallel.For had
+        /// no bound before, so a lone file annotated on every core whatever NumThreads said, and the GUI
+        /// (one file at a time at its default NumThreads of 2) relies on that: capping it at NumThreads
+        /// would make a large EI library, or RT mode without time filtering, up to ProcessorCount / 2
+        /// times slower there. A lone file therefore still annotates on every core. What changes is that
+        /// files processed at once share the cores instead of each asking for all of them. Each peak's
+        /// matches are written to its own index, so the results do not depend on this number.
+        /// </remarks>
+        public static int AnnotationThreadsPerFile(int numParallel, int fileCount) {
+            return Math.Max(1, Environment.ProcessorCount / ConcurrentFiles(numParallel, fileCount));
+        }
+
+        private static int ConcurrentFiles(int numParallel, int fileCount) {
+            return Math.Max(1, Math.Min(numParallel, fileCount));
         }
 
         public async Task RunAsync(AnalysisFileBean analysisFile, ProcessOption option, IProgress<int>? progress, CancellationToken token = default) {
@@ -147,7 +199,7 @@ namespace CompMs.MsdialGcMsApi.Process
 
         public static void Run(AnalysisFileBean file, IMsdialDataStorage<MsdialGcmsParameter> container, bool isGuiProcess = false, IProgress<int> reportAction = null, CancellationToken token = default) {
             var providerFactory = new StandardDataProviderFactory(isGuiProcess: isGuiProcess);
-            FileProcess processor = new(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType, container.Parameter.RiCompoundType));
+            FileProcess processor = new(providerFactory, container, new CalculateMatchScore(container.DataBases.MetabolomicsDataBases.FirstOrDefault(), container.Parameter.MspSearchParam, container.Parameter.RetentionType, container.Parameter.RiCompoundType), numParallel: 1, fileCount: 1);
             processor.RunAsync(file, ProcessOption.PeakSpotting | ProcessOption.Identification, reportAction, token).Wait();
         }
 

@@ -473,6 +473,7 @@
 
                         <DataGridTextColumn x:Name="DataGridColumn_DiagnosticRuleTerm" Header="Rule term" Width="0.6*" Binding="{Binding Path=RuleTerm, Mode=OneWay}" IsReadOnly="True" Visibility="Collapsed" />
                         <DataGridTextColumn x:Name="DataGridColumn_DiagnosticMatchedMotifs" Header="Matched motifs" Width="*" Binding="{Binding Path=MatchedMotifs, Mode=OneWay}" IsReadOnly="True" Visibility="Collapsed" />
+                        <DataGridTextColumn x:Name="DataGridColumn_DiagnosticRuleAgreement" Header="Rule agreement" Width="1.5*" Binding="{Binding Path=RuleAgreement, Mode=OneWay}" IsReadOnly="True" Visibility="Collapsed" />
 
                         <!--<DataGridTemplateColumn SortMemberPath="TotalScore" Width="*" Header="Total score" IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>

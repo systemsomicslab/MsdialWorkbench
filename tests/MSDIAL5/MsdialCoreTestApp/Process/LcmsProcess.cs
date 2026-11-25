@@ -531,7 +531,9 @@ public sealed class LcmsProcess
         storage.Parameter.ProjectParam.MsdialVersionNumber = MsdialBuildIdentity.FullIdentity;
         if (storage.Parameter.TogetherWithAlignment) {
             var alignmentFile = storage.AlignmentFiles.First();
-            using var alignmentLightPeakStore = isAlignmentLightMode ? AlignmentLightPeakStore.CreateTemp() : null;
+            // The light-mode peak matrix spill grows with spots x files; it is kept beside the alignment
+            // deconvolution file that light mode writes, not in %TEMP% on the system drive.
+            using var alignmentLightPeakStore = isAlignmentLightMode ? AlignmentLightPeakStore.CreateTemp(alignmentFile.SpectraFilePath) : null;
             AlignmentResultContainer result;
             IReadOnlyList<MSDecResult> align_decResults;
             IDisposable? alignmentLightMsdecResults = null;

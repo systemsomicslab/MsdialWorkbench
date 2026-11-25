@@ -96,8 +96,8 @@ public readonly struct AlignmentLightPeakRow {
 
 public sealed class AlignmentLightPeakStore : IDisposable {
     // 18 fields plus the reference-matched and in-silico flags. The file is a per-run temporary spill
-    // (CreateTemp uses Path.GetTempFileName and Dispose closes it), so the layout carries no
-    // compatibility obligation across versions.
+    // (CreateTemp creates it beside the alignment result, or in %TEMP% when given no result path, and
+    // Dispose deletes it), so the layout carries no compatibility obligation across versions.
     private const int RecordSize = 104;
 
     private readonly string _filePath;
@@ -116,8 +116,23 @@ public sealed class AlignmentLightPeakStore : IDisposable {
         _writer = new BinaryWriter(_stream);
     }
 
-    public static AlignmentLightPeakStore CreateTemp() {
-        return new AlignmentLightPeakStore(Path.GetTempFileName());
+    /// <summary>
+    /// Creates the store in a new temporary file beside <paramref name="besideFilePath"/>, a file of the
+    /// alignment result being written (see <see cref="AlignmentTemporaryFile.CreateBeside"/>). The file
+    /// holds one record per spot and analysis file, so it grows with the batch; without a result path,
+    /// or when that file's folder does not exist, it is created in %TEMP% as before.
+    /// </summary>
+    public static AlignmentLightPeakStore CreateTemp(string? besideFilePath = null) {
+        var path = AlignmentTemporaryFile.CreateBeside(besideFilePath);
+        try {
+            return new AlignmentLightPeakStore(path);
+        }
+        catch {
+            if (File.Exists(path)) {
+                File.Delete(path);
+            }
+            throw;
+        }
     }
 
     public void Initialize(int spotCount, IReadOnlyList<AnalysisFileBean> files) {

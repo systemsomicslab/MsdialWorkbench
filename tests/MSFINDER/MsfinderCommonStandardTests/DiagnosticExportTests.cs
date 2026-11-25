@@ -93,7 +93,7 @@ public class DiagnosticExportTests
         Assert.IsNotNull(run, error);
         Assert.IsTrue(run!.OpenWriters(out error), error);
         var structure = new StringWriter(CultureInfo.InvariantCulture) { NewLine = "\n" };
-        structure.WriteLine(run.RankingOn ? DiagnosticRuleExport.StructureHeader : DiagnosticRuleExport.LegacyStructureHeader);
+        structure.WriteLine(DiagnosticRuleExport.StructureHeader);
         var i = 0;
         foreach (var (f, empty, name) in queries) {
             var raw = raws[i++];
@@ -208,7 +208,8 @@ public class DiagnosticExportTests
             + "Rule weight\tRule scope",
             DiagnosticRuleExport.ContextHeader);
         Assert.AreEqual(DiagnosticRuleExport.LegacyStructureHeader + "\tRanking score\tBase rank\tDiagnostic rule term\tMatched fired motifs\t"
-                        + "Matched vetoed motifs\tDiagnostic rule status\tRule set version\tRule set sha256", DiagnosticRuleExport.StructureHeader);
+                        + "Matched vetoed motifs\tDiagnostic rule status\tRule set version\tRule set sha256\t"
+                        + "Diagnostic rule agreement\tAgreement fired motifs\tAgreement vetoed motifs", DiagnosticRuleExport.StructureHeader);
         Assert.AreEqual(string.Join("\t", DiagnosticTimingLog.Columns),
             "File name\tMS2 peaks\tRules evaluated\tHypotheses tested\tOutcomes\tCandidates\tUnique SMILES\tCache hits\tEval ms\tMatch ms\t"
             + "Formula step ms\tStructure step ms");
@@ -250,7 +251,9 @@ public class DiagnosticExportTests
     [TestMethod]
     public void ContextHasNoMotifCountsWhenTheWeightIsZero() {
         var outputs = Produce(Runtime, Path.Combine(_dir, "w0"));
-        Assert.AreEqual(DiagnosticRuleExport.LegacyStructureHeader + "\n", outputs.Structure, "no appended rows when w = 0");
+        var rows = outputs.Structure.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        Assert.AreEqual(DiagnosticRuleExport.StructureHeader, rows[0]);
+        Assert.IsTrue(rows.Length > 1, "w = 0 writes the base-order rows with the agreement columns");
         var lines = Encoding.ASCII.GetString(outputs.Files["Diagnostic rule context-stamp.txt"]).Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
         var column = Array.IndexOf(DiagnosticRuleExport.ContextColumns, "Candidates matching motif");
         Assert.IsTrue(lines.Length > 1);
@@ -313,6 +316,25 @@ public class DiagnosticExportTests
     }
 
     [TestMethod]
+    public void WeightZeroKeepsTheBaseOrderAndShowsTheAgreement() {
+        var runtime = CreateRuntime(new MsfinderDiagnosticRuleSettings { Evaluation = true, RankingScope = DiagnosticRuleRankingScope.Measured });
+        Assert.IsFalse(runtime.RankingOn);
+        var outputs = Produce(runtime, Path.Combine(_dir, "w0agree"));
+        var header = DiagnosticRuleExport.StructureHeader.Split('\t');
+        int Col(string name) => Array.IndexOf(header, name);
+        var rows = outputs.Structure.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1).Select(l => l.Split('\t')).ToList();
+        Assert.AreEqual(2 * 7, rows.Count, "seven queries with candidates, TotalScore <= 0 filtered");
+        // the base order: "neg" (score 2) before "pos" (score 1) in every query, even where "pos" agrees with a fired rule
+        CollectionAssert.AreEqual(Enumerable.Range(0, 7).SelectMany(_ => new[] { "neg", "pos" }).ToList(), rows.Select(r => r[Col("Structure rank")]).ToList());
+        Assert.IsTrue(rows.All(r => r[Col("Diagnostic rule status")] == MsfinderDiagnosticRanking.StatusWeightZero && r[Col("Diagnostic rule term")] == "0"
+                                    && r[Col("Matched fired motifs")] == "" && r[Col("Matched vetoed motifs")] == ""));
+        var agreeing = rows.Where(r => r[Col("Diagnostic rule agreement")].StartsWith("consistent (", StringComparison.Ordinal)).ToList();
+        Assert.IsTrue(agreeing.Count >= 4, "non-vacuous: the fired queries' positive examples agree");
+        Assert.IsTrue(agreeing.All(r => r[Col("Agreement fired motifs")] != ""));
+        Assert.IsTrue(rows.Where(r => r[Col("Diagnostic rule agreement")] == "").All(r => r[Col("Agreement fired motifs")] == "" && r[Col("Agreement vetoed motifs")] == ""));
+    }
+
+    [TestMethod]
     public void StructureRowsKeepTheLegacyColumnsAndFilter() {
         var raw = ToRaw(Fixtures[0]);
         var candidates = new List<FragmenterResult>
@@ -331,7 +353,7 @@ public class DiagnosticExportTests
                      + raw.Ms2PeakNumber + "\t" + raw.PrecursorMz + "\t" + raw.PrecursorType + "\t" + c.Title + "\t" + c.TotalScore + "\t" + c.Resources + "\t"
                      + c.Formula + "\t" + c.Ontology + "\t" + c.Inchikey + "\t" + c.Smiles;
         var id = _ranking.Value.RuleSet.Identity;
-        Assert.AreEqual(legacy + "\t3.250000\t1\t0\t\t\tno_outcome\t" + id.Version + "\t" + id.Sha256, lines[0]);
+        Assert.AreEqual(legacy + "\t3.250000\t1\t0\t\t\tno_outcome\t" + id.Version + "\t" + id.Sha256 + "\t\t\t", lines[0]);
     }
 
     [TestMethod]

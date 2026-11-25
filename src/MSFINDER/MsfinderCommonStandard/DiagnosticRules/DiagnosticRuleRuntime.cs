@@ -31,7 +31,13 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             RuleSet = set;
             Evaluator = evaluator;
             Matcher = matcher;
+            _agreementMatcher = matcher != null
+                ? new Lazy<MotifMatcher>(() => matcher)
+                : new Lazy<MotifMatcher>(() => CreateAgreementMatcher(set, out _agreementError));
         }
+
+        private readonly Lazy<MotifMatcher> _agreementMatcher;
+        private string _agreementError;
 
         /// <summary>A copy of the settings the runtime was created with.</summary>
         public MsfinderDiagnosticRuleSettings Settings { get; }
@@ -52,6 +58,32 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
 
         /// <summary>Whether candidates are ranked: the weight is above zero.</summary>
         public bool RankingOn => Matcher != null;
+
+        /// <summary>
+        /// The motif matcher of the display-only candidate agreement (<see cref="DiagnosticRuleAgreement"/>), whatever
+        /// the weight: <see cref="Matcher"/> when the weight is above zero, else one compiled on first use. Null when
+        /// the motifs do not compile (see <see cref="AgreementError"/>); the ranking and the evidence are unaffected.
+        /// </summary>
+        public MotifMatcher AgreementMatcher => _agreementMatcher.Value;
+
+        /// <summary>The <c>rule_set_error:motifs:...</c> of a failed <see cref="AgreementMatcher"/>, or null.</summary>
+        public string AgreementError {
+            get {
+                var _ = _agreementMatcher.Value;
+                return _agreementError;
+            }
+        }
+
+        private static MotifMatcher CreateAgreementMatcher(DiagnosticRuleSet set, out string error) {
+            error = null;
+            try {
+                return new MotifMatcher(set);
+            }
+            catch (Exception e) {
+                error = ErrorPrefix + ":motifs:" + e.GetType().Name;
+                return null;
+            }
+        }
 
         /// <summary>
         /// MS-FINDER's product tolerance as the evaluator takes it: <c>Da</c> gives an absolute tolerance and

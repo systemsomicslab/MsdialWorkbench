@@ -256,7 +256,7 @@ namespace Rfx.Riken.OsakaUniv
 
             using (var sw = new StreamWriter(structureFile, false, Encoding.ASCII))
             {
-                if (diagnosticRun != null && diagnosticRun.RankingOn) sw.WriteLine(DiagnosticRuleExport.GuiStructureHeader); else
+                if (diagnosticRun != null) sw.WriteLine(DiagnosticRuleExport.GuiStructureHeader); else
                 writeStructureResultHeader(sw, exportNumber);
 
                 foreach (var rawfile in files)
@@ -380,7 +380,7 @@ namespace Rfx.Riken.OsakaUniv
             MessageBox.Show(diagnosticRun.Abort(diagnosticQuery), "Diagnostic-ion rules", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        /// <summary>The per-file structure result in rule-adjusted order with the appended columns (w &gt; 0).</summary>
+        /// <summary>The per-file structure result in rule-adjusted order (base order at w = 0) with the appended columns.</summary>
         private static void writeDiagnosticStructureResult(string output, RawData rawData, DiagnosticRanking ranking, DiagnosticRuleRun diagnosticRun)
         {
             using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {

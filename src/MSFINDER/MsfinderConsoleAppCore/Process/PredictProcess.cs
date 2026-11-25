@@ -323,7 +323,7 @@ namespace Riken.Metabolomics.MsfinderConsoleApp.Process {
             Console.WriteLine("Writing structure prediction results...");
             progress = 0;
             using (var sw = new StreamWriter(this.outputStructurePath, false, Encoding.ASCII)) {
-                if (this.diagnosticRun != null && this.diagnosticRun.RankingOn) sw.WriteLine(DiagnosticRuleExport.StructureHeader); else
+                if (this.diagnosticRun != null) sw.WriteLine(DiagnosticRuleExport.StructureHeader); else
                 sw.WriteLine("File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
                     "Precursor mz\tPrecursor type\tStructure rank\tTotal score\tDatabases\tFormula\tOntology\tInChIKey\tSMILES");
 

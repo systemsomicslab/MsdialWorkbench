@@ -151,11 +151,16 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         public const string LegacyStructureHeader = "File path\tFile name\tTitle\tMS1 count\tMSMS count\t" +
             "Precursor mz\tPrecursor type\tStructure rank\tTotal score\tDatabases\tFormula\tOntology\tInChIKey\tSMILES";
 
-        /// <summary>The columns appended after SMILES when the ranking weight is above zero.</summary>
+        /// <summary>
+        /// The columns appended after SMILES while rule evaluation is on, whatever the weight. At w = 0 the rows are in
+        /// the base order with status <c>weight_zero</c>, term 0 and no ranking motifs. The last three columns are the
+        /// display-only candidate agreement (<see cref="DiagnosticRuleAgreement"/>), which never changes the order.
+        /// </summary>
         public static readonly string[] StructureAppendedColumns =
         {
             "Ranking score", "Base rank", "Diagnostic rule term", "Matched fired motifs", "Matched vetoed motifs",
             "Diagnostic rule status", "Rule set version", "Rule set sha256",
+            "Diagnostic rule agreement", "Agreement fired motifs", "Agreement vetoed motifs",
         };
 
         public static string ResultHeader => string.Join("\t", ResultColumns);
@@ -485,23 +490,24 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             string.IsNullOrEmpty(hypothesisFormula) || string.IsNullOrEmpty(topFormula) ? string.Empty : Bool(string.Equals(hypothesisFormula, topFormula, StringComparison.Ordinal));
 
         /// <summary>
-        /// The structure-result rows in rule-adjusted order (w &gt; 0): the legacy columns with their legacy
+        /// The structure-result rows in rule-adjusted order (base order at w = 0): the legacy columns with their legacy
         /// formatting, then the appended columns. The legacy filter <c>TotalScore &lt;= 0</c> is applied to the base
         /// score.
         /// </summary>
         public static void WriteStructureRows(TextWriter sw, RawData rawData, DiagnosticRanking ranking, RuleSetIdentity identity) {
             var fired = new HashSet<string>(ranking.FiredMotifs, StringComparer.Ordinal);
             var vetoes = new HashSet<string>(ranking.VetoMotifs, StringComparer.Ordinal);
-            foreach (var row in ranking.Ranked) {
+            for (var i = 0; i < ranking.Ranked.Count; i++) {
+                var row = ranking.Ranked[i];
                 var result = row.Candidate;
                 if (result.TotalScore <= 0) continue;
                 LegacyStructureColumns.Write(sw, rawData, result);
-                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity));
+                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity, ranking.AgreementAt(i)));
             }
         }
 
         /// <summary>
-        /// The GUI batch-export structure rows in rule-adjusted order (w &gt; 0): the first <paramref name="count"/>
+        /// The GUI batch-export structure rows in rule-adjusted order (base order at w = 0): the first <paramref name="count"/>
         /// candidates, unfiltered like the legacy GUI writer, with the legacy columns and then the appended ones.
         /// </summary>
         public static void WriteGuiStructureRows(TextWriter sw, RawData rawData, DiagnosticRanking ranking, RuleSetIdentity identity, int count) {
@@ -511,12 +517,12 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             for (var i = 0; i < n; i++) {
                 var row = ranking.Ranked[i];
                 LegacyStructureColumns.Write(sw, rawData, row.Candidate);
-                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity));
+                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity, ranking.AgreementAt(i)));
             }
         }
 
         /// <summary>
-        /// The GUI per-file structure rows in rule-adjusted order (w &gt; 0): the legacy columns (Rank is the new
+        /// The GUI per-file structure rows in rule-adjusted order (base order at w = 0): the legacy columns (Rank is the new
         /// rank) and then the appended ones; every candidate, like the legacy writer.
         /// </summary>
         public static void WriteEachFileStructureRows(TextWriter sw, DiagnosticRanking ranking, RuleSetIdentity identity) {
@@ -525,11 +531,12 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             for (var i = 0; i < ranking.Ranked.Count; i++) {
                 var row = ranking.Ranked[i];
                 LegacyStructureColumns.WriteEachFile(sw, i + 1, row.Candidate);
-                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity));
+                sw.WriteLine(AppendedCells(row, ranking.Status, fired, vetoes, identity, ranking.AgreementAt(i)));
             }
         }
 
-        private static string AppendedCells(RankedCandidate row, string status, HashSet<string> fired, HashSet<string> vetoes, RuleSetIdentity identity) {
+        private static string AppendedCells(RankedCandidate row, string status, HashSet<string> fired, HashSet<string> vetoes, RuleSetIdentity identity,
+                                            CandidateRuleAgreement agreement) {
             var cells = new[]
             {
                 string.Empty,
@@ -541,6 +548,9 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
                 status,
                 Cell(identity.Version),
                 Cell(identity.Sha256),
+                Cell(agreement.Label),
+                string.Join(";", agreement.FiredMotifs),
+                string.Join(";", agreement.VetoMotifs),
             };
             return string.Join("\t", cells);
         }
@@ -947,8 +957,9 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         }
 
         /// <summary>
-        /// Records the formula results (legacy order) and the structure candidates (base order) of a query and, when
-        /// the weight is above zero, ranks them. Returns the ranking, or null when w = 0 (legacy rows).
+        /// Records the formula results (legacy order) and the structure candidates (base order) of a query, ranks them
+        /// (the base order when w = 0) and adds the display-only agreement of each candidate. Returns null only when
+        /// there are no candidates.
         /// </summary>
         public DiagnosticRanking Rank(DiagnosticRuleQuery query, IReadOnlyList<FormulaResult> formulaResults, IReadOnlyList<FragmenterResult> baseOrder) {
             DiagnosticRanking ranking = null;
@@ -957,16 +968,21 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
             if (baseOrder != null) {
                 query.UniqueSmiles = new HashSet<string>(baseOrder.Select(c => c.Smiles ?? string.Empty), StringComparer.Ordinal).Count;
             }
-            var matcher = Runtime.Matcher;
-            if (matcher != null && baseOrder != null) {
+            var matcher = Runtime.AgreementMatcher;
+            if (baseOrder != null) {
                 var start = _environment.Clock();
-                var hits = matcher.CacheHits;
+                var hits = matcher?.CacheHits ?? 0;
                 ranking = MsfinderDiagnosticRanking.Rank(baseOrder, query.Evaluation.Result, Runtime);
-                motifCounts = MotifCounts(query.Evaluation.Result, baseOrder);
-                query.CacheHits = matcher.CacheHits - hits;
-                query.MatchMs = Ms(start, _environment.Clock());
+                ranking = ranking.WithAgreements(DiagnosticRuleAgreement.Of(ranking.Candidates(), query.Evaluation.Result, Runtime));
+                if (Runtime.RankingOn) {
+                    motifCounts = MotifCounts(query.Evaluation.Result, baseOrder);
+                }
+                if (matcher != null) {
+                    query.CacheHits = matcher.CacheHits - hits;
+                    query.MatchMs = Ms(start, _environment.Clock());
+                }
             }
-            var context = DiagnosticQueryContext.Of(formulaResults, baseOrder, ranking);
+            var context = DiagnosticQueryContext.Of(formulaResults, baseOrder, Runtime.RankingOn ? ranking : null);
             context.MotifCounts = motifCounts;
             query.Context = context;
             return ranking;

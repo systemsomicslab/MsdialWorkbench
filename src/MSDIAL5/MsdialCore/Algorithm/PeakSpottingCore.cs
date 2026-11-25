@@ -64,62 +64,30 @@ namespace CompMs.MsdialCore.Algorithm {
             return cmbinedFeatures;
         }
 
+        // The single-thread path visits exactly the mass slices of the multi-thread path
+        // (GetMassSlices, whose list includes the end of the MS1 range), extracts them with the
+        // same EIC routine and finalizes them with the same FinalizePeakSpottingResult, so
+        // NumThreads = 1 gives the same peak list as any other thread count. It used to stop at
+        // 'focusedMass < endMass' and so dropped the last slice (for nominal-mass GC-MS, m/z 600
+        // when the MS1 range ends at 600).
         private List<ChromatogramPeakFeature> Execute3DFeatureDetectionNormalModeBySingleThread(AnalysisFileBean file, IDataProvider provider, ReportProgress reporter, ChromatogramRange chromatogramRange) {
+            var (targetMasses, massStep) = GetMassSlices(provider);
+            var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
 
-            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
-            (float startMass, float endMass) = provider.GetMs1Range(_parameter.IonMode);
-            if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
-            if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
-            float focusedMass = startMass, massStep = _parameter.MassSliceWidth;
-            if (_parameter.AccuracyType == AccuracyType.IsNominal) {
-                massStep = 1.0F;
-                System.Diagnostics.Debug.Assert(_parameter.MassSliceWidth == .5f);
-                startMass = (float)Math.Floor(startMass);
-                endMass = (float)Math.Ceiling(endMass);
-                focusedMass = startMass;
-            }
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, file.AcquisitionType);
             var detector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
-            while (focusedMass < endMass) {
-                if (focusedMass < _parameter.MassRangeBegin) { focusedMass += massStep; continue; }
-                if (focusedMass > _parameter.MassRangeEnd) break;
-
-                ExtractedIonChromatogram chromatogram = GetChromatogram(rawSpectra, focusedMass, chromatogramRange);
-                var chromPeakFeatures = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, file.AcquisitionType);
-                if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
-                    focusedMass += massStep;
-                    reporter?.Report(focusedMass - startMass, endMass - startMass);
-                    continue;
+            foreach (var (chromatogram, index) in rawSpectra.GetMS1ExtractedChromatograms(targetMasses, _parameter.MassSliceWidth, chromatogramRange).WithIndex()) {
+                using (chromatogram) {
+                    chromPeakFeaturesArray[index] = GetChromatogramPeakFeatures_Temp2(provider, detector, chromatogram, file.AcquisitionType);
                 }
-
-                //removing peak spot redundancies among slices
-                chromPeakFeatures = RemovePeakAreaBeanRedundancy(chromPeakFeaturesList, chromPeakFeatures, massStep);
-                if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
-                    focusedMass += massStep;
-                    reporter?.Report(focusedMass - startMass, endMass - startMass);
-                    continue;
-                }
-
-                chromPeakFeaturesList.Add(chromPeakFeatures);
-                focusedMass += massStep;
-                reporter?.Report(focusedMass - startMass, endMass - startMass);
+                reporter?.Report(index + 1, targetMasses.Count);
             }
-            return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, file.AcquisitionType);
+
+            return FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, provider, file.AcquisitionType);
         }
 
         private List<ChromatogramPeakFeature> Execute3DFeatureDetectionNormalModeByMultiThread(AnalysisFileBean file, IDataProvider provider, int numThreads, CancellationToken token, ReportProgress reporter, ChromatogramRange chromatogramRange) {
-            var (startMass, endMass) = provider.GetMs1Range(_parameter.IonMode);
-            startMass = Math.Max(startMass, _parameter.MassRangeBegin);
-            endMass = Math.Min(endMass, _parameter.MassRangeEnd);
-            float massStep = _parameter.MassSliceWidth;
-            if (_parameter.AccuracyType == AccuracyType.IsNominal) {
-                massStep = 1.0F;
-                System.Diagnostics.Debug.Assert(_parameter.MassSliceWidth == .5f);
-                startMass = (float)Math.Floor(startMass);
-                endMass = (float)Math.Ceiling(endMass);
-            }
-
-            var targetMasses = GetFocusedMassList(startMass, endMass, massStep);
+            var (targetMasses, massStep) = GetMassSlices(provider);
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
 
             numThreads = Math.Max(2, numThreads);
@@ -175,6 +143,25 @@ namespace CompMs.MsdialCore.Algorithm {
                 chromPeakFeaturesList.Add(filteredFeatures);
             }
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, type);
+        }
+
+        /// <summary>
+        /// The mass slices peak spotting visits, shared by the single-thread and the multi-thread
+        /// paths: the MS1 range of the file clipped to [MassRangeBegin, MassRangeEnd], widened to
+        /// whole numbers with a step of 1 for nominal-mass data, from start to end inclusive.
+        /// </summary>
+        internal (List<double> TargetMasses, float MassStep) GetMassSlices(IDataProvider provider) {
+            var (startMass, endMass) = provider.GetMs1Range(_parameter.IonMode);
+            startMass = Math.Max(startMass, _parameter.MassRangeBegin);
+            endMass = Math.Min(endMass, _parameter.MassRangeEnd);
+            float massStep = _parameter.MassSliceWidth;
+            if (_parameter.AccuracyType == AccuracyType.IsNominal) {
+                massStep = 1.0F;
+                System.Diagnostics.Debug.Assert(_parameter.MassSliceWidth == .5f);
+                startMass = (float)Math.Floor(startMass);
+                endMass = (float)Math.Ceiling(endMass);
+            }
+            return (GetFocusedMassList(startMass, endMass, massStep), massStep);
         }
 
         public List<double> GetFocusedMassList(float startMass, float endMass, float massStep) {
