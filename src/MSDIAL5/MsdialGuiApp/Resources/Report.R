@@ -17,6 +17,28 @@ figure_tex <- function(file, caption) {
     "\\end{center}", paste0("\\label{", file, "}"), "\\end{figure}", "\\clearpage\n\n")
 }
 
+compile_report <- function(file) {
+  engine_args <- getOption("tinytex.engine_args")
+  pdflatex <- Sys.which("pdflatex")
+  if (nzchar(pdflatex) && !tinytex::is_tinytex()) {
+    version <- suppressWarnings(system2(pdflatex, "--version", stdout = TRUE, stderr = TRUE))
+    if (any(grepl("MiKTeX", version, fixed = TRUE))) {
+      # Keep the detected compiler on PATH when passing a MiKTeX-specific flag.
+      old_options <- options(tinytex.tlmgr.path = "")
+      on.exit(options(old_options), add = TRUE)
+      engine_args <- c(engine_args, "--disable-installer")
+    }
+  }
+  tryCatch(
+    tinytex::latexmk(file, engine = "pdflatex", emulation = TRUE,
+                     engine_args = engine_args, install_packages = FALSE),
+    error = function(e) {
+      stop("Could not create the Notame PDF report. If LaTeX packages are missing, ",
+           "install them manually and run Notame again.\n", conditionMessage(e), call. = FALSE)
+    }
+  )
+}
+
 if (report) {
   old_wd <- setwd(ppath)
   tryCatch({
@@ -139,7 +161,7 @@ if (report) {
     close(rnwFile)
 
     utils::Sweave(file = "Notame_Report.Rnw", encoding = "utf8")
-    tinytex::latexmk("Notame_Report.tex")
+    compile_report("Notame_Report.tex")
   }, finally = setwd(old_wd))
 }
 # END

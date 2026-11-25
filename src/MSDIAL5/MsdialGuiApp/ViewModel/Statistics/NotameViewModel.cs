@@ -156,11 +156,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                 MessageBox.Show($"Notame output files were created in {exportDirectory}.", "Notame");
             }
             catch (NotamePackageException ex) {
-                MessageBox.Show(
+                var result = MessageBox.Show(
                     "R is missing what the Notame preprocessing needs:\r\n  " + string.Join("\r\n  ", ex.MissingPackages) +
-                    "\r\n\r\nThe next window shows an R script that installs them. Run it in R or RStudio, then restart MS-DIAL.",
-                    "Notame", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                CustomPackageDialog.ShowDialog(Notame.PackageInstallScript);
+                    "\r\n\r\nRun the setup script yourself in R or RStudio, then restart MS-DIAL. View the script?",
+                    "Notame", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+                if (result == DialogResult.Yes) {
+                    ShowScript();
+                }
             }
             catch (System.Exception ex) {
                 MessageBox.Show(
