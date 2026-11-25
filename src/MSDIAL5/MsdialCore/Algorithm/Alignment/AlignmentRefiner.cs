@@ -7,6 +7,7 @@ using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,11 +49,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         public (List<AlignmentSpotProperty>, List<int>) Refine(IList<AlignmentSpotProperty> alignments) {
+            using var timing = StageTiming.Measure(null, "alignment refine");
             var spots = alignments.ToList();
 
             Deduplicate(spots);
             _removedAsIsotopes.Clear();
-            var cleaned = GetCleanedSpots(spots);
+            List<AlignmentSpotProperty> cleaned;
+            using (StageTiming.Measure(null, "alignment cleanup")) {
+                cleaned = GetCleanedSpots(spots);
+            }
             RemovedIsotopeSpots = RemovesIsotopeSpots
                 ? RemovedIsotopeSpot.Collect(
                     _removedAsIsotopes,
@@ -63,7 +68,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var filtered = FilterByBlank(cleaned);
             var ids = SetAlignmentID(filtered);
             IsotopeAnalysis(filtered);
-            SetLinks(filtered);
+            using (StageTiming.Measure(null, "alignment links")) {
+                SetLinks(filtered);
+            }
             SetStatProperty(filtered);
             PostProcess(filtered);
 
