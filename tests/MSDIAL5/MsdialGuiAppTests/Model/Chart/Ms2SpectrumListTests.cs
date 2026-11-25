@@ -4,6 +4,8 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -58,18 +60,84 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
         }
 
         [TestMethod()]
-        public void SpectraAreScaledToTheirBasePeak() {
-            var spectrum = new MsSpectrum(Peaks((200, 50), (100, 200), (300, 0)));
+        public void TheIntensityRangeCoversTheSpectrum() {
+            Assert.AreEqual((50d, 200d), Ms2SpectrumList.GetIntensityRange(new MsSpectrum(Peaks((200, 50), (100, 200), (300, 120)))));
+            Assert.AreEqual((0d, 1d), Ms2SpectrumList.GetIntensityRange(new MsSpectrum([])));
+            Assert.AreEqual((0d, 1d), Ms2SpectrumList.GetIntensityRange(null));
+        }
 
-            var relative = Ms2SpectrumList.ToRelativeSpectrum(spectrum);
-            CollectionAssert.AreEqual(new[] { 100d, 200d, 300d }, relative.Select(p => p.Mass).ToArray());
-            CollectionAssert.AreEqual(new[] { 100d, 25d, 0d }, relative.Select(p => p.Intensity).ToArray());
+        [DataTestMethod]
+        [DataRow("Relative", "Relative")]
+        [DataRow("Absolute", "Absolute")]
+        [DataRow("Log10", "Log10")]
+        [DataRow("Sqrt", "Sqrt")]
+        [DataRow(" absolute ", "Absolute")]
+        public void TheAxisLabelsOfTheMainViewAreUnderstood(string label, string expected) {
+            Assert.IsTrue(Ms2SpectrumList.TryParseAxisType(label, out var type));
+            Assert.AreEqual(expected, type.ToString());
+        }
 
-            var mirrored = Ms2SpectrumList.ToRelativeSpectrum(spectrum, mirrored: true);
-            CollectionAssert.AreEqual(new[] { -100d, -25d, -0d }, mirrored.Select(p => p.Intensity).ToArray());
+        [DataTestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("Percentile")]
+        [DataRow("7")]
+        public void UnknownAxisLabelsAreIgnored(string? label) {
+            Assert.IsFalse(Ms2SpectrumList.TryParseAxisType(label, out _));
+        }
 
-            Assert.AreEqual(0, Ms2SpectrumList.ToRelativeSpectrum(new MsSpectrum(Peaks((100, 0)))).Count);
-            Assert.AreEqual(0, Ms2SpectrumList.ToRelativeSpectrum(null).Count);
+        [TestMethod()]
+        public void TheAxisTitlesMatchTheMainView() {
+            Assert.AreEqual("Relative abundance", Ms2SpectrumList.GetAxisTitle(Ms2SpectrumAxisType.Relative));
+            Assert.AreEqual("Absolute abundance", Ms2SpectrumList.GetAxisTitle(Ms2SpectrumAxisType.Absolute));
+            Assert.AreEqual("Relative abundance (log10)", Ms2SpectrumList.GetAxisTitle(Ms2SpectrumAxisType.Log10));
+            Assert.AreEqual("Relative abundance (^1/2)", Ms2SpectrumList.GetAxisTitle(Ms2SpectrumAxisType.Sqrt));
+        }
+
+        [TestMethod()]
+        public void EachAxisTypeGetsItsKindOfAxis() {
+            var spectrum = new MsSpectrum(Peaks((100, 20), (200, 5000)));
+
+            var relative = Ms2SpectrumListViewModel.CreateVerticalAxis(Ms2SpectrumAxisType.Relative, spectrum);
+            Assert.IsInstanceOfType(relative, typeof(ContinuousAxisManager<double>));
+            Assert.AreEqual(LabelType.Percent, ((ContinuousAxisManager<double>)relative).LabelType);
+            Assert.AreEqual(0d, relative.Range.Minimum.Value, "Peaks stand on zero.");
+
+            var absolute = Ms2SpectrumListViewModel.CreateVerticalAxis(Ms2SpectrumAxisType.Absolute, spectrum);
+            Assert.AreEqual(LabelType.Standard, ((ContinuousAxisManager<double>)absolute).LabelType);
+            Assert.AreEqual(5000d, ((ContinuousAxisManager<double>)absolute).InitialRange.Maximum.Value, 1e-9);
+
+            Assert.IsInstanceOfType(Ms2SpectrumListViewModel.CreateVerticalAxis(Ms2SpectrumAxisType.Log10, spectrum), typeof(LogScaleAxisManager<double>));
+            Assert.IsInstanceOfType(Ms2SpectrumListViewModel.CreateVerticalAxis(Ms2SpectrumAxisType.Sqrt, spectrum), typeof(SqrtAxisManager));
+            Assert.IsInstanceOfType(Ms2SpectrumListViewModel.CreateVerticalAxis(Ms2SpectrumAxisType.Log10, null), typeof(LogScaleAxisManager<double>), "An empty spectrum still gets an axis.");
+        }
+
+        [TestMethod()]
+        public async Task TheAxisTypeFollowsTheMainViewAndCanBeChangedInTheWindow() {
+            var target = new ReactivePropertySlim<string?>("spot");
+            var mainAxis = new ReactivePropertySlim<string?>("Absolute");
+            using var model = Ms2SpectrumListModel.Create("title", "samples", target, t => t,
+                _ => Task.FromResult<IReadOnlyList<Ms2SpectrumListItem>>([new Ms2SpectrumListItem("A", "", true, Peaks((120, 4), (130, 8)))]),
+                Observable.Return<MsSpectrum?>(null),
+                mainAxis);
+            using var vm = new Ms2SpectrumListViewModel(model);
+            await WaitUntilAsync(() => vm.Tiles.Value.Count == 1);
+
+            Assert.AreEqual(Ms2SpectrumAxisType.Absolute, vm.AxisType.Value, "The window opens with the axis of the main view.");
+            Assert.AreEqual(Ms2SpectrumAxisType.Absolute, vm.Tiles.Value[0].AxisType);
+            Assert.AreEqual("Absolute abundance", vm.Tiles.Value[0].VerticalTitle);
+
+            vm.AxisType.Value = Ms2SpectrumAxisType.Log10;
+            Assert.AreEqual("Relative abundance (log10)", vm.Tiles.Value[0].VerticalTitle);
+            Assert.IsInstanceOfType(vm.Tiles.Value[0].VerticalAxis, typeof(LogScaleAxisManager<double>));
+
+            mainAxis.Value = "Sqrt";
+            Assert.AreEqual(Ms2SpectrumAxisType.Sqrt, vm.AxisType.Value, "Changing the main view changes the window too.");
+            Assert.IsInstanceOfType(vm.Tiles.Value[0].VerticalAxis, typeof(SqrtAxisManager));
+
+            mainAxis.Value = "Unknown";
+            Assert.AreEqual(Ms2SpectrumAxisType.Sqrt, vm.AxisType.Value);
+            CollectionAssert.AreEqual(new[] { Ms2SpectrumAxisType.Relative, Ms2SpectrumAxisType.Absolute, Ms2SpectrumAxisType.Log10, Ms2SpectrumAxisType.Sqrt }, vm.AxisTypes.ToArray());
         }
 
         [TestMethod()]
@@ -182,16 +250,61 @@ namespace CompMs.App.Msdial.Model.Chart.Tests
             CollectionAssert.AreEqual(new[] { "Rep", "A" }, vm.Tiles.Value.Select(tile => tile.Title).ToArray());
             Assert.IsTrue(vm.Tiles.Value.All(tile => tile.ReferencePeaks.Count == 0));
             Assert.AreSame(vm.Tiles.Value[0].HorizontalAxis, vm.Tiles.Value[1].HorizontalAxis, "Every tile shares the m/z axis.");
-            CollectionAssert.AreEqual(new[] { 50d, 100d }, vm.Tiles.Value[1].Peaks.Select(p => p.Intensity).ToArray());
+            CollectionAssert.AreEqual(new[] { 4d, 8d }, vm.Tiles.Value[1].Peaks.Select(p => p.Intensity).ToArray());
             Assert.AreEqual(0d, vm.Tiles.Value[0].VerticalAxis.Range.Minimum.Value);
+            Assert.AreNotSame(vm.Tiles.Value[0].VerticalAxis, vm.Tiles.Value[1].VerticalAxis, "Each spectrum is scaled to its own intensities.");
+
+            Assert.IsTrue(vm.Tiles.Value.All(tile => !tile.IsMirrored));
 
             vm.ShowReference.Value = true;
-            CollectionAssert.AreEqual(new[] { -100d, -50d }, vm.Tiles.Value[0].ReferencePeaks.Select(p => p.Intensity).ToArray());
-            Assert.IsTrue(vm.Tiles.Value[0].VerticalAxis.Range.Minimum.Value < 0d, "The mirrored reference needs the lower half of the axis.");
+            Assert.IsTrue(vm.Tiles.Value.All(tile => tile.IsMirrored));
+            // The reference is drawn downward in its own pane, so its values stay positive and the m/z axis stays at the baseline of both.
+            CollectionAssert.AreEqual(new[] { 10d, 5d }, vm.Tiles.Value[0].ReferencePeaks.Select(p => p.Intensity).ToArray());
+            Assert.AreEqual(0d, vm.Tiles.Value[0].VerticalAxis.Range.Minimum.Value);
+            Assert.AreEqual(0d, vm.Tiles.Value[0].ReferenceVerticalAxis.Range.Minimum.Value);
+            Assert.AreNotSame(vm.Tiles.Value[0].VerticalAxis, vm.Tiles.Value[0].ReferenceVerticalAxis);
 
             reference.Value = null;
             Assert.IsFalse(vm.HasReference.Value);
-            Assert.IsTrue(vm.Tiles.Value.All(tile => tile.ReferencePeaks.Count == 0));
+            Assert.IsTrue(vm.Tiles.Value.All(tile => !tile.IsMirrored && tile.ReferencePeaks.Count == 0));
+        }
+
+        [TestMethod()]
+        public async Task AClickedTileIsEnlargedAndTheArrowsStepThroughTheTiles() {
+            var target = new ReactivePropertySlim<string?>("spot1");
+            Task<IReadOnlyList<Ms2SpectrumListItem>> Load(string t) => Task.FromResult<IReadOnlyList<Ms2SpectrumListItem>>(t == "spot1"
+                ? [new Ms2SpectrumListItem("A", "", false, Peaks((100, 1))), new Ms2SpectrumListItem("Rep", "", true, Peaks((110, 1))), new Ms2SpectrumListItem("B", "", false, Peaks((120, 1)))]
+                : [new Ms2SpectrumListItem("B", "", true, Peaks((130, 1))), new Ms2SpectrumListItem("C", "", false, Peaks((140, 1)))]);
+            using var model = Ms2SpectrumListModel.Create("title", "samples", target, t => t, Load, Observable.Return<MsSpectrum?>(null));
+            using var vm = new Ms2SpectrumListViewModel(model);
+            await WaitUntilAsync(() => vm.Tiles.Value.Count == 3);
+
+            Assert.IsFalse(vm.IsEnlarged.Value);
+            Assert.IsFalse(vm.ShowNextCommand.CanExecute(), "The arrows do nothing while the tiles are shown.");
+
+            vm.EnlargeCommand.Execute(vm.Tiles.Value[1]);
+            Assert.IsTrue(vm.IsEnlarged.Value);
+            Assert.AreEqual("A", vm.EnlargedTile.Value?.Title);
+            Assert.AreEqual("2 / 3", vm.EnlargedPosition.Value);
+
+            vm.ShowNextCommand.Execute();
+            Assert.AreEqual("B", vm.EnlargedTile.Value?.Title);
+            Assert.AreEqual("3 / 3", vm.EnlargedPosition.Value);
+            vm.ShowNextCommand.Execute();
+            Assert.AreEqual("Rep", vm.EnlargedTile.Value?.Title, "Stepping past the last tile wraps around to the first.");
+            vm.ShowPreviousCommand.Execute();
+            Assert.AreEqual("B", vm.EnlargedTile.Value?.Title);
+
+            // Selecting another spot keeps the same sample enlarged when it is still listed.
+            target.Value = "spot2";
+            await WaitUntilAsync(() => vm.Tiles.Value.Count == 2 && vm.EnlargedTile.Value is not null);
+            Assert.AreEqual("B", vm.EnlargedTile.Value?.Title);
+            Assert.AreSame(vm.Tiles.Value[0], vm.EnlargedTile.Value);
+            Assert.AreEqual("1 / 2", vm.EnlargedPosition.Value);
+
+            vm.CloseEnlargedCommand.Execute();
+            Assert.IsFalse(vm.IsEnlarged.Value);
+            Assert.AreEqual(string.Empty, vm.EnlargedPosition.Value);
         }
 
         [TestMethod()]

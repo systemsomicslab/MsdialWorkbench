@@ -3,10 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
              xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type={x:Type vm:Ms2SpectrumListViewModel}}"
@@ -18,8 +20,194 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <ContextMenu x:Key="Ms2SpectrumChartMenu" x:Shared="False">
+                <MenuItem Header="Copy image as png"
+                          Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                <MenuItem Header="Copy image as emf"
+                          Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                <MenuItem Header="Save image as png"
+                          Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                <MenuItem Header="Save image as emf"
+                          Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+            </ContextMenu>
+
+            <!--
+            The spectrum of one tile. The ContentControl showing it gives the number of labelled peaks as its Tag.
+            With the reference shown, the spectrum and the reference get an upper and a lower pane that meet at the m/z axis,
+            as in the main MS/MS view; otherwise a single chart.
+            -->
+            <DataTemplate x:Key="Ms2SpectrumChart" DataType="{x:Type vm:Ms2SpectrumListTileViewModel}">
+                <Grid x:Name="ChartRoot" Tag="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}">
+                    <chart:SimpleChartControl x:Name="SingleChart"
+                                              HorizontalAxis="{Binding HorizontalAxis}"
+                                              VerticalAxis="{Binding VerticalAxis}"
+                                              HorizontalTitle="m/z"
+                                              VerticalTitle="{Binding VerticalTitle}"
+                                              ContextMenu="{StaticResource Ms2SpectrumChartMenu}"
+                                              Style="{StaticResource NoWheelBasicChart}">
+                        <Grid>
+                        <chart:LineSpectrumControlSlim ItemsSource="{Binding Peaks}"
+                                                       DataType="{x:Type components:SpectrumPeak}"
+                                                       HorizontalProperty="Mass"
+                                                       VerticalProperty="Intensity"
+                                                       LineThickness="1.5">
+                            <chart:LineSpectrumControlSlim.LineBrush>
+                                <design:ConstantBrushMapper Brush="Blue"/>
+                            </chart:LineSpectrumControlSlim.LineBrush>
+                            <chart:LineSpectrumControlSlim.ToolTip>
+                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                         d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0:F4}}"/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0:N0}}" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </chart:LineSpectrumControlSlim.ToolTip>
+                        </chart:LineSpectrumControlSlim>
+                        <chart:Annotator ItemsSource="{Binding Peaks}"
+                                         HorizontalPropertyName="Mass"
+                                         VerticalPropertyName="Intensity"
+                                         OrderingPropertyName="Intensity"
+                                         LabelPropertyName="Mass"
+                                         TopN="{Binding Tag, ElementName=ChartRoot, FallbackValue=5}"
+                                         MinimumRelativeOrder="0.05"
+                                         Format="F4"
+                                         Brush="Black"
+                                         LabelPlacement="{StaticResource SpectrumLabelPlacement}"
+                                         ClipToBounds="True"/>
+                        <TextBlock Text="No MS2" FontSize="20" Foreground="Gray"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasSpectrum}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        </Grid>
+                    </chart:SimpleChartControl>
+                    <chart:MultiChart x:Name="MirrorChart"
+                                      Visibility="Collapsed"
+                                      HorizontalAxis="{Binding HorizontalAxis}"
+                                      HorizontalTitle="m/z"
+                                      VerticalTitle="{Binding VerticalTitle}"
+                                      ContextMenu="{StaticResource Ms2SpectrumChartMenu}"
+                                      Style="{StaticResource VerticalConcatChart}">
+                        <Grid core:ChartBaseControl.VerticalAxis="{Binding VerticalAxis}">
+                        <chart:LineSpectrumControlSlim ItemsSource="{Binding Peaks}"
+                                                       DataType="{x:Type components:SpectrumPeak}"
+                                                       HorizontalProperty="Mass"
+                                                       VerticalProperty="Intensity"
+                                                       LineThickness="1.5">
+                            <chart:LineSpectrumControlSlim.LineBrush>
+                                <design:ConstantBrushMapper Brush="Blue"/>
+                            </chart:LineSpectrumControlSlim.LineBrush>
+                            <chart:LineSpectrumControlSlim.ToolTip>
+                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                         d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0:F4}}"/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0:N0}}" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </chart:LineSpectrumControlSlim.ToolTip>
+                        </chart:LineSpectrumControlSlim>
+                        <chart:Annotator ItemsSource="{Binding Peaks}"
+                                         HorizontalPropertyName="Mass"
+                                         VerticalPropertyName="Intensity"
+                                         OrderingPropertyName="Intensity"
+                                         LabelPropertyName="Mass"
+                                         TopN="{Binding Tag, ElementName=ChartRoot, FallbackValue=5}"
+                                         MinimumRelativeOrder="0.05"
+                                         Format="F4"
+                                         Brush="Black"
+                                         LabelPlacement="{StaticResource SpectrumLabelPlacement}"
+                                         ClipToBounds="True"/>
+                        <TextBlock Text="No MS2" FontSize="20" Foreground="Gray"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasSpectrum}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        </Grid>
+                        <Grid core:ChartBaseControl.VerticalAxis="{Binding ReferenceVerticalAxis}"
+                              core:ChartBaseControl.FlippedY="False">
+                            <chart:LineSpectrumControlSlim ItemsSource="{Binding ReferencePeaks}"
+                                                           DataType="{x:Type components:SpectrumPeak}"
+                                                           HorizontalProperty="Mass"
+                                                           VerticalProperty="Intensity"
+                                                           LineThickness="1.5">
+                                <chart:LineSpectrumControlSlim.LineBrush>
+                                    <design:ConstantBrushMapper Brush="Red"/>
+                                </chart:LineSpectrumControlSlim.LineBrush>
+                                <chart:LineSpectrumControlSlim.ToolTip>
+                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                             d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=Reference m/z: {0:F4}}"/>
+                                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0:N0}}" Margin="8,0,0,0"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </chart:LineSpectrumControlSlim.ToolTip>
+                            </chart:LineSpectrumControlSlim>
+                        </Grid>
+                    </chart:MultiChart>
+                </Grid>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsMirrored}" Value="True">
+                        <Setter TargetName="SingleChart" Property="Visibility" Value="Collapsed"/>
+                        <Setter TargetName="MirrorChart" Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+
+            <Style TargetType="Border" x:Key="RepresentativeFrame">
+                <Setter Property="BorderBrush" Value="LightGray"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsRepresentative}" Value="True">
+                        <Setter Property="BorderBrush" Value="DarkOrange"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Title, representative badge and detail of a spectrum. -->
+            <DataTemplate x:Key="Ms2SpectrumHeader" DataType="{x:Type vm:Ms2SpectrumListTileViewModel}">
+                <StackPanel>
+                    <DockPanel>
+                        <Border DockPanel.Dock="Right" Background="DarkOrange" CornerRadius="3" Padding="4,0" VerticalAlignment="Center"
+                                Visibility="{Binding IsRepresentative, Converter={StaticResource BooleanToVisibility}}">
+                            <TextBlock Text="Representative" Foreground="White" FontSize="11"/>
+                        </Border>
+                        <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
+                    </DockPanel>
+                    <TextBlock Text="{Binding Detail}" Foreground="DimGray" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip="{Binding Detail}"/>
+                </StackPanel>
+            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CloseEnlargedCommand}"/>
+        <KeyBinding Key="Right" Command="{Binding ShowNextCommand}"/>
+        <KeyBinding Key="Left" Command="{Binding ShowPreviousCommand}"/>
+    </UserControl.InputBindings>
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -29,6 +217,11 @@
         <Border BorderBrush="LightGray" BorderThickness="0,0,0,1" Padding="8,6" Grid.Row="0">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Y axis:" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding AxisTypes, Mode=OneTime}"
+                              SelectedItem="{Binding AxisType.Value}"
+                              ToolTip="How the abundance axis is drawn. It follows the main MS/MS view, and can be changed here for this window."
+                              Width="90" Margin="4,0,0,0" VerticalAlignment="Center"/>
                     <CheckBox Content="{Binding ShowEmptyLabel, Mode=OneTime}"
                               IsChecked="{Binding ShowEmpty.Value}"
                               VerticalAlignment="Center" Margin="12,0,0,0"/>
@@ -55,109 +248,32 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:Ms2SpectrumListTileViewModel}">
                         <Border Width="420" Height="260" Margin="4" Padding="4" Background="White"
-                                BorderThickness="1" BorderBrush="LightGray">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsRepresentative}" Value="True">
-                                            <Setter Property="BorderBrush" Value="DarkOrange"/>
-                                            <Setter Property="BorderThickness" Value="2"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+                                Style="{StaticResource RepresentativeFrame}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <StackPanel Grid.Row="0" Margin="2,0,2,0">
+                                <!-- Clicking the header shows the spectrum large; the chart below keeps drag-to-zoom. -->
+                                <Button Command="{Binding DataContext.EnlargeCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}"
+                                        Cursor="Hand"
+                                        ToolTip="Click to enlarge"
+                                        HorizontalContentAlignment="Stretch"
+                                        Background="Transparent" BorderThickness="0" Padding="2,0"
+                                        Grid.Row="0">
                                     <DockPanel>
-                                        <Border DockPanel.Dock="Right" Background="DarkOrange" CornerRadius="3" Padding="4,0"
-                                                Visibility="{Binding IsRepresentative, Converter={StaticResource BooleanToVisibility}}">
-                                            <TextBlock Text="Representative" Foreground="White" FontSize="11"/>
-                                        </Border>
-                                        <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
+                                        <TextBlock Text="&#xE740;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="DimGray"
+                                                   DockPanel.Dock="Right" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource Ms2SpectrumHeader}"/>
                                     </DockPanel>
-                                    <TextBlock Text="{Binding Detail}" Foreground="DimGray" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip="{Binding Detail}"/>
-                                </StackPanel>
-                                <chart:SimpleChartControl x:Name="TileChart"
-                                                          HorizontalAxis="{Binding HorizontalAxis}"
-                                                          VerticalAxis="{Binding VerticalAxis}"
-                                                          HorizontalTitle="m/z"
-                                                          VerticalTitle="Relative abundance"
-                                                          Style="{StaticResource NoWheelBasicChart}"
-                                                          Grid.Row="1">
-                                    <chart:SimpleChartControl.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Copy image as png"
-                                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                            <MenuItem Header="Copy image as emf"
-                                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                            <MenuItem Header="Save image as png"
-                                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                            <MenuItem Header="Save image as emf"
-                                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                        </ContextMenu>
-                                    </chart:SimpleChartControl.ContextMenu>
-                                    <Grid>
-                                        <chart:LineSpectrumControlSlim ItemsSource="{Binding ReferencePeaks}"
-                                                                       DataType="{x:Type components:SpectrumPeak}"
-                                                                       HorizontalProperty="Mass"
-                                                                       VerticalProperty="Intensity"
-                                                                       LineThickness="1.5">
-                                            <chart:LineSpectrumControlSlim.LineBrush>
-                                                <design:ConstantBrushMapper Brush="Red"/>
-                                            </chart:LineSpectrumControlSlim.LineBrush>
-                                        </chart:LineSpectrumControlSlim>
-                                        <chart:LineSpectrumControlSlim ItemsSource="{Binding Peaks}"
-                                                                       DataType="{x:Type components:SpectrumPeak}"
-                                                                       HorizontalProperty="Mass"
-                                                                       VerticalProperty="Intensity"
-                                                                       LineThickness="1.5">
-                                            <chart:LineSpectrumControlSlim.LineBrush>
-                                                <design:ConstantBrushMapper Brush="Blue"/>
-                                            </chart:LineSpectrumControlSlim.LineBrush>
-                                            <chart:LineSpectrumControlSlim.ToolTip>
-                                                <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
-                                                         d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0:F4}}"/>
-                                                        <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Relative abundance: {0:F1}}" Margin="8,0,0,0"/>
-                                                    </StackPanel>
-                                                </ToolTip>
-                                            </chart:LineSpectrumControlSlim.ToolTip>
-                                        </chart:LineSpectrumControlSlim>
-                                        <chart:Annotator ItemsSource="{Binding Peaks}"
-                                                         HorizontalPropertyName="Mass"
-                                                         VerticalPropertyName="Intensity"
-                                                         OrderingPropertyName="Intensity"
-                                                         LabelPropertyName="Mass"
-                                                         TopN="5"
-                                                         MinimumRelativeOrder="0.05"
-                                                         Format="F4"
-                                                         Brush="Black"
-                                                         LabelPlacement="{StaticResource SpectrumLabelPlacement}"
-                                                         ClipToBounds="True"/>
-                                        <TextBlock Text="No MS2" FontSize="20" Foreground="Gray"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding HasSpectrum}" Value="False">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </Grid>
-                                </chart:SimpleChartControl>
+                                </Button>
+                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource Ms2SpectrumChart}"
+                                                Focusable="False" Grid.Row="1">
+                                    <ContentControl.Tag>
+                                        <sys:Int32>5</sys:Int32>
+                                    </ContentControl.Tag>
+                                </ContentControl>
                             </Grid>
                         </Border>
                     </DataTemplate>
@@ -173,5 +289,38 @@
         <TextBlock Text="{Binding EmptyMessage.Value}" FontSize="16" Foreground="Gray" TextWrapping="Wrap"
                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16" Grid.Row="1"
                    Visibility="{Binding IsEmpty.Value, Converter={StaticResource BooleanToVisibility}}"/>
+
+        <!-- The enlarged spectrum, drawn over the tiles. -->
+        <Border Background="White" Padding="8" Grid.Row="1"
+                Visibility="{Binding IsEnlarged.Value, Converter={StaticResource BooleanToVisibility}}">
+            <Border DataContext="{Binding EnlargedTile.Value}" Padding="6" Style="{StaticResource RepresentativeFrame}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0" Margin="0,0,0,4">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Top"
+                                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                            <Button Content="&#xE76B;" FontFamily="Segoe MDL2 Assets" Width="32" Height="26"
+                                    Command="{Binding ShowPreviousCommand}" ToolTip="Previous (←)"/>
+                            <TextBlock Text="{Binding EnlargedPosition.Value}" VerticalAlignment="Center" MinWidth="56" TextAlignment="Center"/>
+                            <Button Content="&#xE76C;" FontFamily="Segoe MDL2 Assets" Width="32" Height="26"
+                                    Command="{Binding ShowNextCommand}" ToolTip="Next (→)"/>
+                            <Button Content="Back to list" Height="26" Padding="10,0" Margin="12,0,0,0"
+                                    Command="{Binding CloseEnlargedCommand}" ToolTip="Back to the tiles (Esc)"/>
+                        </StackPanel>
+                        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource Ms2SpectrumHeader}"
+                                          TextElement.FontSize="14"/>
+                    </DockPanel>
+                    <ContentControl Content="{Binding}" ContentTemplate="{StaticResource Ms2SpectrumChart}"
+                                    Focusable="False" Grid.Row="1">
+                        <ContentControl.Tag>
+                            <sys:Int32>15</sys:Int32>
+                        </ContentControl.Tag>
+                    </ContentControl>
+                </Grid>
+            </Border>
+        </Border>
     </Grid>
 </UserControl>

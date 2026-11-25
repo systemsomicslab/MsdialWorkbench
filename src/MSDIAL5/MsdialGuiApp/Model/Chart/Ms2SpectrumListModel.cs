@@ -14,24 +14,47 @@ namespace CompMs.App.Msdial.Model.Chart;
 /// </summary>
 internal sealed class Ms2SpectrumListModel : DisposableModelBase
 {
-    private Ms2SpectrumListModel(string title, string unit, IObservable<LoadState> states, IObservable<MsSpectrum?> reference) {
+    private Ms2SpectrumListModel(string title, string unit, IObservable<LoadState> states, IObservable<MsSpectrum?> reference, IObservable<string?>? axisTypeLabels) {
         Title = title;
         Unit = unit;
 
-        var state = states.ToReadOnlyReactivePropertySlim(LoadState.Empty("No spot is selected.")).AddTo(Disposables);
-        Header = state.Select(s => s.Header).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
-        IsLoading = state.Select(s => s.IsLoading).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-        Error = state.Select(s => s.Error).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-        Items = state.Select(s => s.Items).ToReadOnlyReactivePropertySlim<IReadOnlyList<Ms2SpectrumListItem>>([]).AddTo(Disposables);
-        Summary = state.Select(s => s.IsLoading ? "Loading ..." : s.Error ?? Ms2SpectrumList.Summarize(s.Items.ToList(), unit)).ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+        var initial = LoadState.Empty("No spot is selected.");
+        var header = new ReactivePropertySlim<string>(initial.Header).AddTo(Disposables);
+        var isLoading = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
+        var error = new ReactivePropertySlim<string?>(null).AddTo(Disposables);
+        var summary = new ReactivePropertySlim<string>(Ms2SpectrumList.Summarize([], unit)).AddTo(Disposables);
+        Header = header.ToReadOnlyReactivePropertySlim(initial.Header).AddTo(Disposables);
+        IsLoading = isLoading.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        Error = error.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        Summary = summary.ToReadOnlyReactivePropertySlim(string.Empty).AddTo(Disposables);
+        // Everything else is updated before the items, so whoever sees new items also sees whether they are still loading.
+        Items = states
+            .Do(s => {
+                header.Value = s.Header;
+                isLoading.Value = s.IsLoading;
+                error.Value = s.Error;
+                summary.Value = s.IsLoading ? "Loading ..." : s.Error ?? Ms2SpectrumList.Summarize(s.Items.ToList(), unit);
+            })
+            .Select(s => s.Items)
+            .ToReadOnlyReactivePropertySlim<IReadOnlyList<Ms2SpectrumListItem>>(initial.Items)
+            .AddTo(Disposables);
 
         ShowEmpty = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
         ShowReference = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
-        Reference = reference.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        // A completed property no longer tells later subscribers its value, so a finite source is kept open.
+        Reference = reference.Concat(Observable.Never<MsSpectrum?>()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         HasReference = Reference.Select(r => r?.HasSpectrum ?? false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
         VisibleItems = Items.CombineLatest(ShowEmpty, Ms2SpectrumList.Arrange)
             .ToReadOnlyReactivePropertySlim<IReadOnlyList<Ms2SpectrumListItem>>([]).AddTo(Disposables);
+        // The axis type follows the main MS/MS view, and the window can still change it on its own.
+        AxisType = new ReactivePropertySlim<Ms2SpectrumAxisType>(Ms2SpectrumAxisType.Relative).AddTo(Disposables);
+        axisTypeLabels?.Subscribe(label => {
+            if (Ms2SpectrumList.TryParseAxisType(label, out var type)) {
+                AxisType.Value = type;
+            }
+        }).AddTo(Disposables);
+
         MassRange = VisibleItems.CombineLatest(Reference, ShowReference, (items, r, show) => Ms2SpectrumList.GetMassRange(items.Select(item => item.Spectrum).Append(show ? r : null)))
             .ToReadOnlyReactivePropertySlim((0d, 1d)).AddTo(Disposables);
     }
@@ -56,6 +79,9 @@ internal sealed class Ms2SpectrumListModel : DisposableModelBase
     public ReadOnlyReactivePropertySlim<MsSpectrum?> Reference { get; }
     public ReadOnlyReactivePropertySlim<bool> HasReference { get; }
 
+    /// <summary>How the vertical axes are drawn.</summary>
+    public ReactivePropertySlim<Ms2SpectrumAxisType> AxisType { get; }
+
     /// <summary>The m/z range shared by every tile, so the spectra line up.</summary>
     public ReadOnlyReactivePropertySlim<(double Minimum, double Maximum)> MassRange { get; }
 
@@ -65,13 +91,15 @@ internal sealed class Ms2SpectrumListModel : DisposableModelBase
     /// <param name="describe">The header for a target.</param>
     /// <param name="load">Reads every MS2 spectrum of a target.</param>
     /// <param name="reference">The reference spectrum of the current annotation, drawn as a mirror on request.</param>
+    /// <param name="axisTypeLabels">The vertical axis type chosen in the main MS/MS view, by its label; the list follows it.</param>
     public static Ms2SpectrumListModel Create<T>(
         string title,
         string unit,
         IObservable<T?> target,
         Func<T, string> describe,
         Func<T, Task<IReadOnlyList<Ms2SpectrumListItem>>> load,
-        IObservable<MsSpectrum?> reference) where T : class {
+        IObservable<MsSpectrum?> reference,
+        IObservable<string?>? axisTypeLabels = null) where T : class {
         if (target is null) {
             throw new ArgumentNullException(nameof(target));
         }
@@ -96,7 +124,7 @@ internal sealed class Ms2SpectrumListModel : DisposableModelBase
                 }
             }).StartWith(LoadState.Loading(header));
         }).Switch();
-        return new Ms2SpectrumListModel(title, unit, states, reference ?? Observable.Return<MsSpectrum?>(null));
+        return new Ms2SpectrumListModel(title, unit, states, reference ?? Observable.Return<MsSpectrum?>(null), axisTypeLabels);
     }
 
     private sealed class LoadState

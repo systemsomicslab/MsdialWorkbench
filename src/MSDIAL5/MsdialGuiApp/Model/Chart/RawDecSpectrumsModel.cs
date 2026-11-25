@@ -6,6 +6,7 @@ using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Reactive.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
@@ -71,9 +72,9 @@ namespace CompMs.App.Msdial.Model.Chart
 
         /// <summary>
         /// The MS2 spectra of every MS2 scan of the selected peak, the representative scan first.
-        /// It follows the selected peak until it is disposed.
+        /// It follows the selected peak, and the vertical axis type of <paramref name="spectrumModel"/> when given, until it is disposed.
         /// </summary>
-        public Ms2SpectrumListModel CreateMs2SpectrumListModel() {
+        public Ms2SpectrumListModel CreateMs2SpectrumListModel(MsSpectrumModel? spectrumModel = null) {
             if (RawLoader is not { } loader || _target is not { } target) {
                 throw new InvalidOperationException("The MS2 scans of the peak are not available.");
             }
@@ -83,7 +84,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 target,
                 DescribePeak,
                 loader.LoadMs2SpectrumListAsync,
-                _referenceSpectrum);
+                _referenceSpectrum,
+                spectrumModel?.UpperVerticalAxisSelector.GetAxisItemAsObservable().Select(item => (string?)item?.Label));
         }
 
         private static string DescribePeak(ChromatogramPeakFeatureModel peak) {

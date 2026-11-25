@@ -33,11 +33,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (model.CanShowMs2SpectrumList) {
                 var messageBroker = broker ?? MessageBroker.Default;
-                var showMs2SpectrumListCommand = new ReactiveCommand()
-                    .WithSubscribe(() => messageBroker.Publish(new Ms2SpectrumListViewModel(model.CreateMs2SpectrumListModel())))
+                // Each panel opens a list that follows its own vertical axis type.
+                RawRefSpectrumViewModels.ShowMs2SpectrumListCommand = new ReactiveCommand()
+                    .WithSubscribe(() => messageBroker.Publish(new Ms2SpectrumListViewModel(model.CreateMs2SpectrumListModel(model.RawRefSpectrumModels))))
                     .AddTo(Disposables);
-                RawRefSpectrumViewModels.ShowMs2SpectrumListCommand = showMs2SpectrumListCommand;
-                DecRefSpectrumViewModels.ShowMs2SpectrumListCommand = showMs2SpectrumListCommand;
+                DecRefSpectrumViewModels.ShowMs2SpectrumListCommand = new ReactiveCommand()
+                    .WithSubscribe(() => messageBroker.Publish(new Ms2SpectrumListViewModel(model.CreateMs2SpectrumListModel(model.DecRefSpectrumModels))))
+                    .AddTo(Disposables);
             }
         }
 

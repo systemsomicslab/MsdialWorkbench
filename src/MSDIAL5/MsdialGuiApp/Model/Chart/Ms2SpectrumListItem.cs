@@ -60,10 +60,17 @@ internal sealed class PeakMs2Scan
     public IReadOnlyList<SpectrumPeak>? Spectrum { get; }
 }
 
+/// <summary>How the vertical axis of a spectrum is drawn: the same choices as in the main MS/MS view.</summary>
+internal enum Ms2SpectrumAxisType
+{
+    Relative,
+    Absolute,
+    Log10,
+    Sqrt,
+}
+
 internal static class Ms2SpectrumList
 {
-    public const double RelativeIntensityMaximum = 100d;
-
     /// <summary>
     /// Puts the representative spectrum first and keeps the rest in their given order.
     /// Spectra with no peaks are left out unless <paramref name="showEmpty"/> is true.
@@ -86,22 +93,33 @@ internal static class Ms2SpectrumList
         return min == max ? (min - .5d, max + .5d) : (min, max);
     }
 
-    /// <summary>
-    /// Scales the spectrum so that its base peak is 100. A mirrored spectrum points down (-100 for the base peak),
-    /// so the reference can be drawn under the measured spectrum on the same axis.
-    /// </summary>
-    public static List<SpectrumPeak> ToRelativeSpectrum(MsSpectrum? spectrum, bool mirrored = false) {
+    /// <summary>The lowest and highest intensity of the spectrum; (0, 1) when it has no peak.</summary>
+    public static (double Minimum, double Maximum) GetIntensityRange(MsSpectrum? spectrum) {
         if (spectrum is null || !spectrum.HasSpectrum) {
-            return [];
+            return (0d, 1d);
         }
-        var max = spectrum.Spectrum.Max(peak => peak.Intensity);
-        if (max <= 0d) {
-            return [];
-        }
-        var sign = mirrored ? -1d : 1d;
-        return spectrum.Spectrum
-            .Select(peak => new SpectrumPeak(peak.Mass, sign * peak.Intensity / max * RelativeIntensityMaximum))
-            .ToList();
+        return (spectrum.Spectrum.Min(peak => peak.Intensity), spectrum.Spectrum.Max(peak => peak.Intensity));
+    }
+
+    /// <summary>
+    /// Reads an axis type from the label the main MS/MS view gives it ("Relative", "Absolute", "Log10" or "Sqrt").
+    /// </summary>
+    public static bool TryParseAxisType(string? label, out Ms2SpectrumAxisType type) {
+        type = Ms2SpectrumAxisType.Relative;
+        return !string.IsNullOrWhiteSpace(label)
+            && Enum.TryParse(label!.Trim(), ignoreCase: true, out type)
+            && Enum.IsDefined(typeof(Ms2SpectrumAxisType), type);
+    }
+
+    /// <summary>The vertical axis title, worded as in the main MS/MS view.</summary>
+    public static string GetAxisTitle(Ms2SpectrumAxisType type) {
+        return type switch
+        {
+            Ms2SpectrumAxisType.Absolute => "Absolute abundance",
+            Ms2SpectrumAxisType.Log10 => "Relative abundance (log10)",
+            Ms2SpectrumAxisType.Sqrt => "Relative abundance (^1/2)",
+            _ => "Relative abundance",
+        };
     }
 
     public static IReadOnlyList<Ms2SpectrumListItem> FromAlignedSamples(IEnumerable<AlignedSampleMs2> samples, int representativeFileId) {

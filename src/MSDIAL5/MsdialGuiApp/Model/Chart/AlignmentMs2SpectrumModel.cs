@@ -162,7 +162,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 _target,
                 DescribeSpot,
                 _loader.LoadMs2SpectrumListAsync,
-                _spectraManager.ReferenceSpectrum);
+                _spectraManager.ReferenceSpectrum,
+                UpperVerticalAxisSelector.GetAxisItemAsObservable().Select(item => (string?)item?.Label));
         }
 
         private static string DescribeSpot(AlignmentSpotPropertyModel spot) {
