@@ -8,7 +8,7 @@ namespace CompMs.App.Msdial.ViewModel.Search.Tests
     {
         [TestMethod]
         public void TypingSpacesPreservesInputAndStillFiltersByWords() {
-            using var model = new KeywordFilterModel("Ontology", KeywordFilteringType.ExactMatch);
+            using var model = new KeywordFilterModel("Ontology", KeywordFilteringType.WholeValueMatchIgnoreCase);
             using var vm = new KeywordFilterViewModel(model);
 
             vm.Keywords.Value = "FAFIFA ";
