@@ -253,6 +253,100 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             CollectionAssert.AreEqual(new[] { -1, -1, 0 }, byRt.Select(s => s.AlignedPeakProperties[0].PeakID).ToArray());
         }
 
+        [TestMethod]
+        public void RIJoinerJoinsAPeakWhoseQuantPeakTopIsOutsideTheToleranceWhenItsMSDecRetentionIsInside() {
+            // File 1's peak has its MSDec result at RI 1008, within the tolerance (10) of the master at RI 1000, but
+            // the top of its quant-mass peak at RI 1012, outside it. The joiner scores the MSDec retention, so the
+            // peak covers the master and makes no master of its own; the search window must open on the same
+            // retention, or the peak is never compared with that master and joins no spot.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1008d, height: 1000d, SpectrumA, quantTopRi: 1012d),
+                },
+            };
+
+            var spots = Join(data);
+
+            Assert.AreEqual(1, spots.Count);
+            Assert.AreEqual(0, spots[0].AlignedPeakProperties[1].PeakID, "the peak joins the master at RI 1000");
+            Assert.AreEqual(1012d, spots[0].AlignedPeakProperties[1].ChromXsTop.RI.Value, "the aligned peak keeps its quant-peak top");
+        }
+
+        [TestMethod]
+        public void RTJoinerJoinsAPeakWhoseQuantPeakTopIsOutsideTheToleranceWhenItsMSDecRetentionIsInside() {
+            // The retention-time version of the case above: MSDec result at 10.08 min, quant-peak top at 10.12 min,
+            // master at 10.00 min, tolerance 0.1 min.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1008d, height: 1000d, SpectrumA, quantTopRi: 1012d),
+                },
+            };
+
+            var spots = Join(data, AlignmentIndexType.RT);
+
+            Assert.AreEqual(1, spots.Count);
+            Assert.AreEqual(0, spots[0].AlignedPeakProperties[1].PeakID, "the peak joins the master at 10.00 min");
+        }
+
+        [TestMethod]
+        public void RIJoinerMakesNoSecondMasterOfAPeakWhoseMSDecRetentionMatchesAMaster() {
+            // File 1's peak has its MSDec result at RI 1009, within the tolerance of the master at RI 1000, and the
+            // top of its quant-mass peak at RI 1025. Looked up by the quant-peak top it was not near the master,
+            // became a second master, and the two files' peaks of one compound ended in two spots.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1009d, height: 1000d, SpectrumA, quantTopRi: 1025d),
+                },
+            };
+
+            var spots = Join(data);
+
+            Assert.AreEqual(1, spots.Count);
+            Assert.AreEqual(0, spots[0].AlignedPeakProperties[0].PeakID);
+            Assert.AreEqual(0, spots[0].AlignedPeakProperties[1].PeakID);
+        }
+
+        [TestMethod]
+        public void RTJoinerMakesNoSecondMasterOfAPeakWhoseMSDecRetentionMatchesAMaster() {
+            // The retention-time version of the case above: MSDec result at 10.09 min, quant-peak top at 10.25 min,
+            // master at 10.00 min, tolerance 0.1 min.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1009d, height: 1000d, SpectrumA, quantTopRi: 1025d),
+                },
+            };
+
+            var spots = Join(data, AlignmentIndexType.RT);
+
+            Assert.AreEqual(1, spots.Count);
+            Assert.AreEqual(0, spots[0].AlignedPeakProperties[0].PeakID);
+            Assert.AreEqual(0, spots[0].AlignedPeakProperties[1].PeakID);
+        }
+
         private List<AlignmentSpotProperty> Join(List<List<SpectrumFeature>> data, AlignmentIndexType indexType = AlignmentIndexType.RI) {
             var files = new List<AnalysisFileBean>();
             for (int i = 0; i < data.Count; i++) {
@@ -272,23 +366,26 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             return joiner.Join(files, referenceId: 0, null);
         }
 
-        private static SpectrumFeature CreateFeature(int scanId, double ri, double height, (double Mz, double Intensity)[] spectrum) {
+        // ri is the retention of the MSDec result (RT is ri / 100 min). quantTopRi is the top of the quantified
+        // (quant-mass) chromatogram peak; it is the same as ri unless given.
+        private static SpectrumFeature CreateFeature(int scanId, double ri, double height, (double Mz, double Intensity)[] spectrum, double? quantTopRi = null) {
             var quantMass = spectrum[0].Mz;
-            ChromXs Times() => new ChromXs(new RetentionIndex(ri)) { RT = new RetentionTime(ri / 100d), };
+            var top = quantTopRi ?? ri;
+            ChromXs Times(double value) => new ChromXs(new RetentionIndex(value)) { RT = new RetentionTime(value / 100d), };
             var msdec = new MSDecResult
             {
                 ScanID = scanId,
                 RawSpectrumID = scanId,
-                ChromXs = Times(),
+                ChromXs = Times(ri),
                 ModelPeakMz = quantMass,
                 ModelPeakHeight = height,
                 Spectrum = spectrum.Select(p => new SpectrumPeak(p.Mz, p.Intensity)).ToList(),
             };
             var peak = new BaseChromatogramPeakFeature
             {
-                ChromXsLeft = Times(),
-                ChromXsTop = Times(),
-                ChromXsRight = Times(),
+                ChromXsLeft = Times(top),
+                ChromXsTop = Times(top),
+                ChromXsRight = Times(top),
                 PeakHeightTop = height,
                 Mass = quantMass,
             };
