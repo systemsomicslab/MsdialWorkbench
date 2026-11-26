@@ -113,7 +113,6 @@ public sealed class GcmsProcess
         {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB is null ? [] : [.. mspDB.Database],
             TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
@@ -319,10 +318,9 @@ public sealed class GcmsProcess
         if (isProjectSaved)
         {
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
-            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
-            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
-            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
-            streamManager.Complete();
+            if (!await CommonProcess.SaveProjectAsync(projectDataStorage).ConfigureAwait(false)) {
+                return -1;
+            }
         }
 
         return 0;
