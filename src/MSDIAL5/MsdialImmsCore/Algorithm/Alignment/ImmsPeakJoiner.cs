@@ -160,8 +160,13 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
                 dummy.ChromXs = new ChromXs(target.ChromXs.Drift.Value - driftTol, ChromXType.Drift, ChromXUnit.Msec);
                 dummy.PrecursorMz = target.PrecursorMz - mzTol;
                 var lo = SearchCollection.LowerBound(masters, dummy, Comparer);
+                // The masters are sorted by m/z, then drift, so the scan ends at the composite
+                // upper bound, which is in effect the m/z upper bound. Drift alone does not end it:
+                // a master at a lower m/z with a larger drift can precede one inside both windows.
+                dummy.ChromXs = new ChromXs(target.ChromXs.Drift.Value + driftTol, ChromXType.Drift, ChromXUnit.Msec);
+                dummy.PrecursorMz = target.PrecursorMz + mzTol;
                 for (var i = lo; i < n; i++) {
-                    if (target.ChromXs.Drift.Value + driftTol < masters[i].ChromXs.Drift.Value)
+                    if (Comparer.Compare(masters[i], dummy) > 0)
                         break;
                     if (!IsSimilarTo(masters[i], target))
                         continue;
