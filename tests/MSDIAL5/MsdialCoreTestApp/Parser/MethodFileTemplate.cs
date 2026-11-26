@@ -382,7 +382,7 @@ public static class MethodFileTemplate
         w.Choice("Solvent type", p.LipidQueryContainer.SolventType.ToString(), "CH3COONH4", "HCOONH4", "NH4HCO3");
 
         if (generatedLipid) {
-            GeneratedLipidAnnotation(w);
+            GeneratedLipidAnnotation(w, retention);
         }
 
         w.Section("Text-based annotation");
@@ -408,20 +408,31 @@ public static class MethodFileTemplate
         }
     }
 
-    private static void GeneratedLipidAnnotation(Writer w) {
+    private static void GeneratedLipidAnnotation(Writer w, bool retention) {
         var s = GeneratedLipidAnnotatorSetting.CreateDefaultSearchParameter();
         w.Section("Generated lipid library (Target omics: Lipidomics, Collision type: EAD, OAD or EID)");
         w.Comment("Spectra generated for each lipid the LBM or MSP library matches, which resolve chain, sn-position and double-bond positions.");
         w.Blank("Use generated lipid library", "True | False. Blank follows Target omics and Collision type, as the GUI does.");
         w.Blank("Generated lipid annotator priority", "Blank ranks it above every other annotator, as the GUI does.");
+        if (retention) {
+            w.Value("RT tolerance for generated lipid annotation", F(s.RtTolerance));
+        }
         w.Value("MS1 tolerance for generated lipid annotation", F(s.Ms1Tolerance));
         w.Value("MS2 tolerance for generated lipid annotation", F(s.Ms2Tolerance));
+        w.Value("Mass range begin for generated lipid annotation", F(s.MassRangeBegin));
+        w.Value("Mass range end for generated lipid annotation", F(s.MassRangeEnd));
+        w.Value("Relative amplitude cutoff for generated lipid annotation", F(s.RelativeAmpCutoff));
+        w.Value("Absolute amplitude cutoff for generated lipid annotation", F(s.AbsoluteAmpCutoff));
         w.Value("Square root of weighted dot product cutoff for generated lipid annotation", F(s.WeightedDotProductCutOff));
         w.Value("Square root of simple dot product cutoff for generated lipid annotation", F(s.SimpleDotProductCutOff));
         w.Value("Square root of reverse dot product cutoff for generated lipid annotation", F(s.ReverseDotProductCutOff));
         w.Value("Matched peaks percentage cutoff for generated lipid annotation", F(s.MatchedPeaksPercentageCutOff));
         w.Value("Minimum spectrum match for generated lipid annotation", F(s.MinimumSpectrumMatch));
         w.Value("Total score cutoff for generated lipid annotation", F(s.TotalScoreCutoff));
+        if (retention) {
+            w.Value("Use retention information for generated lipid annotation scoring", B(s.IsUseTimeForAnnotationScoring));
+            w.Value("Use retention information for generated lipid annotation filtering", B(s.IsUseTimeForAnnotationFiltering));
+        }
     }
 
     private static void SearchWindow(Writer w, MsRefSearchParameterBase s, string kind, bool retention, bool mobility) {
