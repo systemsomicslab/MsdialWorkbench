@@ -13,7 +13,7 @@
             <Style TargetType="DataGrid">
                 <Setter Property="behaviors:DataGridCommitBehavior.Enable" Value="True"/>
                 <Setter Property="behaviors:DataGridPasteBehavior.Enable" Value="True"/>
-                <Setter Property="behaviors:DataGridIsEdittingBehavior.Enabled" Value="True"/>
+                <Setter Property="behaviors:DataGridPendingEditBehavior.Enabled" Value="True"/>
             </Style>
 
             <ControlTemplate x:Key="InputErrorTemplate">
