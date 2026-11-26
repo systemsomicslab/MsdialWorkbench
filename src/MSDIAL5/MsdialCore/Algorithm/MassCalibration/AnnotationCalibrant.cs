@@ -32,7 +32,9 @@ public sealed class AnnotationCalibrant
         string annotatorId,
         DataBaseSource dataBaseSource,
         double score,
-        int scanIndex = -1) {
+        int scanIndex = -1,
+        double isolationLowerMz = double.NaN,
+        double isolationUpperMz = double.NaN) {
         PeakId = peakId;
         RetentionTime = retentionTime;
         MsLevel = msLevel;
@@ -47,6 +49,8 @@ public sealed class AnnotationCalibrant
         DataBaseSource = dataBaseSource;
         Score = score;
         ScanIndex = scanIndex;
+        IsolationLowerMz = isolationLowerMz;
+        IsolationUpperMz = isolationUpperMz;
     }
 
     public int PeakId { get; }
@@ -86,6 +90,12 @@ public sealed class AnnotationCalibrant
     /// product-ion scan the spectrum was deconvoluted at; -1 when unknown.
     /// </summary>
     public int ScanIndex { get; }
+
+    /// <summary>Lower bound of the isolation window of the product-ion scan an MS2 pair was read from; NaN for an MS1 pair or when unknown.</summary>
+    public double IsolationLowerMz { get; }
+
+    /// <summary>Upper bound of the isolation window of the product-ion scan an MS2 pair was read from; NaN for an MS1 pair or when unknown.</summary>
+    public double IsolationUpperMz { get; }
 
     /// <summary>The observed m/z's error against the reference, in ppm, positive when the observed m/z is higher.</summary>
     public double ErrorPpm => (ObservedMz - ReferenceMz) / ReferenceMz * 1e6;

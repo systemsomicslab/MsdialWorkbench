@@ -154,7 +154,8 @@ public sealed class PrecursorCalibrantCollector
         return index >= 0 && index < spectra.Count ? spectra[index] : null;
     }
 
-    private static (double Lower, double Upper) IsolationWindow(RawPrecursorIon? precursor) {
+    /// <summary>The isolation window of a product-ion scan, or NaN bounds when the scan has no precursor record.</summary>
+    internal static (double Lower, double Upper) IsolationWindow(RawPrecursorIon? precursor) {
         if (precursor is null) {
             return (double.NaN, double.NaN);
         }

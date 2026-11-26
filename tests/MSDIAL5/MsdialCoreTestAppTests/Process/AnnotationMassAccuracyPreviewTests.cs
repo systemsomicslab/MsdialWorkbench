@@ -130,6 +130,15 @@ public sealed class AnnotationMassAccuracyPreviewTests
         Assert.AreEqual(Ms1Shift, Number(ms1Overall["Offset (ppm)"]), 0.1d);
         Assert.AreEqual(Ms2Shift, Number(ms2Overall["Offset (ppm)"]), 0.1d);
         StringAssert.Contains(stdout, "(s1): MS1 offset ");
+
+        var models = ReadTsv(Path.Combine(folder, "annotation_mass_error_models.tsv"));
+        CollectionAssert.AreEqual(new[] { "MS1 precursor", "MS2 product ion" }, models.Select(row => row["Points"]).ToArray());
+        foreach (var (model, shift) in models.Zip(new[] { Ms1Shift, Ms2Shift }, (model, shift) => (model, shift))) {
+            Assert.AreEqual("Apply", model["Decision"], model["Reason"]);
+            Assert.AreEqual("Offset", model["Model"], "a constant error needs no other term");
+            Assert.AreEqual(shift, Number(model["Error at reference (ppm)"]), 0.1d);
+        }
+        StringAssert.Contains(stdout, "Error models: MS1 Offset, modelled error ");
     }
 
     [TestMethod]
@@ -145,6 +154,11 @@ public sealed class AnnotationMassAccuracyPreviewTests
         Assert.AreEqual(Compounds.Length, calibrants.Count);
         Assert.IsTrue(calibrants.All(row => row["MS level"] == "1"));
         StringAssert.Contains(stdout, "MS2 no product ions of libraries with computed fragment m/z");
+        var models = ReadTsv(Path.Combine(output, "annotation_mass_accuracy", "annotation_mass_error_models.tsv"));
+        Assert.AreEqual("Apply", models.Single(row => row["Points"] == "MS1 precursor")["Decision"]);
+        var ms2 = models.Single(row => row["Points"] == "MS2 product ion");
+        Assert.AreEqual("Do not apply", ms2["Decision"]);
+        Assert.AreEqual("None", ms2["Model"]);
     }
 
     [TestMethod]

@@ -70,6 +70,19 @@ public sealed class Ms2MassAccuracyPreviewTests
         Assert.IsFalse(File.Exists(Path.Combine(folder, "old.ms2_precursor_pairs.tsv")));
 
         var summary = ReadTsv(Path.Combine(folder, "ms2_mass_accuracy_summary.tsv"));
+        var models = ReadTsv(Path.Combine(folder, "ms2_mass_error_models.tsv"));
+        Assert.AreEqual(shifts.Count, models.Count, "one model for each file");
+        foreach (var (name, shift) in shifts) {
+            var model = models.Single(row => row["File name"] == name);
+            if (shift == 0d) {
+                Assert.AreEqual("Do not apply", model["Decision"], $"{name}: {model["Reason"]}");
+            }
+            else {
+                Assert.AreEqual("Apply", model["Decision"], $"{name}: {model["Reason"]}");
+                Assert.AreEqual("Offset", model["Model"], name);
+                Assert.AreEqual(shift, Number(model["Error at reference (ppm)"]), 0.1d, name);
+            }
+        }
         foreach (var (name, shift) in shifts) {
             var pairs = ReadTsv(Path.Combine(folder, name + ".ms2_precursor_pairs.tsv"));
             Assert.AreEqual(Compounds.Length, pairs.Count, $"{name}: one pair for each compound, none for its M+1 feature");

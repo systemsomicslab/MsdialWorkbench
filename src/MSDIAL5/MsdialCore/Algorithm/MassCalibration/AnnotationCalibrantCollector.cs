@@ -151,15 +151,15 @@ public sealed class AnnotationCalibrantCollector
         return calibrants;
     }
 
-    private static RawPeakElement[]? RawScan(IReadOnlyList<RawSpectrum>? rawSpectra, MSDecResult spectrum) {
+    private static RawSpectrum? RawScan(IReadOnlyList<RawSpectrum>? rawSpectra, MSDecResult spectrum) {
         var id = spectrum.RawSpectrumID;
         if (rawSpectra is null || id < 0 || id >= rawSpectra.Count) {
             return null;
         }
-        return rawSpectra[id] is { MsLevel: >= 2, Spectrum.Length: > 0 } scan ? scan.Spectrum : null;
+        return rawSpectra[id] is { MsLevel: >= 2, Spectrum.Length: > 0 } scan ? scan : null;
     }
 
-    private void Collect(List<AnnotationCalibrant> calibrants, ChromatogramPeakFeature feature, MSDecResult spectrum, RawPeakElement[]? rawScan) {
+    private void Collect(List<AnnotationCalibrant> calibrants, ChromatogramPeakFeature feature, MSDecResult spectrum, RawSpectrum? rawScan) {
         if (feature.PeakCharacter.IsotopeWeightNumber > 0 || spectrum.Spectrum.IsEmptyOrNull()) {
             return;
         }
@@ -195,11 +195,13 @@ public sealed class AnnotationCalibrantCollector
         if (fragments is not null && fragmentTies.Count == 0) {
             var observed = spectrum.Spectrum.Where(peak => peak.Intensity > 0d).OrderBy(peak => peak.Mass).ToArray();
             var reference = fragments.Reference;
-            foreach (var (referencePeak, observedPeak) in PairFragments(observed, reference.Spectrum, SearchPpm, rawScan)) {
+            var (isolationLower, isolationUpper) = PrecursorCalibrantCollector.IsolationWindow(rawScan?.Precursor);
+            foreach (var (referencePeak, observedPeak) in PairFragments(observed, reference.Spectrum, SearchPpm, rawScan?.Spectrum)) {
                 var window = referencePeak.Mass * SearchPpm * 1e-6;
                 calibrants.Add(new AnnotationCalibrant(
                     feature.MasterPeakID, feature.ChromXs.RT.Value, 2, observedPeak.Mass, referencePeak.Mass, AnnotationCalibrant.FromLibraryFragment, observedPeak.Intensity,
-                    feature.PrecursorMz, Math.Abs(referencePeak.Mass - reference.PrecursorMz) <= window, reference.Name, fragments.Library.Id, fragments.Library.DataBaseSource, fragments.Score, spectrum.RawSpectrumID));
+                    feature.PrecursorMz, Math.Abs(referencePeak.Mass - reference.PrecursorMz) <= window, reference.Name, fragments.Library.Id, fragments.Library.DataBaseSource, fragments.Score, spectrum.RawSpectrumID,
+                    isolationLower, isolationUpper));
             }
         }
     }
