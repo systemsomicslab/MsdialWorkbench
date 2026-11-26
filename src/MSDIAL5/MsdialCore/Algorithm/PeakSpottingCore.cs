@@ -769,6 +769,9 @@ namespace CompMs.MsdialCore.Algorithm {
                 var chromatogram = rawSpectra.GetMS1ExtractedChromatogram(new MzRange(peak.Mass, _parameter.CentroidMs1Tolerance), chromatogramRange);
 
                 var sPeaklist = ((Chromatogram)chromatogram.ChromatogramSmoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel)).AsPeakArray();
+                // The search below needs at least two points to pick a top, and a peak
+                // narrower than minimumDatapoints is dropped later anyway.
+                if (sPeaklist.Count < Math.Max(2, minimumDatapoints)) continue;
                 var maxID = -1;
                 var maxInt = double.MinValue;
                 var minRtId = -1;

@@ -60,6 +60,37 @@ public class PeakSpottingCoreTests
         }
     }
 
+    [DataTestMethod]
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataRow(2)]
+    public void GetRecalculatedChromPeakFeaturesByMs1MsTolerance_DropsPeakWhenRecalculatedChromatogramIsTooShort(int scanCount) {
+        var spectra = new List<RawSpectrum>();
+        for (int i = 0; i < scanCount; i++) {
+            spectra.Add(new RawSpectrum
+            {
+                Index = i,
+                ScanStartTime = 1d + i * 0.01,
+                MsLevel = 1,
+                ScanPolarity = ScanPolarity.Positive,
+                Spectrum = [new RawPeakElement { Mz = 100d, Intensity = 1000d, }],
+            });
+        }
+        var parameter = new ParameterBase { IonMode = IonMode.Positive, };
+        var feature = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+        {
+            Mass = 100d,
+            ChromXsLeft = new ChromXs(0.99),
+            ChromXsTop = new ChromXs(1.0),
+            ChromXsRight = new ChromXs(1.01),
+        });
+
+        var core = new PeakSpottingCore(parameter);
+        var actual = core.GetRecalculatedChromPeakFeaturesByMs1MsTolerance([feature], new FakeProvider(spectra), AcquisitionType.SWATH);
+
+        Assert.AreEqual(0, actual.Count);
+    }
+
     private static ParameterBase CreateNominalParameter() {
         return new ParameterBase
         {
