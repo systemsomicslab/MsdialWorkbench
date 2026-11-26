@@ -145,6 +145,62 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         }
 
         [TestMethod]
+        public void RIJoinerLetsAPeakJoinAMasterAnEarlierPeakOnlyPassedOverInRetentionOrder() {
+            // The case above with file 1's peaks in ascending RI, the order a file lists them in.
+            // The peak at RI 1005 scores both masters and joins the closer one (RI 1006). The peak at
+            // RI 1007 scores the master at RI 1006 no higher than the peak that joined it, so it can
+            // only join the master at RI 1000, with a lower score there than the first peak had. That
+            // master must take it: the first peak did not join it.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1006d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1005d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1007d, height: 1000d, SpectrumA),
+                },
+            };
+
+            var spots = Join(data);
+
+            Assert.AreEqual(2, spots.Count);
+            var byRi = spots.OrderBy(s => s.TimesCenter.RI.Value).ToArray();
+            Assert.AreEqual(1, byRi[0].AlignedPeakProperties[1].PeakID, "the peak at RI 1007 joins the master at RI 1000");
+            Assert.AreEqual(1007d, byRi[0].AlignedPeakProperties[1].ChromXsTop.RI.Value);
+            Assert.AreEqual(0, byRi[1].AlignedPeakProperties[1].PeakID, "the peak at RI 1005 joins the master at RI 1006");
+            Assert.AreEqual(1005d, byRi[1].AlignedPeakProperties[1].ChromXsTop.RI.Value);
+        }
+
+        [TestMethod]
+        public void RTJoinerLetsAPeakJoinAMasterAnEarlierPeakOnlyPassedOverInRetentionOrder() {
+            // The retention-time version of the case above, with a 0.1 min tolerance.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1006d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1005d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1007d, height: 1000d, SpectrumA),
+                },
+            };
+
+            var spots = Join(data, AlignmentIndexType.RT);
+
+            Assert.AreEqual(2, spots.Count);
+            var byRt = spots.OrderBy(s => s.TimesCenter.RT.Value).ToArray();
+            Assert.AreEqual(1, byRt[0].AlignedPeakProperties[1].PeakID, "the peak at 10.07 min joins the master at 10.00 min");
+            Assert.AreEqual(0, byRt[1].AlignedPeakProperties[1].PeakID, "the peak at 10.05 min joins the master at 10.06 min");
+        }
+
+        [TestMethod]
         public void RIJoinerMakesEachOfTwoSimilarPeaksFirstSeenInANonReferenceFileAMaster() {
             // File 1 has two peaks with the same spectrum, 6 RI apart, that the reference file lacks.
             // Compared with the masters from earlier files only, neither is covered, so both become
