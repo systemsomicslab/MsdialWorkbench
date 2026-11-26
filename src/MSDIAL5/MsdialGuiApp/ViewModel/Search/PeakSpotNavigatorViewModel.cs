@@ -6,7 +6,6 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Data;
 
@@ -37,8 +36,6 @@ namespace CompMs.App.Msdial.ViewModel.Search
             ValueFilterViewModels = model.ValueFilterModels.ToReadOnlyReactiveCollection(m => new ValueFilterViewModel(m)).AddTo(Disposables);
             KeywordFilterViewModels = model.KeywordFilterModels.ToReadOnlyReactiveCollection(m => new KeywordFilterViewModel(m)).AddTo(Disposables);
 
-            IsEditting = new ReactivePropertySlim<bool>().AddTo(Disposables);
-
             PeakSpotsView = CollectionViewSource.GetDefaultView(model.PeakSpots);
 
             var needRefresh = new[]
@@ -51,22 +48,10 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 KeywordFilterViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanged).ToUnit(),
             }.Merge().Publish();
 
-            var editEnd = IsEditting.Where(e => !e);
-            var isEdittingFalse = IsEditting.Select(e => e ? Observable.Never<Unit>() : needRefresh).Switch();
-            var isEdittingTrue = IsEditting.Select(e => e ? Observable.Defer(() => needRefresh.Buffer(editEnd.Take(1)).Where(xs => xs.Count >= 1).ToUnit()) : Observable.Never<Unit>()).Switch();
-            var needRefreshFire = new[] { isEdittingFalse, isEdittingTrue }.Merge();
-            var refreshView = Observable.Defer(() => {
-                model.RefreshCollectionViews();
-                return Observable.Return(Unit.Default);
-            }).OnErrorRetry<Unit, InvalidOperationException>(_ => System.Diagnostics.Debug.WriteLine("Failed to refresh. Retry after 0.1 seconds."), retryCount: 5, delay: TimeSpan.FromSeconds(.1d))
-            .Catch<Unit, InvalidOperationException>(e => {
-                System.Diagnostics.Debug.WriteLine("Failed to refresh. CollectionView couldn't be refreshed.");
-                return Observable.Return(Unit.Default);
-            });
-            needRefreshFire
+            // The navigator model holds back the refresh of a view in an edit transaction until that edit ends.
+            needRefresh
                 .ObserveOnUIDispatcher()
-                .SelectSwitch(_ => refreshView)
-                .Subscribe()
+                .Subscribe(_ => model.RefreshCollectionViews())
                 .AddTo(Disposables);
             Disposables.Add(needRefresh.Connect());
         }
@@ -75,7 +60,6 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public ICollectionView PeakSpotsView { get; }
 
-        public ReactivePropertySlim<bool> IsEditting { get; }
         public ReactiveCommand ResetFiltersCommand { get; }
 
         public ReactiveProperty<double> AmplitudeLowerValue { get; }

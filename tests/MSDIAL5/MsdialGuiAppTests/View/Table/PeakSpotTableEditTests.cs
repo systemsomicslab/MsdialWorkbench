@@ -85,7 +85,6 @@ public class PeakSpotTableEditTests
             grid.IsSynchronizedWithCurrentItem = true;
             grid.SelectionUnit = DataGridSelectionUnit.FullRow;
             grid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(nameof(PeakSpotNavigatorViewModel.PeakSpotsView)));
-            grid.SetBinding(DataGridIsEdittingBehavior.IsEdittingProperty, new Binding("IsEditting.Value") { Mode = BindingMode.OneWayToSource, });
             grid.Columns.Add(new DataGridTextColumn { Header = "Name", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Name)), });
             grid.Columns.Add(new DataGridTextColumn { Header = "Ontology", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Ontology)), });
             grid.Columns.Add(new DataGridTextColumn { Header = "Comment", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Comment)), });
