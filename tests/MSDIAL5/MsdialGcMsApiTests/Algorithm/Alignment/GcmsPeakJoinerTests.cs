@@ -90,7 +90,61 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             Assert.AreEqual(5000d, peak.PeakHeightTop);
         }
 
-        private List<AlignmentSpotProperty> Join(List<List<SpectrumFeature>> data) {
+        [TestMethod]
+        public void RIJoinerLetsAPeakJoinAMasterAnEarlierPeakOnlyPassedOver() {
+            // Two masters with the same spectrum, 6 RI apart. File 1's first peak lies near both and
+            // joins the closer one (RI 1006); on its way it scores the farther one (RI 1000) too. Its
+            // second peak, at RI 994, can only join the master at RI 1000, with a lower score than the
+            // first peak had there. That master must still take it: the first peak did not join it.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1006d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1005d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 994d, height: 1000d, SpectrumA),
+                },
+            };
+
+            var spots = Join(data);
+
+            Assert.AreEqual(2, spots.Count);
+            var byRi = spots.OrderBy(s => s.AlignedPeakProperties[0].ChromXsTop.RI.Value).ToArray();
+            Assert.AreEqual(1, byRi[0].AlignedPeakProperties[1].PeakID, "the peak at RI 994 joins the master at RI 1000");
+            Assert.AreEqual(994d, byRi[0].AlignedPeakProperties[1].ChromXsTop.RI.Value);
+            Assert.AreEqual(0, byRi[1].AlignedPeakProperties[1].PeakID, "the peak at RI 1005 joins the master at RI 1006");
+        }
+
+        [TestMethod]
+        public void RTJoinerLetsAPeakJoinAMasterAnEarlierPeakOnlyPassedOver() {
+            // The retention-time version of the case above, 0.06 min apart with a 0.1 min tolerance.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1006d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1005d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 994d, height: 1000d, SpectrumA),
+                },
+            };
+
+            var spots = Join(data, AlignmentIndexType.RT);
+
+            Assert.AreEqual(2, spots.Count);
+            var byRt = spots.OrderBy(s => s.AlignedPeakProperties[0].ChromXsTop.RT.Value).ToArray();
+            Assert.AreEqual(1, byRt[0].AlignedPeakProperties[1].PeakID, "the peak at 9.94 min joins the master at 10.00 min");
+            Assert.AreEqual(0, byRt[1].AlignedPeakProperties[1].PeakID, "the peak at 10.05 min joins the master at 10.06 min");
+        }
+
+        private List<AlignmentSpotProperty> Join(List<List<SpectrumFeature>> data, AlignmentIndexType indexType = AlignmentIndexType.RI) {
             var files = new List<AnalysisFileBean>();
             for (int i = 0; i < data.Count; i++) {
                 var dcl = Path.Combine(_directory, $"file{i}.dcl");
@@ -99,10 +153,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             }
             var parameter = new MsdialGcmsParameter
             {
-                AlignmentIndexType = AlignmentIndexType.RI,
+                AlignmentIndexType = indexType,
                 RetentionIndexAlignmentTolerance = (float)RiTolerance,
             };
-            var joiner = GcmsPeakJoiner.CreateRIJoiner(RiTolerance, parameter, evaluator: null, refer: null, new StubAccessor(data));
+            parameter.AlignmentBaseParam.RetentionTimeAlignmentTolerance = (float)(RiTolerance / 100d);
+            var joiner = indexType == AlignmentIndexType.RI
+                ? GcmsPeakJoiner.CreateRIJoiner(RiTolerance, parameter, evaluator: null, refer: null, new StubAccessor(data))
+                : GcmsPeakJoiner.CreateRTJoiner(parameter, evaluator: null, refer: null, new StubAccessor(data));
             return joiner.Join(files, referenceId: 0, null);
         }
 
