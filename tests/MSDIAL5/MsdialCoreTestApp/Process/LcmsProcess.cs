@@ -16,6 +16,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialIntegrate.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
@@ -483,6 +484,7 @@ public sealed class LcmsProcess
             tasks[i] = Task.Run(async () => {
                 await sem.WaitAsync();
                 try {
+                    using var timing = StageTiming.Measure(file.AnalysisFileName, "console peak export");
                     var peak_container = await file.LoadChromatogramPeakFeatureCollectionAsync().ConfigureAwait(false);
                     ExportPeakFile(file, peak_container, outputFolder, peakExporterFactory, providerFactory, peak_accessor, storage.DataBaseMapper, storage.Parameter);
                 }
@@ -495,15 +497,17 @@ public sealed class LcmsProcess
 
         AutomaticAlignmentRetentionTimeCorrectionResult? automaticRtCorrectionResult = null;
         if (storage.Parameter.TogetherWithAlignment && storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
-            automaticRtCorrectionResult = AutomaticAlignmentRtCorrectionWorkflow.Build(
-                storage.AnalysisFiles,
-                storage.Parameter,
-                automaticRtCorrectionInputs,
-                outputFolder,
-                file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath),
-                (file, anchors) => AutomaticAlignmentRtCorrectionWorkflow.ReadRawFile(file, providerFactory.Create(file), storage.Parameter, anchors),
-                "Run",
-                ConsoleRtCorrectionReporter.Instance);
+            using (StageTiming.Measure(null, "console automatic rt correction")) {
+                automaticRtCorrectionResult = AutomaticAlignmentRtCorrectionWorkflow.Build(
+                    storage.AnalysisFiles,
+                    storage.Parameter,
+                    automaticRtCorrectionInputs,
+                    outputFolder,
+                    file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath),
+                    (file, anchors) => AutomaticAlignmentRtCorrectionWorkflow.ReadRawFile(file, providerFactory.Create(file), storage.Parameter, anchors),
+                    "Run",
+                    ConsoleRtCorrectionReporter.Instance);
+            }
             if (automaticRtCorrectionResult is null) {
                 return -1;
             }
@@ -545,6 +549,7 @@ public sealed class LcmsProcess
                     CreateConsoleProgressReporter("Alignment"),
                     automaticRtCorrectionResult?.Correction);
                 LcmsAlignmentLightResult lightResult;
+                using (StageTiming.Measure(null, "console alignment"))
                 using (ConsoleLineFilter.SuppressExact("Reading data...")) {
                     lightResult = lightRunner.Run(files, alignmentFile, alignmentLightPeakStore!);
                 }
@@ -566,18 +571,23 @@ public sealed class LcmsProcess
                 factory.Progress = CreateConsoleProgressReporter("Alignment");
                 var aligner = factory.CreatePeakAligner();
                 Console.WriteLine("Alignment started.");
+                using (StageTiming.Measure(null, "console alignment"))
                 using (ConsoleLineFilter.SuppressExact("Reading data...")) {
                     result = aligner.Alignment(files, alignmentFile, serializer);
                 }
                 Console.WriteLine("Alignment finished.");
                 lipidRtRun = aligner.LipidRtRun;
                 removedIsotopeSpots = aligner.RemovedIsotopeSpots;
-                result.Save(alignmentFile);
+                using (StageTiming.Measure(null, "console alignment save")) {
+                    result.Save(alignmentFile);
+                }
                 if (automaticRtCorrectionResult is not null) {
                     WriteRtCorrectionMap(alignmentFile, automaticRtCorrectionResult.Correction, files);
                 }
-                align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
-                MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
+                using (StageTiming.Measure(null, "console representative deconvolutions")) {
+                    align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
+                    MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
+                }
             }
             WriteLipidRtReview(lipidRtRun, outputFolder, alignmentFile.FileName);
             if (removedIsotopeSpots is not null) {
@@ -597,7 +607,9 @@ public sealed class LcmsProcess
             var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
             var align_exporter = new AlignmentCSVExporter { RetentionTimeAxisNote = rtAxisNote };
             using var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
-            align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
+            using (StageTiming.Measure(null, "console mdalign export")) {
+                align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
+            }
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
 
             var peakIdOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdpeakid.tsv");
@@ -652,6 +664,7 @@ public sealed class LcmsProcess
                 (storage.Parameter.IsSnMatrixExport, "SN", "_SN.txt"),
             };
             if (requestedMatrices.Any(item => item.Requested)) {
+                using var timing = StageTiming.Measure(null, "console matrix export");
                 Directory.CreateDirectory(matrixFolder);
                 var matrixStats = new[] { StatsValue.Average, StatsValue.Stdev };
                 foreach (var (_, exportType, suffix) in requestedMatrices.Where(item => item.Requested)) {
@@ -666,6 +679,7 @@ public sealed class LcmsProcess
             }
 
             if (storage.Parameter.IsHeightMatrixExport) {
+                using var timing = StageTiming.Measure(null, "console qa export");
                 var qaOutputFolder = matrixFolder;
                 Directory.CreateDirectory(qaOutputFolder);
                 var qaOutputFile = Path.Combine(qaOutputFolder, alignmentFile.FileName + ".qa.tsv");
@@ -694,7 +708,9 @@ public sealed class LcmsProcess
             var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
             using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
             IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
-            align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
+            using (StageTiming.Measure(null, "console mdmsp export")) {
+                align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
+            }
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
 
             var mztabm_filename = alignmentFile.FileName + ".mzTab";
@@ -705,16 +721,18 @@ public sealed class LcmsProcess
             var mztabM_exporter = new MztabFormatExporter(storage.DataBases, alignmentLightPeakStore) { RetentionTimeAxisNote = rtAxisNote };
 
             using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            mztabM_exporter.MztabFormatExporterCore(
-                tabmstream,
-                spots,
-                msdecs,
-                files,
-                accessor,
-                align_quantAccessor,
-                align_stats,
-                mztabm_filename
-            );
+            using (StageTiming.Measure(null, "console mztab export")) {
+                mztabM_exporter.MztabFormatExporterCore(
+                    tabmstream,
+                    spots,
+                    msdecs,
+                    files,
+                    accessor,
+                    align_quantAccessor,
+                    align_stats,
+                    mztabm_filename
+                );
+            }
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
             alignmentLightMsdecResults?.Dispose();
         }
@@ -723,6 +741,7 @@ public sealed class LcmsProcess
             Console.WriteLine("Alignment light mode: project saving (-p) is skipped because GUI-compatible alignment objects are intentionally not serialized.");
         }
         else if (isProjectSaved) {
+            using var timing = StageTiming.Measure(null, "console project save");
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
             if (!await CommonProcess.SaveProjectAsync(projectDataStorage).ConfigureAwait(false)) {
                 return -1;
