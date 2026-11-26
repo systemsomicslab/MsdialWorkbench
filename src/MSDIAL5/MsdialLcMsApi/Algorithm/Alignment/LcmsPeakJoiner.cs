@@ -59,10 +59,16 @@ public class LcmsPeakJoiner : IPeakJoiner
 
     public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor _) {
         // test process from 0 to 20
-        var master = GetMasterList(analysisFiles, referenceId, _accessor);
+        List<ChromatogramPeakFeature> master;
+        using (StageTiming.Measure(null, "alignment master list")) {
+            master = GetMasterList(analysisFiles, referenceId, _accessor);
+        }
 
         // test process from 20 to 40
-        var spots = JoinAll(master, analysisFiles, _accessor);
+        List<AlignmentSpotProperty> spots;
+        using (StageTiming.Measure(null, "alignment join all")) {
+            spots = JoinAll(master, analysisFiles, _accessor);
+        }
         return spots;
     }
 

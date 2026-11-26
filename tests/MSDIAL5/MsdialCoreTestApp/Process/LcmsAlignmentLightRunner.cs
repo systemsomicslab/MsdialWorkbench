@@ -450,7 +450,7 @@ internal sealed class LcmsAlignmentLightRunner {
             if (fileType == AnalysisFileType.QC) {
                 _detectedQcCount++;
             }
-            if (!string.IsNullOrEmpty(className)) {
+            if (className is { Length: > 0 }) {
                 _detectedClassCounts.TryGetValue(className, out var classCount);
                 _detectedClassCounts[className] = classCount + 1;
             }
