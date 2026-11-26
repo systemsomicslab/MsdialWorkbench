@@ -130,12 +130,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
         /// <summary>
         /// The m/z this file's annotated peak is quantified at: the library QUANTMASS only when
-        /// "Replace quant mass by user defined value" is on and the reference defines one, the
-        /// deconvoluted model peak m/z otherwise. One rule for both the top-hit and the
-        /// every-hit path.
+        /// "Replace quant mass by user defined value" is on and the reference defines a positive one,
+        /// the deconvoluted model peak m/z otherwise. One rule for both the top-hit and the
+        /// every-hit path. The MSP parser stores -1 for a QUANTMASS it cannot read (for example a
+        /// line run into the next field), which is not an m/z.
         /// </summary>
         private double QuantMassOf(MoleculeMsReference reference, MSDecResult result) {
-            return _parameter.IsReplaceQuantmassByUserDefinedValue && reference.QuantMass != 0 ? reference.QuantMass : result.ModelPeakMz;
+            return _parameter.IsReplaceQuantmassByUserDefinedValue && reference.QuantMass > 0 ? reference.QuantMass : result.ModelPeakMz;
         }
     }
 

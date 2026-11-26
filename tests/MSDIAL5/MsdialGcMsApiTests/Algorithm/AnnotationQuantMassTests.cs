@@ -62,6 +62,17 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Tests
         [DataTestMethod()]
         [DataRow(false)]
         [DataRow(true)]
+        public void AnUnreadableLibraryQuantMassKeepsTheModelPeakMz(bool onlyReportTopHit) {
+            // MspFileParser stores -1 when the QUANTMASS field does not parse.
+            var annotated = Annotate(onlyReportTopHit, replaceQuantMass: true, referenceQuantMass: -1d);
+
+            Assert.IsFalse(annotated.IsUnknown);
+            Assert.AreEqual(ModelPeakMz, annotated.QuantMass);
+        }
+
+        [DataTestMethod()]
+        [DataRow(false)]
+        [DataRow(true)]
         public void AnUnannotatedPeakKeepsTheModelPeakMz(bool onlyReportTopHit) {
             // A reference far outside the search window, so nothing is retrieved.
             var annotated = Annotate(onlyReportTopHit, replaceQuantMass: true, referenceQuantMass: LibraryQuantMass, referenceRt: 50d);
