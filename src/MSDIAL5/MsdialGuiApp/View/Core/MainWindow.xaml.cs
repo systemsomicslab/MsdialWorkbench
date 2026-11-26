@@ -155,6 +155,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowChildContent<FseaResultView>("FSEA Result Viewer", height: 600, width: 1000));
             broker.ToObservable<NotameViewModel>()
                 .Subscribe(ShowChildSettingDialog<NotameView>("Notame preprocessing", height: 500, width: 450, finishCommandContent: "Run"));
+            broker.ToObservable<Ms2SpectrumListViewModel>()
+                .Subscribe(ShowChildContent<Ms2SpectrumListView>(needDispose: true));
             broker.ToObservable<SpectraSimilarityMapViewModel>()
                 .Subscribe(ShowChildContent<SpectraSimilarityMapView>("Aligned peaks spectra similarity", height: 400, width: 600));
             broker.ToObservable<SpectraGroupingViewModel>()

@@ -8,13 +8,17 @@ using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialIntegrate.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process
 {
@@ -306,6 +310,22 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             }
             param.LipidQueryContainer.LbmQueries = LbmQueryParcer.GetLbmQueries(iniLipidPath, false);
+        }
+
+        /// <summary>
+        /// Writes the project file with each of its datasets.
+        /// </summary>
+        /// <returns>False when a dataset could not be saved; the error output names it.</returns>
+        public static async Task<bool> SaveProjectAsync(ProjectDataStorage project) {
+            using var stream = File.Open(project.ProjectParameter.FilePath, FileMode.Create);
+            using IStreamManager streamManager = new ZipStreamManager(stream, ZipArchiveMode.Create);
+            var saved = true;
+            await project.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => {
+                Console.Error.WriteLine($"Save {parameter.ProjectFileName} failed");
+                saved = false;
+            }).ConfigureAwait(false);
+            streamManager.Complete();
+            return saved;
         }
 
         public static string NoFileError() {

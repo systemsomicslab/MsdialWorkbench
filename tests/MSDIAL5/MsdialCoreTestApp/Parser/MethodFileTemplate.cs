@@ -151,7 +151,7 @@ public static class MethodFileTemplate
     private static void WriteLcms(Writer w, MsdialLcmsParameter p) {
         w.Section("Data type");
         DataType(w, p, ms2: true);
-        TargetAndAcquisition(w, p);
+        TargetAndAcquisition(w, p, collisionType: true);
         w.Section("Data collection");
         RetentionRange(w, p);
         MassRanges(w, p);
@@ -167,7 +167,7 @@ public static class MethodFileTemplate
         // has its place in the template when it is made to work.
         w.Value("Target CE", D(p.TargetCE));
         MsmsEntropyCleanup(w, p.ChromDecBaseParam);
-        LiquidAnnotation(w, p, retention: true, mobility: false, annotatorTables: true);
+        LiquidAnnotation(w, p, retention: true, mobility: false, annotatorTables: true, generatedLipid: true);
         w.Section("Alignment");
         LiquidAlignment(w, p, retention: true);
         Filtering(w, p);
@@ -194,7 +194,7 @@ public static class MethodFileTemplate
     private static void WriteDims(Writer w, MsdialDimsParameter p) {
         w.Section("Data type");
         DataType(w, p, ms2: true);
-        TargetAndAcquisition(w, p);
+        TargetAndAcquisition(w, p, collisionType: true);
         w.Section("Data collection");
         MassRanges(w, p);
         Threads(w, p);
@@ -205,7 +205,7 @@ public static class MethodFileTemplate
         w.Section("Deconvolution");
         // DIMS MS2 deconvolution does not read KeepOriginalPrecursorIsotopes.
         LiquidDeconvolution(w, p, keepOriginalPrecursorIsotopes: false);
-        LiquidAnnotation(w, p, retention: false, mobility: false);
+        LiquidAnnotation(w, p, retention: false, mobility: false, generatedLipid: true);
         w.Section("Alignment");
         LiquidAlignment(w, p, retention: false);
         Filtering(w, p);
@@ -266,11 +266,19 @@ public static class MethodFileTemplate
         w.Choice("Ion mode", p.IonMode.ToString(), "Positive", "Negative");
     }
 
-    private static void TargetAndAcquisition(Writer w, ParameterBase p) {
+    private static void TargetAndAcquisition(Writer w, ParameterBase p, bool collisionType = false) {
         w.Choice("Target omics", p.TargetOmics.ToString(), "Metabolomics", "Lipidomics");
         // The parameter starts at None and CommonProcess turns None into DDA before anything reads
         // it, so DDA is the default a run actually uses, and writing it back changes nothing.
         w.Choice("Acquisition type", "DDA", "DDA", "SWATH", "AIF");
+        if (collisionType) {
+            // Only the modes that build the generated lipid library write it: elsewhere the key is
+            // read but changes nothing a run does. EAD is the reader's name for EIEIO.
+            // Left blank: a fresh parameter holds HCD for the run but CID for its lipid queries, and
+            // the key sets both, so no value written here reads back as the built-in default.
+            w.Comment("EAD, OAD and EID with Target omics: Lipidomics add the generated lipid library (see its section).");
+            w.Blank("Collision type", "CID | EAD | OAD | EID. Blank keeps the built-in default.");
+        }
     }
 
     private static void RetentionRange(Writer w, ParameterBase p) {
@@ -330,7 +338,7 @@ public static class MethodFileTemplate
         }
     }
 
-    private static void LiquidAnnotation(Writer w, ParameterBase p, bool retention, bool mobility, bool annotatorTables = false) {
+    private static void LiquidAnnotation(Writer w, ParameterBase p, bool retention, bool mobility, bool annotatorTables = false, bool generatedLipid = false) {
         w.Section("MSP-based annotation");
         w.Blank("MSP file path", "MS/MS spectral library (.msp). Leave blank to skip MSP-based annotation.");
         if (annotatorTables) {
@@ -357,6 +365,13 @@ public static class MethodFileTemplate
         w.Value("Mass range end for LBM-based annotation", F(p.LbmSearchParam.MassRangeEnd));
         w.Value("Relative amplitude cutoff for LBM-based annotation", F(p.LbmSearchParam.RelativeAmpCutoff));
         w.Value("Absolute amplitude cutoff for LBM-based annotation", F(p.LbmSearchParam.AbsoluteAmpCutoff));
+        if (generatedLipid) {
+            // ConfigParser.ApplyGeneratedLipidLbmDefaults lowers only the cut-offs a file leaves
+            // unset, and this template sets them all: without this line an EAD run started from the
+            // template keeps the CID cut-offs and passes far fewer peaks to the generated library
+            // than the GUI does.
+            w.Comment("With Collision type EAD, OAD or EID, leave the next five cut-offs blank to get the GUI's values for those modes (0.05, 0.05, 0.05, 0 and 1); the values written here are for CID.");
+        }
         w.Value("Square root of weighted dot product cutoff for LBM-based annotation", F(p.LbmSearchParam.WeightedDotProductCutOff));
         w.Value("Square root of simple dot product cutoff for LBM-based annotation", F(p.LbmSearchParam.SimpleDotProductCutOff));
         w.Value("Square root of reverse dot product cutoff for LBM-based annotation", F(p.LbmSearchParam.ReverseDotProductCutOff));
@@ -365,6 +380,10 @@ public static class MethodFileTemplate
         w.Value("Total score cutoff for LBM-based annotation", F(p.LbmSearchParam.TotalScoreCutoff));
         SearchSwitches(w, p.LbmSearchParam, "LBM", retention, mobility);
         w.Choice("Solvent type", p.LipidQueryContainer.SolventType.ToString(), "CH3COONH4", "HCOONH4", "NH4HCO3");
+
+        if (generatedLipid) {
+            GeneratedLipidAnnotation(w);
+        }
 
         w.Section("Text-based annotation");
         w.Blank("Text DB file path", "Tab-separated compound list matched by m/z. Leave blank to skip Text-based annotation.");
@@ -387,6 +406,22 @@ public static class MethodFileTemplate
             w.Value("Use CCS for Text-based annotation scoring", B(p.TextDbSearchParam.IsUseCcsForAnnotationScoring));
             w.Value("Use CCS for Text-based annotation filtering", B(p.TextDbSearchParam.IsUseCcsForAnnotationFiltering));
         }
+    }
+
+    private static void GeneratedLipidAnnotation(Writer w) {
+        var s = GeneratedLipidAnnotatorSetting.CreateDefaultSearchParameter();
+        w.Section("Generated lipid library (Target omics: Lipidomics, Collision type: EAD, OAD or EID)");
+        w.Comment("Spectra generated for each lipid the LBM or MSP library matches, which resolve chain, sn-position and double-bond positions.");
+        w.Blank("Use generated lipid library", "True | False. Blank follows Target omics and Collision type, as the GUI does.");
+        w.Blank("Generated lipid annotator priority", "Blank ranks it above every other annotator, as the GUI does.");
+        w.Value("MS1 tolerance for generated lipid annotation", F(s.Ms1Tolerance));
+        w.Value("MS2 tolerance for generated lipid annotation", F(s.Ms2Tolerance));
+        w.Value("Square root of weighted dot product cutoff for generated lipid annotation", F(s.WeightedDotProductCutOff));
+        w.Value("Square root of simple dot product cutoff for generated lipid annotation", F(s.SimpleDotProductCutOff));
+        w.Value("Square root of reverse dot product cutoff for generated lipid annotation", F(s.ReverseDotProductCutOff));
+        w.Value("Matched peaks percentage cutoff for generated lipid annotation", F(s.MatchedPeaksPercentageCutOff));
+        w.Value("Minimum spectrum match for generated lipid annotation", F(s.MinimumSpectrumMatch));
+        w.Value("Total score cutoff for generated lipid annotation", F(s.TotalScoreCutoff));
     }
 
     private static void SearchWindow(Writer w, MsRefSearchParameterBase s, string kind, bool retention, bool mobility) {

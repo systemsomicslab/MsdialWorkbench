@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
@@ -11,8 +12,10 @@ using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics {
@@ -29,7 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                 AlignmentFiles.MoveCurrentTo(notame.AlignmentFilesForExport.SelectedFile);
             }
 
-            RunNotameCommand = new DelegateCommand(RunNotame, () => !HasValidationErrors);
+            RunNotameCommand = new DelegateCommand(RunNotame, () => !HasValidationErrors && !_isRunning);
             ShowSettingViewCommand = new DelegateCommand(ShowSettingView);
 
             AlignmentFile = notame.AlignmentFilesForExport.SelectedFile;
@@ -126,27 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
         private DelegateCommand? _showScript;
 
         private void ShowScript() {
-            string msgtext ="if (!requireNamespace('BiocManager', quietly=TRUE)){\r\n  " +
-                            "install.packages('BiocManager')}\r\n" +
-                            "BiocManager::install('pcaMethods')\r\n" +
-                            "BiocManager::install('Biobase')\r\n\r\n" +
-                            "if (!requireNamespace('devtools', quietly = TRUE)) {\r\n  " +
-                            "install.packages('devtools')}\r\n" +
-                            "devtools::install_github('antonvsdata/notame')\r\n\r\n" +
-                            "if (!requireNamespace('remotes', quietly=TRUE)){\r\n  " +
-                            "install.packages('remotes')}\r\n" +
-                            "library(remotes)\r\n" +
-                            "install_gitlab('CarlBrunius/MUVR')\r\n\r\n" +
-                            "if (!requireNamespace('tinytex', quietly=TRUE)){\r\n  " +
-                            "install.packages('tinytex')}\r\n" +
-                            "tinytex::install_tinytex()\r\n" +
-                            "tinytex::tlmgr_install('grfext')\r\n\r\n" +
-                            "required_packages <- c('doParallel', 'dplyr', 'openxlsx', 'cowplot', 'missForest', 'ggpubr', 'Cairo', 'tidyr')\r\n" +
-                            "packages_to_install <- required_packages[!(required_packages %in% installed.packages()[,'Package'])]\r\n\r\n" +
-                            "if(length(packages_to_install)) {\r\n  " +
-                            "install.packages(packages_to_install)}\r\n" +
-                            "lapply(required_packages, library, character.only = TRUE)";
-            var result = CustomPackageDialog.ShowDialog(msgtext);
+            NotamePackageDialog.Show("Notame package installation script", Notame.PackageInstallScript);
         }
 
         public bool ExportReport {
@@ -159,12 +142,62 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
         
         public DelegateCommand RunNotameCommand { get; }
 
+        private bool _isRunning;
+
         private async void RunNotame() {
-            var publisher = new TaskProgressPublisher(_broker, "Notame running in the background...");
-            using (publisher.Start())
-            {
-                await _notame.ExportAlignmentResultAsync(_broker).ConfigureAwait(false);
-                _notame.Run();
+            if (_isRunning) {
+                return;
+            }
+            _isRunning = true;
+            RunNotameCommand.RaiseCanExecuteChanged();
+            var exportDirectory = _notame.ExportDirectory;
+            try {
+                var publisher = new TaskProgressPublisher(_broker, "Notame running in the background...");
+                using (publisher.Start()) {
+                    await _notame.RunAsync(_broker);
+                }
+                MessageBox.Show($"Notame output files were created in {exportDirectory}.", "Notame");
+            }
+            catch (NotamePackageException ex) {
+                await OfferPackageInstallationAsync(ex);
+            }
+            catch (System.Exception ex) {
+                MessageBox.Show(
+                    $"Notame failed: {ex.Message}\r\n\r\nThe log of the run is in {System.IO.Path.Combine(exportDirectory, "notame_log.txt")}.",
+                    "Notame", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally {
+                _isRunning = false;
+                RunNotameCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private async Task OfferPackageInstallationAsync(NotamePackageException requirements) {
+            var packages = requirements.Packages.Select(package =>
+                package == "notame" && requirements.OldNotameVersion.Length > 0
+                    ? $"notame 1.0 or later (installed: {requirements.OldNotameVersion})"
+                    : package).ToList();
+            if (requirements.InstallTinyTex) {
+                packages.Add("TinyTeX (LaTeX distribution for PDF reports, if needed)");
+            }
+            var answer = MessageBox.Show(
+                "Notame needs these packages to continue.\r\n\r\n  " + string.Join("\r\n  ", packages) +
+                $"\r\n\r\nDownload and install these packages and their required dependencies using R at {requirements.RHome}?" +
+                "\r\n\r\nAfter setup, restart MS-DIAL and run Notame again.",
+                "Install Notame packages", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (answer != MessageBoxResult.Yes) {
+                return;
+            }
+
+            try {
+                var publisher = new TaskProgressPublisher(_broker, "Installing Notame packages...");
+                using (publisher.Start()) {
+                    await Notame.InstallPackagesAsync(requirements);
+                }
+                MessageBox.Show("Setup completed. Restart MS-DIAL and run Notame again.", "Notame");
+            }
+            catch (System.Exception ex) {
+                NotamePackageDialog.Show("Notame package setup failed", ex.Message);
             }
         }
 
