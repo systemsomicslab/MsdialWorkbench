@@ -72,6 +72,15 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(19)]
         public RawFileFormat RawFileFormat { get; set; }
 
+        /// <summary>
+        /// The m/z recalibration chosen for this file when its peaks were picked, taken out of its spectra whenever they
+        /// are read (<see cref="Algorithm.BaseDataProvider"/>); null when its m/z are read as recorded, which is also what a
+        /// project written before this member existed reads as.
+        /// </summary>
+        /// <remarks>No initializer, for the reason <see cref="RawFileFormat"/> gives.</remarks>
+        [Key(20)]
+        public MassRecalibrationBean? MassRecalibration { get; set; }
+
 
         [IgnoreMember]
         public bool IsDoMs2ChromDeconvolution => AcquisitionType != AcquisitionType.DDA;

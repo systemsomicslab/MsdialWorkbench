@@ -3,6 +3,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
+using CompMs.MsdialCore.Algorithm.MassCalibration;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -24,8 +25,13 @@ public sealed class FileProcess : IFileProcessor {
     // Read once, here, and only read afterwards, so the per-file parallel loop can share it.
     private readonly ISet<string> _predictedLibraryAnnotators;
     private readonly ConcurrentQueue<(string File, LipidRtUnitRun Run)> _lipidRtFailures = new ConcurrentQueue<(string, LipidRtUnitRun)>();
+    private readonly MassRecalibrationProcess? _massRecalibration;
 
-    public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+    /// <param name="massRecalibration">
+    /// The first pass of a two-pass annotation, which recalibrates a file's m/z before its peaks are picked for good;
+    /// null, the default, picks every file from its m/z as recorded, as before the recalibration existed.
+    /// </param>
+    public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator, MassRecalibrationProcess? massRecalibration = null) {
         if (storage is null) {
             throw new ArgumentNullException(nameof(storage));
         }
@@ -44,6 +50,7 @@ public sealed class FileProcess : IFileProcessor {
         _peakPickProcess = new PeakPickProcess(storage);
         _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
         _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
+        _massRecalibration = massRecalibration;
     }
 
     /// <summary>
@@ -58,10 +65,30 @@ public sealed class FileProcess : IFileProcessor {
             return;
         }
 
+        if (option.HasFlag(ProcessOption.PeakSpotting)) {
+            // Peaks are picked from the m/z as recorded: an earlier run's recalibration is not carried into this one,
+            // and is made again below only if this run asks for it and its first pass decides so.
+            analysisFile.MassRecalibration = null;
+        }
         var provider = _factory.Create(analysisFile);
         var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
             ? FindPeakAndScans(analysisFile, provider, progress, token)
             : await LoadPeakAndScans(analysisFile, token).ConfigureAwait(false);
+
+        if (option.HasFlag(ProcessOption.PeakSpotting) && _massRecalibration is not null) {
+            token.ThrowIfCancellationRequested();
+            Console.WriteLine("Mass recalibration started");
+            var outcome = _massRecalibration.Decide(analysisFile, chromPeakFeatures.Items, mSDecResultCollections, provider.LoadMsSpectrums(), token);
+            Console.WriteLine($"Mass recalibration ({analysisFile.AnalysisFileName}): {outcome.Describe()}");
+            if (outcome.Recalibration is not null) {
+                // Recorded with the file, the recalibration is taken out of its spectra whenever they are read: by the
+                // provider made now, by the alignment and gap filling, and by whoever views the file later. The peaks
+                // are picked and deconvoluted again from the recalibrated m/z, as a file recorded with them would be.
+                analysisFile.MassRecalibration = outcome.Recalibration;
+                provider = _factory.Create(analysisFile);
+                (chromPeakFeatures, mSDecResultCollections) = FindPeakAndScans(analysisFile, provider, progress, token);
+            }
+        }
 
         if (option.HasFlag(ProcessOption.Identification)) {
             // annotations

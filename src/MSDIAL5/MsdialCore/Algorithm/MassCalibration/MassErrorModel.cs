@@ -54,6 +54,16 @@ public sealed class MassErrorModel
     /// <summary>t₀, the median retention time of the points, in minutes.</summary>
     public double ReferenceRetentionTime => _design.ReferenceRetentionTime;
 
+    /// <summary>The m/z the model is held within: below the lowest, the lowest's error is taken; above the highest, the highest's.</summary>
+    public double MinimumMz => _design.MinimumMz;
+
+    public double MaximumMz => _design.MaximumMz;
+
+    /// <summary>The retention times the model is held within, in minutes.</summary>
+    public double MinimumRetentionTime => _design.MinimumRetentionTime;
+
+    public double MaximumRetentionTime => _design.MaximumRetentionTime;
+
     /// <summary>a: the error at <see cref="ReferenceMz"/> and <see cref="ReferenceRetentionTime"/>, in ppm.</summary>
     public double ErrorAtReferencePpm => Coefficient(_design.OffsetColumn);
 

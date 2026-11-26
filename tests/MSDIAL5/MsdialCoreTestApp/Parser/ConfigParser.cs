@@ -781,6 +781,9 @@ namespace CompMs.App.MsdialConsole.Parser
             (param, method, value) => Ms2MassAccuracyPreviewOnlyLine(method, value, _ => { }),
             (param, method, value) => AnnotationMassAccuracyPreviewOnlyLine(method, value, _ => { }),
             (param, method, value) => AnnotationMassAccuracySearchWindowLine(method, value, _ => { }),
+            (param, method, value) => MassRecalibrationLine(method, value, _ => { }),
+            (param, method, value) => MassRecalibrationSearchWindowLine(method, value, _ => { }),
+            (param, method, value) => MassRecalibrationMinimumCorrectionLine(method, value, _ => { }),
             (param, method, value) => ReadAutomaticRtCorrectionParameter(param, method, value),
             (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
             (param, method, value) => MsmsEntropyCleanupLine(param.ChromDecBaseParam, method, value),
@@ -1002,8 +1005,41 @@ namespace CompMs.App.MsdialConsole.Parser
         /// positive number, or null.
         /// </summary>
         public static double ReadAnnotationMassAccuracySearchWindow(string filepath, out string? unusableValue) {
+            return ReadLastNumber(filepath, AnnotationCalibrantCollector.DefaultSearchPpm, AnnotationMassAccuracySearchWindowLine, out unusableValue);
+        }
+
+        /// <summary>
+        /// Whether each file's m/z are recalibrated before its peaks are picked for good: a first, permissive annotation
+        /// measures its MS1 and MS2 error, a model of each is chosen and judged, and a model worth applying is recorded
+        /// with the file and taken out of its spectra wherever they are read. False by default. The value of the last
+        /// line that says neither True nor False, or null, is returned too: LcmsProcess refuses it, since either reading
+        /// would run another analysis than the one asked for.
+        /// </summary>
+        public static bool ReadMassRecalibration(string filepath, out string? unusableValue) {
+            return ReadLastSwitch(filepath, MassRecalibrationLine, out unusableValue);
+        }
+
+        /// <summary>
+        /// The half width, in ppm, of the m/z windows of the recalibration's first annotation (default
+        /// <see cref="AnnotationCalibrantCollector.DefaultSearchPpm"/>), and the value of the last line that is not a
+        /// positive number, or null.
+        /// </summary>
+        public static double ReadMassRecalibrationSearchWindow(string filepath, out string? unusableValue) {
+            return ReadLastNumber(filepath, AnnotationCalibrantCollector.DefaultSearchPpm, MassRecalibrationSearchWindowLine, out unusableValue);
+        }
+
+        /// <summary>
+        /// The smallest modelled error, in ppm, that the recalibration applies (default
+        /// <see cref="MassCalibrationDecision.DefaultMinimumCorrectionPpm"/>), and the value of the last line that is
+        /// not a number of ppm of zero or more, or null.
+        /// </summary>
+        public static double ReadMassRecalibrationMinimumCorrection(string filepath, out string? unusableValue) {
+            return ReadLastNumber(filepath, MassCalibrationDecision.DefaultMinimumCorrectionPpm, MassRecalibrationMinimumCorrectionLine, out unusableValue);
+        }
+
+        private static double ReadLastNumber(string filepath, double defaultValue, Func<string, string, Action<double>, MethodKeyOutcome> line, out string? unusableValue) {
             string? unusable = null;
-            var result = AnnotationCalibrantCollector.DefaultSearchPpm;
+            var result = defaultValue;
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
                 while (sr.Peek() > -1) {
                     readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
@@ -1011,7 +1047,7 @@ namespace CompMs.App.MsdialConsole.Parser
                         continue;
                     }
                     var read = result;
-                    var outcome = AnnotationMassAccuracySearchWindowLine(method, value, v => read = v);
+                    var outcome = line(method, value, v => read = v);
                     if (outcome.IsApplied) {
                         result = read;
                     }
@@ -1148,6 +1184,43 @@ namespace CompMs.App.MsdialConsole.Parser
                     return Number(value, ppm => {
                         if (!(ppm > 0d) || double.IsInfinity(ppm)) {
                             throw new ArgumentOutOfRangeException(nameof(value), ppm, "The search window must be a positive number of ppm.");
+                        }
+                        assign(ppm);
+                    });
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome MassRecalibrationLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "mass recalibration":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome MassRecalibrationSearchWindowLine(string method, string value, Action<double> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "mass recalibration search window (ppm)":
+                    return Number(value, ppm => {
+                        if (!(ppm > 0d) || double.IsInfinity(ppm)) {
+                            throw new ArgumentOutOfRangeException(nameof(value), ppm, "The search window must be a positive number of ppm.");
+                        }
+                        assign(ppm);
+                    });
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome MassRecalibrationMinimumCorrectionLine(string method, string value, Action<double> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "mass recalibration minimum correction (ppm)":
+                    return Number(value, ppm => {
+                        if (!(ppm >= 0d) || double.IsInfinity(ppm)) {
+                            throw new ArgumentOutOfRangeException(nameof(value), ppm, "The minimum correction must be a number of ppm, zero or more.");
                         }
                         assign(ppm);
                     });

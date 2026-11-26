@@ -55,11 +55,20 @@ public sealed class MassCalibrationPoint
 
     /// <summary>The precursors of the annotated features (<paramref name="msLevel"/> 1) or their product ions (2).</summary>
     public static List<MassCalibrationPoint> FromAnnotation(IEnumerable<AnnotationCalibrant> calibrants, int msLevel) {
+        return FromAnnotation(calibrants, msLevel, out _);
+    }
+
+    /// <summary>
+    /// The precursors of the annotated features (<paramref name="msLevel"/> 1) or their product ions (2), and the bounds
+    /// of each fixed isolation window, rounded to 0.1 m/z, by the window index the points carry.
+    /// </summary>
+    public static List<MassCalibrationPoint> FromAnnotation(IEnumerable<AnnotationCalibrant> calibrants, int msLevel, out IReadOnlyList<(double Lower, double Upper)> windowBounds) {
         if (calibrants is null) {
             throw new ArgumentNullException(nameof(calibrants));
         }
         var selected = calibrants.Where(calibrant => calibrant.MsLevel == msLevel).ToList();
         var windows = new WindowIndex(selected.Select(calibrant => (calibrant.IsolationLowerMz, calibrant.IsolationUpperMz)));
+        windowBounds = windows.Bounds;
         return selected
             .Select(calibrant => new MassCalibrationPoint(
                 calibrant.ObservedMz, calibrant.ErrorPpm, calibrant.RetentionTime, calibrant.ObservedIntensity, calibrant.PeakId,
@@ -106,7 +115,11 @@ public sealed class MassCalibrationPoint
             return key.HasValue && _index.TryGetValue(key.Value, out var index) ? index : NoWindow;
         }
 
-        private static (double, double)? Key(double lower, double upper) {
+        /// <summary>The rounded bounds of each window, by index.</summary>
+        public IReadOnlyList<(double Lower, double Upper)> Bounds => _index.OrderBy(pair => pair.Value).Select(pair => pair.Key).ToList();
+
+        /// <summary>A window's bounds rounded as the index keys them, or null when it is no fixed window.</summary>
+        internal static (double, double)? Key(double lower, double upper) {
             if (double.IsNaN(lower) || double.IsNaN(upper) || upper - lower < MinimumWindowWidth) {
                 return null;
             }

@@ -63,10 +63,14 @@ namespace CompMs.MsdialCore.Algorithm
 
         protected static async Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry, bool ignoreRtCorrection, CancellationToken token) {
             List<double> correctedRts = ignoreRtCorrection ? null : file.RetentionTimeCorrectionBean.PredictedRt;
+            // Taken now, as the provider is made, so a recalibration recorded with the file afterwards applies to the
+            // providers made after it and not to one already reading.
+            var recalibration = file.MassRecalibration;
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMs, isGuiProcess, correctedRts)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = await Task.Run(() => access.GetMeasurement(), token).ConfigureAwait(false);
                     if (rawObj != null) {
+                        recalibration?.ApplyTo(rawObj.SpectrumList);
                         return rawObj;
                     }
                     Thread.Sleep(5000);
@@ -81,6 +85,7 @@ namespace CompMs.MsdialCore.Algorithm
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
                     if (rawObj != null) {
+                        file.MassRecalibration?.ApplyTo(rawObj.SpectrumList);
                         return rawObj;
                     }
                     Thread.Sleep(5000);

@@ -121,6 +121,22 @@ public sealed class LcmsProcess
             Console.Error.WriteLine($"'Annotation mass accuracy search window (ppm): {unusableSearchWindow}' is not a positive number; the run is refused rather than run with another window.");
             return -1;
         }
+        var massRecalibration = ConfigParser.ReadMassRecalibration(methodFile, out var unusableRecalibrationValue);
+        if (unusableRecalibrationValue is not null) {
+            // Either reading would run another analysis than the one asked for: one whose m/z are recalibrated, or not.
+            Console.Error.WriteLine($"'Mass recalibration: {unusableRecalibrationValue}' is neither True nor False; the run is refused rather than run with or without recalibration on a guess.");
+            return -1;
+        }
+        var recalibrationSearchPpm = ConfigParser.ReadMassRecalibrationSearchWindow(methodFile, out var unusableRecalibrationWindow);
+        if (massRecalibration && unusableRecalibrationWindow is not null) {
+            Console.Error.WriteLine($"'Mass recalibration search window (ppm): {unusableRecalibrationWindow}' is not a positive number; the run is refused rather than run with another window.");
+            return -1;
+        }
+        var recalibrationMinimumPpm = ConfigParser.ReadMassRecalibrationMinimumCorrection(methodFile, out var unusableRecalibrationMinimum);
+        if (massRecalibration && unusableRecalibrationMinimum is not null) {
+            Console.Error.WriteLine($"'Mass recalibration minimum correction (ppm): {unusableRecalibrationMinimum}' is not a number of ppm, zero or more; the run is refused rather than run with another minimum.");
+            return -1;
+        }
         var previews = new[] {
             (automaticRtCorrectionPreviewOnly, "Automatic RT correction preview only"),
             (ms2MassAccuracyPreviewOnly, "MS2 mass accuracy preview only"),
@@ -247,6 +263,18 @@ public sealed class LcmsProcess
             return PreviewAnnotationMassAccuracy(annotationPreviewStorage, libraries, outputFolder, annotationSearchPpm);
         }
 
+        MassRecalibrationProcess? recalibrationProcess = null;
+        if (massRecalibration) {
+            var libraries = CalibrationLibraries(param, mspDBs, lbmDB, lbmAnnotatorPriority);
+            if (libraries.Count == 0) {
+                Console.Error.WriteLine("Mass recalibration needs an MSP or LBM library with MS/MS spectra, and none was read.");
+                return -1;
+            }
+            recalibrationProcess = new MassRecalibrationProcess(new AnnotationCalibrantCollector(libraries, recalibrationSearchPpm), recalibrationMinimumPpm);
+            var invariant = System.Globalization.CultureInfo.InvariantCulture;
+            Console.WriteLine($"Mass recalibration: each file's features are first annotated against {string.Join(", ", libraries.Select(library => library.Id))} with ±{recalibrationSearchPpm.ToString("0.#", invariant)} ppm m/z windows and without the precursor m/z in the score; an MS1 or MS2 error model of at least {recalibrationMinimumPpm.ToString("0.0#", invariant)} ppm and {MassCalibrationDecision.SignificanceFactor.ToString("0", invariant)} standard errors is recorded with the file and taken out of its spectra, and its peaks are picked, deconvoluted and annotated from the recalibrated m/z.");
+        }
+
         var container = new MsdialLcmsDataStorage() {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
@@ -288,7 +316,7 @@ public sealed class LcmsProcess
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionInputs).Result;
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionInputs, recalibrationProcess).Result;
     }
 
     /// <summary>
@@ -643,6 +671,61 @@ public sealed class LcmsProcess
         return 0;
     }
 
+    private const string RecalibrationFolderName = "mass_recalibration";
+    private const string RecalibrationModelsFileName = "mass_recalibration_models.tsv";
+
+    // Removes an earlier run's recalibration audit (its models and calibrants) from the output folder; false, with the
+    // reason, when one of them cannot be removed, in which case the run is refused before anything is processed.
+    private static bool RemoveEarlierRecalibrationAudit(string outputFolder) {
+        var folder = Path.Combine(outputFolder, RecalibrationFolderName);
+        if (!Directory.Exists(folder)) {
+            return true;
+        }
+        try {
+            var earlier = Directory.GetFiles(folder, "*" + AnnotationMassAccuracyReport.CalibrantsFileSuffix)
+                .Concat(Directory.GetFiles(folder, RecalibrationModelsFileName))
+                .ToList();
+            foreach (var path in earlier) {
+                File.Delete(path);
+            }
+            if (earlier.Count > 0) {
+                Console.WriteLine($"Removed {earlier.Count} mass recalibration file(s) of an earlier run from {folder}.");
+            }
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+            Console.Error.WriteLine($"The mass recalibration files of an earlier run in {folder} cannot be replaced: {ex.Message} Close them and run again.");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Writes what the recalibration found for each file: the calibrants of its first annotation, and the MS1 and MS2
+    /// models with their decisions, to <see cref="RecalibrationFolderName"/> in the output folder; and says how many
+    /// files were recalibrated.
+    /// </summary>
+    private static void WriteRecalibrationAudit(string outputFolder, IReadOnlyList<AnalysisFileBean> files, MassRecalibrationProcess recalibration) {
+        var folder = Path.Combine(outputFolder, RecalibrationFolderName);
+        Directory.CreateDirectory(folder);
+        var outcomes = recalibration.Outcomes;
+        foreach (var outcome in outcomes) {
+            using var writer = new StreamWriter(Path.Combine(folder, AnnotationMassAccuracyReport.CalibrantsFileName(outcome.FileName)));
+            AnnotationMassAccuracyReport.WriteCalibrants(writer, outcome.Calibrants);
+        }
+        var modelsPath = Path.Combine(folder, RecalibrationModelsFileName);
+        using (var writer = new StreamWriter(modelsPath)) {
+            MassCalibrationReport.WriteHeader(writer);
+            foreach (var outcome in outcomes) {
+                MassCalibrationReport.WriteRow(writer, outcome.FileName, AnnotationMassAccuracyReport.Ms1Pairs, outcome.Ms1);
+                MassCalibrationReport.WriteRow(writer, outcome.FileName, AnnotationMassAccuracyReport.Ms2Pairs, outcome.Ms2);
+            }
+        }
+        var ms1 = outcomes.Count(outcome => outcome.Ms1.IsApplied);
+        var ms2 = outcomes.Count(outcome => outcome.Ms2.IsApplied);
+        var recalibrated = files.Count(file => file.MassRecalibration is not null);
+        Console.WriteLine($"Mass recalibration: {recalibrated} of {files.Count} file(s) recalibrated (MS1 in {ms1}, MS2 in {ms2}); the models and their reasons are in {modelsPath}.");
+    }
+
     // Removes an earlier run's automatic RT correction audit from the output folder; false, with
     // the file named, when one is open elsewhere (an audit under review in a spreadsheet), in
     // which case nothing is removed.
@@ -693,15 +776,22 @@ public sealed class LcmsProcess
         bool isAlignmentLightMode,
         bool exportDetailedAlignmentProvenance,
         bool exportAnnotationCandidates,
-        AutomaticRtCorrectionInputs automaticRtCorrectionInputs) {
+        AutomaticRtCorrectionInputs automaticRtCorrectionInputs,
+        MassRecalibrationProcess? recalibrationProcess) {
         var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, Path.ChangeExtension(storage.Parameter.ProjectParam.ProjectFileName, ".mdproject")));
         projectDataStorage.AddStorage(storage);
+
+        // An earlier run's recalibration audit must not stay in this run's output folder looking like this run's,
+        // whether this run recalibrates or not.
+        if (!RemoveEarlierRecalibrationAudit(outputFolder)) {
+            return -1;
+        }
 
         var files = storage.AnalysisFiles;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
         var providerFactory = new StandardDataProviderFactory(5, false);
-        var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
+        var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator, recalibrationProcess);
         // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
         // Math.Max(1, UsableNumThreads / 2)). Without it "number of threads: 1" -- a value
         // ConfigParser accepts -- gives 1/2 = 0 workers, ProcessRunner builds an empty Task array,
@@ -712,6 +802,9 @@ public sealed class LcmsProcess
         // run that never happened.
         var runner = new ProcessRunner(process, Math.Max(1, storage.Parameter.NumThreads / 2));
         await runner.RunAllAsync(files, ProcessOption.All, Enumerable.Repeat(default(IProgress<int>?), files.Count), null, default).ConfigureAwait(false);
+        if (recalibrationProcess is not null) {
+            WriteRecalibrationAudit(outputFolder, files, recalibrationProcess);
+        }
 
         var peak_accessor = new LcmsAnalysisMetadataAccessor(storage.DataBaseMapper, storage.Parameter, ExportspectraType.deconvoluted);
         var peakExporterFactory = new AnalysisCSVExporterFactory("\t");

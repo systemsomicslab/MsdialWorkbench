@@ -90,8 +90,10 @@ namespace CompMs.MsdialCore.Utility {
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isImagingMsData, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
-                    if (rawObj != null)
+                    if (rawObj != null) {
+                        file.MassRecalibration?.ApplyTo(rawObj.SpectrumList);
                         return rawObj;
+                    }
                     Thread.Sleep(sleepMilliSeconds);
                 }
                 throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
