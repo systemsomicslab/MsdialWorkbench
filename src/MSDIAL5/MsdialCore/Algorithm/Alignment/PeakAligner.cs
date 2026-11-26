@@ -60,8 +60,11 @@ public class PeakAligner {
         IReadOnlyList<AnalysisFileBean> analysisFiles, AlignmentFileBean alignmentFile,
         ChromatogramSerializer<ChromatogramSpotInfo>? spotSerializer) {
 
-        var spots = Joiner.Join(analysisFiles, Param.AlignmentReferenceFileID, Accessor);
-        spots = FilterAlignments(spots, Param);
+        List<AlignmentSpotProperty> spots;
+        using (StageTiming.Measure(null, "alignment join")) {
+            spots = Joiner.Join(analysisFiles, Param.AlignmentReferenceFileID, Accessor);
+            spots = FilterAlignments(spots, Param);
+        }
 
         var chromPeakInfoSerializer = spotSerializer is null ? null : ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
         // One chromatogram spill per analysis file, read back to write the EIC file. They are created beside that file
@@ -130,6 +133,7 @@ public class PeakAligner {
         ChromatogramSerializer<ChromatogramPeakInfo> chromPeakInfoSerializer,
         string[] tempFiles) {
 
+        using var timing = StageTiming.Measure(null, "alignment collect");
         // from 40 to 80
         var counter = 0;
         ReportProgress reporter = ReportProgress.FromLength(Progress, 40.0, 40.0);
@@ -160,13 +164,17 @@ public class PeakAligner {
         string tempFile,
         ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
-        var provider = ProviderFactory?.Create(analysisFile);
-        IReadOnlyList<RawSpectrum> spectra = provider?.LoadMs1Spectrums();
-        if (spectra == null) {
-            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, false, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
-                spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
+        IReadOnlyList<RawSpectrum> spectra;
+        using (StageTiming.Measure(analysisFile.AnalysisFileName, "alignment load spectra")) {
+            var provider = ProviderFactory?.Create(analysisFile);
+            spectra = provider?.LoadMs1Spectrums();
+            if (spectra == null) {
+                using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, false, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
+                    spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
+                }
             }
         }
+        using var timing = StageTiming.Measure(analysisFile.AnalysisFileName, "alignment gap fill");
         var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
         var rawSpectra = new RawSpectra(spectra, Param.IonMode, analysisFile.AcquisitionType);
         var peakInfos = peaks.ZipInternal(spots)
@@ -247,6 +255,7 @@ public class PeakAligner {
         AlignmentFileBean alignmentFile,
         ChromatogramSerializer<ChromatogramSpotInfo> spotSerializer,
         ChromatogramSerializer<ChromatogramPeakInfo> peakSerializer) {
+        using var timing = StageTiming.Measure(null, "alignment eic serialize");
         var pss = files.Select(file => peakSerializer.DeserializeEachFromFile(file, ids)).ToList();
         var qss = pss.Sequence();
 

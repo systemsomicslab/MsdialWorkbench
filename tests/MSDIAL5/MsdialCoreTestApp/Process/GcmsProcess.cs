@@ -14,6 +14,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Algorithm;
 using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.DataObj;
@@ -113,7 +114,6 @@ public sealed class GcmsProcess
         {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB is null ? [] : [.. mspDB.Database],
             TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
@@ -248,6 +248,7 @@ public sealed class GcmsProcess
             tasks[i] = Task.Run(async () => {
                 await sem.WaitAsync();
                 try {
+                    using var timing = StageTiming.Measure(file.AnalysisFileName, "console mdscan export");
                     var sfs = file.LoadSpectrumFeatures();
                     using var stream = File.Open(Path.Combine(outputFolder, file.AnalysisFileName + ".mdscan"), FileMode.Create, FileAccess.Write, FileShare.Read);
                     scanExporter.Export(stream, file, sfs.Items, new ExportStyle());
@@ -283,19 +284,31 @@ public sealed class GcmsProcess
             var factory = new GcmsAlignmentProcessFactory(storage);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = providerFactory;
-            var result = aligner.Alignment(files, alignmentFile, serializer);
-            result.Save(alignmentFile);
-            var decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, decResults);
+            AlignmentResultContainer result;
+            using (StageTiming.Measure(null, "console alignment")) {
+                result = aligner.Alignment(files, alignmentFile, serializer);
+            }
+            using (StageTiming.Measure(null, "console alignment save")) {
+                result.Save(alignmentFile);
+            }
+            List<MSDecResult> decResults;
+            using (StageTiming.Measure(null, "console representative deconvolutions")) {
+                decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties);
+                MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, decResults);
+            }
 
             var accessor = new GcmsAlignmentMetadataAccessor(storage.DataBaseMapper, storage.MsdialGcmsParameter, false);
             var quantAccessor = new LegacyQuantValueAccessor("Height", storage.MsdialGcmsParameter);
             var stats = new[] { StatsValue.Average, StatsValue.Stdev };
             var spotExporter = new AlignmentCSVExporter("\t");
             using var stream = File.Open(Path.Combine(outputFolder, alignmentFile.FileName + ".mdalign"), FileMode.Create, FileAccess.Write, FileShare.Read);
-            spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+            using (StageTiming.Measure(null, "console mdalign export")) {
+                spotExporter.Export(stream, result.AlignmentSpotProperties, decResults, files, new MulticlassFileMetaAccessor(0), accessor, quantAccessor, stats);
+            }
 
-            ExportAlignmentMatrices(storage.MsdialGcmsParameter, outputFolder, alignmentFile.FileName, result.AlignmentSpotProperties, decResults, files, accessor, stats);
+            using (StageTiming.Measure(null, "console matrix export")) {
+                ExportAlignmentMatrices(storage.MsdialGcmsParameter, outputFolder, alignmentFile.FileName, result.AlignmentSpotProperties, decResults, files, accessor, stats);
+            }
 
             var mztabm_filename = alignmentFile.FileName + ".mzTab";
             var mztabm_outputfile = Path.Combine(outputFolder, mztabm_filename);
@@ -304,25 +317,27 @@ public sealed class GcmsProcess
             var mztabM_exporter = new MztabFormatExporter(storage.DataBases);
 
             using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            mztabM_exporter.MztabFormatExporterCore(
-                tabmstream,
-                spots,
-                msdecs,
-                files,
-                accessor,
-                quantAccessor,
-                stats,
-                mztabm_filename
-            );
+            using (StageTiming.Measure(null, "console mztab export")) {
+                mztabM_exporter.MztabFormatExporterCore(
+                    tabmstream,
+                    spots,
+                    msdecs,
+                    files,
+                    accessor,
+                    quantAccessor,
+                    stats,
+                    mztabm_filename
+                );
+            }
         }
 
         if (isProjectSaved)
         {
+            using var timing = StageTiming.Measure(null, "console project save");
             storage.MsdialGcmsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
-            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
-            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
-            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
-            streamManager.Complete();
+            if (!await CommonProcess.SaveProjectAsync(projectDataStorage).ConfigureAwait(false)) {
+                return -1;
+            }
         }
 
         return 0;

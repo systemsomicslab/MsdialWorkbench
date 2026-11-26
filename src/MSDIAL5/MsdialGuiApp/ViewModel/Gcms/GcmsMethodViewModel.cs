@@ -41,8 +41,6 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
             var msfinderBatchSettingVM = new InternalMsfinderBatchSettingViewModel(model.MsfinderSettingParameter, batchMsfinder, broker).AddTo(Disposables);
             ShowMsfinderSettingViewCommand = new ReactiveCommand().WithSubscribe(() => _broker.Publish(msfinderBatchSettingVM)).AddTo(Disposables);
         }
-        public InternalMsfinderBatchSettingViewModel InternalMsfinderBatchSettingVM { get; }
-
         public ReactiveCommand ShowMsfinderSettingViewCommand { get; }
 
         protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {

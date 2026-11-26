@@ -225,6 +225,85 @@ public sealed class MethodFileTemplateTests
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => MethodFileTemplate.Create(MethodFileMode.Lcms, IonMode.Both));
     }
 
+    /// <summary>
+    /// AN EAD RUN STARTED FROM THE TEMPLATE CAN HAVE THE GUI'S LBM CUT-OFFS.
+    /// </summary>
+    /// <remarks>
+    /// The template writes the CID cut-offs for the LBM library, and the Console lowers only the
+    /// cut-offs a file leaves unset. Its comment therefore tells an EAD user to blank five lines;
+    /// this holds that advice to giving the values the GUI uses.
+    /// </remarks>
+    [TestMethod]
+    [DataRow(MethodFileMode.Lcms)]
+    [DataRow(MethodFileMode.Dims)]
+    public void Template_EadWithTheLbmCutOffsBlankedHasTheGuiValues(MethodFileMode mode)
+    {
+        using var directory = new TemporaryDirectory();
+        var template = MethodFileTemplate.Create(mode);
+        StringAssert.Contains(template, "\nCollision type:\n");
+        string[] cutOffs = [
+            "Square root of weighted dot product cutoff for LBM-based annotation",
+            "Square root of simple dot product cutoff for LBM-based annotation",
+            "Square root of reverse dot product cutoff for LBM-based annotation",
+            "Matched peaks percentage cutoff for LBM-based annotation",
+            "Minimum spectrum match for LBM-based annotation",
+        ];
+        var lines = template.Split('\n').Select(line =>
+            line == "Collision type:" ? "Collision type: EAD"
+            : line.StartsWith("Target omics:", StringComparison.Ordinal) ? "Target omics: Lipidomics"
+            : cutOffs.FirstOrDefault(key => line.StartsWith(key + ":", StringComparison.Ordinal)) is { } key ? key + ":"
+            : line);
+        var method = directory.CreateFile("method.txt", string.Join("\n", lines));
+
+        var (parsed, report) = Read(mode, method);
+
+        Assert.AreEqual(CollisionType.EIEIO, parsed.CollistionType);
+        Assert.AreEqual(0.05f, parsed.LbmSearchParam.WeightedDotProductCutOff);
+        Assert.AreEqual(0.05f, parsed.LbmSearchParam.SimpleDotProductCutOff);
+        Assert.AreEqual(0.05f, parsed.LbmSearchParam.ReverseDotProductCutOff);
+        Assert.AreEqual(0f, parsed.LbmSearchParam.MatchedPeaksPercentageCutOff);
+        Assert.AreEqual(1f, parsed.LbmSearchParam.MinimumSpectrumMatch);
+        Assert.IsFalse(report.Contains("NO EFFECT"), report);
+    }
+
+    [TestMethod]
+    [DataRow(MethodFileMode.Lcms)]
+    [DataRow(MethodFileMode.Dims)]
+    public void Template_GeneratedLipidKeysReadBackAsTheGuiDefaults(MethodFileMode mode)
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt", MethodFileTemplate.Create(mode));
+
+        var setting = ConfigParser.ReadGeneratedLipidAnnotatorSetting(method);
+
+        var expected = GeneratedLipidAnnotatorSetting.CreateDefaultSearchParameter();
+        Assert.IsNull(setting.Enabled);
+        Assert.IsNull(setting.Priority);
+        Assert.AreEqual(expected.Ms1Tolerance, setting.SearchParameter.Ms1Tolerance);
+        Assert.AreEqual(expected.Ms2Tolerance, setting.SearchParameter.Ms2Tolerance);
+        Assert.AreEqual(expected.WeightedDotProductCutOff, setting.SearchParameter.WeightedDotProductCutOff);
+        Assert.AreEqual(expected.SimpleDotProductCutOff, setting.SearchParameter.SimpleDotProductCutOff);
+        Assert.AreEqual(expected.ReverseDotProductCutOff, setting.SearchParameter.ReverseDotProductCutOff);
+        Assert.AreEqual(expected.MatchedPeaksPercentageCutOff, setting.SearchParameter.MatchedPeaksPercentageCutOff);
+        Assert.AreEqual(expected.MinimumSpectrumMatch, setting.SearchParameter.MinimumSpectrumMatch);
+        Assert.AreEqual(expected.TotalScoreCutoff, setting.SearchParameter.TotalScoreCutoff);
+    }
+
+    /// <summary>
+    /// Only the modes that build the generated lipid library offer its settings.
+    /// </summary>
+    [TestMethod]
+    [DataRow(MethodFileMode.Gcms)]
+    [DataRow(MethodFileMode.Imms)]
+    [DataRow(MethodFileMode.Lcimms)]
+    public void Template_OtherModesDoNotOfferTheGeneratedLipidLibrary(MethodFileMode mode)
+    {
+        var template = MethodFileTemplate.Create(mode);
+
+        Assert.IsFalse(template.Contains("Collision type"), template);
+        Assert.IsFalse(template.Contains("generated lipid", StringComparison.OrdinalIgnoreCase), template);
+    }
+
     private static ParameterBase CreateDefault(MethodFileMode mode) => mode switch {
         MethodFileMode.Gcms => new MsdialGcmsParameter(),
         MethodFileMode.Lcms => new MsdialLcmsParameter(),

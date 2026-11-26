@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Concurrent;
@@ -65,7 +66,11 @@ namespace CompMs.MsdialCore.Algorithm
             List<double> correctedRts = ignoreRtCorrection ? null : file.RetentionTimeCorrectionBean.PredictedRt;
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMs, isGuiProcess, correctedRts)) {
                 for (var i = 0; i < retry; i++) {
-                    var rawObj = await Task.Run(() => access.GetMeasurement(), token).ConfigureAwait(false);
+                    var rawObj = await Task.Run(() => {
+                        using (StageTiming.Measure(file.AnalysisFileName, "decode")) {
+                            return access.GetMeasurement();
+                        }
+                    }, token).ConfigureAwait(false);
                     if (rawObj != null) {
                         return rawObj;
                     }

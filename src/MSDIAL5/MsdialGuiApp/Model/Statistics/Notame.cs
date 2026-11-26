@@ -8,15 +8,58 @@ using CompMs.MsdialCore.Parameter;
 using RDotNet;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CompMs.App.Msdial.Model.Statistics {
     internal sealed class Notame : DisposableModelBase {
+        /// <summary>R packages the scripts in Resources (Notame.R, Report.R) use.</summary>
+        private static readonly string[] _requiredPackages = [
+            "notame", "SummarizedExperiment", "BiocParallel", "pcaMethods", "missForest", "MUVR",
+            "doParallel", "foreach", "dplyr", "ggplot2", "openxlsx", "cowplot", "ggsignif", "futile.logger",
+        ];
+
+        public static string PackageInstallScript =>
+            GetPackageInstallScript([.. _requiredPackages, "Cairo", "tinytex"], installTinyTex: true);
+
+        private static string GetPackageInstallScript(IEnumerable<string> packages, bool installTinyTex) {
+            using var stream = typeof(Notame).Assembly.GetManifestResourceStream("NotamePackageInstall.R")
+                ?? throw new InvalidOperationException("The Notame package installation script is missing.");
+            using var reader = new StreamReader(stream);
+            var packageNames = string.Join(", ", packages.Select(NotameRSession.ToRString));
+            var script = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\n", "\r\n");
+            return script + $"\r\ninstall_notame_packages(c({packageNames}), {(installTinyTex ? "TRUE" : "FALSE")})\r\n";
+        }
+
+        public static async Task InstallPackagesAsync(NotamePackageException requirements) {
+            // Use a fresh process because the embedded R keeps loaded namespaces until restart.
+            var rscript = Path.Combine(requirements.RHome, "bin", "x64", "Rscript.exe");
+            var script = GetPackageInstallScript(requirements.Packages, requirements.InstallTinyTex);
+            using var process = Process.Start(new ProcessStartInfo(rscript, "-") {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            }) ?? throw new InvalidOperationException("Could not start Rscript.");
+
+            var output = process.StandardOutput.ReadToEndAsync();
+            var errors = process.StandardError.ReadToEndAsync();
+            using (var input = process.StandardInput) {
+                await input.WriteAsync(script).ConfigureAwait(false);
+            }
+            await Task.WhenAll(output, errors).ConfigureAwait(false);
+            process.WaitForExit();
+            if (process.ExitCode != 0) {
+                throw new InvalidOperationException($"Rscript exited with code {process.ExitCode}.\r\n\r\n{errors.Result}\r\n{output.Result}");
+            }
+        }
+
         public Notame(AlignmentFilesForExport alignmentFilesForExport, AlignmentPeakSpotSupplyer peakSpotSupplyer, AlignmentExportGroupModel exportModel, DataExportBaseParameter dataExportParameter, ParameterBase parameterBase) {
             AlignmentFilesForExport = alignmentFilesForExport;
             PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
@@ -38,11 +81,6 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
         private string _rDirectory = string.Empty;
 
-        public string GetExportFolder(string directory) {
-            var folder = directory.Replace("\\", "/");
-            return folder;
-        }
-
         public AlignmentExportGroupModel ExportModel { get; }
 
         public AlignmentFilesForExport AlignmentFilesForExport { get; }
@@ -50,24 +88,6 @@ namespace CompMs.App.Msdial.Model.Statistics {
         public ExportMethod ExportMethod => ExportModel.ExportMethod;
         public ReadOnlyObservableCollection<ExportType> ExportTypes => ExportModel.Types;
         public bool exportReport;
-
-        public Task ExportAlignmentResultAsync(IMessageBroker broker) {
-            return Task.Run(() => {
-                if (AlignmentFilesForExport.SelectedFile is null) {
-                    return;
-                }
-                var publisher = new TaskProgressPublisher(broker, $"Exporting {AlignmentFilesForExport.SelectedFile.FileName}");
-                using (publisher.Start()) {
-                    var alignmentFile = AlignmentFilesForExport.SelectedFile;
-                    if (ExportTypes.FirstOrDefault(type => type.IsSelected) is not { } type) {
-                        throw new Exception("Export type (Height, Area, ...) is not selected.");
-                    }
-                    var fileName = $"{type.TargetLabel}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
-                    FileName = ExportMethod.Format.WithExtension(fileName);
-                    ExportModel.Export(alignmentFile, ExportDirectory, fileName, null);
-                }
-            });
-        }
 
         private readonly IonMode IonMode;
 
@@ -81,112 +101,85 @@ namespace CompMs.App.Msdial.Model.Statistics {
             return string.Empty;
         }
 
-        private string NotameIonMode = string.Empty;
-        private string NotameExport = string.Empty;
-        private string FileName = string.Empty;
-        private string RPath = string.Empty;
+        /// <summary>
+        /// Checks that R has the packages, exports the selected alignment result and runs the Notame
+        /// workflow (and the PDF report when <see cref="exportReport"/> is set) on it.
+        /// </summary>
+        /// <exception cref="NotamePackageException">R lacks packages the workflow needs.</exception>
+        public async Task RunAsync(IMessageBroker broker) {
+            var rHome = Path.GetFullPath(RDirectory);
+            var exportReport = this.exportReport;
+            var missing = await NotameRSession.RunAsync(rHome, engine => CheckPackages(engine, rHome, exportReport)).ConfigureAwait(false);
+            if (Settings.Default.RHome != rHome) {
+                Settings.Default.RHome = rHome;
+                Settings.Default.Save();
+            }
+            if (missing is not null) {
+                throw missing;
+            }
 
-        [STAThread]
-        public void Run() {
-            REngine? engine = null;
-            string? originalDir = null;
-            try {
-                NotameIonMode = GetIonMode();
-                NotameExport = GetExportFolder(ExportDirectory);
-                RPath = GetExportFolder(RDirectory);
-                REngine.SetEnvironmentVariables();
-                REngine.SetEnvironmentVariables($"{RPath}/bin/x64", RPath);
-                engine = REngine.GetInstance();
-                engine.Evaluate($@"Sys.setenv(PATH = paste('{RPath}/bin/x64', Sys.getenv('PATH'), sep=';'))");
-                
-                string[] libraries = ["BiocManager", "pcaMethods", "Biobase", "devtools", "notame", "remotes", "tinytex", "cowplot", "missForest", "ggpubr", "Cairo", "doParallel", "dplyr", "tidyr", "openxlsx", "MUVR"];
-                var check = libraries.Select(lib => new {
-                    Package = lib,
-                    IsLoaded = engine.Evaluate($"require(\"{lib}\")").AsLogical().FirstOrDefault()
-                });
-                if (check.Any(x => !x.IsLoaded)) {
-                    foreach (var item in check.Where(x => !x.IsLoaded)) {
-                        MessageBox.Show($"Some packages failed to load: {item.Package}");
+            var exportDirectory = ExportDirectory;
+            var fileName = await ExportAlignmentResultAsync(broker, exportDirectory).ConfigureAwait(false);
+            var ionMode = GetIonMode();
+            var resources = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
+
+            var publisher = new TaskProgressPublisher(broker, $"Running notame on {fileName}");
+            using (publisher.Start()) {
+                await NotameRSession.RunAsync(rHome, engine => {
+                    // Report.R changes R's working directory; it is kept in R, not passed through .NET strings.
+                    engine.Evaluate(".msdial_wd <- getwd()");
+                    try {
+                        NotameRSession.SetString(engine, "path", exportDirectory);
+                        NotameRSession.SetString(engine, "file_name", fileName);
+                        NotameRSession.SetString(engine, "ion_mod", ionMode);
+                        NotameRSession.Source(engine, Path.Combine(resources, "Notame.R"));
+                        if (exportReport) {
+                            CreateSweave(exportDirectory);
+                            NotameRSession.Source(engine, Path.Combine(resources, "Report.R"));
+                        }
                     }
-                    Packages();
-                }
-                originalDir = engine.Evaluate("getwd()").AsCharacter().First();
-                RunNotame(engine);
-                if (exportReport) {
-                    ExportReport(engine);
-                }
-                MessageBox.Show("Output files are successfully created.");
-                if (Settings.Default.RHome != RDirectory) {
-                    Settings.Default.RHome = RDirectory;
-                    Settings.Default.Save();
-                }
-            } catch (Exception ex) {
-                MessageBox.Show($"An error occurred on R: {ex.Message}");
-            } finally {
-                if (Settings.Default.RHome != RDirectory) {
-                    Settings.Default.RHome = RDirectory;
-                    Settings.Default.Save();
-                }
-                if (originalDir is not null) {
-                    engine?.Evaluate($"setwd('{originalDir.Replace(@"\", @"\\")}')");
-                }
+                    finally {
+                        engine.Evaluate("setwd(.msdial_wd)");
+                    }
+                }).ConfigureAwait(false);
             }
         }
 
-        private bool Packages() {
-            string msgtext = "There is a package which has not installed yet. Please run this scripts on your local R Studio to install packages used in Notame preprocessing.\r\n\r\n" +
-                            "###########################################\r\n\r\n" +
-                            "if (!requireNamespace('BiocManager', quietly=TRUE)){\r\n  " +
-                            "install.packages('BiocManager')}\r\n" +
-                            "BiocManager::install('pcaMethods')\r\n" +
-                            "BiocManager::install('Biobase')\r\n\r\n" +
-                            "if (!requireNamespace('devtools', quietly = TRUE)) {\r\n  " +
-                            "install.packages('devtools')}\r\n" +
-                            "devtools::install_github('antonvsdata/notame')\r\n\r\n" +
-                            "if (!requireNamespace('remotes', quietly=TRUE)){\r\n  " +
-                            "install.packages('remotes')}\r\n" +
-                            "library(remotes)\r\n" +
-                            "install_gitlab('CarlBrunius/MUVR')\r\n\r\n" +
-                            "if (!requireNamespace('tinytex', quietly=TRUE)){\r\n  " +
-                            "install.packages('tinytex')}\r\n" +
-                            "tinytex::install_tinytex()\r\n" +
-                            "tinytex::tlmgr_install('grfext')\r\n\r\n" +
-                            "required_packages <- c('doParallel', 'dplyr', 'openxlsx', 'cowplot', 'missForest', 'ggpubr', 'Cairo', 'tidyr', 'xfun')\r\n" +
-                            "packages_to_install <- required_packages[!(required_packages %in% installed.packages()[,'Package'])]\r\n\r\n" +
-                            "if(length(packages_to_install)) {\r\n  " +
-                            "install.packages(packages_to_install)}\r\n" +
-                            "lapply(required_packages, library, character.only = TRUE)\r\n\r\n" +
-                            "##########################################";
-            var result = CustomPackageDialog.ShowDialog(msgtext);
-            if (MessageBox.Show("Click OK to run Notame (packages needed to be installed)", "Notame",
-                MessageBoxButtons.OKCancel) == DialogResult.Cancel) {
-                return false;
-            } else {
-                return true;
+        private static NotamePackageException? CheckPackages(REngine engine, string rHome, bool exportReport) {
+            IEnumerable<string> packages = exportReport ? [.. _requiredPackages, "tinytex"] : _requiredPackages;
+            var oldNotameVersion = engine.Evaluate(
+                "tryCatch(if (utils::packageVersion('notame') < '0.99.0') as.character(utils::packageVersion('notame')) else '', error = function(e) '')")
+                .AsCharacter().First();
+            var missing = NotameRSession.MissingPackages(engine, packages.Where(package => package != "notame" || oldNotameVersion.Length == 0)).ToList();
+            if (oldNotameVersion.Length > 0) {
+                missing.Insert(0, "notame");
             }
+            var installTinyTex = exportReport
+                && !engine.Evaluate("nzchar(Sys.which('pdflatex')) || (requireNamespace('tinytex', quietly = TRUE) && tinytex::is_tinytex())")
+                    .AsLogical().First();
+            if (missing.Count == 0 && !installTinyTex) {
+                return null;
+            }
+            return new NotamePackageException(rHome, missing, oldNotameVersion, installTinyTex);
         }
 
-        private void RunNotame(REngine engine) {
-            string notameScriptPath = "Resources/Notame.R";
-            string notameScript = System.IO.File.ReadAllText(notameScriptPath);
-
-            engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
-            engine.SetSymbol("file_name", engine.CreateCharacter(FileName));
-            engine.SetSymbol("ion_mod", engine.CreateCharacter(NotameIonMode));
-            engine.Evaluate(notameScript);
+        private Task<string> ExportAlignmentResultAsync(IMessageBroker broker, string exportDirectory) {
+            return Task.Run(() => {
+                var alignmentFile = AlignmentFilesForExport.SelectedFile ?? throw new InvalidOperationException("Select an alignment result to process.");
+                if (ExportTypes.FirstOrDefault(type => type.ShouldExport) is not { } type) {
+                    throw new InvalidOperationException("Export type (Height, Area, ...) is not selected.");
+                }
+                var publisher = new TaskProgressPublisher(broker, $"Exporting {alignmentFile.FileName}");
+                using (publisher.Start()) {
+                    var fileName = $"{type.TargetLabel}_{((IFileBean)alignmentFile).FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+                    ExportModel.Export(alignmentFile, exportDirectory, fileName, null);
+                    return ExportMethod.Format.WithExtension(fileName);
+                }
+            });
         }
 
-        private void ExportReport(REngine engine) {
-            CreateSweave();
-            string reportScriptPath = "Resources/Report.R";
-            string reportScript = System.IO.File.ReadAllText(reportScriptPath);
-
-            engine.SetSymbol("path", engine.CreateCharacter(NotameExport));
-            engine.Evaluate(reportScript);
-        }
-
-        private void CreateSweave() {
-            string path = Path.Combine(NotameExport, "Sweave.sty");
+        private static void CreateSweave(string exportDirectory) {
+            string path = Path.Combine(exportDirectory, "Sweave.sty");
 
             string content = @"%% This is file `Sweave.sty`,
 %% generated with the docstrip utility.
@@ -244,31 +237,20 @@ namespace CompMs.App.Msdial.Model.Statistics {
             File.WriteAllText(path, content, new UTF8Encoding(false));
         }
     }
-    public class CustomPackageDialog : Form {
-        private string message;
 
-        public CustomPackageDialog(string message) {
-            this.message = message;
-            InitializeComponents();
+    /// <summary>R lacks packages the Notame workflow needs.</summary>
+    internal sealed class NotamePackageException : Exception {
+        public NotamePackageException(string rHome, IReadOnlyList<string> packages, string oldNotameVersion, bool installTinyTex)
+            : base("The Notame preprocessing needs additional packages.") {
+            RHome = rHome;
+            Packages = packages;
+            OldNotameVersion = oldNotameVersion;
+            InstallTinyTex = installTinyTex;
         }
 
-        private void InitializeComponents() {
-            this.Text = "Package Installation";
-            this.Size = new System.Drawing.Size(600, 400);
-
-            var txtMessage = new TextBox();
-            txtMessage.Multiline = true;
-            txtMessage.ReadOnly = true;
-            txtMessage.Text = message;
-            txtMessage.Dock = DockStyle.Top;
-            txtMessage.Height = 350;
-            this.Controls.Add(txtMessage);
-        }
-
-        public static DialogResult ShowDialog(string message) {
-            using (var dialog = new CustomPackageDialog(message)) {
-                return dialog.ShowDialog();
-            }
-        }
+        public string RHome { get; }
+        public IReadOnlyList<string> Packages { get; }
+        public string OldNotameVersion { get; }
+        public bool InstallTinyTex { get; }
     }
 }

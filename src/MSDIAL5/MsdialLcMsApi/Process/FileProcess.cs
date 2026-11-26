@@ -5,6 +5,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Concurrent;
@@ -58,6 +59,7 @@ public sealed class FileProcess : IFileProcessor {
             return;
         }
 
+        using var timing = StageTiming.Measure(analysisFile.AnalysisFileName, "file total");
         var provider = _factory.Create(analysisFile);
         var (chromPeakFeatures, mSDecResultCollections) = option.HasFlag(ProcessOption.PeakSpotting)
             ? FindPeakAndScans(analysisFile, provider, progress, token)
@@ -72,12 +74,16 @@ public sealed class FileProcess : IFileProcessor {
             // Hook A of the lipid RT check: this file's peaks against each other, on this file's own RT axis, after the
             // annotation and before the save, so the Console and the GUI both get it.
             token.ThrowIfCancellationRequested();
-            RunLipidRtCheck(analysisFile, chromPeakFeatures.Items);
+            using (StageTiming.Measure(analysisFile.AnalysisFileName, "lipid rt check")) {
+                RunLipidRtCheck(analysisFile, chromPeakFeatures.Items);
+            }
         }
 
         // file save
         token.ThrowIfCancellationRequested();
-        await SaveToFileAsync(analysisFile, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
+        using (StageTiming.Measure(analysisFile.AnalysisFileName, "save")) {
+            await SaveToFileAsync(analysisFile, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
+        }
         progress?.Report(100);
     }
 
@@ -98,6 +104,7 @@ public sealed class FileProcess : IFileProcessor {
     }
 
     private async Task<(ChromatogramPeakFeatureCollection, MSDecResultCollection[])> LoadPeakAndScans(AnalysisFileBean analysisFile, CancellationToken token) {
+        using var timing = StageTiming.Measure(analysisFile.AnalysisFileName, "load results");
         var peakTask = analysisFile.LoadChromatogramPeakFeatureCollectionAsync(token);
         var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(analysisFile, token));
 
@@ -111,15 +118,24 @@ public sealed class FileProcess : IFileProcessor {
         // feature detections
         token.ThrowIfCancellationRequested();
         Console.WriteLine("Peak picking started");
-        var chromPeakFeatures = _peakPickProcess.Pick(analysisFile, provider, progress, token);
+        ChromatogramPeakFeatureCollection chromPeakFeatures;
+        using (StageTiming.Measure(analysisFile.AnalysisFileName, "peak spotting")) {
+            chromPeakFeatures = _peakPickProcess.Pick(analysisFile, provider, progress, token);
+        }
 
-        var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
+        ChromatogramPeaksDataSummaryDto summaryDto;
+        using (StageTiming.Measure(analysisFile.AnalysisFileName, "peak summary")) {
+            summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
+        }
         analysisFile.ChromPeakFeaturesSummary = summaryDto;
 
         // chrom deconvolutions
         token.ThrowIfCancellationRequested();
         Console.WriteLine("Deconvolution started");
-        var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, analysisFile, summaryDto, progress, token);
+        List<MSDecResultCollection> mSDecResultCollections;
+        using (StageTiming.Measure(analysisFile.AnalysisFileName, "ms2 deconvolution")) {
+            mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, analysisFile, summaryDto, progress, token);
+        }
         return (chromPeakFeatures, mSDecResultCollections.ToArray());
     }
 
