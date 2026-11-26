@@ -347,6 +347,57 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             Assert.AreEqual(0, spots[0].AlignedPeakProperties[1].PeakID);
         }
 
+        [DataTestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void JoinerSortsTheMastersOnTheRetentionItSearches(AlignmentIndexType indexType) {
+            // Master P: MSDec RI 1000, quant top 1030. Master Q: MSDec RI 1040, quant top 1005, another spectrum.
+            // Sorted on the quant top the list is [Q, P]; the search for file 1's peak (MSDec RI 1002) would then start
+            // at Q, find it beyond the window and stop before P. Sorted on the MSDec retention it reaches P.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA, quantTopRi: 1030d),
+                    CreateFeature(scanId: 1, ri: 1040d, height: 1000d, SpectrumB, quantTopRi: 1005d),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1002d, height: 1000d, SpectrumA),
+                },
+            };
+
+            var spots = Join(data, indexType);
+
+            Assert.AreEqual(2, spots.Count);
+            var p = spots.Single(s => s.AlignedPeakProperties[0].PeakID == 0);
+            Assert.AreEqual(0, p.AlignedPeakProperties[1].PeakID, "file 1's peak joins master P");
+        }
+
+        [DataTestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void JoinerDoesNotStopItsScanOnAQuantPeakTopBeforeTheMSDecRetention(AlignmentIndexType indexType) {
+            // File 1's peak has its MSDec result at RI 1008 (within 10 of the master at RI 1000) but its quant-peak top
+            // at RI 985. A scan that stopped on the quant top (985 + 10 < 1000) would never compare the master.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1008d, height: 1000d, SpectrumA, quantTopRi: 985d),
+                },
+            };
+
+            var spots = Join(data, indexType);
+
+            Assert.AreEqual(1, spots.Count);
+            Assert.AreEqual(0, spots[0].AlignedPeakProperties[1].PeakID, "the peak joins the master");
+        }
+
         private List<AlignmentSpotProperty> Join(List<List<SpectrumFeature>> data, AlignmentIndexType indexType = AlignmentIndexType.RI) {
             var files = new List<AnalysisFileBean>();
             for (int i = 0; i < data.Count; i++) {
