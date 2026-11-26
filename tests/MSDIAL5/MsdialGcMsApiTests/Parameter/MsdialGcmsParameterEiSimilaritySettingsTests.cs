@@ -33,20 +33,22 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
         }
 
         [TestMethod]
-        public void AParameterFileSavedBeforeTheSpectrumSimilaritySettingsKeepsTheEiSettingsItAlignedWith() {
+        public void AParameterFileSavedBeforeTheSpectrumSimilaritySettingsTakesTheGcmsDefaultAndKeepsItsEiWeight() {
             var saved = MessagePackSerializer.Serialize(SavedByAnOlderGui(), Options);
             Assert.AreEqual(EiSimilarityMarkerKey + 1, new MessagePackReader(saved).ReadArrayHeader(), "the marker must be the last key for the fixture to predate it");
 
             // MsdialGcmsDataStorage.LoadParameter is what the method setting dialog's "Load parameter" reads.
             var actual = new MsdialGcmsDataStorage().LoadParameter(new MemoryStream(Truncate(saved, EiSimilarityMarkerKey)));
 
-            Assert.AreEqual(.7f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
+            // The GC-MS default, neither the 0.7 the dialog wrote into the MS1 alignment tolerance nor the unseen 0.8.
+            Assert.AreEqual(MsdialGcmsParameter.DefaultSpectrumSimilarityAlignmentTolerance, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
+            Assert.AreEqual(.5f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
             Assert.AreEqual(.6f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor);
             Assert.IsTrue(actual.AlignmentEiSimilarityIsSpectrumSimilarity);
         }
 
         [TestMethod]
-        public void AProjectSavedBeforeTheSpectrumSimilaritySettingsKeepsTheEiSettingsItAlignedWith() {
+        public void AProjectSavedBeforeTheSpectrumSimilaritySettingsTakesTheGcmsDefaultAndKeepsItsEiWeight() {
             var storage = new MsdialGcmsDataStorage { MsdialGcmsParameter = SavedByAnOlderGui(), };
             var saved = MessagePackSerializer.Serialize(storage, Options);
             var old = ReplaceElement(saved, GcmsParameterKeyInStorage, parameter => Truncate(parameter, EiSimilarityMarkerKey));
@@ -54,8 +56,28 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
             // The call MsdialGcmsDataStorage.Serializer makes for the project container.
             var actual = MessagePackDefaultHandler.LoadFromStream<MsdialGcmsDataStorage>(new MemoryStream(old)).MsdialGcmsParameter;
 
-            Assert.AreEqual(.7f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
+            Assert.AreEqual(.5f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
             Assert.AreEqual(.6f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor);
+        }
+
+        [TestMethod]
+        [DataRow(.015f)]
+        [DataRow(.5f)]
+        public void AConsoleProjectSavedBeforeTheSpectrumSimilaritySettingsTakesTheGcmsDefault(float ms1AlignmentTolerance) {
+            // A project the Console wrote from a method file with "MS1 tolerance for alignment: 0.015" (LC-MS style)
+            // or 0.5 (the earlier GC-MS template), which as a similarity threshold admitted any pair.
+            var parameter = SavedByAnOlderGui();
+            parameter.AlignmentBaseParam.Ms1AlignmentTolerance = ms1AlignmentTolerance;
+            parameter.AlignmentBaseParam.Ms1AlignmentFactor = .5f;
+            var storage = new MsdialGcmsDataStorage { MsdialGcmsParameter = parameter, };
+            var saved = MessagePackSerializer.Serialize(storage, Options);
+            var old = ReplaceElement(saved, GcmsParameterKeyInStorage, element => Truncate(element, EiSimilarityMarkerKey));
+
+            var actual = MessagePackDefaultHandler.LoadFromStream<MsdialGcmsDataStorage>(new MemoryStream(old)).MsdialGcmsParameter;
+
+            Assert.AreEqual(.5f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
+            Assert.AreEqual(.5f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor);
+            Assert.AreEqual(ms1AlignmentTolerance, actual.AlignmentBaseParam.Ms1AlignmentTolerance, "the MS1 alignment settings are left as they were");
         }
 
         [TestMethod]

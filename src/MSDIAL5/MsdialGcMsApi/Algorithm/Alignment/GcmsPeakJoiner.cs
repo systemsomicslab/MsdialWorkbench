@@ -141,22 +141,20 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
 
     /// <remarks>
     /// Retention and spectrum are judged separately: two features are similar when they are within
-    /// the retention tolerance and their EI spectra match. The spectra match when the integrated EI
-    /// similarity exceeds the spectrum similarity tolerance, or when the dot-product cutoffs of
-    /// <see cref="_msMatchParam"/> pass (weighted and simple 0.6, reverse 0.8, matched peaks 25% and
-    /// at least 3); a pair that passes those cutoffs has an integrated similarity of at least 0.608,
-    /// so that clause adds nothing at a tolerance of 0.6 or below. The total score only chooses the
-    /// best master (<see cref="GetSimilality"/>). Two spectra of one compound in two files of a
-    /// GC-MS run commonly score 0.6-0.75 on the integrated similarity, because every small peak
-    /// present in one spectrum lowers the matched-peaks term, so a tolerance of 0.7 or more splits
-    /// most compounds; the GC-MS default is 0.5.
+    /// the retention tolerance and their integrated EI similarity exceeds the spectrum similarity
+    /// tolerance, and only then. <see cref="MsScanMatchResult.IsSpectrumMatch"/>, which the
+    /// comparison also sets when the fixed dot-product cutoffs of <see cref="_msMatchParam"/> pass,
+    /// is not read: those cutoffs are not settings, and a pair that passes them has an integrated
+    /// similarity of at least 0.608, so with them any tolerance above that was not binding. The total
+    /// score only chooses the best master (<see cref="GetSimilality"/>). Two spectra of one compound
+    /// in two files of a GC-MS run commonly score 0.6-0.75 on the integrated similarity, because
+    /// every small peak present in one spectrum lowers the matched-peaks term, so a tolerance of 0.7
+    /// or more splits most compounds; the GC-MS default is 0.5.
     /// </remarks>
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.SpectrumSimilarityAlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
-            _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = CompareSpectra(x, y);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
-        return result.IsSpectrumMatch && isRetentionMatch;
+        return isRetentionMatch && MsScanMatching.GetIntegratedSpectraSimilarity(result) > _alignmentParameter.SpectrumSimilarityAlignmentTolerance;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {

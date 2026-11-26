@@ -242,17 +242,22 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         [TestMethod]
         [DataRow(AlignmentIndexType.RI)]
         [DataRow(AlignmentIndexType.RT)]
-        public void TheDotProductCutoffsStillGrantAMatchBelowAHighTolerance(AlignmentIndexType indexType) {
-            // SpectrumA's peaks with other intensities pass the default dot-product cutoffs, which grant
-            // the spectrum match whatever the tolerance; such a pair has an integrated EI similarity of
-            // at least 0.608, so the clause matters only above that.
+        public void TheDotProductCutoffsDoNotGrantAMatchBelowTheTolerance(AlignmentIndexType indexType) {
+            // SpectrumA's peaks with other intensities pass the fixed dot-product cutoffs, which set
+            // IsSpectrumMatch whatever the tolerance. The joiner reads only the integrated EI similarity
+            // (about 0.92 here), so at a tolerance of 0.95 the two stay apart; with the cutoffs OR'ed in they joined.
             var parameter = new MsRefSearchParameterBase { Ms1Tolerance = .5f, Ms2Tolerance = .5f, MassRangeBegin = 0, MassRangeEnd = 2000, };
             var a = CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA).AnnotatedMSDecResult.MSDecResult;
             var b = CreateFeature(scanId: 0, ri: 1002d, height: 1000d, SpectrumAReweighed).AnnotatedMSDecResult.MSDecResult;
             var premise = MsScanMatching.CompareEIMSScanProperties(a, b, parameter, rtTol: .1, riTol: RiTolerance, eiFactor: .5, riFactor: .5, isUseRetentionIndex: indexType == AlignmentIndexType.RI);
             var ei = MsScanMatching.GetIntegratedSpectraSimilarity(premise);
             Assert.IsTrue(premise.IsSpectrumMatch, $"the dot-product cutoffs pass: weighted {premise.WeightedDotProduct}, simple {premise.SimpleDotProduct}, reverse {premise.ReverseDotProduct}, matched {premise.MatchedPeaksPercentage} / {premise.MatchedPeaksCount}");
-            Assert.IsTrue(ei < .99, $"integrated EI similarity {ei}");
+            Assert.IsTrue(ei < .95, $"integrated EI similarity {ei}");
+            var selfA = MsScanMatching.GetIntegratedSpectraSimilarity(MsScanMatching.CompareEIMSScanProperties(a, a, parameter, rtTol: .1, riTol: RiTolerance, eiFactor: .5, riFactor: .5, isUseRetentionIndex: indexType == AlignmentIndexType.RI));
+            var selfB = MsScanMatching.GetIntegratedSpectraSimilarity(MsScanMatching.CompareEIMSScanProperties(b, b, parameter, rtTol: .1, riTol: RiTolerance, eiFactor: .5, riFactor: .5, isUseRetentionIndex: indexType == AlignmentIndexType.RI));
+            // A spectrum compared with itself scores below 1 on the integrated similarity (about 0.99 and 0.97 here),
+            // so each feature still joins its own master at 0.95.
+            Assert.IsTrue(selfA > .95 && selfB > .95, $"self-similarity {selfA}, {selfB}");
             var data = new List<List<SpectrumFeature>>
             {
                 new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
@@ -260,11 +265,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             };
 
             var spots = Join(data, indexType, p => {
-                p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .99f;
+                p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .95f;
             });
 
-            Assert.AreEqual(1, spots.Count);
-            Assert.IsTrue(spots[0].AlignedPeakProperties.All(p => p.MasterPeakID >= 0));
+            Assert.AreEqual(2, spots.Count);
+            Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 1));
         }
 
         [TestMethod]

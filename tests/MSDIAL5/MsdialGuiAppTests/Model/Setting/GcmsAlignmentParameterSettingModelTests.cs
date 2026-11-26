@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
         }
 
         [TestMethod()]
-        public void LoadingAParameterFileSavedByAnOlderVersionShowsTheEiSettingsItAlignedWith() {
+        public void LoadingAParameterFileSavedByAnOlderVersionShowsTheGcmsDefaultAndItsEiWeight() {
             // An older version wrote the dialog's "EI similarity tolerance / factor" into the MS1 alignment
             // settings and had no key 157 in MsdialGcmsParameter.
             var older = new MsdialGcmsParameter();
@@ -76,7 +76,8 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
 
             model.LoadParameter(loaded);
 
-            Assert.AreEqual(.7f, model.EiEqualityParameter.Tolerance);
+            // The GC-MS default threshold, not the 0.7 the older dialog wrote; the EI weight it wrote is kept.
+            Assert.AreEqual(.5f, model.EiEqualityParameter.Tolerance);
             Assert.AreEqual(.6f, model.EiEqualityParameter.Factor);
         }
 

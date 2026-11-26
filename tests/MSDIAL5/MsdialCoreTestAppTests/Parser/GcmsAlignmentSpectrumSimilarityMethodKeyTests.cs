@@ -1,8 +1,10 @@
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.MsdialGcMsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace MsdialCoreTestAppTests.Parser;
@@ -62,6 +64,82 @@ public sealed class GcmsAlignmentSpectrumSimilarityMethodKeyTests
         Assert.AreEqual(0.5f, parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
         Assert.AreEqual(0.5f, parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor);
         Assert.AreEqual(0.015f, parameter.AlignmentBaseParam.Ms1AlignmentTolerance);
+    }
+
+    [TestMethod]
+    public void AGcmsMethodFileWritingTheMs1AlignmentKeysIsToldTheyAreNotUsed()
+    {
+        // The Kovats method file of MS-DIAL Interactive, among others, still writes both.
+        var template = MethodFileTemplate.Create(MethodFileMode.Gcms)
+            + "\nMS1 tolerance for alignment: 0.015\nMS1 factor for alignment: 0.5\n";
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", template);
+
+        var output = ReadCapturingConsole(methodFile);
+
+        var record = Record(methodFile);
+        var overridden = record["overridden"]!.Select(entry => (string)entry["key"]!).ToList();
+        var applied = record["applied"]!.Select(entry => (string)entry!).ToList();
+        CollectionAssert.Contains(overridden, "MS1 tolerance for alignment");
+        CollectionAssert.Contains(overridden, "MS1 factor for alignment");
+        CollectionAssert.DoesNotContain(applied, "MS1 tolerance for alignment");
+        CollectionAssert.DoesNotContain(applied, "MS1 factor for alignment");
+        StringAssert.Contains(output, "'MS1 tolerance for alignment: 0.015' is not used: GC-MS alignment does not read it");
+        StringAssert.Contains(output, "'MS1 factor for alignment: 0.5' is not used: GC-MS alignment does not read it");
+    }
+
+    [TestMethod]
+    public void TheMs1AlignmentToleranceStaysAppliedWhileIsotopeLabelsAreTracked()
+    {
+        // Isotope label tracking reads "MS1 tolerance for alignment" as its m/z tolerance.
+        var template = MethodFileTemplate.Create(MethodFileMode.Gcms)
+            + "\nMS1 tolerance for alignment: 0.015\nMS1 factor for alignment: 0.5\nTracking isotope label: True\n";
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", template);
+
+        var output = ReadCapturingConsole(methodFile);
+
+        var record = Record(methodFile);
+        var overridden = record["overridden"]!.Select(entry => (string)entry["key"]!).ToList();
+        var applied = record["applied"]!.Select(entry => (string)entry!).ToList();
+        CollectionAssert.Contains(applied, "MS1 tolerance for alignment");
+        CollectionAssert.DoesNotContain(overridden, "MS1 tolerance for alignment");
+        CollectionAssert.Contains(overridden, "MS1 factor for alignment");
+        Assert.IsFalse(output.Contains("'MS1 tolerance for alignment: 0.015' is not used"), output);
+    }
+
+    [TestMethod]
+    public void AGcmsMethodFileWithoutTheMs1AlignmentKeysIsToldNothingAboutThem()
+    {
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", MethodFileTemplate.Create(MethodFileMode.Gcms));
+
+        var output = ReadCapturingConsole(methodFile);
+
+        Assert.AreEqual(0, Record(methodFile)["overridden"]!.Count());
+        Assert.IsFalse(output.Contains("MS1 tolerance for alignment"), output);
+        Assert.IsFalse(output.Contains("MS1 factor for alignment"), output);
+    }
+
+    private static string ReadCapturingConsole(string methodFile)
+    {
+        var original = Console.Out;
+        using var writer = new StringWriter();
+        Console.SetOut(writer);
+        try
+        {
+            ConfigParser.ReadForGcms(methodFile);
+        }
+        finally
+        {
+            Console.SetOut(original);
+        }
+        return writer.ToString();
+    }
+
+    private static JObject Record(string methodFile)
+    {
+        return JObject.Parse(File.ReadAllText(Path.Combine(Path.GetDirectoryName(methodFile)!, "method.keys.json")));
     }
 
     private static string ReplaceOnce(string text, string oldValue, string newValue)

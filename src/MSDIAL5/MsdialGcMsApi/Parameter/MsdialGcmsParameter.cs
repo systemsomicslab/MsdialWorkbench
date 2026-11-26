@@ -53,9 +53,11 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         /// while the spectrum similarity settings kept a default nobody saw. A file written then has no element
         /// for this key; the member has no initializer and no constructor sets it, so it reads false whether
         /// MessagePack leaves an absent member alone or sets it to default(T). <see cref="OnAfterDeserialize"/>
-        /// then moves the settings that file aligned with into the spectrum similarity settings, so that the
-        /// dialog shows them and the next alignment uses them. A project the Console wrote from a method file
-        /// with "MS1 tolerance for alignment: 0.015" therefore keeps 0.015, which admits any pair, as it did.
+        /// then gives the file the GC-MS default threshold, <see cref="DefaultSpectrumSimilarityAlignmentTolerance"/>,
+        /// whatever Ms1AlignmentTolerance held: 0.7 from the dialog fragments the alignment, and 0.015 or 0.5 from
+        /// a method file admits any pair within the retention window. The EI weight the file aligned with,
+        /// Ms1AlignmentFactor, is carried into the spectrum similarity factor, so the dialog shows it and the next
+        /// alignment uses it.
         /// </remarks>
         [Key(157)]
         public bool AlignmentEiSimilarityIsSpectrumSimilarity { get; set; }
@@ -66,7 +68,7 @@ namespace CompMs.MsdialGcMsApi.Parameter {
 
         void IMessagePackSerializationCallbackReceiver.OnAfterDeserialize() {
             if (!AlignmentEiSimilarityIsSpectrumSimilarity) {
-                AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = AlignmentBaseParam.Ms1AlignmentTolerance;
+                AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = DefaultSpectrumSimilarityAlignmentTolerance;
                 AlignmentBaseParam.SpectrumSimilarityAlignmentFactor = AlignmentBaseParam.Ms1AlignmentFactor;
                 AlignmentEiSimilarityIsSpectrumSimilarity = true;
             }
