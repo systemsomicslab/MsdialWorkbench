@@ -33,7 +33,31 @@ public abstract class GcmsGapFiller : IGapFiller
 
     public bool NeedsGapFill(AlignmentSpotProperty spot, AnalysisFileBean analysisFile) {
         var peak = spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId);
-        return peak.Mass != spot.QuantMass;
+        return NeedsGapFill(peak, spot.QuantMass, _parameter.PeakPickBaseParam.CentroidMs1Tolerance);
+    }
+
+    /// <summary>
+    /// Whether a file's peak of a spot has to be (re-)extracted at the spot's quant mass.
+    /// A file with no peak joined to the spot is always gap filled. A detected peak is re-extracted
+    /// only when it was quantified on another ion, that is when its quant mass lies farther than
+    /// <paramref name="massTolerance"/> (the MS1 centroid tolerance) from the spot's quant mass.
+    /// Within that distance the peak's own ion lies inside the m/z window the re-extraction would use
+    /// (<see cref="GetPeaks"/>), so the detected peak is kept as quantified.
+    /// </summary>
+    /// <remarks>
+    /// The spot's quant mass is the average of the voted peaks' masses (<see cref="GcmsPeakJoiner"/>),
+    /// so with accurate-mass data it almost never equals any file's mass exactly; an exact comparison
+    /// re-extracted nearly every detected peak and re-picked its apex, and a detected peak could come
+    /// back with height 0 while still counted as detected. For nominal data the Console and the GUI set
+    /// the tolerance to 0.5: whole-number masses compare as before, and masses recorded in finer steps
+    /// (103.9 and 104.0 voted into 103.95) count as the same nominal ion. A distance equal to the
+    /// tolerance counts as the same ion, as in the quant-mass check of <see cref="GcmsPeakJoiner"/>.
+    /// </remarks>
+    private static bool NeedsGapFill(AlignmentChromPeakFeature peak, double quantMass, double massTolerance) {
+        if (peak.MasterPeakID < 0) {
+            return true;
+        }
+        return Math.Abs(peak.Mass - quantMass) > massTolerance;
     }
 
     public void GapFill(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
