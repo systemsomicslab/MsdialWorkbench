@@ -9,6 +9,11 @@
     <Configurations>Debug;Release;Debug vendor unsupported;Release vendor unsupported</Configurations>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <!-- Peak spotting, deconvolution and annotation allocate heavily on all cores. The workstation collector
+         collects often and on one thread while every other thread waits; the server collector keeps a heap and
+         a collection thread per core, so it collects less often and in parallel. Results are unaffected.
+         App.config sets gcServer for the .NET Framework builds. -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
   </PropertyGroup>
   <PropertyGroup>
     <HighEntropyVA>false</HighEntropyVA>

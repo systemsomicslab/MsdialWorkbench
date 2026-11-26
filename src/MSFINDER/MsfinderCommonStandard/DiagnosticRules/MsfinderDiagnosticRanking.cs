@@ -136,8 +136,24 @@ namespace Riken.Metabolomics.MsfinderCommon.DiagnosticRules
         public IReadOnlyList<string> FiredMotifs { get; }
         public IReadOnlyList<string> VetoMotifs { get; }
 
+        /// <summary>The display-only agreement of each candidate of <see cref="Ranked"/> (same order), or null when it
+        /// was not computed.</summary>
+        public IReadOnlyList<CandidateRuleAgreement> Agreements { get; private set; }
+
         /// <summary>The candidates in ranked order.</summary>
         public List<FragmenterResult> Candidates() => Ranked.Select(r => r.Candidate).ToList();
+
+        /// <summary>This ranking with the agreement of each candidate of <see cref="Ranked"/> (same order and count).</summary>
+        public DiagnosticRanking WithAgreements(IReadOnlyList<CandidateRuleAgreement> agreements) {
+            if (agreements != null && agreements.Count != Ranked.Count) {
+                throw new ArgumentException("one agreement per ranked candidate", nameof(agreements));
+            }
+            return new DiagnosticRanking(Status, Ranked, FiredMotifs, VetoMotifs) { Agreements = agreements };
+        }
+
+        /// <summary>The agreement of the i-th ranked candidate; <see cref="CandidateRuleAgreement.None"/> when none was
+        /// computed.</summary>
+        public CandidateRuleAgreement AgreementAt(int i) => Agreements != null && i < Agreements.Count ? Agreements[i] : CandidateRuleAgreement.None;
     }
 
     /// <summary>

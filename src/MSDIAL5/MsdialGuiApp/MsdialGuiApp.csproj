@@ -117,6 +117,7 @@
 	  <EmbeddedResource Include="Resources\Notame.R">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </EmbeddedResource>
+	  <EmbeddedResource Include="Resources\InstallNotamePackages.R" LogicalName="NotamePackageInstall.R" />
 	  <EmbeddedResource Include="Resources\SplashLipids.xml" />
 	</ItemGroup>
 	<ItemGroup>

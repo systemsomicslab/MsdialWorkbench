@@ -30,7 +30,9 @@
                           Style="{StaticResource OverlapChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Save image as...">
+                    <MenuItem Header="Copy spectrum as table" Command="{Binding CopyAsTableCommand}"/>
+                <MenuItem Header="Save spectrum as table" Command="{Binding SaveAsTableCommand}"/>
+                <MenuItem Header="Save image as...">
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>

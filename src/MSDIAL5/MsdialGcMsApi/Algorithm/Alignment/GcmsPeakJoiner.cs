@@ -368,7 +368,8 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
             MergeChromatogramPeaks(master, target);
         }
 
-        return master.Values.SelectMany(props => props).ToList();
+        // AlignPeaksToMaster binary-searches this list on (RI, Mass), so it must be sorted on that key.
+        return master.Values.SelectMany(props => props).OrderBy(prop => (prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
     }
 
     private void MergeChromatogramPeaks(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
@@ -425,7 +426,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
                 var factor = GetSimilality(masters[i], target);
                 if (factor > maxMatchs[i] && factor > matchFactor) {
                     matchIdx = i;
-                    matchFactor = factor;
+                    maxMatchs[i] = matchFactor = factor;
                 }
             }
             if (matchIdx.HasValue) {

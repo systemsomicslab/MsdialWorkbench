@@ -59,11 +59,11 @@ namespace CompMs.App.Msdial.ViewModel.Gcms
                         parameter.RelativeAmpCutoff.ToUnit(),
                         parameter.TotalScoreCutoff.ToUnit(),
                         parameter.IsUseTimeForAnnotationScoring.ToUnit(),
-                        SearchCommand.ToUnit(),
                     }.Merge()
                     .StartWith(Unit.Default)
                     .Throttle(TimeSpan.FromSeconds(.2)))
                 .Switch()
+                .Merge(SearchCommand.ToUnit())
                 .Where(_ => !_parameterHasErrors.Value)
                 .Select(_ => Observable.FromAsync(model.SearchAsync)).Switch()
                 .Subscribe().AddTo(Disposables);

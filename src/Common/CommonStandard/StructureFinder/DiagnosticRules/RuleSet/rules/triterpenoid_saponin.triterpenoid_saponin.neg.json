@@ -1,5 +1,5 @@
 {
- "author_reviewed": false,
+ "author_reviewed": true,
  "calibrated_on": [
   "Orbitrap/FT",
   "other"
@@ -123,7 +123,26 @@
  },
  "primary_precondition_mode": "adduct_ambiguous",
  "product_tolerance": "p2",
- "review": null,
+ "review": {
+  "at": "2026-11-24",
+  "basis": "benchmark",
+  "by": "author",
+  "instrument_classes": [
+   "Orbitrap/FT",
+   "QTOF-type",
+   "other"
+  ],
+  "precursor_tolerance_da": 0.01,
+  "product_tolerance": {
+   "abs_da": 0.005,
+   "ppm": 10.0,
+   "source": "p2"
+  },
+  "review_proposal_sha256": "c356597c09e0e8b386eec89856b43da9b82b143ae7cd8fbceea10a07afc85369",
+  "rule_semantic_sha256": "b0b2fc1dd8ec2292bd955988faa5d6e7eab371527bd132e53fad75b947147051",
+  "rules_precision_sha256": "156dc642a2acca2e160c956ce51bd038a9190d340b8b3e5935fa58bdb909940b",
+  "run_id": "p3cs-20261124-5a8fc37a"
+ },
  "rule_id": "triterpenoid_saponin.triterpenoid_saponin.neg",
  "source": [
   {
