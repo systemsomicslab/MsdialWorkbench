@@ -724,10 +724,9 @@ public sealed class LcmsProcess
         }
         else if (isProjectSaved) {
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
-            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
-            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
-            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
-            streamManager.Complete();
+            if (!await CommonProcess.SaveProjectAsync(projectDataStorage).ConfigureAwait(false)) {
+                return -1;
+            }
         }
 
         return 0;
