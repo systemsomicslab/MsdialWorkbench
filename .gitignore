@@ -242,3 +242,6 @@ Assemblies/*.dll
 
 # Diagnostic-rule benchmark outputs derived from a VS21 library stay local (named by the diagrules tool and scripts)
 *.local-vs21.*
+
+# Local working specs and plans (see docs/agents/issue-tracker.md)
+docs/specs/
