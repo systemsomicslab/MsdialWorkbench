@@ -91,13 +91,70 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         }
 
         [TestMethod()]
-        public void GapFillDoesNotCenterLaterFilesOnAPeakWhoseReextractionFoundNothing() {
+        public void GapFillKeepsTheRetentionOfAJoinedPeakWhoseReextractionFoundNothing() {
             var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
             var (spot, representative, target, missing) = CreateSpot();
 
-            // No chromatogram: the peak is reset to RT and RI -1.
+            // No chromatogram: the peak keeps its own retention at height 0, as MS-DIAL 4 set it, and later files are
+            // still centered on it.
             filler.GapFill(null, null, null, spot, fileID: target.FileID);
-            Assert.AreEqual(-1d, target.ChromXsTop.RT.Value);
+            Assert.AreEqual(1.0d, target.ChromXsTop.RT.Value, 1e-9);
+            Assert.AreEqual(ChromXType.RT, target.ChromXsTop.MainType);
+            Assert.AreEqual(0d, target.PeakHeightTop);
+            Assert.AreEqual(0d, target.PeakAreaAboveZero);
+            Assert.AreEqual(-2, target.PeakID);
+            filler.GapFill(null, null, null, spot, fileID: missing.FileID);
+
+            CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastCenterPeaks);
+            CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastWidthPeaks);
+        }
+
+        [TestMethod()]
+        public void GapFillStillResetsAGapCellWhoseReextractionFoundNothing() {
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
+            var (spot, _, _, missing) = CreateSpot();
+
+            filler.GapFill(null, null, null, spot, fileID: missing.FileID);
+
+            Assert.AreEqual(-1d, missing.ChromXsTop.RT.Value);
+            Assert.IsTrue(missing.PeakID < 0);
+        }
+
+        [TestMethod()]
+        public void WithoutForcingARepresentativeWhoseReextractionFindsNoApexKeepsItsRetention() {
+            // Not forced, and no apex at the spot's quant mass in the representative's file. The representative stays
+            // detected (the spot takes its name and spectrum from it) at height 0. It keeps its retention, so the spot's
+            // average retention is not pulled toward -1 and its main axis stays RT.
+            var parameter = new MsdialGcmsParameter { IsForceInsertForGapFilling = false, RetentionTimeAlignmentTolerance = 0.075f, };
+            var filler = new SyntheticRtGapFiller(parameter, fileWithoutIon: 0);
+            var peaks = Enumerable.Range(0, 3).Select(fileID => new AlignmentChromPeakFeature {
+                FileID = fileID,
+                MasterPeakID = fileID,
+                PeakID = fileID,
+                Mass = fileID == 0 ? 217.0d : 73.0d,
+                PeakHeightTop = 500d,
+                ChromXsLeft = new ChromXs(9.95d, ChromXType.RT, ChromXUnit.Min),
+                ChromXsTop = new ChromXs(10.0d, ChromXType.RT, ChromXUnit.Min),
+                ChromXsRight = new ChromXs(10.05d, ChromXType.RT, ChromXUnit.Min),
+            }).ToList();
+            var spot = new AlignmentSpotProperty { QuantMass = 73.0d, RepresentativeFileID = 0, AlignedPeakProperties = peaks, };
+
+            filler.GapFill(null, null, null, spot, fileID: 0);
+
+            Assert.AreEqual(0, peaks[0].PeakID);
+            Assert.AreEqual(0d, peaks[0].PeakHeightTop);
+            Assert.AreEqual(10.0d, peaks[0].ChromXsTop.RT.Value, 1e-9);
+            Assert.AreEqual(ChromXType.RT, peaks[0].ChromXsTop.MainType);
+        }
+
+        [TestMethod()]
+        public void GapFillDoesNotCenterLaterFilesOnAPeakWithoutAPosition() {
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
+            var (spot, representative, target, missing) = CreateSpot();
+            // As read back from an alignment saved by an earlier version, which reset such a peak to RT -1.
+            target.PeakID = -2;
+            target.ChromXsLeft = target.ChromXsTop = target.ChromXsRight = new ChromXs(0d, ChromXType.Mz, ChromXUnit.Mz);
+
             filler.GapFill(null, null, null, spot, fileID: missing.FileID);
 
             CollectionAssert.AreEquivalent(new[] { representative, }, filler.LastCenterPeaks);
@@ -108,9 +165,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         public void GapFillCentersOnEveryJoinedPeakWhenNoneHasAPosition() {
             var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
             var (spot, representative, target, missing) = CreateSpot();
+            foreach (var peak in new[] { representative, target, }) {
+                peak.ChromXsLeft = peak.ChromXsTop = peak.ChromXsRight = new ChromXs(0d, ChromXType.Mz, ChromXUnit.Mz);
+            }
 
-            filler.GapFill(null, null, null, spot, fileID: representative.FileID);
-            filler.GapFill(null, null, null, spot, fileID: target.FileID);
             filler.GapFill(null, null, null, spot, fileID: missing.FileID);
 
             CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastCenterPeaks);
