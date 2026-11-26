@@ -43,8 +43,9 @@ public abstract class GcmsGapFiller : IGapFiller
         var target = peaks.First(peak => peak?.FileID == fileID);
         target.PeakShape.EstimatedNoise = GetEstimatedNoise(joined);
 
-        var chromXCenter = GetCenter(spot, joined);
-        var peakWidth = GetPeakWidth(joined);
+        var located = GetLocatedPeaks(joined);
+        var chromXCenter = GetCenter(spot, located);
+        var peakWidth = GetPeakWidth(located);
         var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
         target.Mass = spot.QuantMass;
         GapFillCore(peaklist, chromXCenter, AxTol, target);
@@ -57,8 +58,9 @@ public abstract class GcmsGapFiller : IGapFiller
 
         var target = peaks.First(peak => peak?.FileID == fileID);
 
-        var chromXCenter = GetCenter(spot, joined);
-        var peakWidth = GetPeakWidth(joined);
+        var located = GetLocatedPeaks(joined);
+        var chromXCenter = GetCenter(spot, located);
+        var peakWidth = GetPeakWidth(located);
         var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
         target.Mass = spot.QuantMass;
         GapFillCore(peaklist, chromXCenter, AxTol, target);
@@ -73,6 +75,18 @@ public abstract class GcmsGapFiller : IGapFiller
     /// </summary>
     private static AlignmentChromPeakFeature[] GetJoinedPeaks(IEnumerable<AlignmentChromPeakFeature> peaks) {
         return peaks.Where(peak => peak.MasterPeakID >= 0).ToArray();
+    }
+
+    /// <summary>
+    /// The joined peaks that the center and width are taken from: those that still have a position. A peak whose
+    /// re-extraction found no peak (an empty chromatogram, or, when gap filling is not forced, no local maximum near
+    /// the center) was reset to RT and RI -1 (<see cref="SetDefaultValueToAlignmentChromPeakFeature"/>). Averaged in,
+    /// it would pull the center away from every other file, so that the files re-extracted after it could miss their
+    /// peak and be reset in turn. When no joined peak has a position, all of them are used, as before.
+    /// </summary>
+    private static AlignmentChromPeakFeature[] GetLocatedPeaks(AlignmentChromPeakFeature[] joined) {
+        var located = joined.Where(peak => peak.ChromXsTop.RT.Value >= 0).ToArray();
+        return located.Length > 0 ? located : joined;
     }
 
     /// <summary>
