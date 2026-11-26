@@ -64,7 +64,9 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         using var timing = StageTiming.Measure(null, "alignment reset quant masses");
         var loaders = analysisFiles.ToDictionary(f => f.AnalysisFileId, f => new MSDecLoader(f.DeconvolutionFilePath, f.DeconvolutionFilePathList));
         try {
-            spots = JoinSpotsSplitByRetentionDrift(spots, master, loaders);
+            if (_parameter.JoinSpotsSplitByRetentionDrift && _parameter.SplitSpotJoinWindow > 0) {
+                spots = JoinSpotsSplitByRetentionDrift(spots, master, loaders);
+            }
             return ResetQuantMasses(spots, loaders);
         }
         finally {
@@ -100,8 +102,8 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     /// Two spots are joined when all of these hold:
     /// their masters are more than the retention tolerance apart, so that retention, not spectrum,
     /// is what kept the joiner from putting their features together; their centres (the mean
-    /// retention of their detected peaks) are within twice the retention tolerance; no file has a
-    /// detected peak in both, so that no file's peak is dropped; the EI
+    /// retention of their detected peaks) are within <see cref="MsdialGcmsParameter.SplitSpotJoinWindow"/>
+    /// times the retention tolerance (2 by default); no file has a detected peak in both, so that no file's peak is dropped; the EI
     /// spectra of their representative peaks pass the dot-product cutoffs the joiner's comparison
     /// carries (weighted and simple 0.6, reverse 0.8, matched peaks 25% and at least 3); each is the
     /// other's best such match by the integrated EI similarity; and their masters are not matched to
@@ -123,7 +125,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     /// </para>
     /// </remarks>
     private List<AlignmentSpotProperty> JoinSpotsSplitByRetentionDrift(List<AlignmentSpotProperty> spots, List<SpectrumFeature> masters, Dictionary<int, MSDecLoader> loaders) {
-        var window = 2d * RetentionTolerance;
+        var window = _parameter.SplitSpotJoinWindow * RetentionTolerance;
         var alive = spots.Select((spot, i) => (Spot: spot, Master: masters[i])).ToList();
         var loaded = new Dictionary<(int File, int Id), MSDecResult>();
         MSDecResult? Representative(List<AlignmentChromPeakFeature> detected) {

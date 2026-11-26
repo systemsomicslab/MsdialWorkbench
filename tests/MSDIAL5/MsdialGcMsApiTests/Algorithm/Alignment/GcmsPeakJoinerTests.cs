@@ -248,6 +248,43 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         [TestMethod]
         [DataRow(AlignmentIndexType.RI)]
         [DataRow(AlignmentIndexType.RT)]
+        public void SpotsSplitByRetentionDriftAreLeftApartWhenTheJoinIsOff(AlignmentIndexType indexType) {
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 1000d, SpectrumA), },
+            };
+
+            var spots = Join(data, indexType, p => p.JoinSpotsSplitByRetentionDrift = false);
+
+            Assert.AreEqual(2, spots.Count);
+            Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 1));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI, 2f, 2)]
+        [DataRow(AlignmentIndexType.RI, 3f, 1)]
+        [DataRow(AlignmentIndexType.RI, 0f, 2)]
+        [DataRow(AlignmentIndexType.RT, 2f, 2)]
+        [DataRow(AlignmentIndexType.RT, 3f, 1)]
+        [DataRow(AlignmentIndexType.RT, 0f, 2)]
+        public void TheJoinWindowIsInMultiplesOfTheRetentionTolerance(AlignmentIndexType indexType, float window, int expectedSpots) {
+            // 25 RI units (0.25 min) apart, 2.5 retention tolerances: beyond a window of 2, within one of 3.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1025d, height: 1000d, SpectrumA), },
+            };
+
+            var spots = Join(data, indexType, p => p.SplitSpotJoinWindow = window);
+
+            Assert.AreEqual(expectedSpots, spots.Count);
+            Assert.AreEqual(2, spots.Sum(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0)), "no detected peak is lost either way");
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
         public void ACompoundSplitThreeWaysIsJoinedIntoOneSpot(AlignmentIndexType indexType) {
             // Each file 12 RI units (0.12 min) later than the one before: three masters, joined in two
             // rounds (the first two spots, then their joined spot, centred at 1006, with the third).

@@ -35,7 +35,7 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
         [TestMethod]
         public void AParameterFileSavedBeforeTheSpectrumSimilaritySettingsTakesTheGcmsDefaultAndKeepsItsEiWeight() {
             var saved = MessagePackSerializer.Serialize(SavedByAnOlderGui(), Options);
-            Assert.AreEqual(EiSimilarityMarkerKey + 1, new MessagePackReader(saved).ReadArrayHeader(), "the marker must be the last key for the fixture to predate it");
+            Assert.IsTrue(new MessagePackReader(saved).ReadArrayHeader() > EiSimilarityMarkerKey, "the truncation below must drop the marker, and every key after it");
 
             // MsdialGcmsDataStorage.LoadParameter is what the method setting dialog's "Load parameter" reads.
             var actual = new MsdialGcmsDataStorage().LoadParameter(new MemoryStream(Truncate(saved, EiSimilarityMarkerKey)));

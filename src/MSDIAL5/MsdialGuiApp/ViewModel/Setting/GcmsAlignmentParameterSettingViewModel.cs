@@ -74,6 +74,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ).AddTo(Disposables);
             IsIdentificationOnlyPerformedForAlignmentFile = model.ToReactivePropertySlimAsSynchronized(m => m.IsIdentificationOnlyPerformedForAlignmentFile).AddTo(Disposables);
             IsRepresentativeQuantMassBasedOnBasePeakMz = model.ToReactivePropertySlimAsSynchronized(m => m.IsRepresentativeQuantMassBasedOnBasePeakMz).AddTo(Disposables);
+            JoinSpotsSplitByRetentionDrift = model.ToReactivePropertySlimAsSynchronized(m => m.JoinSpotsSplitByRetentionDrift).AddTo(Disposables);
+            SplitSpotJoinWindow = model.ToReactivePropertyAsSynchronized(
+                m => m.SplitSpotJoinWindow,
+                m => m.ToString(),
+                vm => float.Parse(vm),
+                ignoreValidationErrorValue: true)
+                .SetValidateAttribute(() => SplitSpotJoinWindow)
+                .AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -86,6 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 EiEqualityParameterSetting?.ObserveHasErrors ?? Observable.Return(false),
                 PeakCountFilter.ObserveHasErrors,
                 FoldChangeForBlankFiltering.ObserveHasErrors,
+                SplitSpotJoinWindow.ObserveHasErrors,
             }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -105,6 +114,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 IsKeepRemovableFeaturesAndAssignedTagForChecking.ToUnit(),
                 IsForceInsertForGapFilling.ToUnit(),
                 UseRefMatchedPeaksOnly.ToUnit(),
+                JoinSpotsSplitByRetentionDrift.ToUnit(),
+                SplitSpotJoinWindow.ToUnit(),
             }.Merge();
 
             _decide = new Subject<Unit>().AddTo(Disposables);
@@ -160,6 +171,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> UseRefMatchedPeaksOnly { get; }
         public ReactivePropertySlim<bool> IsIdentificationOnlyPerformedForAlignmentFile { get; }
         public ReactivePropertySlim<bool> IsRepresentativeQuantMassBasedOnBasePeakMz { get; }
+        public ReactivePropertySlim<bool> JoinSpotsSplitByRetentionDrift { get; }
+
+        [Required(ErrorMessage = "Join window required.")]
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
+        [Range(0, float.MaxValue, ErrorMessage = "Join window should be positive value.")]
+        public ReactiveProperty<string> SplitSpotJoinWindow { get; }
 
         public ReactivePropertySlim<bool> ShouldRunAlignment { get; }
 

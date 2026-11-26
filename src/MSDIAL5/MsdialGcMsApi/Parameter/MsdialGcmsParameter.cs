@@ -63,6 +63,27 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         [Key(157)]
         public bool AlignmentEiSimilarityIsSpectrumSimilarity { get; set; }
 
+        /// <summary>
+        /// Whether the alignment joins two spots of one compound that its retention drift split apart (see
+        /// GcmsPeakJoiner), when their centres are within <see cref="SplitSpotJoinWindow"/>.
+        /// </summary>
+        /// <remarks>
+        /// Keys 158 and 159 are left free: an unmerged GC×GC branch uses 157-159 for its column settings.
+        /// </remarks>
+        [Key(160)]
+        public bool JoinSpotsSplitByRetentionDrift { get; set; } = true;
+
+        /// <summary>
+        /// How far apart the centres of two spots (the mean retention of their detected peaks) may be for
+        /// <see cref="JoinSpotsSplitByRetentionDrift"/> to join them, in multiples of the alignment's retention
+        /// tolerance: <see cref="AlignmentBaseParameter.RetentionTimeAlignmentTolerance"/> when aligning on
+        /// retention time, <see cref="RetentionIndexAlignmentTolerance"/> on retention index.
+        /// </summary>
+        [Key(161)]
+        public float SplitSpotJoinWindow { get; set; } = DefaultSplitSpotJoinWindow;
+
+        public const float DefaultSplitSpotJoinWindow = 2f;
+
         void IMessagePackSerializationCallbackReceiver.OnBeforeSerialize() {
             AlignmentEiSimilarityIsSpectrumSimilarity = true;
         }
@@ -91,6 +112,8 @@ namespace CompMs.MsdialGcMsApi.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Retention index alignment tolerance", RetentionIndexAlignmentTolerance.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Replace quant mass by user defined value", IsReplaceQuantmassByUserDefinedValue.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Is quant mass based on base peak mz", IsRepresentativeQuantMassBasedOnBasePeakMz.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Join spots split by retention drift", JoinSpotsSplitByRetentionDrift.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Split spot join window", SplitSpotJoinWindow.ToString() }));
 
             // The EI library search. These lines use the Console's method-file keys, so that a parameter file exported
             // from a GC-MS project runs in the Console with the same identification settings. The dot product cutoffs

@@ -148,6 +148,10 @@ public static class MethodFileTemplate
         w.Value("Force insert peaks in gap filling", B(p.IsForceInsertForGapFilling));
         w.Value("Replace quant mass by user defined value", B(p.IsReplaceQuantmassByUserDefinedValue));
         w.Value("Is quant mass based on base peak mz", B(p.IsRepresentativeQuantMassBasedOnBasePeakMz));
+        w.Comment("Joins the two spots of a compound that retention drift split: their EI spectra match, no file has a peak in both,");
+        w.Comment("and their centres are within the window, in multiples of the retention time or retention index tolerance above.");
+        w.Value("Join spots split by retention drift", B(p.JoinSpotsSplitByRetentionDrift));
+        w.Value("Split spot join window", F(p.SplitSpotJoinWindow));
         Filtering(w, p);
     }
 
