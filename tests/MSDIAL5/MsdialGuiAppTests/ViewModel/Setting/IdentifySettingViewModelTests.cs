@@ -164,7 +164,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged {
+            add { }
+            remove { }
+        }
 
         public void Dispose() {
 

@@ -33,6 +33,11 @@
                           Style="{StaticResource VerticalConcatChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Show MS2 spectrum list of this peak"
+                              ToolTip="Draw every MS2 scan of this peak side by side, the representative scan first."
+                              Command="{Binding PlacementTarget.DataContext.ShowMs2SpectrumListCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"
+                              Visibility="{Binding PlacementTarget.DataContext.CanShowMs2SpectrumList, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
+                    <Separator Visibility="{Binding PlacementTarget.DataContext.CanShowMs2SpectrumList, RelativeSource={RelativeSource AncestorType=ContextMenu}, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
                     <MenuItem Header="Change axis type of upper spectrum into.."
                               ItemsSource="{Binding Path=UpperVerticalAxisSelector.AxisItems}"
                               DisplayMemberPath="Label"
@@ -80,6 +85,11 @@
                               Command="{Binding PlacementTarget.DataContext.SaveLowerSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
                     <MenuItem Header="Save matched spectrum as table format"
                               Command="{Binding PlacementTarget.DataContext.SaveMatchedSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue={x:Static common:NeverCommand.Instance}}"/>
+                    <Separator/>
+                    <MenuItem Header="Copy upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save upper spectrum as table" Command="{Binding PlacementTarget.DataContext.UpperSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.CopyAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save lower spectrum as table" Command="{Binding PlacementTarget.DataContext.LowerSpectrumViewModel.SaveAsTableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Save image as...">
                         <MenuItem Header="Save formatted image"
                                   Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
