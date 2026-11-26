@@ -12,6 +12,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialLcmsApi.Parameter;
+using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcMsApi.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -114,6 +115,28 @@ public sealed class LcmsProcessAnnotationParityTests
         Assert.AreEqual(guiResult.MatchedPeaksPercentage, consoleResult.MatchedPeaksPercentage);
         Assert.AreEqual(guiResult.TotalScore, consoleResult.TotalScore);
         Assert.AreEqual(guiResult.Name, consoleResult.Name);
+    }
+
+    [TestMethod]
+    public void EadRun_TheMassCalibrationLibrariesScoreWithTheProjectCollisionType()
+    {
+        // The annotation mass accuracy preview matches the run's features again to measure their m/z; it must score
+        // the spectra as the run does, or an EAD run's calibrants would be chosen by the CID scores and lipid rules.
+        var parameter = CreateEadParameter();
+        var lbmDB = CreateLbmLibrary();
+        var storage = LcmsProcess.CreateDataBaseStorage(parameter, [], lbmDB, 1, [], new GeneratedLipidAnnotatorSetting { Enabled = false }, new DataBaseMapper());
+        var calibration = LcmsProcess.CalibrationLibraries(parameter, [], lbmDB, 1).Single();
+
+        var (peak, msdec, provider) = SynthesizePeak(Lipids[0].Measured, 0);
+        var spectrum = provider.LoadMsSpectrumFromIndex(0).Spectrum;
+        var runQuery = storage.CreateQueryFactories().MoleculeQueryFactories.Single();
+        IAnnotationQueryFactory<MsScanMatchResult> calibrationQuery = new AnnotationQueryFactory((LcmsMspAnnotator)calibration.Annotator, parameter.PeakPickBaseParam, calibration.Parameter, ignoreIsotopicPeak: true);
+        var runResult = runQuery.Create(peak, msdec, spectrum, peak.PeakCharacter, runQuery.PrepareParameter()).FindCandidates().Single();
+        var calibrationResult = calibrationQuery.Create(peak, msdec, spectrum, peak.PeakCharacter, calibrationQuery.PrepareParameter()).FindCandidates().Single();
+
+        Assert.AreEqual(runResult.MatchedPeaksPercentage, calibrationResult.MatchedPeaksPercentage);
+        Assert.AreEqual(runResult.TotalScore, calibrationResult.TotalScore);
+        Assert.AreEqual(runResult.Name, calibrationResult.Name);
     }
 
     private static MsdialLcmsParameter CreateEadParameter()

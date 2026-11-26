@@ -560,19 +560,21 @@ public sealed class LcmsProcess
 
     /// <summary>
     /// The libraries the annotation mass accuracy preview searches: each MSP annotator, as the full run would build it,
-    /// and the LBM. The text libraries are left out: without a spectrum, a match could be chosen only by its m/z.
+    /// and the LBM. The text libraries are left out: without a spectrum, a match could be chosen only by its m/z. The
+    /// annotators take the project's collision type, as CreateDataBaseStorage's do, so that an EAD run's calibrants are
+    /// matched with the EAD scores and lipid rules and not the CID ones.
     /// </summary>
-    private static List<CalibrationLibrary> CalibrationLibraries(MsdialLcmsParameter param, IEnumerable<MspDataBaseAnnotatorSetting> mspDBs, MoleculeDataBase? lbmDB, int lbmAnnotatorPriority) {
+    internal static List<CalibrationLibrary> CalibrationLibraries(MsdialLcmsParameter param, IEnumerable<MspDataBaseAnnotatorSetting> mspDBs, MoleculeDataBase? lbmDB, int lbmAnnotatorPriority) {
         var libraries = new List<CalibrationLibrary>();
         foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
             foreach (var setting in mspDB.AnnotatorSettings) {
                 var targetOmics = setting.TargetOmics ?? param.TargetOmics;
-                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, param.CollistionType, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
                 libraries.Add(new CalibrationLibrary(annotator, setting.SearchParameter, targetOmics, mspDB.DataBase.DataBaseSource));
             }
         }
         if (lbmDB is { Database.Count: > 0 }) {
-            var annotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, CommonProcess.LbmAnnotatorId(param.LbmFilePath), lbmAnnotatorPriority);
+            var annotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, param.CollistionType, CommonProcess.LbmAnnotatorId(param.LbmFilePath), lbmAnnotatorPriority);
             libraries.Add(new CalibrationLibrary(annotator, param.LbmSearchParam, TargetOmics.Lipidomics, DataBaseSource.Lbm));
         }
         return libraries;
