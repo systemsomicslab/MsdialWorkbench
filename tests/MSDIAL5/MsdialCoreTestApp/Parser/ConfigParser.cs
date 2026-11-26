@@ -2096,7 +2096,11 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ccs tolerance for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.CcsTolerance = (float)v);
                 case "mass range begin for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.MassRangeBegin = (float)v);
                 case "mass range end for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.MassRangeEnd = (float)v);
-                case "relative amplitude cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.RelativeAmpCutoff = (float)v);
+                // Percent of the base peak, as the GUI shows it (MsRefSearchParameterBaseViewModel stores value / 100) and as
+                // this key meant when it was added in 2020, when DataAccess applied the cutoff times 0.01. Since 2021
+                // DataAccess applies RelativeAmpCutoff as a fraction, so the key is divided here: read verbatim, the
+                // 0.1 of the GC-MS demo methods cut every measured EI spectrum at 10% of its base peak.
+                case "relative amplitude cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.RelativeAmpCutoff = (float)(v / 100d));
                 case "absolute amplitude cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.AbsoluteAmpCutoff = (float)v);
                 case "weighted dot product cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.SquaredWeightedDotProductCutOff = (float)v);
                 case "simple dot product cutoff for msp-based annotation": return Number(valueLower, v => param.MspSearchParam.SquaredSimpleDotProductCutOff = (float)v);

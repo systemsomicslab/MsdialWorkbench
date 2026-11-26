@@ -119,7 +119,8 @@ public static class MethodFileTemplate
         w.Value("Mass range begin for MSP-based annotation", F(p.MspSearchParam.MassRangeBegin));
         w.Value("Mass range end for MSP-based annotation", F(p.MspSearchParam.MassRangeEnd));
         w.Value("MS1 tolerance for MSP-based annotation", F(p.MspSearchParam.Ms1Tolerance));
-        w.Value("Relative amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.RelativeAmpCutoff));
+        w.Comment("Percent of the base peak (0.1 means 0.1%), as in the GUI.");
+        w.Value("Relative amplitude cutoff for MSP-based annotation", Percent(p.MspSearchParam.RelativeAmpCutoff));
         w.Value("Absolute amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.AbsoluteAmpCutoff));
         SpectrumScores(w, p.MspSearchParam, "MSP");
         w.Value("Total score cutoff for MSP-based annotation", F(p.MspSearchParam.TotalScoreCutoff));
@@ -347,7 +348,8 @@ public static class MethodFileTemplate
         SearchWindow(w, p.MspSearchParam, "MSP", retention, mobility);
         w.Value("Mass range begin for MSP-based annotation", F(p.MspSearchParam.MassRangeBegin));
         w.Value("Mass range end for MSP-based annotation", F(p.MspSearchParam.MassRangeEnd));
-        w.Value("Relative amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.RelativeAmpCutoff));
+        w.Comment("Percent of the base peak (0.1 means 0.1%), as in the GUI.");
+        w.Value("Relative amplitude cutoff for MSP-based annotation", Percent(p.MspSearchParam.RelativeAmpCutoff));
         w.Value("Absolute amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.AbsoluteAmpCutoff));
         SpectrumScores(w, p.MspSearchParam, "MSP");
         w.Value("Total score cutoff for MSP-based annotation", F(p.MspSearchParam.TotalScoreCutoff));
@@ -525,6 +527,9 @@ public static class MethodFileTemplate
     // "R" because .NET Framework's default float formatting keeps only 7 significant digits and
     // does not always read back as the same value.
     private static string F(float value) => value.ToString("R", CultureInfo.InvariantCulture);
+
+    // A fraction of the base peak written as the percent the method key is read in.
+    private static string Percent(float fraction) => F((float)Math.Round(fraction * 100d, 6));
     private static string D(double value) => value.ToString("R", CultureInfo.InvariantCulture);
     private static string I(int value) => value.ToString(CultureInfo.InvariantCulture);
     private static string B(bool value) => value ? "True" : "False";
