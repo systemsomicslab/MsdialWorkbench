@@ -201,12 +201,45 @@ public sealed class LcmsProcess
             MsdialLcmsParameter = param
         };
 
+        // Created before the libraries: the generated lipid annotator looks up the molecule
+        // library's match through it, and SetDataBaseMapper fills it once they are all added.
+        var dataBaseMapper = new DataBaseMapper();
+        var dbStorage = CreateDataBaseStorage(param, mspDBs, lbmDB, lbmAnnotatorPriority, textDBs, ConfigParser.ReadGeneratedLipidAnnotatorSetting(methodFile), dataBaseMapper);
+        container.DataBaseMapper = dataBaseMapper;
+        container.DataBases = dbStorage;
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
+
+        Console.WriteLine("Start processing..");
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionInputs).Result;
+    }
+
+    /// <summary>
+    /// The libraries and annotators of an LC-MS run.
+    /// </summary>
+    /// <remarks>
+    /// THE MSP AND LBM ANNOTATORS TAKE THE PROJECT'S COLLISION TYPE, as the GUI's
+    /// LcmsLoadAnnotatorVisitor builds them. They used to be built without it, which is CID: an
+    /// EAD run then scored its LBM matches with the CID matched-peak scores and judged them with
+    /// the CID lipid rules, and since the generated lipid library expands exactly those matches,
+    /// the run's lipid names differed from the GUI's on the same data. A project the Console saves
+    /// is rebuilt through that visitor when the GUI opens it, so the two must agree.
+    /// LcmsProcessAnnotationParityTests checks that they do.
+    /// </remarks>
+    internal static DataBaseStorage CreateDataBaseStorage(
+        MsdialLcmsParameter param,
+        IReadOnlyList<MspDataBaseAnnotatorSetting> mspDBs,
+        MoleculeDataBase? lbmDB,
+        int lbmAnnotatorPriority,
+        IReadOnlyList<TextDataBaseAnnotatorSetting> textDBs,
+        GeneratedLipidAnnotatorSetting generatedLipidSetting,
+        DataBaseMapper dataBaseMapper) {
+
         var dbStorage = DataBaseStorage.CreateEmpty();
         foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
             var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
             foreach (var setting in mspDB.AnnotatorSettings) {
                 var targetOmics = setting.TargetOmics ?? param.TargetOmics;
-                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, param.CollistionType, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
                 annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: true)));
             }
             if (annotatorPairs.Count > 0) {
@@ -214,7 +247,7 @@ public sealed class LcmsProcess
             }
         }
         if (lbmDB is { Database.Count: > 0 }) {
-            var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, CommonProcess.LbmAnnotatorId(param.LbmFilePath), lbmAnnotatorPriority);
+            var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, param.CollistionType, CommonProcess.LbmAnnotatorId(param.LbmFilePath), lbmAnnotatorPriority);
             dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
@@ -229,12 +262,8 @@ public sealed class LcmsProcess
                 dbStorage.AddMoleculeDataBase(textDB.DataBase, annotatorPairs);
             }
         }
-        container.DataBaseMapper = new DataBaseMapper();
-        container.DataBases = dbStorage;
-        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
-
-        Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionInputs).Result;
+        GeneratedLipidLibrary.AddTo(dbStorage, param, generatedLipidSetting, dataBaseMapper);
+        return dbStorage;
     }
 
     /// <summary>
@@ -461,7 +490,7 @@ public sealed class LcmsProcess
 
         var files = storage.AnalysisFiles;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
+        var annotationProcess = GeneratedLipidLibrary.CreateAnnotationProcess(storage.DataBases, storage.DataBaseMapper, evaluator);
         var providerFactory = new StandardDataProviderFactory(5, false);
         var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
         // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
