@@ -21,6 +21,9 @@ public abstract class GcmsGapFiller : IGapFiller
 
     protected abstract double AxTol { get; }
 
+    // The smallest own-peak window MS-DIAL 4 searched a detected peak within (PeakAlignment.recalculationByQuantMass).
+    protected const double MinimumOwnWidthInMinutes = 0.02d;
+
     private int Bin => _parameter?.AccuracyType == AccuracyType.IsAccurate ? 2 : 0;
 
     public GcmsGapFiller(MsdialGcmsParameter parameter) {
@@ -43,12 +46,7 @@ public abstract class GcmsGapFiller : IGapFiller
         var target = peaks.First(peak => peak?.FileID == fileID);
         target.PeakShape.EstimatedNoise = GetEstimatedNoise(joined);
 
-        var located = GetLocatedPeaks(joined);
-        var chromXCenter = GetCenter(spot, located);
-        var peakWidth = GetPeakWidth(located);
-        var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
-        target.Mass = spot.QuantMass;
-        GapFillCore(peaklist, chromXCenter, AxTol, target);
+        Reextract(rawSpectra, spot, joined, target, fileID);
         UpdateDetection(spot, target, fileID);
     }
 
@@ -58,13 +56,59 @@ public abstract class GcmsGapFiller : IGapFiller
 
         var target = peaks.First(peak => peak?.FileID == fileID);
 
-        var located = GetLocatedPeaks(joined);
-        var chromXCenter = GetCenter(spot, located);
-        var peakWidth = GetPeakWidth(located);
-        var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
-        target.Mass = spot.QuantMass;
-        GapFillCore(peaklist, chromXCenter, AxTol, target);
+        Reextract(rawSpectra, spot, joined, target, fileID);
         UpdateDetection(spot, target, fileID);
+    }
+
+    /// <summary>
+    /// Measures the file's peak of the spot at the spot's quant mass.
+    /// </summary>
+    /// <remarks>
+    /// A peak joined from the file and still holding its position is re-extracted around its own apex: the local maximum
+    /// nearest its own retention, within its own peak width (at least <see cref="MinimumOwnWidth"/>), is taken, as MS-DIAL 4
+    /// re-quantified every detected peak (PeakAlignment.recalculationByQuantMass). The file's peak was detected and joined
+    /// there; around the spot's mean retention, within the whole alignment tolerance, a file whose peak lies off the mean
+    /// could be given a neighbouring compound's apex on the same ion. If no apex is found the peak keeps its position at
+    /// height 0, as in MS-DIAL 4, instead of being reset to RT -1, which averaged into the spot's retention.
+    /// A file without a joined peak (a gap) is still searched around the spot's center within the alignment tolerance.
+    /// </remarks>
+    private void Reextract(RawSpectra rawSpectra, AlignmentSpotProperty spot, AlignmentChromPeakFeature[] joined, AlignmentChromPeakFeature target, int fileID) {
+        var located = GetLocatedPeaks(joined);
+        var peakWidth = GetPeakWidth(located);
+        target.Mass = spot.QuantMass;
+        if (target.MasterPeakID >= 0 && HasPosition(target)) {
+            var ownCenter = GetOwnCenter(spot, target);
+            var ownTolerance = GetOwnTolerance(target);
+            var ownPeaklist = GetPeaks(rawSpectra, ownCenter, Math.Max(peakWidth, ownTolerance), fileID, _smoothingMethod, _smoothingLevel);
+            GapFillCore(ownPeaklist, ownCenter, ownTolerance, target, keepPosition: true);
+            return;
+        }
+        var chromXCenter = GetCenter(spot, located);
+        var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
+        GapFillCore(peaklist, chromXCenter, AxTol, target, keepPosition: false);
+    }
+
+    private static bool HasPosition(AlignmentChromPeakFeature peak) {
+        return peak.ChromXsTop.RT.Value >= 0;
+    }
+
+    /// <summary>
+    /// The center a joined peak is re-extracted around: its own apex, at the spot's quant mass.
+    /// </summary>
+    protected virtual ChromXs GetOwnCenter(AlignmentSpotProperty spot, AlignmentChromPeakFeature peak) {
+        return GetCenter(spot, new[] { peak });
+    }
+
+    /// <summary>
+    /// The smallest window a joined peak's own apex is searched within. MS-DIAL 4 used 0.02 min.
+    /// </summary>
+    protected virtual double MinimumOwnWidth(AlignmentChromPeakFeature peak) {
+        return 0d;
+    }
+
+    private double GetOwnTolerance(AlignmentChromPeakFeature peak) {
+        var width = Math.Max(GetPeakWidth(new[] { peak }), MinimumOwnWidth(peak));
+        return width > 0 ? width : AxTol;
     }
 
     /// <summary>
@@ -117,9 +161,14 @@ public abstract class GcmsGapFiller : IGapFiller
         return peaks.Max(n => n.PeakShape.EstimatedNoise);
     }
 
-    private void GapFillCore(List<ChromatogramPeak> peaklist, ChromXs center, double axTol, AlignmentChromPeakFeature alignmentChromPeakFeature) {
+    private void GapFillCore(List<ChromatogramPeak> peaklist, ChromXs center, double axTol, AlignmentChromPeakFeature alignmentChromPeakFeature, bool keepPosition) {
         if (peaklist is null || peaklist.Count == 0) {
-            SetDefaultValueToAlignmentChromPeakFeature(alignmentChromPeakFeature, center.Mz.Value);
+            if (keepPosition) {
+                SetZeroAtOwnPosition(alignmentChromPeakFeature, center.Mz.Value);
+            }
+            else {
+                SetDefaultValueToAlignmentChromPeakFeature(alignmentChromPeakFeature, center.Mz.Value);
+            }
             return;
         }
         var result = alignmentChromPeakFeature;
@@ -134,7 +183,12 @@ public abstract class GcmsGapFiller : IGapFiller
         var isForceInsert = this._isForceInsert;
         (var id, var leftId, var rightId) = GetPeakRange(candidates, peaklist, minId, centralAx, isForceInsert);
         if (id == -1 || leftId == -1 || rightId == -1) {
-            SetDefaultValueToAlignmentChromPeakFeature(result, center.Mz.Value);
+            if (keepPosition) {
+                SetZeroAtOwnPosition(result, center.Mz.Value);
+            }
+            else {
+                SetDefaultValueToAlignmentChromPeakFeature(result, center.Mz.Value);
+            }
             return;
         }
 
@@ -262,6 +316,21 @@ public abstract class GcmsGapFiller : IGapFiller
         result.PeakShape.SignalToNoise = (float)result.PeakHeightTop / result.PeakShape.EstimatedNoise;
     }
 
+    // A joined peak whose re-extraction found no apex: height 0 at its own retention, as MS-DIAL 4 set it.
+    private static void SetZeroAtOwnPosition(AlignmentChromPeakFeature result, double mz) {
+        result.Mass = mz;
+        result.ChromXsLeft = result.ChromXsTop;
+        result.ChromXsRight = result.ChromXsTop;
+        result.ChromScanIdLeft = result.ChromScanIdTop;
+        result.ChromScanIdRight = result.ChromScanIdTop;
+        result.PeakHeightTop = 0;
+        result.PeakHeightLeft = 0;
+        result.PeakHeightRight = 0;
+        result.PeakAreaAboveZero = 0;
+        result.PeakAreaAboveBaseline = 0;
+        result.PeakShape.SignalToNoise = 0;
+    }
+
     private static void SetDefaultValueToAlignmentChromPeakFeature(AlignmentChromPeakFeature result, double mz) {
         result.Mass = mz;
         result.ChromScanIdTop = -1;
@@ -305,6 +374,10 @@ public class GcmsRTGapFiller : GcmsGapFiller
 
     protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
         return peaks.Max(peak => peak.PeakWidth(ChromXType.RT));
+    }
+
+    protected override double MinimumOwnWidth(AlignmentChromPeakFeature peak) {
+        return MinimumOwnWidthInMinutes;
     }
 
     /// <summary>
@@ -364,6 +437,17 @@ public class GcmsRIGapFiller : GcmsGapFiller
 
     protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {
         return peaks.Max(peak => peak.PeakWidth(ChromXType.RI));
+    }
+
+    // MS-DIAL 4 searched in retention time, at least 0.02 min; in RI that is 0.02 min times the index units per minute
+    // across the peak's own edges.
+    protected override double MinimumOwnWidth(AlignmentChromPeakFeature peak) {
+        var rtWidth = peak.PeakWidth(ChromXType.RT);
+        var riWidth = peak.PeakWidth(ChromXType.RI);
+        if (rtWidth <= 0 || riWidth <= 0 || peak.ChromXsLeft.RI.Value < 0) {
+            return 0d;
+        }
+        return MinimumOwnWidthInMinutes * riWidth / rtWidth;
     }
 
     /// <summary>

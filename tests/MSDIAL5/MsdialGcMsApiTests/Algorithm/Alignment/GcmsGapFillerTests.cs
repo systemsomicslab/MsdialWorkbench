@@ -91,13 +91,30 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         }
 
         [TestMethod()]
-        public void GapFillDoesNotCenterLaterFilesOnAPeakWhoseReextractionFoundNothing() {
+        public void GapFillKeepsTheOwnPositionOfADetectedPeakWhoseReextractionFoundNothing() {
             var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
             var (spot, representative, target, missing) = CreateSpot();
 
-            // No chromatogram: the peak is reset to RT and RI -1.
+            // No chromatogram: the peak keeps its own retention at height 0, as MS-DIAL 4 set it, and is not reset to
+            // RT -1, so later files are still centered on it.
             filler.GapFill(null, null, null, spot, fileID: target.FileID);
-            Assert.AreEqual(-1d, target.ChromXsTop.RT.Value);
+            Assert.AreEqual(1.0d, target.ChromXsTop.RT.Value, 1e-9);
+            Assert.AreEqual(0d, target.PeakHeightTop);
+            Assert.AreEqual(-2, target.PeakID);
+            filler.GapFill(null, null, null, spot, fileID: missing.FileID);
+
+            CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastCenterPeaks);
+            CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastWidthPeaks);
+        }
+
+        [TestMethod()]
+        public void GapFillDoesNotCenterLaterFilesOnAPeakWithoutAPosition() {
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
+            var (spot, representative, target, missing) = CreateSpot();
+            // As read back from an alignment saved by an earlier version, which reset such a peak to RT -1.
+            target.PeakID = -2;
+            target.ChromXsLeft = target.ChromXsTop = target.ChromXsRight = new ChromXs(0d, ChromXType.Mz, ChromXUnit.Mz);
+
             filler.GapFill(null, null, null, spot, fileID: missing.FileID);
 
             CollectionAssert.AreEquivalent(new[] { representative, }, filler.LastCenterPeaks);
@@ -108,12 +125,69 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         public void GapFillCentersOnEveryJoinedPeakWhenNoneHasAPosition() {
             var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
             var (spot, representative, target, missing) = CreateSpot();
+            foreach (var peak in new[] { representative, target, }) {
+                peak.ChromXsLeft = peak.ChromXsTop = peak.ChromXsRight = new ChromXs(0d, ChromXType.Mz, ChromXUnit.Mz);
+            }
 
-            filler.GapFill(null, null, null, spot, fileID: representative.FileID);
-            filler.GapFill(null, null, null, spot, fileID: target.FileID);
             filler.GapFill(null, null, null, spot, fileID: missing.FileID);
 
             CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastCenterPeaks);
+        }
+
+        [TestMethod()]
+        public void GapFillTakesADetectedPeaksOwnApexNotANeighbourNearerTheSpotCenter() {
+            // Files 0 and 1 have the compound at 10.00 min, file 2 at 10.09 (it joined within the 0.075 min tolerance of a
+            // 10.03 master). A neighbouring compound on the same ion peaks at 9.99. File 2 is re-extracted at the spot's
+            // quant mass: around the spot center (10.03) the nearest apex is the neighbour's; around its own apex it is
+            // its own, which MS-DIAL 4 took.
+            var parameter = new MsdialGcmsParameter { RetentionTimeAlignmentTolerance = 0.075f, };
+            var filler = new SyntheticRtGapFiller(parameter, fileWithoutIon: -1, apexes: new[] { (9.99d, 1e5d), (10.09d, 5e4d), });
+            var peaks = new List<AlignmentChromPeakFeature> {
+                CreateDetectedAt(fileID: 0, top: 10.00d, mass: 73.0d),
+                CreateDetectedAt(fileID: 1, top: 10.00d, mass: 73.0d),
+                CreateDetectedAt(fileID: 2, top: 10.09d, mass: 217.0d),
+            };
+            var spot = new AlignmentSpotProperty { QuantMass = 73.0d, RepresentativeFileID = 0, AlignedPeakProperties = peaks, };
+
+            filler.GapFill(null, null, null, spot, fileID: 2);
+
+            Assert.AreEqual(10.09d, peaks[2].ChromXsTop.RT.Value, 1e-9);
+            Assert.AreEqual(2, peaks[2].PeakID);
+            Assert.AreEqual(73.0d, peaks[2].Mass);
+        }
+
+        [TestMethod()]
+        public void WithoutForcingARepresentativeWhoseReextractionFindsNoApexKeepsItsRetention() {
+            // Not forced: no apex near the representative's own retention at the new quant mass. It stays detected (the
+            // spot takes its name and spectrum from it) at height 0, and keeps its retention, so the spot's average
+            // retention is not pulled toward -1 and its main axis stays RT.
+            var parameter = new MsdialGcmsParameter { IsForceInsertForGapFilling = false, RetentionTimeAlignmentTolerance = 0.075f, };
+            var filler = new SyntheticRtGapFiller(parameter, fileWithoutIon: 0);
+            var peaks = new List<AlignmentChromPeakFeature> {
+                CreateDetectedAt(fileID: 0, top: 10.00d, mass: 217.0d),
+                CreateDetectedAt(fileID: 1, top: 10.00d, mass: 73.0d),
+            };
+            var spot = new AlignmentSpotProperty { QuantMass = 73.0d, RepresentativeFileID = 0, AlignedPeakProperties = peaks, };
+
+            filler.GapFill(null, null, null, spot, fileID: 0);
+
+            Assert.AreEqual(0, peaks[0].PeakID);
+            Assert.AreEqual(0d, peaks[0].PeakHeightTop);
+            Assert.AreEqual(10.00d, peaks[0].ChromXsTop.RT.Value, 1e-9);
+            Assert.AreEqual(ChromXType.RT, peaks[0].ChromXsTop.MainType);
+        }
+
+        [TestMethod()]
+        public void TheRiFillerSearchesAtLeastTheMinutesMsDial4UsedConvertedToIndexUnits() {
+            var filler = new ExposedRiGapFiller(new MsdialGcmsParameter());
+            var peak = new AlignmentChromPeakFeature {
+                ChromXsLeft = new ChromXs(new RetentionIndex(1500d)) { RT = new RetentionTime(10.000d), },
+                ChromXsTop = new ChromXs(new RetentionIndex(1500.25d)) { RT = new RetentionTime(10.0025d), },
+                ChromXsRight = new ChromXs(new RetentionIndex(1500.5d)) { RT = new RetentionTime(10.005d), },
+            };
+
+            // 100 index units per minute across the peak: 0.02 min is 2 units.
+            Assert.AreEqual(2d, filler.MinimumOwnWidthOf(peak), 1e-9);
         }
 
         [TestMethod()]
@@ -260,6 +334,19 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             };
         }
 
+        private static AlignmentChromPeakFeature CreateDetectedAt(int fileID, double top, double mass) {
+            return new AlignmentChromPeakFeature {
+                FileID = fileID,
+                MasterPeakID = fileID,
+                PeakID = fileID,
+                Mass = mass,
+                PeakHeightTop = 500d,
+                ChromXsLeft = new ChromXs(top - 0.03d, ChromXType.RT, ChromXUnit.Min),
+                ChromXsTop = new ChromXs(top, ChromXType.RT, ChromXUnit.Min),
+                ChromXsRight = new ChromXs(top + 0.03d, ChromXType.RT, ChromXUnit.Min),
+            };
+        }
+
         private static List<ChromatogramPeak> CreatePeakList() {
             var intensities = new[] { 0d, 100d, 400d, 1000d, 400d, 100d, 0d, };
             var peaks = new List<ChromatogramPeak>();
@@ -281,13 +368,16 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
 
         /// <summary>
         /// The real RT gap filler, reading a synthetic chromatogram: a 0.01 min grid over center +/- 2 x width, the window
-        /// GcmsRTGapFiller extracts, with a Gaussian peak at 10.00 min in every file except one, which is flat at 0.
+        /// GcmsRTGapFiller extracts, with Gaussian peaks (by default one at 10.00 min) in every file except one, which is
+        /// flat at 0.
         /// </summary>
         private sealed class SyntheticRtGapFiller : GcmsRTGapFiller {
             private readonly int _fileWithoutIon;
+            private readonly (double Rt, double Height)[] _apexes;
 
-            public SyntheticRtGapFiller(MsdialGcmsParameter parameter, int fileWithoutIon) : base(parameter) {
+            public SyntheticRtGapFiller(MsdialGcmsParameter parameter, int fileWithoutIon, (double Rt, double Height)[] apexes = null) : base(parameter) {
                 _fileWithoutIon = fileWithoutIon;
+                _apexes = apexes ?? new[] { (10d, 1e5d), };
             }
 
             protected override List<ChromatogramPeak> GetPeaks(RawSpectra rawSpectra, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
@@ -297,11 +387,18 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
                 var peaks = new List<ChromatogramPeak>();
                 for (int k = first; k <= last; k++) {
                     var rt = k * step;
-                    var intensity = fileID == _fileWithoutIon ? 0d : 1e5d * System.Math.Exp(-(rt - 10d) * (rt - 10d) / (2d * sigma * sigma));
+                    var intensity = fileID == _fileWithoutIon ? 0d : _apexes.Sum(a => a.Height * System.Math.Exp(-(rt - a.Rt) * (rt - a.Rt) / (2d * sigma * sigma)));
                     peaks.Add(new ChromatogramPeak(peaks.Count, center.Mz.Value, intensity, new ChromXs(rt, ChromXType.RT, ChromXUnit.Min)));
                 }
                 return peaks;
             }
+        }
+
+        private sealed class ExposedRiGapFiller : GcmsRIGapFiller {
+            public ExposedRiGapFiller(MsdialGcmsParameter parameter) : base(parameter) {
+            }
+
+            public double MinimumOwnWidthOf(AlignmentChromPeakFeature peak) => MinimumOwnWidth(peak);
         }
 
         private sealed class StubGcmsGapFiller : GcmsGapFiller {
