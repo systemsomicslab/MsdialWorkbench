@@ -32,11 +32,14 @@ namespace CompMs.App.Msdial.Model.Search
         /// <summary>
         /// Refreshes the view now, or once its edit transaction ends. Requests made during one edit lead to one refresh.
         /// </summary>
+        /// <remarks>A request made after the edit ended but before the held refresh ran is left to that refresh.</remarks>
         public void Request() {
             if (_disposed) {
                 return;
             }
-            if (IsInEdit) {
+            // While a refresh is posted for an edit that just ended, the table may still be ending that edit's row:
+            // the posted refresh does this one too, instead of refreshing inside the row commit.
+            if (IsInEdit || _posted) {
                 _pending = true;
                 return;
             }
@@ -51,7 +54,10 @@ namespace CompMs.App.Msdial.Model.Search
                 return;
             }
             _posted = true;
-            _dispatcher.BeginInvoke(new Action(RefreshIfStillPending));
+            // Background is below DataBind on purpose. A table that closes the view's transaction itself
+            // (DataGridPendingEditBehavior.CommitPendingEdit) then ends the DataGrid row, and DataGrid runs the queued
+            // DataBind work while doing so: a refresh posted at DataBind or above would run inside that row commit.
+            _dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(RefreshIfStillPending));
         }
 
         private static bool IsEditStateChange(string? propertyName) {

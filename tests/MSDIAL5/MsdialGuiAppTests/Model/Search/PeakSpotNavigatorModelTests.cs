@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Search.Tests
         {
             public FilteredView() {
                 Items = new ObservableCollection<Row>(Enumerable.Range(0, 10).Select(i => new Row(i)));
-                View = new ListCollectionView(Items) { Filter = o => ((Row)o).Value < Threshold };
+                View = new ListCollectionView(Items) { Filter = o => Error is null ? ((Row)o).Value < Threshold : throw Error };
                 ((INotifyCollectionChanged)View).CollectionChanged += (s, e) => {
                     if (e.Action == NotifyCollectionChangedAction.Reset) {
                         Refreshes++;
@@ -43,6 +43,8 @@ namespace CompMs.App.Msdial.Model.Search.Tests
             public ObservableCollection<Row> Items { get; }
             public ListCollectionView View { get; }
             public int Threshold { get; set; } = 10;
+            // When set, the filter throws it, so refreshing the view fails.
+            public Exception? Error { get; set; }
             public int Refreshes { get; private set; }
             public int[] Contents => View.Cast<Row>().Select(row => row.Value).ToArray();
         }
@@ -249,10 +251,57 @@ namespace CompMs.App.Msdial.Model.Search.Tests
             spots.View.CommitEdit();
             spots.Threshold = 3;
             navigator.RefreshCollectionViews();
+
+            // The refresh already posted for the ended edit does it: refreshing now could run inside the end of the row commit.
+            Assert.AreEqual(0, spots.Refreshes);
+
             RunDispatcher();
 
             Assert.AreEqual(1, spots.Refreshes);
             CollectionAssert.AreEqual(new[] { 0, 1, 2 }, spots.Contents);
+        }
+
+        [TestMethod]
+        public void AViewThatFailsToRefreshDoesNotStopTheOthersAndItsErrorIsRethrown() {
+            var failing = new FilteredView();
+            var other = new FilteredView();
+            var navigator = CreateNavigator(failing, other);
+            var error = new InvalidOperationException("filter failed");
+            failing.Error = error;
+
+            other.Threshold = 3;
+            var thrown = Assert.ThrowsException<InvalidOperationException>(() => navigator.RefreshCollectionViews());
+
+            Assert.AreSame(error, thrown);
+            Assert.AreEqual(1, other.Refreshes);
+            CollectionAssert.AreEqual(new[] { 0, 1, 2 }, other.Contents);
+        }
+
+        [TestMethod]
+        public void SeveralViewsFailingToRefreshAreReportedTogether() {
+            var first = new FilteredView();
+            var second = new FilteredView();
+            var navigator = CreateNavigator(first, second);
+            var firstError = new InvalidOperationException("first filter failed");
+            var secondError = new InvalidOperationException("second filter failed");
+            first.Error = firstError;
+            second.Error = secondError;
+
+            var thrown = Assert.ThrowsException<AggregateException>(() => navigator.RefreshCollectionViews());
+
+            CollectionAssert.AreEqual(new Exception[] { firstError, secondError }, thrown.InnerExceptions.ToArray());
+        }
+
+        [TestMethod]
+        public void AViewAddedAfterTheNavigatorWasDisposedIsSkipped() {
+            var spots = new FilteredView();
+            var navigator = CreateNavigator();
+            navigator.Dispose();
+            navigator.PeakSpotsCollection.Add(spots.View);
+
+            navigator.RefreshCollectionViews();
+
+            Assert.AreEqual(0, spots.Refreshes);
         }
     }
 }

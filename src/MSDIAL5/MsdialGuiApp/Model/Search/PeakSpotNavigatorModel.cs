@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -67,9 +68,29 @@ namespace CompMs.App.Msdial.Model.Search
         /// <summary>
         /// Refreshes every view that is not in an edit transaction now; a view in one is refreshed once, after its edit ends.
         /// </summary>
+        /// <remarks>
+        /// A view that fails to refresh does not stop the others: every view is refreshed first, then the failure is rethrown,
+        /// or, when several views failed, all of them together in an <see cref="AggregateException"/>.
+        /// </remarks>
         public void RefreshCollectionViews() {
+            var errors = new List<Exception>();
             foreach (var view in PeakSpotsCollection) {
-                _pendingRefreshes[view].Request();
+                // A view added after the navigator was disposed has no pending refresh, and is no longer refreshed.
+                if (!_pendingRefreshes.TryGetValue(view, out var pendingRefresh)) {
+                    continue;
+                }
+                try {
+                    pendingRefresh.Request();
+                }
+                catch (Exception ex) {
+                    errors.Add(ex);
+                }
+            }
+            if (errors.Count == 1) {
+                ExceptionDispatchInfo.Capture(errors[0]).Throw();
+            }
+            if (errors.Count > 1) {
+                throw new AggregateException(errors);
             }
         }
 

@@ -7,7 +7,9 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.ExceptionServices;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
@@ -51,9 +53,23 @@ namespace CompMs.App.Msdial.ViewModel.Search
             // The navigator model holds back the refresh of a view in an edit transaction until that edit ends.
             needRefresh
                 .ObserveOnUIDispatcher()
-                .Subscribe(_ => model.RefreshCollectionViews())
+                .Subscribe(_ => RefreshCollectionViews())
                 .AddTo(Disposables);
             Disposables.Add(needRefresh.Connect());
+        }
+
+        // An exception escaping the subscription would end it, and no filter change would refresh the views again.
+        // It is caught here and thrown again from its own dispatcher operation, so the application's unhandled-exception
+        // handling still reports it while the subscription keeps going.
+        private void RefreshCollectionViews() {
+            try {
+                _model.RefreshCollectionViews();
+            }
+            catch (Exception ex) {
+                var error = ExceptionDispatchInfo.Capture(ex);
+                // This runs on the UI dispatcher (ObserveOnUIDispatcher above).
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(error.Throw));
+            }
         }
 
         public ReactivePropertySlim<string?> SelectedAnnotationLabel { get; }
