@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
+using CompMs.MsdialCore.Algorithm.MassCalibration;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -778,6 +779,8 @@ namespace CompMs.App.MsdialConsole.Parser
             (param, method, value) => AnnotationCandidateExportLine(method, value, _ => { }),
             (param, method, value) => AutomaticRtCorrectionPreviewOnlyLine(method, value, _ => { }),
             (param, method, value) => Ms2MassAccuracyPreviewOnlyLine(method, value, _ => { }),
+            (param, method, value) => AnnotationMassAccuracyPreviewOnlyLine(method, value, _ => { }),
+            (param, method, value) => AnnotationMassAccuracySearchWindowLine(method, value, _ => { }),
             (param, method, value) => ReadAutomaticRtCorrectionParameter(param, method, value),
             (param, method, value) => LipidRtCheckLine(param.LipidRtCheckParam, method, value),
             (param, method, value) => MsmsEntropyCleanupLine(param.ChromDecBaseParam, method, value),
@@ -980,6 +983,48 @@ namespace CompMs.App.MsdialConsole.Parser
         /// for into a full run.
         /// </summary>
         public static bool ReadMs2MassAccuracyPreviewOnly(string filepath, out string? unusableValue) {
+            return ReadLastSwitch(filepath, Ms2MassAccuracyPreviewOnlyLine, out unusableValue);
+        }
+
+        /// <summary>
+        /// Whether the run stops once every file's features are deconvoluted, annotated once more with wide m/z windows
+        /// and their m/z measured against the theoretical m/z of what they matched (the annotation mass accuracy
+        /// report), and the value of the last line that says neither True nor False, or null. LcmsProcess refuses such a
+        /// line, as it refuses the other preview switches.
+        /// </summary>
+        public static bool ReadAnnotationMassAccuracyPreviewOnly(string filepath, out string? unusableValue) {
+            return ReadLastSwitch(filepath, AnnotationMassAccuracyPreviewOnlyLine, out unusableValue);
+        }
+
+        /// <summary>
+        /// The half width, in ppm, of the m/z windows of the annotation mass accuracy preview (default
+        /// <see cref="AnnotationCalibrantCollector.DefaultSearchPpm"/>), and the value of the last line that is not a
+        /// positive number, or null.
+        /// </summary>
+        public static double ReadAnnotationMassAccuracySearchWindow(string filepath, out string? unusableValue) {
+            string? unusable = null;
+            var result = AnnotationCalibrantCollector.DefaultSearchPpm;
+            using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
+                while (sr.Peek() > -1) {
+                    readFieldValues(sr.ReadLine(), out string method, out string value, out bool isReadable);
+                    if (!isReadable || value.IsEmptyOrNull()) {
+                        continue;
+                    }
+                    var read = result;
+                    var outcome = AnnotationMassAccuracySearchWindowLine(method, value, v => read = v);
+                    if (outcome.IsApplied) {
+                        result = read;
+                    }
+                    else if (outcome.IsUnusableValue) {
+                        unusable = value;
+                    }
+                }
+            }
+            unusableValue = unusable;
+            return result;
+        }
+
+        private static bool ReadLastSwitch(string filepath, Func<string, string, Action<bool>, MethodKeyOutcome> line, out string? unusableValue) {
             string? unusable = null;
             var result = false;
             using (var sr = new StreamReader(filepath, Encoding.ASCII)) {
@@ -989,7 +1034,7 @@ namespace CompMs.App.MsdialConsole.Parser
                         continue;
                     }
                     var read = false;
-                    var outcome = Ms2MassAccuracyPreviewOnlyLine(method, value, v => read = v);
+                    var outcome = line(method, value, v => read = v);
                     if (outcome.IsApplied) {
                         result = read;
                     }
@@ -1083,6 +1128,29 @@ namespace CompMs.App.MsdialConsole.Parser
             switch (method.ToLowerInvariant()) {
                 case "automatic rt correction preview only":
                     return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome AnnotationMassAccuracyPreviewOnlyLine(string method, string value, Action<bool> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "annotation mass accuracy preview only":
+                    return TrueOrFalse(value, assign);
+                default:
+                    return MethodKeyOutcome.UnknownKey;
+            }
+        }
+
+        private static MethodKeyOutcome AnnotationMassAccuracySearchWindowLine(string method, string value, Action<double> assign) {
+            switch (method.ToLowerInvariant()) {
+                case "annotation mass accuracy search window (ppm)":
+                    return Number(value, ppm => {
+                        if (!(ppm > 0d) || double.IsInfinity(ppm)) {
+                            throw new ArgumentOutOfRangeException(nameof(value), ppm, "The search window must be a positive number of ppm.");
+                        }
+                        assign(ppm);
+                    });
                 default:
                     return MethodKeyOutcome.UnknownKey;
             }

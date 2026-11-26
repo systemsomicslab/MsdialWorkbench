@@ -531,6 +531,37 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadAnnotationMassAccuracyPreview_IsOffUnlessTheMethodFileSaysTrueAndTheWindowIsAPositiveNumber()
+    {
+        using var directory = new TemporaryDirectory();
+        var none = directory.CreateFile("none.txt", "Acquisition type: SWATH\n");
+        var on = directory.CreateFile("on.txt", "Annotation mass accuracy preview only: True\nAnnotation mass accuracy search window (ppm): 60\n");
+        var unusable = directory.CreateFile("unusable.txt", "Annotation mass accuracy preview only: yes\nAnnotation mass accuracy search window (ppm): -5\n");
+        var lastWins = directory.CreateFile("last.txt", "Annotation mass accuracy search window (ppm): 60\nAnnotation mass accuracy search window (ppm): 150\nAnnotation mass accuracy search window (ppm): wide\n");
+
+        Assert.IsFalse(ConfigParser.ReadAnnotationMassAccuracyPreviewOnly(none, out var noneValue));
+        Assert.IsNull(noneValue);
+        Assert.AreEqual(100d, ConfigParser.ReadAnnotationMassAccuracySearchWindow(none, out var noWindow));
+        Assert.IsNull(noWindow);
+
+        Assert.IsTrue(ConfigParser.ReadAnnotationMassAccuracyPreviewOnly(on, out var onValue));
+        Assert.IsNull(onValue);
+        Assert.AreEqual(60d, ConfigParser.ReadAnnotationMassAccuracySearchWindow(on, out _));
+
+        Assert.IsFalse(ConfigParser.ReadAnnotationMassAccuracyPreviewOnly(unusable, out var unusableValue));
+        Assert.AreEqual("yes", unusableValue);
+        Assert.AreEqual(100d, ConfigParser.ReadAnnotationMassAccuracySearchWindow(unusable, out var unusableWindow));
+        Assert.AreEqual("-5", unusableWindow);
+        ConfigParser.ReadForLcmsParameter(unusable);
+        CollectionAssert.AreEquivalent(
+            new[] { "Annotation mass accuracy preview only: yes", "Annotation mass accuracy search window (ppm): -5" },
+            RecordedKeys(unusable, "unusable"));
+
+        Assert.AreEqual(150d, ConfigParser.ReadAnnotationMassAccuracySearchWindow(lastWins, out var lastUnusable), "an unusable later line leaves the earlier value");
+        Assert.AreEqual("wide", lastUnusable);
+    }
+
+    [TestMethod]
     public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
     {
         // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller
@@ -657,6 +688,8 @@ public sealed class ConfigParserTests
     [DataRow("Export annotation candidates", "false")]
     [DataRow("Automatic RT correction preview only", "true")]
     [DataRow("MS2 mass accuracy preview only", "false")]
+    [DataRow("Annotation mass accuracy preview only", "true")]
+    [DataRow("Annotation mass accuracy search window (ppm)", "80")]
     public void ReadForLcms_KeyRecordAcceptsEverySpellingTheSideReadersAccept(string key, string value)
     {
         using var directory = new TemporaryDirectory();

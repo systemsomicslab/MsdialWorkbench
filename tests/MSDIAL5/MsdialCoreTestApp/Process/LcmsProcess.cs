@@ -111,8 +111,23 @@ public sealed class LcmsProcess
             Console.Error.WriteLine($"'MS2 mass accuracy preview only: {unusableMs2PreviewValue}' is neither True nor False; the run is refused rather than run in full.");
             return -1;
         }
-        if (ms2MassAccuracyPreviewOnly && automaticRtCorrectionPreviewOnly) {
-            Console.Error.WriteLine("'MS2 mass accuracy preview only' and 'Automatic RT correction preview only' are both True; run them one at a time.");
+        var annotationMassAccuracyPreviewOnly = ConfigParser.ReadAnnotationMassAccuracyPreviewOnly(methodFile, out var unusableAnnotationPreviewValue);
+        if (unusableAnnotationPreviewValue is not null) {
+            Console.Error.WriteLine($"'Annotation mass accuracy preview only: {unusableAnnotationPreviewValue}' is neither True nor False; the run is refused rather than run in full.");
+            return -1;
+        }
+        var annotationSearchPpm = ConfigParser.ReadAnnotationMassAccuracySearchWindow(methodFile, out var unusableSearchWindow);
+        if (annotationMassAccuracyPreviewOnly && unusableSearchWindow is not null) {
+            Console.Error.WriteLine($"'Annotation mass accuracy search window (ppm): {unusableSearchWindow}' is not a positive number; the run is refused rather than run with another window.");
+            return -1;
+        }
+        var previews = new[] {
+            (automaticRtCorrectionPreviewOnly, "Automatic RT correction preview only"),
+            (ms2MassAccuracyPreviewOnly, "MS2 mass accuracy preview only"),
+            (annotationMassAccuracyPreviewOnly, "Annotation mass accuracy preview only"),
+        }.Where(preview => preview.Item1).Select(preview => $"'{preview.Item2}'").ToList();
+        if (previews.Count > 1) {
+            Console.Error.WriteLine($"{string.Join(" and ", previews)} are {(previews.Count == 2 ? "both" : "all")} True; run them one at a time.");
             return -1;
         }
         // The settings and the anchor library are checked before anything heavy is read, as the
@@ -142,7 +157,8 @@ public sealed class LcmsProcess
         }
         // The MSP annotator table is read here for the same reason: a value it refuses should stop
         // the run before the analysis files and the raw data are read. The libraries it names are
-        // read later, with the others. A preview searches no library, so it does not read the table.
+        // read later, with the others. The RT correction and MS2 mass accuracy previews search no
+        // library, so they do not read the table; the annotation mass accuracy preview does.
         List<MspAnnotatorSetting> mspAnnotatorSettings = [];
         if (!automaticRtCorrectionPreviewOnly && !ms2MassAccuracyPreviewOnly) {
             try {
@@ -213,6 +229,23 @@ public sealed class LcmsProcess
             out var mspDBs, out var textDBs,
             out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode,
             out var lbmDB);
+
+        if (annotationMassAccuracyPreviewOnly) {
+            var libraries = CalibrationLibraries(param, mspDBs, lbmDB, lbmAnnotatorPriority);
+            if (libraries.Count == 0) {
+                Console.Error.WriteLine("The annotation mass accuracy preview needs an MSP or LBM library with MS/MS spectra, and none was read.");
+                return -1;
+            }
+            var annotationPreviewStorage = new MsdialLcmsDataStorage() {
+                AnalysisFiles = analysisFiles,
+                AlignmentFiles = [alignmentFile],
+                IsotopeTextDB = isotopeTextDB,
+                IupacDatabase = iupacDB,
+                MsdialLcmsParameter = param
+            };
+            Console.WriteLine($"Annotation mass accuracy preview: peak picking and deconvolution, then each feature annotated once more against {string.Join(", ", libraries.Select(library => library.Id))} with ±{annotationSearchPpm.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)} ppm m/z windows and without the precursor m/z in the score, and its m/z measured against what it matched; nothing is aligned, no m/z is corrected, no annotation is kept, and nothing is saved beside the raw data.");
+            return PreviewAnnotationMassAccuracy(annotationPreviewStorage, libraries, outputFolder, annotationSearchPpm);
+        }
 
         var container = new MsdialLcmsDataStorage() {
             AnalysisFiles = analysisFiles,
@@ -462,7 +495,7 @@ public sealed class LcmsProcess
         var providerFactory = new StandardDataProviderFactory(5, false);
         var picker = new PeakPickProcess(storage);
         var collector = new PrecursorCalibrantCollector(parameter.CentroidMs1Tolerance);
-        var rows = new ConcurrentDictionary<int, List<Ms2MassAccuracyRow>>();
+        var rows = new ConcurrentDictionary<int, List<MassAccuracyRow>>();
         var completed = 0;
         try {
             // Files in parallel as ProcessRunner takes them, Math.Max(1, ...) for the reason
@@ -492,6 +525,97 @@ public sealed class LcmsProcess
             }
         }
         Console.WriteLine($"MS2 mass accuracy preview: {summaryPath}. No m/z was corrected; the offsets are the product-ion scans' error against the MS1 survey, positive when the product-ion m/z is higher.");
+        return 0;
+    }
+
+    /// <summary>
+    /// The libraries the annotation mass accuracy preview searches: each MSP annotator, as the full run would build it,
+    /// and the LBM. The text libraries are left out: without a spectrum, a match could be chosen only by its m/z.
+    /// </summary>
+    private static List<CalibrationLibrary> CalibrationLibraries(MsdialLcmsParameter param, IEnumerable<MspDataBaseAnnotatorSetting> mspDBs, MoleculeDataBase? lbmDB, int lbmAnnotatorPriority) {
+        var libraries = new List<CalibrationLibrary>();
+        foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
+            foreach (var setting in mspDB.AnnotatorSettings) {
+                var targetOmics = setting.TargetOmics ?? param.TargetOmics;
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
+                libraries.Add(new CalibrationLibrary(annotator, setting.SearchParameter, targetOmics, mspDB.DataBase.DataBaseSource));
+            }
+        }
+        if (lbmDB is { Database.Count: > 0 }) {
+            var annotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, CommonProcess.LbmAnnotatorId(param.LbmFilePath), lbmAnnotatorPriority);
+            libraries.Add(new CalibrationLibrary(annotator, param.LbmSearchParam, TargetOmics.Lipidomics, DataBaseSource.Lbm));
+        }
+        return libraries;
+    }
+
+    /// <summary>
+    /// Picks and deconvolutes every file's features, annotates each once more with wide m/z windows, and measures its
+    /// MS1 m/z and its product ions against the theoretical m/z of what it matched, and stops: the annotation mass
+    /// accuracy report, read before deciding whether a file's MS1 or MS2 needs recalibration.
+    /// </summary>
+    /// <remarks>
+    /// The peaks are picked and deconvoluted as the full run does it (PeakPickProcess, SpectrumDeconvolutionProcess),
+    /// so the spectra are those the full run would annotate; for AIF, those of the lowest collision energy. Nothing is
+    /// corrected, aligned or kept, and nothing is saved beside the raw data: the calibrants of each file and the summary
+    /// go to <see cref="AnnotationMassAccuracyReport.FolderName"/> in the output folder, whose files of an earlier
+    /// preview are removed first.
+    /// </remarks>
+    private static int PreviewAnnotationMassAccuracy(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<CalibrationLibrary> libraries, string outputFolder, double searchPpm) {
+        var files = storage.AnalysisFiles;
+        var parameter = storage.Parameter;
+        var folder = Path.Combine(outputFolder, AnnotationMassAccuracyReport.FolderName);
+        try {
+            Directory.CreateDirectory(folder);
+            var earlier = Directory.GetFiles(folder, "*" + AnnotationMassAccuracyReport.CalibrantsFileSuffix)
+                .Concat(Directory.GetFiles(folder, AnnotationMassAccuracyReport.SummaryFileName))
+                .ToList();
+            foreach (var path in earlier) {
+                File.Delete(path);
+            }
+            if (earlier.Count > 0) {
+                Console.WriteLine($"Removed {earlier.Count} annotation mass accuracy file(s) of an earlier preview from {folder}.");
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+            Console.Error.WriteLine($"The annotation mass accuracy files of an earlier preview in {folder} cannot be replaced: {ex.Message} Close them and run again.");
+            return -1;
+        }
+
+        var providerFactory = new StandardDataProviderFactory(5, false);
+        var picker = new PeakPickProcess(storage);
+        var deconvoluter = new SpectrumDeconvolutionProcess(storage);
+        var collector = new AnnotationCalibrantCollector(libraries, searchPpm);
+        var rows = new ConcurrentDictionary<int, List<MassAccuracyRow>>();
+        var completed = 0;
+        try {
+            Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, parameter.NumThreads / 2) }, file => {
+                var provider = providerFactory.Create(file);
+                var peaks = picker.Pick(file, provider, null, default).Items;
+                var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, peaks);
+                var deconvolutions = deconvoluter.Deconvolute(provider, peaks, file, summaryDto, null, default);
+                var spectra = deconvolutions.Argmin(collection => collection.CollisionEnergy).MSDecResults;
+                var calibrants = collector.Collect(peaks, spectra, provider.LoadMsSpectrums());
+                using (var writer = new StreamWriter(Path.Combine(folder, AnnotationMassAccuracyReport.CalibrantsFileName(file.AnalysisFileName)))) {
+                    AnnotationMassAccuracyReport.WriteCalibrants(writer, calibrants);
+                }
+                var summary = AnnotationMassAccuracyReport.Summarize(file.AnalysisFileName, calibrants, searchPpm);
+                rows[file.AnalysisFileId] = summary;
+                Console.WriteLine($"Annotation mass accuracy preview: {Interlocked.Increment(ref completed)}/{files.Count} files read ({file.AnalysisFileName}): {AnnotationMassAccuracyReport.Describe(summary)}");
+            });
+        }
+        catch (AggregateException ex) {
+            Console.Error.WriteLine($"Annotation mass accuracy preview failed: {ex.InnerException?.Message ?? ex.Message}");
+            return -1;
+        }
+
+        var summaryPath = Path.Combine(folder, AnnotationMassAccuracyReport.SummaryFileName);
+        using (var writer = new StreamWriter(summaryPath)) {
+            MassAccuracySummary.WriteHeader(writer);
+            foreach (var file in files) {
+                MassAccuracySummary.WriteRows(writer, rows[file.AnalysisFileId]);
+            }
+        }
+        Console.WriteLine($"Annotation mass accuracy preview: {summaryPath}. No m/z was corrected and no annotation was kept; the offsets are the observed m/z's error against the theoretical m/z of what each feature matched, positive when the observed m/z is higher.");
         return 0;
     }
 
