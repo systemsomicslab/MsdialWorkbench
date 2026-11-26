@@ -168,11 +168,14 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {
                         matchIdx = i;
-                        maxMatchs[i] = matchFactor = factor;
+                        matchFactor = factor;
                     }
                 }
-                if (matchIdx.HasValue)
+                // Only the master the peak joins records its score (see PeakJoiner.AlignPeaksToMaster).
+                if (matchIdx.HasValue) {
+                    maxMatchs[matchIdx.Value] = matchFactor;
                     DataObjConverter.SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target as ChromatogramPeakFeature);
+                }
             }
         }
 

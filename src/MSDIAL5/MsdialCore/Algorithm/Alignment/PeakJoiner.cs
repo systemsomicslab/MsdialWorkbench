@@ -43,11 +43,16 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     var factor = GetSimilality(masters[i], target);
                     if (factor > maxMatchs[i] && factor > matchFactor) {
                         matchIdx = i;
-                        maxMatchs[i] = matchFactor = factor;
+                        matchFactor = factor;
                     }
                 }
-                if (matchIdx.HasValue)
+                // Only the master the peak joins records its score. Recording every master that was the best so far
+                // while scanning left a claim on masters the peak did not join, which then refused the file's other
+                // peaks that matched them less well (MS-DIAL 4 recorded the chosen master only).
+                if (matchIdx.HasValue) {
+                    maxMatchs[matchIdx.Value] = matchFactor;
                     DataObjConverter.SetAlignmentChromPeakFeatureFromChromatogramPeakFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target as ChromatogramPeakFeature);
+                }
             }
         }
 
