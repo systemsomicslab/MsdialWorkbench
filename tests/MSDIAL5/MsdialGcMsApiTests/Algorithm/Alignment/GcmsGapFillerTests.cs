@@ -45,8 +45,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             filler.GapFill(null, null, null, spot, fileID: target.FileID);
 
             Assert.AreEqual(0d, target.PeakHeightTop);
-            Assert.AreEqual(-2, target.MasterPeakID);
             Assert.AreEqual(-2, target.PeakID);
+            // The link to the file's own peak, and the record that the file had a joined peak, are kept.
+            Assert.AreEqual(1, target.MasterPeakID);
             Assert.AreEqual(0, representative.PeakID);
         }
 
@@ -81,6 +82,71 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
 
             filler.GapFill(null, null, null, spot, fileID: target.FileID);
             filler.GapFill(null, null, null, spot, fileID: missing.FileID);
+
+            CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastCenterPeaks);
+        }
+
+        [TestMethod()]
+        public void UpdateQuantMassRestoresADemotedPeakThatCarriesTheNewQuantMass() {
+            var (spot, _, target, _) = CreateSpot();
+            new StubGcmsGapFiller(new MsdialGcmsParameter()).GapFill(null, null, null, spot, fileID: target.FileID);
+            Assert.AreEqual(-2, target.PeakID);
+
+            // The user picks another quant mass, one that this file's peak carries, and re-quantifies: the GUI uses a
+            // new gap filler, so nothing but the alignment result records the earlier decision.
+            spot.QuantMass = 73.0472d;
+            new StubGcmsGapFiller(new MsdialGcmsParameter()) { Peaks = CreatePeakList(), }.UpdateQuantMass(null, spot, fileID: target.FileID);
+
+            Assert.AreEqual(1000d, target.PeakHeightTop);
+            Assert.AreEqual(1, target.PeakID);
+            Assert.AreEqual(1, target.MasterPeakID);
+        }
+
+        [TestMethod()]
+        public void UpdateQuantMassDemotesADetectedPeakWithoutSignalAtTheNewQuantMass() {
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
+            var (spot, _, target, _) = CreateSpot();
+
+            spot.QuantMass = 73.0472d;
+            filler.UpdateQuantMass(null, spot, fileID: target.FileID);
+
+            Assert.AreEqual(0d, target.PeakHeightTop);
+            Assert.AreEqual(-2, target.PeakID);
+            Assert.AreEqual(1, target.MasterPeakID);
+        }
+
+        [TestMethod()]
+        public void UpdateQuantMassKeepsTheRepresentativePeakDetected() {
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
+            var (spot, representative, _, _) = CreateSpot();
+
+            filler.UpdateQuantMass(null, spot, fileID: representative.FileID);
+
+            Assert.AreEqual(0d, representative.PeakHeightTop);
+            Assert.AreEqual(0, representative.PeakID);
+            Assert.AreEqual(0, representative.MasterPeakID);
+        }
+
+        [TestMethod()]
+        public void UpdateQuantMassLeavesAGapFilledCellNotDetected() {
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter()) { Peaks = CreatePeakList(), };
+            var (spot, _, _, missing) = CreateSpot();
+
+            filler.UpdateQuantMass(null, spot, fileID: missing.FileID);
+
+            Assert.AreEqual(1000d, missing.PeakHeightTop);
+            Assert.AreEqual(-2, missing.PeakID);
+            Assert.AreEqual(-2, missing.MasterPeakID);
+        }
+
+        [TestMethod()]
+        public void UpdateQuantMassCentersOnADemotedPeakAsTheAlignmentDid() {
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
+            var (spot, representative, target, missing) = CreateSpot();
+            // As read back from a saved alignment: the file's peak was joined, then counted as not detected.
+            target.PeakID = -2;
+
+            filler.UpdateQuantMass(null, spot, fileID: missing.FileID);
 
             CollectionAssert.AreEquivalent(new[] { representative, target, }, filler.LastCenterPeaks);
         }

@@ -7,10 +7,8 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment;
 
@@ -40,56 +38,61 @@ public abstract class GcmsGapFiller : IGapFiller
 
     public void GapFill(Ms1Spectra ms1Spectra, RawSpectra rawSpectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
         var peaks = spot.AlignedPeakProperties;
-        var detected = peaks.Where(peak => peak.PeakID >= 0 || _demoted.ContainsKey(peak)).ToArray();
+        var joined = GetJoinedPeaks(peaks);
 
         var target = peaks.First(peak => peak?.FileID == fileID);
-        var wasDetected = target.MasterPeakID >= 0;
-        target.PeakShape.EstimatedNoise = GetEstimatedNoise(detected);
+        target.PeakShape.EstimatedNoise = GetEstimatedNoise(joined);
 
-        var chromXCenter = GetCenter(spot, detected);
-        var peakWidth = GetPeakWidth(detected);
+        var chromXCenter = GetCenter(spot, joined);
+        var peakWidth = GetPeakWidth(joined);
         var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
         target.Mass = spot.QuantMass;
         GapFillCore(peaklist, chromXCenter, AxTol, target);
-
-        // A peak detected in this file joins the spot on its EI spectrum at nominal mass, but it is quantified on the
-        // spot's quant mass within the centroid tolerance. With accurate-mass data the file's peak may carry no ion
-        // there, and the re-extraction then gives no signal. Such a peak is counted as not detected, like a gap-filled
-        // peak, so that it does not raise the fill percentage or the spot's height statistics. The representative
-        // file's peak is kept: the spot takes its name, spectrum and annotation from it. The demoted peak still counts
-        // towards the center and width used for the files filled after it, exactly as before, so the other files'
-        // values do not depend on this decision.
-        if (wasDetected && target.PeakHeightTop <= 0 && spot.RepresentativeFileID != fileID) {
-            target.MasterPeakID = -2;
-            target.PeakID = -2;
-            _demoted.TryAdd(target, 0);
-        }
-    }
-
-    /// <summary>
-    /// Peaks detected in their file that the gap filler counted as not detected because their re-extraction at the
-    /// spot's quant mass gave no signal. Keyed by reference.
-    /// </summary>
-    private readonly ConcurrentDictionary<AlignmentChromPeakFeature, byte> _demoted = new ConcurrentDictionary<AlignmentChromPeakFeature, byte>(ReferenceComparer.Instance);
-
-    private sealed class ReferenceComparer : IEqualityComparer<AlignmentChromPeakFeature>
-    {
-        public static ReferenceComparer Instance { get; } = new ReferenceComparer();
-        public bool Equals(AlignmentChromPeakFeature x, AlignmentChromPeakFeature y) => ReferenceEquals(x, y);
-        public int GetHashCode(AlignmentChromPeakFeature obj) => RuntimeHelpers.GetHashCode(obj);
+        UpdateDetection(spot, target, fileID);
     }
 
     public void UpdateQuantMass(RawSpectra rawSpectra, AlignmentSpotProperty spot, int fileID) {
         var peaks = spot.AlignedPeakProperties;
-        var detected = peaks.Where(peak => peak.PeakID >= 0).ToArray();
+        var joined = GetJoinedPeaks(peaks);
 
         var target = peaks.First(peak => peak?.FileID == fileID);
 
-        var chromXCenter = GetCenter(spot, detected);
-        var peakWidth = GetPeakWidth(detected);
+        var chromXCenter = GetCenter(spot, joined);
+        var peakWidth = GetPeakWidth(joined);
         var peaklist = GetPeaks(rawSpectra, chromXCenter, peakWidth, fileID, _smoothingMethod, _smoothingLevel);
         target.Mass = spot.QuantMass;
         GapFillCore(peaklist, chromXCenter, AxTol, target);
+        UpdateDetection(spot, target, fileID);
+    }
+
+    /// <summary>
+    /// The peaks joined to the spot from their own file, whether or not they currently count as detected (see
+    /// <see cref="UpdateDetection"/>). The center, width and noise used to re-extract a file are taken from this set, at
+    /// alignment and at every later re-quantification alike, so that whether one file counts as detected never moves
+    /// the values of the others.
+    /// </summary>
+    private static AlignmentChromPeakFeature[] GetJoinedPeaks(IEnumerable<AlignmentChromPeakFeature> peaks) {
+        return peaks.Where(peak => peak.MasterPeakID >= 0).ToArray();
+    }
+
+    /// <summary>
+    /// Decides whether a peak joined to the spot counts as detected at the spot's current quant mass.
+    /// </summary>
+    /// <remarks>
+    /// A peak detected in its file joins the spot on its EI spectrum compared at nominal mass, but it is quantified on
+    /// the spot's quant mass within the centroid tolerance. With accurate-mass data the file's peak may carry no ion
+    /// there, and the re-extraction then gives no signal. Such a peak counts as not detected, like a gap-filled peak
+    /// (PeakID -2), so that it does not raise the fill percentage or lower the spot's height statistics. MasterPeakID
+    /// keeps the link to the file's own peak (its deconvoluted spectrum and annotation), and it records that the file
+    /// had a joined peak, so the decision is made again on every re-quantification: a peak demoted at one quant mass is
+    /// restored at another that it carries, and the reverse. A gap-filled cell (MasterPeakID below 0) is left as it is,
+    /// and so is the representative file's peak: the spot takes its name, spectrum and annotation from it.
+    /// </remarks>
+    private static void UpdateDetection(AlignmentSpotProperty spot, AlignmentChromPeakFeature target, int fileID) {
+        if (target.MasterPeakID < 0 || spot.RepresentativeFileID == fileID) {
+            return;
+        }
+        target.PeakID = target.PeakHeightTop > 0 ? target.MasterPeakID : -2;
     }
 
     protected abstract ChromXs GetCenter(AlignmentSpotProperty spot, IEnumerable<AlignmentChromPeakFeature> peaks); // TODO: change this to run only once per spot
