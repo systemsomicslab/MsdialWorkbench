@@ -80,7 +80,10 @@ public sealed class FileProcess : IFileProcessor {
         if (option.HasFlag(ProcessOption.PeakSpotting) && _massRecalibration is not null) {
             token.ThrowIfCancellationRequested();
             Console.WriteLine("Mass recalibration started");
-            var outcome = _massRecalibration.Decide(analysisFile, chromPeakFeatures.Items, mSDecResultCollections, provider.LoadMsSpectrums(), token);
+            MassRecalibrationOutcome outcome;
+            using (StageTiming.Measure(analysisFile.AnalysisFileName, "mass recalibration")) {
+                outcome = _massRecalibration.Decide(analysisFile, chromPeakFeatures.Items, mSDecResultCollections, provider.LoadMsSpectrums(), token);
+            }
             Console.WriteLine($"Mass recalibration ({analysisFile.AnalysisFileName}): {outcome.Describe()}");
             if (outcome.Recalibration is not null) {
                 // Recorded with the file, the recalibration is taken out of its spectra whenever they are read: by the
