@@ -15,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CompMs.App.Msdial.Model.Statistics {
     internal sealed class Notame : DisposableModelBase {
@@ -253,35 +252,5 @@ namespace CompMs.App.Msdial.Model.Statistics {
         public IReadOnlyList<string> Packages { get; }
         public string OldNotameVersion { get; }
         public bool InstallTinyTex { get; }
-    }
-
-    public class CustomPackageDialog : Form {
-        private string message;
-
-        public CustomPackageDialog(string message) {
-            this.message = message;
-            InitializeComponents();
-        }
-
-        private void InitializeComponents() {
-            this.Text = "Package Installation";
-            this.Size = new System.Drawing.Size(700, 420);
-
-            var txtMessage = new TextBox();
-            txtMessage.Multiline = true;
-            txtMessage.ReadOnly = true;
-            txtMessage.ScrollBars = ScrollBars.Both;
-            txtMessage.WordWrap = false;
-            txtMessage.Font = new System.Drawing.Font(System.Drawing.FontFamily.GenericMonospace, 9f);
-            txtMessage.Text = message;
-            txtMessage.Dock = DockStyle.Fill;
-            this.Controls.Add(txtMessage);
-        }
-
-        public static DialogResult ShowDialog(string message) {
-            using (var dialog = new CustomPackageDialog(message)) {
-                return dialog.ShowDialog();
-            }
-        }
     }
 }

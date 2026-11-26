@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
@@ -13,8 +14,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics {
@@ -128,7 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
         private DelegateCommand? _showScript;
 
         private void ShowScript() {
-            CustomPackageDialog.ShowDialog(Notame.PackageInstallScript);
+            NotamePackageDialog.Show("Notame package installation script", Notame.PackageInstallScript);
         }
 
         public bool ExportReport {
@@ -163,7 +164,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
             catch (System.Exception ex) {
                 MessageBox.Show(
                     $"Notame failed: {ex.Message}\r\n\r\nThe log of the run is in {System.IO.Path.Combine(exportDirectory, "notame_log.txt")}.",
-                    "Notame", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    "Notame", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally {
                 _isRunning = false;
@@ -183,8 +184,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                 "Notame needs these packages to continue.\r\n\r\n  " + string.Join("\r\n  ", packages) +
                 $"\r\n\r\nDownload and install these packages and their required dependencies using R at {requirements.RHome}?" +
                 "\r\n\r\nAfter setup, restart MS-DIAL and run Notame again.",
-                "Install Notame packages", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-            if (answer != DialogResult.Yes) {
+                "Install Notame packages", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (answer != MessageBoxResult.Yes) {
                 return;
             }
 
@@ -196,7 +197,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                 MessageBox.Show("Setup completed. Restart MS-DIAL and run Notame again.", "Notame");
             }
             catch (System.Exception ex) {
-                CustomPackageDialog.ShowDialog("Notame package setup failed.\r\n\r\n" + ex.Message);
+                NotamePackageDialog.Show("Notame package setup failed", ex.Message);
             }
         }
 
