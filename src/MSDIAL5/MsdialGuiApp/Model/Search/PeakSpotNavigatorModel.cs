@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -29,6 +31,7 @@ namespace CompMs.App.Msdial.Model.Search
             ValueFilterModels = new ObservableCollection<ValueFilterModel>(valueFilterModels);
             KeywordFilterModels = new ObservableCollection<KeywordFilterModel>(keywordFilterModels);
             TagSearchQueryBuilder = tagSearchQueryBuilderModel;
+            PeakSpotsCollection.CollectionChanged += OnPeakSpotsCollectionChanged;
         }
 
         public string? SelectedAnnotationLabel {
@@ -40,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Search
         public object PeakSpots { get; }
 
         public ObservableCollection<ICollectionView> PeakSpotsCollection { get; } = new ObservableCollection<ICollectionView>();
+        private readonly Dictionary<ICollectionView, PendingRefresh> _pendingRefreshes = new Dictionary<ICollectionView, PendingRefresh>();
         public ValueFilterModel AmplitudeFilterModel { get; }
         public ObservableCollection<ValueFilterModel> ValueFilterModels { get; }
         public ObservableCollection<KeywordFilterModel> KeywordFilterModels { get; }
@@ -60,9 +64,23 @@ namespace CompMs.App.Msdial.Model.Search
             TagSearchQueryBuilder.Reset();
         }
 
+        /// <summary>
+        /// Refreshes every view that is not in an edit transaction now; a view in one is refreshed once, after its edit ends.
+        /// </summary>
         public void RefreshCollectionViews() {
             foreach (var view in PeakSpotsCollection) {
-                view.Refresh();
+                _pendingRefreshes[view].Request();
+            }
+        }
+
+        // Keeps one PendingRefresh per view in the list; a view leaving the list drops its pending refresh.
+        private void OnPeakSpotsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            foreach (var removed in _pendingRefreshes.Keys.Except(PeakSpotsCollection).ToArray()) {
+                _pendingRefreshes[removed].Dispose();
+                _pendingRefreshes.Remove(removed);
+            }
+            foreach (var added in PeakSpotsCollection.Except(_pendingRefreshes.Keys).ToArray()) {
+                _pendingRefreshes.Add(added, new PendingRefresh(added));
             }
         }
 
@@ -70,6 +88,7 @@ namespace CompMs.App.Msdial.Model.Search
             if (disposing) {
                 PeakFilters.Clear();
                 PeakSpotsCollection.Clear();
+                PeakSpotsCollection.CollectionChanged -= OnPeakSpotsCollectionChanged;
             }
             base.Dispose(disposing);
         }
