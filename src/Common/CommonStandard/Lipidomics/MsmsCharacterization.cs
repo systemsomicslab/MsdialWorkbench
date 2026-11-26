@@ -11110,8 +11110,8 @@ AdductIon adduct)
                                 ? theoreticalMz
                                 : theoreticalMz + H2O;
                             var sph1 = protonatedMz
-                                - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) 
-                                + MassDiffDictionary.HydrogenMass 
+                                - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble)
+                                + MassDiffDictionary.HydrogenMass
                                 - MassDiffDictionary.OxygenMass;
                             var sph2 = sph1 - H2O;
                             var sph3 = sph1 - 2 * H2O;
@@ -11604,7 +11604,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             if (acylCarbon <= 0 || acylDouble < 0) { continue; }
 
-                            var sphChain_loss = diagnosticMz 
+                            var sphChain_loss = diagnosticMz
                                 - (LipidMsmsCharacterizationUtility.SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.OxygenMass)
                                 - MassDiffDictionary.HydrogenMass
                                 + MassDiffDictionary.HydrogenMass * 3 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.CarbonMass * 2; // "[FA+NCCO-O-3H]-"
@@ -13551,8 +13551,8 @@ AdductIon adduct)
                                     if (sphCarbon <= 0 || acylCarbon <= 0 || terminalC <= 0) continue;
                                     if (sphDouble < 0 || acylDB < 0 || terminalDB < 0) continue;
 
-                                    var esterloss = diagnosticMz 
-                                        - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalC, terminalDB) 
+                                    var esterloss = diagnosticMz
+                                        - LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalC, terminalDB)
                                         - Proton; // 
                                     var esterFa = LipidMsmsCharacterizationUtility.fattyacidProductIon(terminalC, terminalDB);
                                     var acylFragment = esterloss
@@ -13799,7 +13799,7 @@ AdductIon adduct)
                                     //    extCarbon + acylCarbon, extDouble + acylDouble, exAcylQueryAverageInt + ceramideQueryAverageInt, "+O");
                                     //    candidates.Add(molecule);
                                     //}
-                                    var ceramideScore =ceramideQueryAverageInt + exAcylQueryAverageInt;
+                                    var ceramideScore = ceramideQueryAverageInt + exAcylQueryAverageInt;
                                     if (sphQueryFoundCount >= 1 && ceramideQueryFoundCount >= 1)
                                     {
                                         // Assign the sphingoid base and amide chain when base evidence exists.
@@ -15106,7 +15106,7 @@ AdductIon adduct)
                 {
                     // seek [C2H8NO4P-H]-
                     var threshold = 5.0;
-                    var diagnosticMz =2 * MassDiffDictionary.CarbonMass
+                    var diagnosticMz = 2 * MassDiffDictionary.CarbonMass
                         + 8 * MassDiffDictionary.HydrogenMass
                         + MassDiffDictionary.NitrogenMass
                         + 4 * MassDiffDictionary.OxygenMass
@@ -15146,9 +15146,19 @@ AdductIon adduct)
                             LipidMsmsCharacterizationUtility.countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
 
                             if (foundCount == 1)
-                            { 
-                                var molecule = LipidMsmsCharacterizationUtility.getCeramideMoleculeObjAsLevel2("PE-Cer", LbmClass.PE_Cer, hydrogenString, sphCarbon, sphDouble,
-                                    acylCarbon, acylDouble, averageIntensity);
+                            {
+                                var molecule =
+                                    LipidMsmsCharacterizationUtility
+                                        .getCeramideoxMoleculeObjAsLevel2(
+                                            "PE-Cer", LbmClass.PE_Cer, hydrogenString,
+                                            sphCarbon, sphDouble,
+                                            acylCarbon, acylDouble,
+                                            acylOxidized, averageIntensity);
+
+                                molecule.TotalOxidizedCount = totalOxidized;
+                                molecule.Sn1Oxidizedount = sphOxidized;
+                                molecule.Sn2Oxidizedount = acylOxidized;
+
                                 candidates.Add(molecule);
                             }
                             //var acylLoss2 = theoreticalMz - LipidMsmsCharacterizationUtility.acylCainMass(acylCarbon, acylDouble) - acylOxidized * MassDiffDictionary.OxygenMass + Proton;
@@ -15166,17 +15176,19 @@ AdductIon adduct)
                             //        acylCarbon, acylDouble, acylOxidized, averageIntensity2);
                             //    candidates.Add(molecule);
                             //}
-                            var result =LipidMsmsCharacterizationUtility.returnAnnotationResult(
-                                    "PE-Cer", LbmClass.PE_Cer, hydrogenString,
-                                    theoreticalMz, adduct,
-                                    totalCarbon, totalDoubleBond,
-                                    acylOxidized, candidates, 2);
 
-                            // The shared fallback helper stores only the extra oxygen argument.
-                            result.TotalOxidizedCount = totalOxidized;
-                            return result;
                         }
+
                     }
+                    var result = LipidMsmsCharacterizationUtility.returnAnnotationResult(
+                            "PE-Cer", LbmClass.PE_Cer, hydrogenString,
+                            theoreticalMz, adduct,
+                            totalCarbon, totalDoubleBond,
+                            acylOxidized, candidates, 2);
+
+                    // The shared fallback helper stores only the extra oxygen argument.
+                    result.TotalOxidizedCount = totalOxidized;
+                    return result;
                 }
             }
             return null;
