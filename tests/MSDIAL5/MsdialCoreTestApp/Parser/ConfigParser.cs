@@ -1138,7 +1138,8 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ms2 tolerance for generated lipid annotation": return Number(value, v => search.Ms2Tolerance = (float)v);
                 case "mass range begin for generated lipid annotation": return Number(value, v => search.MassRangeBegin = (float)v);
                 case "mass range end for generated lipid annotation": return Number(value, v => search.MassRangeEnd = (float)v);
-                case "relative amplitude cutoff for generated lipid annotation": return Number(value, v => search.RelativeAmpCutoff = (float)v);
+                // Percent of the base peak, as for the MSP and LBM keys.
+                case "relative amplitude cutoff for generated lipid annotation": return Number(value, v => search.RelativeAmpCutoff = (float)(v / 100d));
                 case "absolute amplitude cutoff for generated lipid annotation": return Number(value, v => search.AbsoluteAmpCutoff = (float)v);
                 case "square root of weighted dot product cutoff for generated lipid annotation": return Number(value, v => search.WeightedDotProductCutOff = (float)v);
                 case "square root of simple dot product cutoff for generated lipid annotation": return Number(value, v => search.SimpleDotProductCutOff = (float)v);
@@ -1392,7 +1393,8 @@ namespace CompMs.App.MsdialConsole.Parser
             SetFloat(fields, headers, value => parameter.CcsTolerance = value, "ccstolerance");
             SetFloat(fields, headers, value => parameter.Ms1Tolerance = value, "ms1tolerance", "accuratems1tolerance");
             SetFloat(fields, headers, value => parameter.Ms2Tolerance = value, "ms2tolerance");
-            SetFloat(fields, headers, value => parameter.RelativeAmpCutoff = value, "relativeamplitudecutoff", "relativeampcutoff");
+            // Percent of the base peak, as the method file's "Relative amplitude cutoff for MSP-based annotation".
+            SetFloat(fields, headers, value => parameter.RelativeAmpCutoff = (float)(value / 100d), "relativeamplitudecutoff", "relativeampcutoff");
             SetFloat(fields, headers, value => parameter.AbsoluteAmpCutoff = value, "absoluteamplitudecutoff", "absoluteampcutoff");
             SetFloat(fields, headers, value => parameter.WeightedDotProductCutOff = value, "weighteddotproductcutoff");
             SetFloat(fields, headers, value => parameter.SimpleDotProductCutOff = value, "simpledotproductcutoff");
@@ -2138,7 +2140,8 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "ccs tolerance for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.CcsTolerance = (float)v);
                 case "mass range begin for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.MassRangeBegin = (float)v);
                 case "mass range end for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.MassRangeEnd = (float)v);
-                case "relative amplitude cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.RelativeAmpCutoff = (float)v);
+                // Percent of the base peak, as for the MSP key above.
+                case "relative amplitude cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.RelativeAmpCutoff = (float)(v / 100d));
                 case "absolute amplitude cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.AbsoluteAmpCutoff = (float)v);
                 case "weighted dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.SquaredWeightedDotProductCutOff = (float)v);
                 case "simple dot product cutoff for lbm-based annotation": return Number(valueLower, v => param.LbmSearchParam.SquaredSimpleDotProductCutOff = (float)v);

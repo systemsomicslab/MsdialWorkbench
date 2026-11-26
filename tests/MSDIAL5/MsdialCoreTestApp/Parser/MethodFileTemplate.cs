@@ -365,7 +365,8 @@ public static class MethodFileTemplate
         SearchWindow(w, p.LbmSearchParam, "LBM", retention, mobility);
         w.Value("Mass range begin for LBM-based annotation", F(p.LbmSearchParam.MassRangeBegin));
         w.Value("Mass range end for LBM-based annotation", F(p.LbmSearchParam.MassRangeEnd));
-        w.Value("Relative amplitude cutoff for LBM-based annotation", F(p.LbmSearchParam.RelativeAmpCutoff));
+        w.Comment("Percent of the base peak (0.1 means 0.1%), as in the GUI.");
+        w.Value("Relative amplitude cutoff for LBM-based annotation", Percent(p.LbmSearchParam.RelativeAmpCutoff));
         w.Value("Absolute amplitude cutoff for LBM-based annotation", F(p.LbmSearchParam.AbsoluteAmpCutoff));
         if (generatedLipid) {
             // ConfigParser.ApplyGeneratedLipidLbmDefaults lowers only the cut-offs a file leaves

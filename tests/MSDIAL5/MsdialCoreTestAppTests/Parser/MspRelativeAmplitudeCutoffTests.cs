@@ -5,6 +5,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
+using CompMs.MsdialLcmsApi.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,51 @@ public sealed class MspRelativeAmplitudeCutoffTests
 
         Assert.IsTrue(outcome.IsApplied);
         Assert.AreEqual(0.001f, parameter.MspSearchParam.RelativeAmpCutoff, 1e-7f);
+    }
+
+    [TestMethod]
+    public void LbmRelativeAmplitudeCutoffIsReadAsPercentLikeTheMspKey()
+    {
+        // The GUI shows the LBM field in percent too: one view model serves every library search.
+        var parameter = new MsdialLcmsParameter();
+
+        var outcome = ConfigParser.ReadCommonParameter(parameter, "Relative amplitude cutoff for LBM-based annotation", "0.1");
+
+        Assert.IsTrue(outcome.IsApplied);
+        Assert.AreEqual(0.001f, parameter.LbmSearchParam.RelativeAmpCutoff, 1e-7f);
+    }
+
+    [TestMethod]
+    public void GeneratedLipidRelativeAmplitudeCutoffIsReadAsPercentLikeTheMspKey()
+    {
+        using var directory = new TemporaryDirectory();
+        var method = directory.CreateFile("method.txt", "Relative amplitude cutoff for generated lipid annotation: 0.1\n");
+
+        var setting = ConfigParser.ReadGeneratedLipidAnnotatorSetting(method);
+
+        Assert.AreEqual(0.001f, setting.SearchParameter.RelativeAmpCutoff, 1e-7f);
+    }
+
+    [TestMethod]
+    public void MspAnnotatorTableRelativeAmplitudeCutoffIsReadAsPercentAndALeftOutCellKeepsTheMethodValue()
+    {
+        using var directory = new TemporaryDirectory();
+        var msp = directory.CreateFile("library.msp");
+        var settings = directory.CreateFile(
+            "msp_annotator_settings.tsv",
+            "annotator_id\tmsp_file_path\trelative_amplitude_cutoff\n" +
+            $"strict\t{msp}\t0.5\n" +
+            $"inherit\t{msp}\t\n");
+        var method = directory.CreateFile("method.txt", $"MSP annotator settings file path: {settings}\n");
+        var parameter = new MsdialLcmsParameter();
+        // What "Relative amplitude cutoff for MSP-based annotation: 0.1" in the method file sets.
+        parameter.MspSearchParam.RelativeAmpCutoff = 0.001f;
+
+        var parsed = ConfigParser.ReadMspAnnotatorSettings(method, parameter);
+
+        Assert.AreEqual(2, parsed.Count);
+        Assert.AreEqual(0.005f, parsed[0].SearchParameter.RelativeAmpCutoff, 1e-7f);
+        Assert.AreEqual(0.001f, parsed[1].SearchParameter.RelativeAmpCutoff, 1e-7f);
     }
 
     [TestMethod]
