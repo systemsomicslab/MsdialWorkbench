@@ -85,7 +85,6 @@ public class PeakSpotTableEditTests
             grid.IsSynchronizedWithCurrentItem = true;
             grid.SelectionUnit = DataGridSelectionUnit.FullRow;
             grid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(nameof(PeakSpotNavigatorViewModel.PeakSpotsView)));
-            grid.SetBinding(DataGridIsEdittingBehavior.IsEdittingProperty, new Binding("IsEditting.Value") { Mode = BindingMode.OneWayToSource, });
             grid.Columns.Add(new DataGridTextColumn { Header = "Name", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Name)), });
             grid.Columns.Add(new DataGridTextColumn { Header = "Ontology", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Ontology)), });
             grid.Columns.Add(new DataGridTextColumn { Header = "Comment", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Comment)), });
@@ -99,7 +98,7 @@ public class PeakSpotTableEditTests
     private static (DataGrid, Window) OpenTable(Harness h) {
         var style = new Style(typeof(DataGrid));
         style.Setters.Add(new Setter(DataGridCommitBehavior.EnableProperty, true));
-        style.Setters.Add(new Setter(DataGridIsEdittingBehavior.EnabledProperty, true));
+        style.Setters.Add(new Setter(DataGridCommitPendingEditBehavior.EnabledProperty, true));
         var window = new Window { DataContext = h.Navigator, Width = 600, Height = 400, ShowActivated = true, WindowStartupLocation = WindowStartupLocation.Manual, Left = 0, Top = 0, };
         window.Resources.Add(typeof(DataGrid), style);
         var host = new ContentControl { ContentTemplate = new DataTemplate { VisualTree = new FrameworkElementFactory(typeof(TableView)), }, };

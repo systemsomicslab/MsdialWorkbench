@@ -76,6 +76,12 @@ public class PeakAligner {
                 files[i] = AlignmentTemporaryFile.CreateBeside(alignmentFile?.EicFilePath);
             }
             var id2idx = CollectPeakSpots(analysisFiles, spots, chromPeakInfoSerializer, files);
+            // Gap filling can count a peak joined from its file as not detected: the GC-MS gap filler does so for a peak
+            // with no signal at the spot's quant mass. The detection filters are applied again so that no spot is kept
+            // that fails them. In the other modes gap filling never changes whether a cell is detected, and this pass
+            // removes nothing. id2idx covers every collected spot by MasterAlignmentID, so the EIC file is still read
+            // for exactly the spots that remain.
+            spots = FilterAlignments(spots, Param);
             (var refined, var ids) = Refiner.Refine(spots);
 
             var container = PackingSpots(refined);

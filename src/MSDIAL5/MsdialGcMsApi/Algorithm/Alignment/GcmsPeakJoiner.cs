@@ -79,18 +79,23 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     private List<AlignmentSpotProperty> ResetQuantMasses(List<AlignmentSpotProperty> spots, Dictionary<int, MSDecLoader> loaders) {
         var results = new List<AlignmentSpotProperty>(spots.Count);
         foreach (var spot in spots) {
-            if (_parameter.IsReplaceQuantmassByUserDefinedValue && spot.IsReferenceMatched(_evaluator)) {
-                var reference = _refer.Refer(spot.MatchResults.Representative);
-                if (reference is not null && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
+            var repPeak = DataObjConverter.GetRepresentativePeak(spot.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).ToList());
+            if (repPeak is null) {
+                continue;
+            }
+            // The library quant mass is read from the representative peak's annotation, as MS-DIAL 4 read it from the
+            // representative file's identification. The spot itself carries no match results yet: PeakAligner copies them
+            // from that peak (DataObjConverter.SetRepresentativeProperty) after gap filling, so a test on the spot here was
+            // always false and the library quant mass never reached the spot. It takes precedence over the base peak and
+            // over the vote below, as in MS-DIAL 4.
+            if (_parameter.IsReplaceQuantmassByUserDefinedValue && IsReferenceMatched(repPeak)) {
+                var reference = _refer?.Refer(repPeak.MatchResults.Representative);
+                if (reference is not null && reference.QuantMass > 0 && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
                     spot.MassCenter = reference.QuantMass;
                     spot.QuantMass = reference.QuantMass;
                     results.Add(spot);
                     continue;
                 }
-            }
-            var repPeak = DataObjConverter.GetRepresentativePeak(spot.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).ToList());
-            if (repPeak is null) {
-                continue; 
             }
             var rep = repPeak.FileID;
             var loader = loaders[rep];
@@ -126,6 +131,11 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         foreach (var spot in results) { spot.MasterAlignmentID = counter; spot.AlignmentID = counter; counter++; }
 
         return results;
+    }
+
+    // The test AlignmentSpotProperty.IsReferenceMatched applies to a spot, applied to one aligned peak.
+    private bool IsReferenceMatched(AlignmentChromPeakFeature peak) {
+        return peak.IsReferenceMatched() || peak.MatchResults.IsReferenceMatched(_evaluator);
     }
 
     private bool QuantMassExists(double quantMass, MSDecResult result) {
