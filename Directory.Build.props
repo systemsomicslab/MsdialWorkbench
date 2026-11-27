@@ -38,11 +38,12 @@
   </PropertyGroup>
 
   <!--
-    A plain `dotnet test` leaves out the Window tests, which show a real WPF window or dialog.
-    A filter given to dotnet test replaces this one (CI gives one, so CI runs them), and
-    -p:RunAllTests=true runs everything. See tests/MSDIAL5/MsdialGuiAppTests/README.md.
+    A plain `dotnet test` leaves out the UI tests, which put a real window on screen: the view tests
+    of MsdialGuiAppTests and the MSDIAL.exe tests of MsdialGuiAppUiTests. A filter given to dotnet test
+    replaces this one (CI gives one, so CI runs them), and -p:RunAllTests=true runs everything.
+    See the README.md of those two test projects.
   -->
   <PropertyGroup Condition="'$(VSTestTestCaseFilter)' == '' And '$(RunAllTests)' != 'true'">
-    <VSTestTestCaseFilter>TestCategory!=Window</VSTestTestCaseFilter>
+    <VSTestTestCaseFilter>TestCategory!=UI</VSTestTestCaseFilter>
   </PropertyGroup>
 </Project>

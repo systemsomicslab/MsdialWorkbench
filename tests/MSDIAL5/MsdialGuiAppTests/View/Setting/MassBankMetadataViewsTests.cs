@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.View.Setting.Tests
     /// The views of the MassBank format constraint: every binding resolves, the free-text and constrained controls
     /// swap with the toggle, and the lists show the saved values. Most are laid out without a window; the checks of
     /// what the person sees (messages under the fields, closing without Finish) show the view in a SettingDialog
-    /// off screen, as MainWindow does. Those make a real window, so they are in the Window category (see the project README).
+    /// off screen, as MainWindow does. Those make a real window, so they are in the UI category (see the project README).
     /// </summary>
     [TestClass]
     public class MassBankMetadataViewsTests
@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.View.Setting.Tests
 
         // Hosted as MainWindow hosts it: in a SettingDialog, whose window template has no AdornerDecorator of its own.
         [TestMethod]
-        [TestCategory("Window")]
+        [TestCategory("UI")]
         public void TheSettingDialogShowsWhatAConstrainedFieldNeeds() {
             TestApplication.Ensure();
             Application.Current.Dispatcher.Invoke(() => {
@@ -174,7 +174,7 @@ namespace CompMs.App.Msdial.View.Setting.Tests
         }
 
         [TestMethod]
-        [TestCategory("Window")]
+        [TestCategory("UI")]
         public void ClosingTheDialogWithoutFinishThrowsTheEditsAway() {
             TestApplication.Ensure();
             Application.Current.Dispatcher.Invoke(() => {
