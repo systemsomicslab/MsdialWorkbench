@@ -80,6 +80,11 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         /// tolerance: <see cref="AlignmentBaseParameter.RetentionTimeAlignmentTolerance"/> when aligning on
         /// retention time, <see cref="RetentionIndexAlignmentTolerance"/> on retention index.
         /// </summary>
+        /// <remarks>
+        /// Every detected peak of a joined spot must also lie within one retention tolerance of the joined spot's
+        /// centre, the window in which the gap filler re-extracts each file's peak. Two spots' centres are then at
+        /// most twice the tolerance apart, so a window above the default of 2 joins no more; a smaller one joins less.
+        /// </remarks>
         [Key(159)]
         public float SplitSpotJoinWindow { get; set; } = DefaultSplitSpotJoinWindow;
 
@@ -114,7 +119,7 @@ namespace CompMs.MsdialGcMsApi.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Replace quant mass by user defined value", IsReplaceQuantmassByUserDefinedValue.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Is quant mass based on base peak mz", IsRepresentativeQuantMassBasedOnBasePeakMz.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Join spots split by retention drift", JoinSpotsSplitByRetentionDrift.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Split spot join window", SplitSpotJoinWindow.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Split spot join window", SplitSpotJoinWindow.ToString(CultureInfo.InvariantCulture) }));
 
             // The EI library search. These lines use the Console's method-file keys, so that a parameter file exported
             // from a GC-MS project runs in the Console with the same identification settings. The dot product cutoffs

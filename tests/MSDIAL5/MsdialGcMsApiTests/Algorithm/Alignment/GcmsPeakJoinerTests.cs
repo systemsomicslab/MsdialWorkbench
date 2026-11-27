@@ -262,18 +262,22 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         }
 
         [TestMethod]
-        [DataRow(AlignmentIndexType.RI, 2f, 2)]
-        [DataRow(AlignmentIndexType.RI, 3f, 1)]
-        [DataRow(AlignmentIndexType.RI, 0f, 2)]
-        [DataRow(AlignmentIndexType.RT, 2f, 2)]
-        [DataRow(AlignmentIndexType.RT, 3f, 1)]
-        [DataRow(AlignmentIndexType.RT, 0f, 2)]
-        public void TheJoinWindowIsInMultiplesOfTheRetentionTolerance(AlignmentIndexType indexType, float window, int expectedSpots) {
-            // 25 RI units (0.25 min) apart, 2.5 retention tolerances: beyond a window of 2, within one of 3.
+        [DataRow(AlignmentIndexType.RI, 2f, 15d, 1)]
+        [DataRow(AlignmentIndexType.RI, 1f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RI, 0f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RI, 3f, 25d, 2)]
+        [DataRow(AlignmentIndexType.RT, 2f, 15d, 1)]
+        [DataRow(AlignmentIndexType.RT, 1f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RT, 0f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RT, 3f, 25d, 2)]
+        public void TheJoinWindowIsInMultiplesOfTheRetentionTolerance(AlignmentIndexType indexType, float window, double distance, int expectedSpots) {
+            // 15 RI units (0.15 min) apart, 1.5 retention tolerances: within a window of 2, beyond one of 1, and 0 turns
+            // the join off. 25 apart are not joined even within a window of 3: the joined spot's centre would be 12.5
+            // from each peak, outside the gap filler's re-extraction window of one tolerance.
             var data = new List<List<SpectrumFeature>>
             {
                 new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
-                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1025d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d + distance, height: 1000d, SpectrumA), },
             };
 
             var spots = Join(data, indexType, p => p.SplitSpotJoinWindow = window);
@@ -285,9 +289,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         [TestMethod]
         [DataRow(AlignmentIndexType.RI)]
         [DataRow(AlignmentIndexType.RT)]
-        public void ACompoundSplitThreeWaysIsJoinedIntoOneSpot(AlignmentIndexType indexType) {
-            // Each file 12 RI units (0.12 min) later than the one before: three masters, joined in two
-            // rounds (the first two spots, then their joined spot, centred at 1006, with the third).
+        public void ACompoundSplitThreeWaysIsJoinedOnlyAsFarAsOneReextractionWindowReaches(AlignmentIndexType indexType) {
+            // Each file 12 RI units (0.12 min) later than the one before: three masters. The first two spots are joined
+            // (centre 1006, both peaks within 10 of it). Joined with the third, the centre would be 1012 and the peaks
+            // at 1000 and 1024 would lie outside the window the gap filler re-extracts in, so the third stays apart.
             var data = new List<List<SpectrumFeature>>
             {
                 new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
@@ -297,8 +302,31 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
 
             var spots = Join(data, indexType, _ => { });
 
-            Assert.AreEqual(1, spots.Count);
-            Assert.IsTrue(spots[0].AlignedPeakProperties.All(p => p.MasterPeakID >= 0));
+            Assert.AreEqual(2, spots.Count);
+            Assert.AreEqual(3, spots.Sum(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0)), "no detected peak is lost");
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsAreNotJoinedWhenAPeakWouldLieOutsideTheReextractionWindow(AlignmentIndexType indexType) {
+            // Six files near 1000 and two near 1018: masters 18 apart, within the join window of 20. Joined, the
+            // centre would be 1004.5 and the gap filler would re-extract within 994.5-1014.5, where the peaks at 1018
+            // are not. Two files near 1000 and two near 1012 (centre 1006) are joined.
+            List<List<SpectrumFeature>> Data(int near, double far) {
+                var data = Enumerable.Range(0, near)
+                    .Select(i => new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d + (i % 2), height: 1000d, SpectrumA), })
+                    .ToList();
+                data.Add(new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: far, height: 1000d, SpectrumA), });
+                data.Add(new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: far, height: 1000d, SpectrumA), });
+                return data;
+            }
+
+            var unbalanced = Join(Data(6, 1018d), indexType, _ => { });
+            var balanced = Join(Data(2, 1012d), indexType, _ => { });
+
+            Assert.AreEqual(2, unbalanced.Count);
+            Assert.AreEqual(1, balanced.Count);
         }
 
         [TestMethod]

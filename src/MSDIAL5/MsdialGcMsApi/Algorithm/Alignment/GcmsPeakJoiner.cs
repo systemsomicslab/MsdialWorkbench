@@ -94,6 +94,17 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         return xs.All(x => ys.All(y => Math.Abs(MasterRetention(x) - MasterRetention(y)) > RetentionTolerance));
     }
 
+    // The gap filler re-extracts every peak of a spot around the spot's centre, the mean retention of its joined peaks
+    // (GcmsGapFiller.GetCenter), and takes a peak top only within the retention tolerance of it (GetPeakTopCandidates).
+    // A detected peak is re-extracted whenever its quant mass is not the spot's (the base peak or the library quant mass
+    // makes that most files) and on every re-quantification. Every peak of the joined spot must lie in that window, or a
+    // re-extraction could not find its own file's peak and would take a neighbour or noise instead.
+    private bool AreWithinOneReextractionWindow(List<AlignmentChromPeakFeature> xs, List<AlignmentChromPeakFeature> ys) {
+        var retentions = xs.Concat(ys).Select(p => RetentionOf(p.ChromXsTop)).ToArray();
+        var centre = retentions.Average();
+        return retentions.All(r => Math.Abs(r - centre) <= RetentionTolerance);
+    }
+
     /// <summary>
     /// Joins the spots of one compound whose retention drifted across the files by more than the
     /// alignment tolerance.
@@ -112,14 +123,17 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     /// compares; for a spot already joined, every master it holds), so that retention, not spectrum,
     /// is what kept the joiner from putting their features together; their centres (the mean
     /// retention of their detected peaks) are within <see cref="MsdialGcmsParameter.SplitSpotJoinWindow"/>
-    /// times the retention tolerance (2 by default); no file has a detected peak in both, so that no file's peak is dropped; the EI
+    /// times the retention tolerance (2 by default); every detected peak of the joined spot lies within the retention
+    /// tolerance of its centre, the window in which the gap filler re-extracts each file's peak; no file has a detected
+    /// peak in both, so that no file's peak is dropped; the EI
     /// spectra of their representative peaks pass the dot-product cutoffs the joiner's comparison
     /// carries (weighted and simple 0.6, reverse 0.8, matched peaks 25% and at least 3) and the
     /// alignment's EI similarity tolerance, as <see cref="IsSimilarTo"/> asks of two features; each is
     /// the other's best such match by the integrated EI similarity; and no two of their masters are
     /// matched to different references. The spot with more detected peaks keeps its master and takes the
-    /// other's peaks. This repeats until no pair is left, so a compound split three ways is joined
-    /// as well.
+    /// other's peaks. This repeats until no pair is left. A compound split three ways by more than the
+    /// tolerance each time spans more than twice the tolerance, so no re-extraction window holds all of
+    /// it: two of its spots are joined and the third is left apart.
     /// </para>
     /// <para>
     /// The test is stricter than the joiner's own (<see cref="IsSimilarTo"/>): its spectrum similarity
@@ -163,7 +177,8 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
                 for (var b = a + 1; b < order.Length && centres[order[b]] - centres[order[a]] <= window; b++) {
                     int i = order[a], j = order[b];
                     if (!AreMastersApartByRetention(alive[i].Masters, alive[j].Masters)
-                        || files[i].Overlaps(files[j]) || !AreSpectraOfOneCompound(representatives[i], representatives[j], alive[i].Masters, alive[j].Masters, out var similarity)) {
+                        || files[i].Overlaps(files[j]) || !AreWithinOneReextractionWindow(members[i], members[j])
+                        || !AreSpectraOfOneCompound(representatives[i], representatives[j], alive[i].Masters, alive[j].Masters, out var similarity)) {
                         continue;
                     }
                     if (similarity > best[i].Similarity) best[i] = (j, similarity);

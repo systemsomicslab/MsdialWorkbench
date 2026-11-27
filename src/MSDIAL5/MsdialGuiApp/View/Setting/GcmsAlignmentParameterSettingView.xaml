@@ -299,7 +299,7 @@
                     <CheckBox IsChecked="{Binding Path=JoinSpotsSplitByRetentionDrift.Value}"
                               IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                               HorizontalAlignment="Left"
-                              ToolTip="When a compound's retention drifts across the files by more than the tolerance, its peaks fall into two spots, and each spot gap-fills the files whose peak is in the other. Two such spots are joined when their EI spectra match, no file has a detected peak in both, and their centres are within the join window."
+                              ToolTip="When a compound's retention drifts across the files by more than the tolerance, its peaks fall into two spots, and each spot gap-fills the files whose peak is in the other. Two such spots are joined when their EI spectra match, no file has a detected peak in both, their centres are within the join window, and every peak of the joined spot lies within the tolerance of its centre, where gap filling re-extracts each file's peak."
                               VerticalContentAlignment="Center"
                               Height="24"/>
                 </ui:LabeledContent>
@@ -310,7 +310,7 @@
                              Text="{Binding SplitSpotJoinWindow.Value}"
                              d:Text="2"
                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
-                             ToolTip="How far apart the centres of two spots (the mean retention of their detected peaks) may be for them to be joined, in multiples of the retention time or retention index tolerance. The default is 2."
+                             ToolTip="How far apart the centres of two spots (the mean retention of their detected peaks) may be for them to be joined, in multiples of the retention time or retention index tolerance. The default is 2, which is also the most that takes effect: every peak of a joined spot must lie within one tolerance of its centre. A smaller value joins less."
                              Height="24"
                              VerticalContentAlignment="Center"
                              HorizontalContentAlignment="Right"/>
