@@ -262,6 +262,39 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             Assert.AreEqual(-1, spots[3].AlignedPeakProperties[0].PeakID);
         }
 
+        [TestMethod()]
+        public void AlignPeaksToMasterLetsAPeakJoinAMasterAnEarlierPeakOnlyPassedOver() {
+            // The first peak lies within the m/z tolerance of both masters and joins the closer one
+            // (100.006); on its way it scores the other (100.000) too. The second peak can only join
+            // the master at 100.000, with a lower score than the first peak had there. That master
+            // must still take it: the first peak did not join it.
+            var rtTol = 1d;
+            var mzTol = 0.01;
+            var spots = new List<AlignmentSpotProperty>
+            {
+                BuildSpotProperty(100.000d, 10),
+                BuildSpotProperty(100.006d, 10),
+            };
+            var masters = new List<ChromatogramPeakFeature>
+            {
+                BuildPeakFeature(0, 100.000d, 10),
+                BuildPeakFeature(1, 100.006d, 10),
+            };
+            var targets = new List<ChromatogramPeakFeature>
+            {
+                BuildPeakFeature(1, 100.005d, 10),
+                BuildPeakFeature(2, 99.994d, 10),
+            };
+
+            var evaluator = new FakeEvaluator();
+            var accessor = new StubAccessor([]);
+            var joiner = new LcmsPeakJoiner(new() { RetentionTimeAlignmentTolerance = (float)rtTol, Ms1AlignmentTolerance = (float)mzTol }, accessor, evaluator);
+            joiner.AlignPeaksToMaster(spots, masters, targets, 0);
+
+            Assert.AreEqual(2, spots[0].AlignedPeakProperties[0].PeakID);
+            Assert.AreEqual(1, spots[1].AlignedPeakProperties[0].PeakID);
+        }
+
         AlignmentSpotProperty BuildSpotProperty(double mass, double rt) {
             return new AlignmentSpotProperty
             {

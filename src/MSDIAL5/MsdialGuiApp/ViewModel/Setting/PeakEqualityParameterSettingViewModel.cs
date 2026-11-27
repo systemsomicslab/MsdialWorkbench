@@ -91,6 +91,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
     }
 
+    public class SpectrumSimilarityEqualityParameterSettingViewModel : PeakEqualityParameterSettingViewModel
+    {
+        public SpectrumSimilarityEqualityParameterSettingViewModel(SpectrumSimilarityEqualityParameterSetting model) : base(model) {
+
+        }
+    }
+
     public static class PeakEqualityParameterSettingViewModelFactory
     {
         public static PeakEqualityParameterSettingViewModel? Create(IPeakEqualityParameterSetting model) {
@@ -103,6 +110,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     return new DriftTimeEqualityParameterSettingViewModel(dt);
                 case Ms1EqualityParameterSetting ms1:
                     return new Ms1EqualityParameterSettingViewModel(ms1);
+                case SpectrumSimilarityEqualityParameterSetting spectrum:
+                    return new SpectrumSimilarityEqualityParameterSettingViewModel(spectrum);
                 default:
                     return null;
             }

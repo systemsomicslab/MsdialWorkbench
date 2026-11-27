@@ -79,18 +79,23 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     private List<AlignmentSpotProperty> ResetQuantMasses(List<AlignmentSpotProperty> spots, Dictionary<int, MSDecLoader> loaders) {
         var results = new List<AlignmentSpotProperty>(spots.Count);
         foreach (var spot in spots) {
-            if (_parameter.IsReplaceQuantmassByUserDefinedValue && spot.IsReferenceMatched(_evaluator)) {
-                var reference = _refer.Refer(spot.MatchResults.Representative);
-                if (reference is not null && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
+            var repPeak = DataObjConverter.GetRepresentativePeak(spot.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).ToList());
+            if (repPeak is null) {
+                continue;
+            }
+            // The library quant mass is read from the representative peak's annotation, as MS-DIAL 4 read it from the
+            // representative file's identification. The spot itself carries no match results yet: PeakAligner copies them
+            // from that peak (DataObjConverter.SetRepresentativeProperty) after gap filling, so a test on the spot here was
+            // always false and the library quant mass never reached the spot. It takes precedence over the base peak and
+            // over the vote below, as in MS-DIAL 4.
+            if (_parameter.IsReplaceQuantmassByUserDefinedValue && IsReferenceMatched(repPeak)) {
+                var reference = _refer?.Refer(repPeak.MatchResults.Representative);
+                if (reference is not null && reference.QuantMass > 0 && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
                     spot.MassCenter = reference.QuantMass;
                     spot.QuantMass = reference.QuantMass;
                     results.Add(spot);
                     continue;
                 }
-            }
-            var repPeak = DataObjConverter.GetRepresentativePeak(spot.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).ToList());
-            if (repPeak is null) {
-                continue; 
             }
             var rep = repPeak.FileID;
             var loader = loaders[rep];
@@ -128,6 +133,11 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         return results;
     }
 
+    // The test AlignmentSpotProperty.IsReferenceMatched applies to a spot, applied to one aligned peak.
+    private bool IsReferenceMatched(AlignmentChromPeakFeature peak) {
+        return peak.IsReferenceMatched() || peak.MatchResults.IsReferenceMatched(_evaluator);
+    }
+
     private bool QuantMassExists(double quantMass, MSDecResult result) {
         var bin = _parameter.PeakPickBaseParam.CentroidMs1Tolerance;
         var maxIntensity = result.Spectrum.DefaultIfEmpty().Max(s => s?.Intensity ?? 0d);
@@ -146,19 +156,39 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         return false;
     }
 
+    /// <remarks>
+    /// Retention and spectrum are judged separately: two features are similar when they are within
+    /// the retention tolerance and their integrated EI similarity exceeds the spectrum similarity
+    /// tolerance, and only then. <see cref="MsScanMatchResult.IsSpectrumMatch"/>, which the
+    /// comparison also sets when the fixed dot-product cutoffs of <see cref="_msMatchParam"/> pass,
+    /// is not read: those cutoffs are not settings, and a pair that passes them has an integrated
+    /// similarity of at least 0.608, so with them any tolerance above that was not binding. The total
+    /// score only chooses the best master (<see cref="GetSimilality"/>). Two spectra of one compound
+    /// in two files of a GC-MS run commonly score 0.6-0.75 on the integrated similarity, because
+    /// every small peak present in one spectrum lowers the matched-peaks term, so a tolerance of 0.7
+    /// or more splits most compounds; the GC-MS default is 0.5.
+    /// </remarks>
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance, 
-            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = CompareSpectra(x, y);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
-        return result.IsSpectrumMatch && isRetentionMatch;
+        return isRetentionMatch && MsScanMatching.GetIntegratedSpectraSimilarity(result) > _alignmentParameter.SpectrumSimilarityAlignmentTolerance;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
-            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
-        return result.TotalScore;
+        return CompareSpectra(x, y).TotalScore;
+    }
+
+    /// <remarks>
+    /// The threshold and the EI weight are the alignment's spectrum similarity settings ("Spectrum
+    /// similarity tolerance / factor for alignment" in a method file, "EI similarity tolerance /
+    /// factor" in the dialog), not its MS1 settings: "MS1 tolerance for alignment" is an m/z
+    /// tolerance (0.015 in a method file written like an LC-MS one), and as a similarity threshold
+    /// it admits any spectrum within the retention window.
+    /// </remarks>
+    private MsScanMatchResult CompareSpectra(SpectrumFeature x, SpectrumFeature y) {
+        return MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
+            _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
     }
 
     // The joiners place a peak in a bucket, sort the masters, open the search window and stop the scan on the

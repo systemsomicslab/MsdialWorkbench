@@ -8,13 +8,13 @@ using System.Windows.Threading;
 
 namespace CompMs.Graphics.Behavior
 {
-    public sealed class DataGridIsEdittingBehavior
+    public sealed class DataGridCommitPendingEditBehavior
     {
         public static readonly DependencyProperty EnabledProperty =
             DependencyProperty.RegisterAttached(
                 "Enabled",
                 typeof(bool),
-                typeof(DataGridIsEdittingBehavior),
+                typeof(DataGridCommitPendingEditBehavior),
                 new PropertyMetadata(
                     BooleanBoxes.FalseBox,
                     OnEnabledChanged));
@@ -33,7 +33,6 @@ namespace CompMs.Graphics.Behavior
             if (d is DataGrid grid) {
                 if ((bool)e.OldValue) {
                     grid.BeginningEdit -= OnBeginningEdit;
-                    grid.RowEditEnding -= OnRowEditEnding;
                     grid.Sorting -= OnSorting;
                     grid.IsKeyboardFocusWithinChanged -= OnIsKeyboardFocusWithinChanged;
                     grid.SelectionChanged -= OnSelectionChanged;
@@ -44,7 +43,6 @@ namespace CompMs.Graphics.Behavior
                     // table is opened again while a name is being edited in it). Such edits are committed first, as Enter would.
                     CommitPendingEditsOfOtherGrids(grid);
                     grid.BeginningEdit += OnBeginningEdit;
-                    grid.RowEditEnding += OnRowEditEnding;
                     grid.Sorting += OnSorting;
                     grid.IsKeyboardFocusWithinChanged += OnIsKeyboardFocusWithinChanged;
                     grid.SelectionChanged += OnSelectionChanged;
@@ -69,7 +67,6 @@ namespace CompMs.Graphics.Behavior
                 if (grid.Items is IEditableCollectionView view && view.IsEditingItem && !Equals(view.CurrentEditItem, e.Row?.Item)) {
                     CommitPendingEdit(grid);
                 }
-                SetIsEditting(grid, true);
                 RegisterEditingGrid(grid);
             }
         }
@@ -154,30 +151,7 @@ namespace CompMs.Graphics.Behavior
             catch (InvalidOperationException ex) {
                 System.Diagnostics.Debug.WriteLine($"DataGrid could not commit the row: {ex.Message}");
             }
-            SetIsEditting(grid, false);
             UnregisterEditingGrid(grid);
-        }
-
-        private static void OnRowEditEnding(object sender, DataGridRowEditEndingEventArgs e) {
-            if (sender is DataGrid grid) {
-                System.Diagnostics.Debug.WriteLine("Row edit ending");
-                SetIsEditting(grid, false);
-            }
-        }
-
-        public static readonly DependencyProperty IsEdittingProperty =
-            DependencyProperty.RegisterAttached(
-                "IsEditting",
-                typeof(bool),
-                typeof(DataGridIsEdittingBehavior),
-                new PropertyMetadata(BooleanBoxes.FalseBox));
-
-        public static bool GetIsEditting(DependencyObject d) {
-            return (bool)d.GetValue(IsEdittingProperty);
-        }
-
-        public static void SetIsEditting(DependencyObject d, bool value) {
-            d.SetValue(IsEdittingProperty, BooleanBoxes.Box(value));
         }
     }
 }

@@ -17,3 +17,9 @@ Current mainline MSDIAL development. Unless told otherwise, this is the primary 
 
 - Use the names already established by the MSDIAL5 code paths and UI.
 - If a term is shared with Common, keep the wording consistent across both contexts.
+
+## Language
+
+**Peak spot table**:
+The table listing the alignment spots of an alignment result, or the peaks of an analysis file, with their name, ontology and comment. The UI opens it from "Show ion table".
+_Avoid_: ion table (except when naming the UI command)
