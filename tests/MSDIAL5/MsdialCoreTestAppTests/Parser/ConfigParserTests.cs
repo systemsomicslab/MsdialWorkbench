@@ -621,6 +621,28 @@ public sealed class ConfigParserTests
             RecordedKeys(unusable, "unusable"));
     }
 
+    /// <summary>
+    /// The GUI records the recalibration in the project's parameter; the section of its parameter text is method-file
+    /// lines, which reproduce the settings in the Console.
+    /// </summary>
+    [TestMethod]
+    public void MassRecalibration_TheParameterTextLinesReadBackAsTheSameSettings()
+    {
+        var written = new MsdialLcmsParameter();
+        written.MassRecalibrationParam = new MassRecalibrationParameter { IsEnabled = true, SearchPpm = 60d, MinimumCorrectionPpm = 2.5d };
+        var section = written.ParametersAsText().SkipWhile(line => line != "# Mass recalibration").Skip(1).TakeWhile(line => line.StartsWith("Mass recalibration")).ToList();
+        Assert.AreEqual(3, section.Count);
+        Assert.IsFalse(new MsdialLcImMsParameter().ParametersAsText().Contains("# Mass recalibration"), "LC-IM-MS does not recalibrate");
+
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", string.Join("\n", section) + "\n");
+
+        Assert.IsTrue(ConfigParser.ReadMassRecalibration(methodFile, out var unusable));
+        Assert.IsNull(unusable);
+        Assert.AreEqual(60d, ConfigParser.ReadMassRecalibrationSearchWindow(methodFile, out _));
+        Assert.AreEqual(2.5d, ConfigParser.ReadMassRecalibrationMinimumCorrection(methodFile, out _));
+    }
+
     [TestMethod]
     public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
     {

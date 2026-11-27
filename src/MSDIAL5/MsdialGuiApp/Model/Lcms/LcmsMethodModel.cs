@@ -13,6 +13,7 @@ using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
+using CompMs.MsdialCore.Algorithm.MassCalibration;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -26,6 +27,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -266,6 +268,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var starttimestamp = DateTime.Now.ToString("yyyyMMddHHmm");
             var stopwatch = Stopwatch.StartNew();
             var lipidRtRuns = new List<(string Unit, LipidRtUnitRun? Run)>();
+            string? recalibrationNotice = null;
 
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification)) {
@@ -280,12 +283,29 @@ namespace CompMs.App.Msdial.Model.Lcms
                 else {
                     annotationProcess = BuildAnnotationProcess();
                 }
-                var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator);
+                MassRecalibrationProcess? recalibration = null;
+                if (processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                    recalibration = MassRecalibrationProcess.FromParameter(parameter.MassRecalibrationParam, _storage.DataBases, parameter.TargetOmics, out var refusal);
+                    if (refusal is not null) {
+                        _broker.Publish(new ShortMessageRequest($"{refusal} Change the Identification or the Mass recalibration step, or turn mass recalibration off, and run again. Nothing was processed."));
+                        return;
+                    }
+                    // Picking the peaks again clears each file's recalibration, so an earlier run's audit would no longer
+                    // describe the files; it goes whether or not this run recalibrates, as the Console's does. A refused
+                    // run leaves the files as they were, and so their audit too.
+                    if (!TryRemoveEarlierRecalibrationAudit(parameter.ProjectFolderPath)) {
+                        return;
+                    }
+                }
+                var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, _storage, annotationProcess, _matchResultEvaluator, recalibration);
                 var runner = new ProcessRunner(processor, Math.Max(1, _storage.Parameter.ProcessBaseParam.UsableNumThreads / 2));
                 if (!ProcessFiles(_storage.AnalysisFiles, runner, processOption)) {
                     return;
                 }
                 lipidRtRuns.AddRange(processor.LipidRtFailures.Select(failure => (failure.File, (LipidRtUnitRun?)failure.Run)));
+                if (recalibration is not null) {
+                    recalibrationNotice = WriteRecalibrationAudit(parameter.ProjectFolderPath, recalibration);
+                }
             }
 
             // Run second process
@@ -308,8 +328,36 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (LipidRtCheckDescription.ProcessingFailures(lipidRtRuns) is string lipidRtNotice) {
                 _broker.Publish(new ShortMessageRequest(lipidRtNotice));
             }
+            if (recalibrationNotice is not null) {
+                _broker.Publish(new ShortMessageRequest(recalibrationNotice));
+            }
 
             await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
+        }
+
+        // False, having told the person, when an earlier run's recalibration audit in the project folder cannot be
+        // removed (open in a spreadsheet, say); nothing is processed then.
+        private bool TryRemoveEarlierRecalibrationAudit(string projectFolder) {
+            try {
+                MassRecalibrationAudit.RemoveEarlier(projectFolder);
+                return true;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+                _broker.Publish(new ShortMessageRequest($"The mass recalibration files of an earlier run in {Path.Combine(projectFolder, MassRecalibrationAudit.FolderName)} cannot be replaced: {ex.Message} Close them and run again. Nothing was processed."));
+                return false;
+            }
+        }
+
+        // Writes what the recalibration found for each file to the project folder, and returns what to tell the person.
+        private string WriteRecalibrationAudit(string projectFolder, MassRecalibrationProcess recalibration) {
+            var summary = MassRecalibrationAudit.Summarize(_storage.AnalysisFiles, recalibration);
+            try {
+                var modelsPath = MassRecalibrationAudit.Write(projectFolder, recalibration);
+                return $"Mass recalibration: {summary}. The models and the reason for each decision are in {modelsPath}.";
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+                return $"Mass recalibration: {summary}. Its record could not be written to {Path.Combine(projectFolder, MassRecalibrationAudit.FolderName)}: {ex.Message}";
+            }
         }
 
         private IAnnotationProcess BuildAnnotationProcess() {

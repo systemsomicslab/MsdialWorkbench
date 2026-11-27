@@ -1,0 +1,59 @@
+<UserControl x:Class="CompMs.App.Msdial.View.Setting.MassRecalibrationSettingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:MassRecalibrationSettingViewModel}}"
+             d:DesignHeight="400" d:DesignWidth="700">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}">
+                <Setter Property="Height" Value="30"/>
+            </Style>
+            <Style TargetType="GroupBox">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Margin" Value="8,0,0,0"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel Margin="8">
+        <TextBlock TextWrapping="Wrap" Margin="8,0,8,8"
+                   Text="Each file's features are first annotated against the MSP and LBM libraries of the Identification step, with wide m/z windows and without the precursor m/z in the score. From these matches an MS1 and an MS2 m/z error model are chosen; a model whose error reaches the minimum correction and three standard errors is recorded with the file and taken out of its spectra wherever they are read. The file's peaks are then picked, deconvoluted and annotated again from the corrected m/z, with the tolerances of the Identification step. A file whose error is within its own scatter is left as it is. The models and the reasons for each decision are written to the mass_recalibration folder of the project."/>
+        <GroupBox>
+            <GroupBox.Header>
+                <TextBlock Text="Mass recalibration (LC-MS)" FontStyle="Italic"/>
+            </GroupBox.Header>
+            <StackPanel>
+                <ui:LabeledContent PrependLabel="Recalibrate MS1 and MS2 m/z:">
+                    <CheckBox HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=Recalibrate.Value}"
+                              IsEnabled="{Binding Path=IsReadOnly, Converter={StaticResource NegativeConverter}}"
+                              ToolTip="Off by default. Needs an MSP or LBM library with MS/MS spectra in the Identification step."/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Search window:" AppendLabel="ppm">
+                    <TextBox Text="{Binding Path=SearchPpm.Value}"
+                             IsReadOnly="{Binding Path=IsReadOnly, Mode=OneTime}"
+                             IsEnabled="{Binding Path=Recalibrate.Value}"
+                             ToolTip="Half width of the m/z windows of the first annotation. It must hold the largest error expected; 100 ppm by default."/>
+                </ui:LabeledContent>
+                <ui:LabeledContent PrependLabel="Minimum correction:" AppendLabel="ppm">
+                    <TextBox Text="{Binding Path=MinimumCorrectionPpm.Value}"
+                             IsReadOnly="{Binding Path=IsReadOnly, Mode=OneTime}"
+                             IsEnabled="{Binding Path=Recalibrate.Value}"
+                             ToolTip="A modelled error smaller than this is not corrected; 1.5 ppm by default."/>
+                </ui:LabeledContent>
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+</UserControl>

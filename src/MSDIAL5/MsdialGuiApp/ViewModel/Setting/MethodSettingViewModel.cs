@@ -36,6 +36,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 CreatePeakDetectionSettingViewModel(model.PeakDetectionSettingModel, isEnabled)?.AddTo(Disposables),
                 CreateDeconvolutionSettingViewModel(model.DeconvolutionSettingModel, model.Storage.Parameter.ProjectParam.MachineCategory, isEnabled)?.AddTo(Disposables),
                 CreateIdentificationSettingViewModel(model.IdentifySettingModel, model.Storage, MessageBroker.Default, isEnabled)?.AddTo(Disposables),
+                // After Identification: it annotates against the libraries set there.
+                model.MassRecalibrationSettingModel is null ? null : new MassRecalibrationSettingViewModel(model.MassRecalibrationSettingModel, isEnabled).AddTo(Disposables),
                 model.AdductIonSettingModel is null ? null : new AdductIonSettingViewModel(model.AdductIonSettingModel, isEnabled)?.AddTo(Disposables),
                 CreateAlignmentParameterSettingViewModel(model.AlignmentParameterSettingModel, isEnabled)?.AddTo(Disposables),
                 model.MobilitySettingModel is null ? null : new MobilitySettingViewModel(model.MobilitySettingModel, isEnabled).AddTo(Disposables),

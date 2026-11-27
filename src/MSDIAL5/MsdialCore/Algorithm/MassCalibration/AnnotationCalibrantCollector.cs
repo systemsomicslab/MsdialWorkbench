@@ -44,6 +44,36 @@ public sealed class CalibrationLibrary
     public string Id => Annotator.Id;
 
     /// <summary>
+    /// The libraries of a project's databases that can be searched for calibrants, each with the very annotator and
+    /// search settings its annotation uses: every MSP and LBM annotator. Text libraries are left out, since without a
+    /// spectrum a match could be chosen only by its m/z, and so are the in silico EAD/OAD/EID lipid libraries, which
+    /// annotate in a second step from a first match rather than from the feature.
+    /// </summary>
+    /// <param name="dataBases">The project's databases, with their annotators built (as for processing).</param>
+    /// <param name="targetOmics">The project's target omics, which scores the MSP matches; an LBM's are lipids.</param>
+    public static List<CalibrationLibrary> FromDataBases(DataBaseStorage dataBases, TargetOmics targetOmics) {
+        if (dataBases is null) {
+            throw new ArgumentNullException(nameof(dataBases));
+        }
+        var libraries = new List<CalibrationLibrary>();
+        foreach (var item in dataBases.MetabolomicsDataBases) {
+            var source = item.DataBase.DataBaseSource;
+            if (source == DataBaseSource.Text || item.DataBase.Database.Count == 0) {
+                continue;
+            }
+            foreach (var pair in item.Pairs) {
+                if (pair.AnnotationQueryFactory is AnnotationQueryFactory factory
+                    && factory.Annotator is IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotator) {
+                    var parameter = ((IAnnotationQueryFactory<MsScanMatchResult>)factory).PrepareParameter();
+                    var omics = source == DataBaseSource.Lbm ? TargetOmics.Lipidomics : targetOmics;
+                    libraries.Add(new CalibrationLibrary(annotator, parameter, omics, source));
+                }
+            }
+        }
+        return libraries;
+    }
+
+    /// <summary>
     /// Whether the library's fragment m/z are computed, so that a product ion can be measured against them: LBM and
     /// the in silico libraries. An acquired spectrum's fragment m/z carry the error of the instrument that recorded it.
     /// </summary>
@@ -128,6 +158,9 @@ public sealed class AnnotationCalibrantCollector
         }
         SearchPpm = searchPpm;
     }
+
+    /// <summary>The libraries searched.</summary>
+    public IReadOnlyList<CalibrationLibrary> Libraries => _libraries;
 
     public double SearchPpm { get; }
 

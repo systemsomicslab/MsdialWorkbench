@@ -1,10 +1,13 @@
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 
@@ -67,9 +70,44 @@ public sealed class MassRecalibrationProcess
         MinimumCorrectionPpm = minimumCorrectionPpm;
     }
 
+    /// <summary>
+    /// The recalibration a project's settings ask for, searching the project's own MSP and LBM annotators
+    /// (<see cref="CalibrationLibrary.FromDataBases"/>), as the Console and the GUI both build it.
+    /// </summary>
+    /// <param name="parameter">The project's mass recalibration settings.</param>
+    /// <param name="dataBases">The project's databases, with their annotators built.</param>
+    /// <param name="targetOmics">The project's target omics.</param>
+    /// <param name="refusal">Why a recalibration that is asked for cannot run, or null.</param>
+    /// <returns>The process; null when none is asked for, or when it cannot run, which <paramref name="refusal"/> then says.</returns>
+    public static MassRecalibrationProcess? FromParameter(MassRecalibrationParameter parameter, DataBaseStorage dataBases, TargetOmics targetOmics, out string? refusal) {
+        if (parameter is null) {
+            throw new ArgumentNullException(nameof(parameter));
+        }
+        refusal = null;
+        if (!parameter.IsEnabled) {
+            return null;
+        }
+        refusal = parameter.Problem();
+        if (refusal is not null) {
+            return null;
+        }
+        var libraries = CalibrationLibrary.FromDataBases(dataBases, targetOmics);
+        if (libraries.Count == 0) {
+            refusal = "Mass recalibration needs an MSP or LBM library with MS/MS spectra to annotate against, and none is set.";
+            return null;
+        }
+        return new MassRecalibrationProcess(new AnnotationCalibrantCollector(libraries, parameter.SearchPpm), parameter.MinimumCorrectionPpm);
+    }
+
     public double SearchPpm => _collector.SearchPpm;
 
     public double MinimumCorrectionPpm { get; }
+
+    /// <summary>What the recalibration does, for a log: the libraries, the window and the rule.</summary>
+    public string Describe() {
+        var invariant = CultureInfo.InvariantCulture;
+        return $"each file's features are first annotated against {string.Join(", ", _collector.Libraries.Select(library => library.Id))} with ±{SearchPpm.ToString("0.#", invariant)} ppm m/z windows and without the precursor m/z in the score; an MS1 or MS2 error model of at least {MinimumCorrectionPpm.ToString("0.0#", invariant)} ppm and {MassCalibrationDecision.SignificanceFactor.ToString("0", invariant)} standard errors is recorded with the file and taken out of its spectra, and its peaks are picked, deconvoluted and annotated from the recalibrated m/z.";
+    }
 
     /// <summary>The outcome of each file this process has decided on, in the order of the files' IDs.</summary>
     public IReadOnlyList<MassRecalibrationOutcome> Outcomes => _outcomes.Values.OrderBy(outcome => outcome.FileId).ToList();
