@@ -162,6 +162,27 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         [TestMethod()]
+        public async Task FailureInTheOpenedFolderIsReportedWhenTheStoredFolderIsMissing() {
+            // A project copied from another machine: its stored folder does not exist here, and the dataset beside the
+            // opened project fails for another reason. That failure, not the stored folder, is what the person is shown.
+            var serializer = new FailingSerializer((folder, title) => folder == "Folder"
+                ? new FileNotFoundException("Could not find file.", Path.Combine(folder, title))
+                : (Exception)new ArgumentException("Invalid path or directory."));
+            var stream = await SaveProjectAsync(serializer, "Folder", "Test1");
+
+            var failures = new List<Exception>();
+            using (var streamManager = ZipStreamManager.OpenGet(stream)) {
+                var actual = await ProjectDataStorage.LoadReportingFailuresAsync(streamManager, serializer, _ => null, "Copy",
+                    _ => Task.FromResult<string>(null),
+                    datasetLoadFailed: (_, error) => failures.Add(error));
+                Assert.AreEqual(0, actual.Storages.Count);
+            }
+
+            Assert.AreEqual(1, failures.Count);
+            Assert.IsInstanceOfType(failures[0], typeof(ArgumentException));
+        }
+
+        [TestMethod()]
         public async Task ACompleteCopyPickedElsewhereSuppliesTheMissingSibling() {
             var serializer = new MissingFileSerializer((folder, title) => folder == "Folder" ? title + "_Loaded.msp2.dbs" : null);
             var stream = await SaveProjectAsync(serializer, "Folder", "Test1");
@@ -476,6 +497,31 @@ namespace CompMs.MsdialCore.DataObj.Tests
         }
 
         // Saved with the folder as the prefix and read back with none, so a dataset is found by its title alone.
+        public Task SaveAsync(IMsdialDataStorage<ParameterBase> dataStorage, IStreamManager streamManager, string projectTitle, string prefix) {
+            _storages[projectTitle] = dataStorage;
+            return Task.CompletedTask;
+        }
+    }
+
+    /// <summary>
+    /// Fails with the exception given for (folder, dataset title), or loads the saved dataset when that is null.
+    /// </summary>
+    class FailingSerializer : IMsdialSerializer
+    {
+        private readonly Func<string, string, Exception> _failure;
+        private readonly Dictionary<string, IMsdialDataStorage<ParameterBase>> _storages = new Dictionary<string, IMsdialDataStorage<ParameterBase>>();
+
+        public FailingSerializer(Func<string, string, Exception> failure) {
+            _failure = failure;
+        }
+
+        public Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string projectFolderPath, string prefix) {
+            if (_failure(projectFolderPath, projectTitle) is Exception ex) {
+                throw ex;
+            }
+            return Task.FromResult(_storages[projectTitle]);
+        }
+
         public Task SaveAsync(IMsdialDataStorage<ParameterBase> dataStorage, IStreamManager streamManager, string projectTitle, string prefix) {
             _storages[projectTitle] = dataStorage;
             return Task.CompletedTask;

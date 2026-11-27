@@ -151,14 +151,48 @@ namespace CompMs.MsdialCore.DataObj
 
        
 
-        private static string ReplaceFolderPath(string path, string oldFolder, string newFolder) {
+        /// <summary>
+        /// Moves a stored path from the folder the dataset was saved in to the folder it is opened from.
+        /// A path inside the saved folder, or relative to it, moves with the project. A rooted path outside it (an RI
+        /// dictionary or a library kept elsewhere, or a path of a project saved on another machine, such as a Linux
+        /// path on Windows) is not part of the project folder: it is kept while that file exists, and otherwise becomes
+        /// the file of the same name in the new folder when one is there. A path found in neither place is kept as
+        /// stored, so that whatever reads it later names the file it looked for.
+        /// </summary>
+        internal static string ReplaceFolderPath(string path, string oldFolder, string newFolder) {
             if (string.IsNullOrEmpty(path))
                 return path;
-            if (path.StartsWith(oldFolder))
+            if (IsInFolder(path, oldFolder))
                 return Path.Combine(newFolder, path.Substring(oldFolder.Length).TrimStart('\\', '/'));
-            if (!Path.IsPathRooted(path))
+            if (!IsRootedOnAnyPlatform(path))
                 return Path.Combine(newFolder, path);
-            throw new ArgumentException("Invalid path or directory.");
+            if (File.Exists(path))
+                return path;
+            var besideProject = Path.Combine(newFolder, FileNameOnAnyPlatform(path));
+            return File.Exists(besideProject) ? besideProject : path;
+        }
+
+        private static bool IsInFolder(string path, string folder) {
+            if (string.IsNullOrEmpty(folder))
+                return true;
+            if (!path.StartsWith(folder, StringComparison.Ordinal))
+                return false;
+            if (path.Length == folder.Length || folder.EndsWith("\\") || folder.EndsWith("/"))
+                return true;
+            var next = path[folder.Length];
+            return next == '\\' || next == '/';
+        }
+
+        // A project saved on Windows stores drive-letter and UNC paths, one saved on Linux or macOS stores paths that
+        // start with '/'; each is rooted wherever the project is opened.
+        private static bool IsRootedOnAnyPlatform(string path) {
+            if (Path.IsPathRooted(path) || path.StartsWith("/") || path.StartsWith("\\\\"))
+                return true;
+            return path.Length >= 3 && char.IsLetter(path[0]) && path[1] == ':' && (path[2] == '\\' || path[2] == '/');
+        }
+
+        private static string FileNameOnAnyPlatform(string path) {
+            return path.Substring(path.LastIndexOfAny(new[] { '\\', '/' }) + 1);
         }
 
         protected class MsdialSerializer : IMsdialSerializer {
