@@ -601,6 +601,26 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadMs2MassAccuracyPreviewOnly_IsOffUnlessTheMethodFileSaysTrueAndNamesAnUnusableValue()
+    {
+        using var directory = new TemporaryDirectory();
+        var none = directory.CreateFile("none.txt", "Acquisition type: SWATH\n");
+        var on = directory.CreateFile("on.txt", "MS2 mass accuracy preview only: True\n");
+        var lastWins = directory.CreateFile("last.txt", "MS2 mass accuracy preview only: True\nMS2 mass accuracy preview only: False\n");
+        var unusable = directory.CreateFile("unusable.txt", "MS2 mass accuracy preview only: yes\n");
+
+        Assert.IsFalse(ConfigParser.ReadMs2MassAccuracyPreviewOnly(none, out var noneValue));
+        Assert.IsNull(noneValue);
+        Assert.IsTrue(ConfigParser.ReadMs2MassAccuracyPreviewOnly(on, out var onValue));
+        Assert.IsNull(onValue);
+        Assert.IsFalse(ConfigParser.ReadMs2MassAccuracyPreviewOnly(lastWins, out _));
+        Assert.IsFalse(ConfigParser.ReadMs2MassAccuracyPreviewOnly(unusable, out var unusableValue));
+        Assert.AreEqual("yes", unusableValue);
+        ConfigParser.ReadForLcmsParameter(unusable);
+        CollectionAssert.AreEqual(new[] { "MS2 mass accuracy preview only: yes" }, RecordedKeys(unusable, "unusable"));
+    }
+
+    [TestMethod]
     public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
     {
         // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller
@@ -726,6 +746,7 @@ public sealed class ConfigParserTests
     [DataRow("Annotation candidates", "true")]
     [DataRow("Export annotation candidates", "false")]
     [DataRow("Automatic RT correction preview only", "true")]
+    [DataRow("MS2 mass accuracy preview only", "false")]
     public void ReadForLcms_KeyRecordAcceptsEverySpellingTheSideReadersAccept(string key, string value)
     {
         using var directory = new TemporaryDirectory();

@@ -11,6 +11,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Algorithm.Annotation.LipidRt;
+using CompMs.MsdialCore.Algorithm.MassCalibration;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -106,6 +107,15 @@ public sealed class LcmsProcess
             Console.Error.WriteLine("Automatic RT correction preview only requires Execute automatic RT correction for alignment: True.");
             return -1;
         }
+        var ms2MassAccuracyPreviewOnly = ConfigParser.ReadMs2MassAccuracyPreviewOnly(methodFile, out var unusableMs2PreviewValue);
+        if (unusableMs2PreviewValue is not null) {
+            Console.Error.WriteLine($"'MS2 mass accuracy preview only: {unusableMs2PreviewValue}' is neither True nor False; the run is refused rather than run in full.");
+            return -1;
+        }
+        if (ms2MassAccuracyPreviewOnly && automaticRtCorrectionPreviewOnly) {
+            Console.Error.WriteLine("'MS2 mass accuracy preview only' and 'Automatic RT correction preview only' are both True; run them one at a time.");
+            return -1;
+        }
         // The settings and the anchor library are checked before anything heavy is read, as the
         // RT correction library below is; the library is handed to the correction once the peaks
         // are picked.
@@ -135,7 +145,7 @@ public sealed class LcmsProcess
         // the run before the analysis files and the raw data are read. The libraries it names are
         // read later, with the others. A preview searches no library, so it does not read the table.
         List<MspAnnotatorSetting> mspAnnotatorSettings = [];
-        if (!automaticRtCorrectionPreviewOnly) {
+        if (!automaticRtCorrectionPreviewOnly && !ms2MassAccuracyPreviewOnly) {
             try {
                 mspAnnotatorSettings = ConfigParser.ReadMspAnnotatorSettings(methodFile, param);
             }
@@ -170,6 +180,18 @@ public sealed class LcmsProcess
         // it alone; and a file someone has open is said before anything is removed.
         if (!RemoveEarlierAudit(outputFolder)) {
             return -1;
+        }
+
+        if (ms2MassAccuracyPreviewOnly) {
+            var ms2PreviewStorage = new MsdialLcmsDataStorage() {
+                AnalysisFiles = analysisFiles,
+                AlignmentFiles = [alignmentFile],
+                IsotopeTextDB = [],
+                IupacDatabase = CompMs.Common.Parser.IupacResourceParser.GetIUPACDatabase(),
+                MsdialLcmsParameter = param
+            };
+            Console.WriteLine("MS2 mass accuracy preview: peak picking, then each feature's ion in its product-ion scan against its MS1 m/z; no deconvolution, annotation or alignment, no m/z is corrected, and nothing is saved beside the raw data.");
+            return PreviewMs2MassAccuracy(ms2PreviewStorage, outputFolder);
         }
 
         if (automaticRtCorrectionPreviewOnly) {
@@ -432,6 +454,75 @@ public sealed class LcmsProcess
                 Thread.Sleep(200 * attempt);
             }
         }
+    }
+
+    /// <summary>
+    /// Picks every file's peaks and measures its product-ion scans' m/z against the MS1 survey, from
+    /// the ion each feature leaves unfragmented in the product-ion scan chosen for it, and stops: the
+    /// MS2 mass accuracy report, read before deciding whether a file's MS/MS needs recalibration.
+    /// </summary>
+    /// <remarks>
+    /// The peaks are picked as the full run picks them (PeakPickProcess), so the pairs are those of
+    /// the features the full run would deconvolute. Nothing is corrected, deconvoluted, annotated or
+    /// aligned, and nothing is saved beside the raw data: the candidate pairs of each file and the
+    /// summary go to <see cref="Ms2MassAccuracyReport.FolderName"/> in the output folder, whose
+    /// files of an earlier preview are removed first so that none of them is taken for this run's.
+    /// </remarks>
+    private static int PreviewMs2MassAccuracy(IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder) {
+        var files = storage.AnalysisFiles;
+        var parameter = storage.Parameter;
+        var folder = Path.Combine(outputFolder, Ms2MassAccuracyReport.FolderName);
+        try {
+            Directory.CreateDirectory(folder);
+            var earlier = Directory.GetFiles(folder, "*" + Ms2MassAccuracyReport.PairsFileSuffix)
+                .Concat(Directory.GetFiles(folder, Ms2MassAccuracyReport.SummaryFileName))
+                .ToList();
+            foreach (var path in earlier) {
+                File.Delete(path);
+            }
+            if (earlier.Count > 0) {
+                Console.WriteLine($"Removed {earlier.Count} MS2 mass accuracy file(s) of an earlier preview from {folder}.");
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) {
+            Console.Error.WriteLine($"The MS2 mass accuracy files of an earlier preview in {folder} cannot be replaced: {ex.Message} Close them and run again.");
+            return -1;
+        }
+
+        var providerFactory = new StandardDataProviderFactory(5, false);
+        var picker = new PeakPickProcess(storage);
+        var collector = new PrecursorCalibrantCollector(parameter.CentroidMs1Tolerance);
+        var rows = new ConcurrentDictionary<int, List<Ms2MassAccuracyRow>>();
+        var completed = 0;
+        try {
+            // Files in parallel as ProcessRunner takes them, Math.Max(1, ...) for the reason
+            // ExecuteAsync gives.
+            Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, parameter.NumThreads / 2) }, file => {
+                var provider = providerFactory.Create(file);
+                var peaks = picker.Pick(file, provider, null, default).Items;
+                var pairs = collector.Collect(provider.LoadMsSpectrums(), peaks);
+                using (var writer = new StreamWriter(Path.Combine(folder, Ms2MassAccuracyReport.PairsFileName(file.AnalysisFileName)))) {
+                    Ms2MassAccuracyReport.WritePairs(writer, pairs);
+                }
+                var summary = Ms2MassAccuracyReport.Summarize(file.AnalysisFileName, pairs, collector.SearchPpm);
+                rows[file.AnalysisFileId] = summary;
+                Console.WriteLine($"MS2 mass accuracy preview: {Interlocked.Increment(ref completed)}/{files.Count} files read ({file.AnalysisFileName}): {Ms2MassAccuracyReport.Describe(summary)}");
+            });
+        }
+        catch (AggregateException ex) {
+            Console.Error.WriteLine($"MS2 mass accuracy preview failed: {ex.InnerException?.Message ?? ex.Message}");
+            return -1;
+        }
+
+        var summaryPath = Path.Combine(folder, Ms2MassAccuracyReport.SummaryFileName);
+        using (var writer = new StreamWriter(summaryPath)) {
+            Ms2MassAccuracyReport.WriteSummaryHeader(writer);
+            foreach (var file in files) {
+                Ms2MassAccuracyReport.WriteSummaryRows(writer, rows[file.AnalysisFileId]);
+            }
+        }
+        Console.WriteLine($"MS2 mass accuracy preview: {summaryPath}. No m/z was corrected; the offsets are the product-ion scans' error against the MS1 survey, positive when the product-ion m/z is higher.");
+        return 0;
     }
 
     // Removes an earlier run's automatic RT correction audit from the output folder; false, with
