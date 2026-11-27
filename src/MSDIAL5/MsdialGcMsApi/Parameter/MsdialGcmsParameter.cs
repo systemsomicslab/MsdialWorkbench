@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Parameter;
 using MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace CompMs.MsdialGcMsApi.Parameter {
@@ -87,9 +88,36 @@ namespace CompMs.MsdialGcMsApi.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "RI compound type", RiCompoundType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Retention type", RetentionType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Alignment index type", AlignmentIndexType.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Retention index alignment tolerance", RetentionIndexAlignmentTolerance.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Retention index alignment tolerance", RetentionIndexAlignmentTolerance.ToString(CultureInfo.InvariantCulture) }));
             pStrings.Add(String.Join(": ", new string[] { "Replace quant mass by user defined value", IsReplaceQuantmassByUserDefinedValue.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Is quant mass based on base peak mz", IsRepresentativeQuantMassBasedOnBasePeakMz.ToString() }));
+
+            // The EI library search. These lines use the Console's method-file keys, so that a parameter file exported
+            // from a GC-MS project runs in the Console with the same identification settings. The dot product cutoffs
+            // are written as plain cosines with the "Square root of" keys, as the Console's method template does; the
+            // keys without that prefix are read as squared values.
+            var msp = MspSearchParam;
+            string F(float value) => value.ToString(CultureInfo.InvariantCulture);
+            pStrings.Add("\r\n");
+            pStrings.Add("# MSP-based annotation");
+            pStrings.Add(String.Join(": ", new string[] { "RT tolerance for MSP-based annotation", F(msp.RtTolerance) }));
+            pStrings.Add(String.Join(": ", new string[] { "RI tolerance for MSP-based annotation", F(msp.RiTolerance) }));
+            pStrings.Add(String.Join(": ", new string[] { "Mass range begin for MSP-based annotation", F(msp.MassRangeBegin) }));
+            pStrings.Add(String.Join(": ", new string[] { "Mass range end for MSP-based annotation", F(msp.MassRangeEnd) }));
+            pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for MSP-based annotation", F(msp.Ms1Tolerance) }));
+            // The Console reads this key in percent of the base peak, as the GUI shows it; the model holds a fraction.
+            pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cutoff for MSP-based annotation", F((float)Math.Round(msp.RelativeAmpCutoff * 100d, 6)) }));
+            pStrings.Add(String.Join(": ", new string[] { "Absolute amplitude cutoff for MSP-based annotation", F(msp.AbsoluteAmpCutoff) }));
+            pStrings.Add(String.Join(": ", new string[] { "Square root of weighted dot product cutoff for MSP-based annotation", F(msp.WeightedDotProductCutOff) }));
+            pStrings.Add(String.Join(": ", new string[] { "Square root of simple dot product cutoff for MSP-based annotation", F(msp.SimpleDotProductCutOff) }));
+            pStrings.Add(String.Join(": ", new string[] { "Square root of reverse dot product cutoff for MSP-based annotation", F(msp.ReverseDotProductCutOff) }));
+            pStrings.Add(String.Join(": ", new string[] { "Matched peaks percentage cutoff for MSP-based annotation", F(msp.MatchedPeaksPercentageCutOff) }));
+            pStrings.Add(String.Join(": ", new string[] { "Minimum spectrum match for MSP-based annotation", F(msp.MinimumSpectrumMatch) }));
+            pStrings.Add(String.Join(": ", new string[] { "Total score cutoff for MSP-based annotation", F(msp.TotalScoreCutoff) }));
+            pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation scoring", msp.IsUseTimeForAnnotationScoring.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Use retention information for MSP-based annotation filtering", msp.IsUseTimeForAnnotationFiltering.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Only report top hit for MSP-based annotation", OnlyReportTopHitInMspSearch.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Execute annotation process only for alignment file", IsIdentificationOnlyPerformedForAlignmentFile.ToString() }));
 
             return pStrings;
         }

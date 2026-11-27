@@ -174,7 +174,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SingleSpectrumModel referenceSpectrumModel = new SingleSpectrumModel(refObservableMsSpectrum, refObservableMsSpectrum.CreateAxisPropertySelectors(horizontalPropertySelector, "m/z", "m/z"), refObservableMsSpectrum.CreateAxisPropertySelectors2(verticalPropertySelector, "abundance"), referenceSpectrumHueItem, refGraphLabels).AddTo(Disposables);
 
             var ms2ScanMatching = MatchResultCandidatesModel.GetCandidatesScorer(_compoundSearchers).Publish();
-            Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, rawSpectrumLoader).AddTo(Disposables);
+            Ms2SpectrumModel = new RawDecSpectrumsModel(rawSpectrumModel, decSpectrumModel, referenceSpectrumModel, ms2ScanMatching, rawSpectrumLoader, Target).AddTo(Disposables);
             if (!IsRawDataAvailable) {
                 Ms2SpectrumModel.RawRefSpectrumModels.GraphTitle = RawDataGuard.MeasureVsReferenceTitle;
             }

@@ -1,0 +1,6 @@
+# Keep the vendored NCDK sources unchanged.
+[NCDK/Smiles/SmilesParser.cs]
+dotnet_diagnostic.CS0168.severity = none
+
+[NCDK/SMARTS/SmartsPattern.cs]
+dotnet_diagnostic.CS1574.severity = none

@@ -16,6 +16,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialIntegrate.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
@@ -200,12 +201,45 @@ public sealed class LcmsProcess
             MsdialLcmsParameter = param
         };
 
+        // Created before the libraries: the generated lipid annotator looks up the molecule
+        // library's match through it, and SetDataBaseMapper fills it once they are all added.
+        var dataBaseMapper = new DataBaseMapper();
+        var dbStorage = CreateDataBaseStorage(param, mspDBs, lbmDB, lbmAnnotatorPriority, textDBs, ConfigParser.ReadGeneratedLipidAnnotatorSetting(methodFile), dataBaseMapper);
+        container.DataBaseMapper = dataBaseMapper;
+        container.DataBases = dbStorage;
+        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
+
+        Console.WriteLine("Start processing..");
+        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionInputs).Result;
+    }
+
+    /// <summary>
+    /// The libraries and annotators of an LC-MS run.
+    /// </summary>
+    /// <remarks>
+    /// THE MSP AND LBM ANNOTATORS TAKE THE PROJECT'S COLLISION TYPE, as the GUI's
+    /// LcmsLoadAnnotatorVisitor builds them. They used to be built without it, which is CID: an
+    /// EAD run then scored its LBM matches with the CID matched-peak scores and judged them with
+    /// the CID lipid rules, and since the generated lipid library expands exactly those matches,
+    /// the run's lipid names differed from the GUI's on the same data. A project the Console saves
+    /// is rebuilt through that visitor when the GUI opens it, so the two must agree.
+    /// LcmsProcessAnnotationParityTests checks that they do.
+    /// </remarks>
+    internal static DataBaseStorage CreateDataBaseStorage(
+        MsdialLcmsParameter param,
+        IReadOnlyList<MspDataBaseAnnotatorSetting> mspDBs,
+        MoleculeDataBase? lbmDB,
+        int lbmAnnotatorPriority,
+        IReadOnlyList<TextDataBaseAnnotatorSetting> textDBs,
+        GeneratedLipidAnnotatorSetting generatedLipidSetting,
+        DataBaseMapper dataBaseMapper) {
+
         var dbStorage = DataBaseStorage.CreateEmpty();
         foreach (var mspDB in mspDBs.Where(db => db.DataBase is { Database.Count: > 0 })) {
             var annotatorPairs = new List<IAnnotatorParameterPair<MoleculeDataBase>>();
             foreach (var setting in mspDB.AnnotatorSettings) {
                 var targetOmics = setting.TargetOmics ?? param.TargetOmics;
-                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
+                var annotator = new LcmsMspAnnotator(mspDB.DataBase, setting.SearchParameter, targetOmics, param.CollistionType, setting.AnnotatorId, setting.Priority, setting.AllowsSuggestions);
                 annotatorPairs.Add(new MetabolomicsAnnotatorParameterPair(annotator.Save(), new AnnotationQueryFactory(annotator, param.PeakPickBaseParam, setting.SearchParameter, ignoreIsotopicPeak: true)));
             }
             if (annotatorPairs.Count > 0) {
@@ -213,7 +247,7 @@ public sealed class LcmsProcess
             }
         }
         if (lbmDB is { Database.Count: > 0 }) {
-            var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, CommonProcess.LbmAnnotatorId(param.LbmFilePath), lbmAnnotatorPriority);
+            var lbmAnnotator = new LcmsMspAnnotator(lbmDB, param.LbmSearchParam, TargetOmics.Lipidomics, param.CollistionType, CommonProcess.LbmAnnotatorId(param.LbmFilePath), lbmAnnotatorPriority);
             dbStorage.AddMoleculeDataBase(lbmDB, [
                 new MetabolomicsAnnotatorParameterPair(lbmAnnotator.Save(), new AnnotationQueryFactory(lbmAnnotator, param.PeakPickBaseParam, param.LbmSearchParam, ignoreIsotopicPeak: true)),
             ]);
@@ -228,12 +262,8 @@ public sealed class LcmsProcess
                 dbStorage.AddMoleculeDataBase(textDB.DataBase, annotatorPairs);
             }
         }
-        container.DataBaseMapper = new DataBaseMapper();
-        container.DataBases = dbStorage;
-        container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
-
-        Console.WriteLine("Start processing..");
-        return ExecuteAsync(container, outputFolder, isProjectSaved, isAlignmentLightMode, exportDetailedAlignmentProvenance, exportAnnotationCandidates, automaticRtCorrectionInputs).Result;
+        GeneratedLipidLibrary.AddTo(dbStorage, param, generatedLipidSetting, dataBaseMapper);
+        return dbStorage;
     }
 
     /// <summary>
@@ -460,7 +490,7 @@ public sealed class LcmsProcess
 
         var files = storage.AnalysisFiles;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
-        var annotationProcess = new StandardAnnotationProcess(storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories, evaluator, storage.DataBaseMapper);
+        var annotationProcess = GeneratedLipidLibrary.CreateAnnotationProcess(storage.DataBases, storage.DataBaseMapper, evaluator);
         var providerFactory = new StandardDataProviderFactory(5, false);
         var process = new FileProcess(providerFactory, storage, annotationProcess, evaluator);
         // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
@@ -483,6 +513,7 @@ public sealed class LcmsProcess
             tasks[i] = Task.Run(async () => {
                 await sem.WaitAsync();
                 try {
+                    using var timing = StageTiming.Measure(file.AnalysisFileName, "console peak export");
                     var peak_container = await file.LoadChromatogramPeakFeatureCollectionAsync().ConfigureAwait(false);
                     ExportPeakFile(file, peak_container, outputFolder, peakExporterFactory, providerFactory, peak_accessor, storage.DataBaseMapper, storage.Parameter);
                 }
@@ -495,15 +526,17 @@ public sealed class LcmsProcess
 
         AutomaticAlignmentRetentionTimeCorrectionResult? automaticRtCorrectionResult = null;
         if (storage.Parameter.TogetherWithAlignment && storage.Parameter.AlignmentBaseParam.AutomaticRtCorrection.Execute) {
-            automaticRtCorrectionResult = AutomaticAlignmentRtCorrectionWorkflow.Build(
-                storage.AnalysisFiles,
-                storage.Parameter,
-                automaticRtCorrectionInputs,
-                outputFolder,
-                file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath),
-                (file, anchors) => AutomaticAlignmentRtCorrectionWorkflow.ReadRawFile(file, providerFactory.Create(file), storage.Parameter, anchors),
-                "Run",
-                ConsoleRtCorrectionReporter.Instance);
+            using (StageTiming.Measure(null, "console automatic rt correction")) {
+                automaticRtCorrectionResult = AutomaticAlignmentRtCorrectionWorkflow.Build(
+                    storage.AnalysisFiles,
+                    storage.Parameter,
+                    automaticRtCorrectionInputs,
+                    outputFolder,
+                    file => MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath),
+                    (file, anchors) => AutomaticAlignmentRtCorrectionWorkflow.ReadRawFile(file, providerFactory.Create(file), storage.Parameter, anchors),
+                    "Run",
+                    ConsoleRtCorrectionReporter.Instance);
+            }
             if (automaticRtCorrectionResult is null) {
                 return -1;
             }
@@ -545,6 +578,7 @@ public sealed class LcmsProcess
                     CreateConsoleProgressReporter("Alignment"),
                     automaticRtCorrectionResult?.Correction);
                 LcmsAlignmentLightResult lightResult;
+                using (StageTiming.Measure(null, "console alignment"))
                 using (ConsoleLineFilter.SuppressExact("Reading data...")) {
                     lightResult = lightRunner.Run(files, alignmentFile, alignmentLightPeakStore!);
                 }
@@ -566,18 +600,23 @@ public sealed class LcmsProcess
                 factory.Progress = CreateConsoleProgressReporter("Alignment");
                 var aligner = factory.CreatePeakAligner();
                 Console.WriteLine("Alignment started.");
+                using (StageTiming.Measure(null, "console alignment"))
                 using (ConsoleLineFilter.SuppressExact("Reading data...")) {
                     result = aligner.Alignment(files, alignmentFile, serializer);
                 }
                 Console.WriteLine("Alignment finished.");
                 lipidRtRun = aligner.LipidRtRun;
                 removedIsotopeSpots = aligner.RemovedIsotopeSpots;
-                result.Save(alignmentFile);
+                using (StageTiming.Measure(null, "console alignment save")) {
+                    result.Save(alignmentFile);
+                }
                 if (automaticRtCorrectionResult is not null) {
                     WriteRtCorrectionMap(alignmentFile, automaticRtCorrectionResult.Correction, files);
                 }
-                align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
-                MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
+                using (StageTiming.Measure(null, "console representative deconvolutions")) {
+                    align_decResults = LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList();
+                    MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, align_decResults);
+                }
             }
             WriteLipidRtReview(lipidRtRun, outputFolder, alignmentFile.FileName);
             if (removedIsotopeSpots is not null) {
@@ -597,7 +636,9 @@ public sealed class LcmsProcess
             var align_stats = new[] { StatsValue.Average, StatsValue.Stdev };
             var align_exporter = new AlignmentCSVExporter { RetentionTimeAxisNote = rtAxisNote };
             using var stream = File.Open(align_outputfile, FileMode.Create, FileAccess.Write);
-            align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
+            using (StageTiming.Measure(null, "console mdalign export")) {
+                align_exporter.Export(stream, result.AlignmentSpotProperties, align_decResults, files, new MulticlassFileMetaAccessor(0), align_accessor, align_quantAccessor, align_stats);
+            }
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
 
             var peakIdOutputFile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdpeakid.tsv");
@@ -652,6 +693,7 @@ public sealed class LcmsProcess
                 (storage.Parameter.IsSnMatrixExport, "SN", "_SN.txt"),
             };
             if (requestedMatrices.Any(item => item.Requested)) {
+                using var timing = StageTiming.Measure(null, "console matrix export");
                 Directory.CreateDirectory(matrixFolder);
                 var matrixStats = new[] { StatsValue.Average, StatsValue.Stdev };
                 foreach (var (_, exportType, suffix) in requestedMatrices.Where(item => item.Requested)) {
@@ -666,6 +708,7 @@ public sealed class LcmsProcess
             }
 
             if (storage.Parameter.IsHeightMatrixExport) {
+                using var timing = StageTiming.Measure(null, "console qa export");
                 var qaOutputFolder = matrixFolder;
                 Directory.CreateDirectory(qaOutputFolder);
                 var qaOutputFile = Path.Combine(qaOutputFolder, alignmentFile.FileName + ".qa.tsv");
@@ -694,7 +737,9 @@ public sealed class LcmsProcess
             var align_outputmspfile = Path.Combine(outputFolder, alignmentFile.FileName + ".mdmsp");
             using var streammsp = File.Open(align_outputmspfile, FileMode.Create, FileAccess.Write);
             IAlignmentSpectraExporter align_mspexporter = new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter);
-            align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
+            using (StageTiming.Measure(null, "console mdmsp export")) {
+                align_mspexporter.BatchExport(streammsp, result.AlignmentSpotProperties, align_decResults);
+            }
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
 
             var mztabm_filename = alignmentFile.FileName + ".mzTab";
@@ -705,16 +750,18 @@ public sealed class LcmsProcess
             var mztabM_exporter = new MztabFormatExporter(storage.DataBases, alignmentLightPeakStore) { RetentionTimeAxisNote = rtAxisNote };
 
             using var tabmstream = File.Open(mztabm_outputfile, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-            mztabM_exporter.MztabFormatExporterCore(
-                tabmstream,
-                spots,
-                msdecs,
-                files,
-                accessor,
-                align_quantAccessor,
-                align_stats,
-                mztabm_filename
-            );
+            using (StageTiming.Measure(null, "console mztab export")) {
+                mztabM_exporter.MztabFormatExporterCore(
+                    tabmstream,
+                    spots,
+                    msdecs,
+                    files,
+                    accessor,
+                    align_quantAccessor,
+                    align_stats,
+                    mztabm_filename
+                );
+            }
             CollectAlignmentLightExportGarbage(isAlignmentLightMode);
             alignmentLightMsdecResults?.Dispose();
         }
@@ -723,11 +770,11 @@ public sealed class LcmsProcess
             Console.WriteLine("Alignment light mode: project saving (-p) is skipped because GUI-compatible alignment objects are intentionally not serialized.");
         }
         else if (isProjectSaved) {
+            using var timing = StageTiming.Measure(null, "console project save");
             storage.Parameter.ProjectParam.FinalSavedDate = DateTime.Now;
-            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
-            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
-            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
-            streamManager.Complete();
+            if (!await CommonProcess.SaveProjectAsync(projectDataStorage).ConfigureAwait(false)) {
+                return -1;
+            }
         }
 
         return 0;

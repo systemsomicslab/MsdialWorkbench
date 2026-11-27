@@ -42,7 +42,6 @@ public sealed class DimsProcess {
         var container = new MsdialDimsDataStorage() {
             AnalysisFiles = analysisFiles,
             AlignmentFiles = [alignmentFile],
-            MspDB = mspDB is null ? [] : [.. mspDB.Database],
             TextDB = txtDB is null ? [] : [.. txtDB.Database],
             IsotopeTextDB = isotopeTextDB,
             IupacDatabase = iupacDB,
@@ -51,6 +50,7 @@ public sealed class DimsProcess {
 
         container.DataBaseMapper = new DataBaseMapper();
         container.DataBases = CreateDataBaseStorage(param, mspDB, lbmDB, txtDB);
+        GeneratedLipidLibrary.AddTo(container.DataBases, param, ConfigParser.ReadGeneratedLipidAnnotatorSetting(methodFile), container.DataBaseMapper);
         container.DataBases.SetDataBaseMapper(container.DataBaseMapper);
 
         var providerFactory = new StandardDataProviderFactory();
@@ -89,10 +89,7 @@ public sealed class DimsProcess {
         var mapper = storage.DataBaseMapper;
         var evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
 
-        var annotationProcess = new StandardAnnotationProcess(
-            storage.CreateAnnotationQueryFactoryStorage().MoleculeQueryFactories,
-            evaluator,
-            mapper);
+        var annotationProcess = GeneratedLipidLibrary.CreateAnnotationProcess(storage.DataBases, mapper, evaluator);
         var process = new ProcessFile(providerFactory, storage, annotationProcess, evaluator);
         // Math.Max(1, ...) as the GUI does (LcmsMethodModel.cs and its four siblings all use
         // Math.Max(1, UsableNumThreads / 2)). Without it "number of threads: 1" -- a value
@@ -181,10 +178,9 @@ public sealed class DimsProcess {
 
         if (isProjectSaved) {
             storage.MsdialDimsParameter.ProjectParam.FinalSavedDate = DateTime.Now;
-            using var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create);
-            using IStreamManager streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create);
-            projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
-            streamManager.Complete();
+            if (!await CommonProcess.SaveProjectAsync(projectDataStorage).ConfigureAwait(false)) {
+                return -1;
+            }
         }
 
         return 0;
