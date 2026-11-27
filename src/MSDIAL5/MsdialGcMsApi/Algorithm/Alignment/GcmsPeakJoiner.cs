@@ -64,6 +64,9 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         using var timing = StageTiming.Measure(null, "alignment reset quant masses");
         var loaders = analysisFiles.ToDictionary(f => f.AnalysisFileId, f => new MSDecLoader(f.DeconvolutionFilePath, f.DeconvolutionFilePathList));
         try {
+            if (_parameter.JoinSpotsSplitByRetentionDrift && _parameter.SplitSpotJoinWindow > 0) {
+                spots = JoinSpotsSplitByRetentionDrift(spots, master, loaders);
+            }
             return ResetQuantMasses(spots, loaders);
         }
         finally {
@@ -76,21 +79,185 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     protected abstract List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId);
     protected abstract List<AlignmentSpotProperty> JoinAll(List<SpectrumFeature> master, IReadOnlyList<AnalysisFileBean> analysisFiles);
 
+    /// <summary>The retention tolerance of the joiner, in the unit of its index (minutes, or RI units).</summary>
+    protected abstract double RetentionTolerance { get; }
+
+    private double RetentionOf(ChromXs chromXs) => _indextype == AlignmentIndexType.RI ? chromXs.RI.Value : chromXs.RT.Value;
+
+    // The retention the joiner bucketed, windowed and compared the master on (GetRetentionTime / GetRetentionIndex,
+    // the MSDec retention), so that "more than the tolerance apart" means what kept the joiner from comparing them.
+    private double MasterRetention(SpectrumFeature master) => _indextype == AlignmentIndexType.RI ? GetRetentionIndex(master) : GetRetentionTime(master);
+
+    // Every master of one spot more than the tolerance from every master of the other. A joined spot holds the masters
+    // of all the spots it took, so a pair the joiner kept apart on spectrum stays apart after either joins a third.
+    private bool AreMastersApartByRetention(List<SpectrumFeature> xs, List<SpectrumFeature> ys) {
+        return xs.All(x => ys.All(y => Math.Abs(MasterRetention(x) - MasterRetention(y)) > RetentionTolerance));
+    }
+
+    // The gap filler re-extracts every peak of a spot around the spot's centre, the mean retention of its joined peaks
+    // (GcmsGapFiller.GetCenter), and takes a peak top only within the retention tolerance of it (GetPeakTopCandidates).
+    // A detected peak is re-extracted whenever its quant mass is not the spot's (the base peak or the library quant mass
+    // makes that most files) and on every re-quantification. Every peak of the joined spot must lie in that window, or a
+    // re-extraction could not find its own file's peak and would take a neighbour or noise instead.
+    private bool AreWithinOneReextractionWindow(List<AlignmentChromPeakFeature> xs, List<AlignmentChromPeakFeature> ys) {
+        var retentions = xs.Concat(ys).Select(p => RetentionOf(p.ChromXsTop)).ToArray();
+        var centre = retentions.Average();
+        return retentions.All(r => Math.Abs(r - centre) <= RetentionTolerance);
+    }
+
+    /// <summary>
+    /// Joins the spots of one compound whose retention drifted across the files by more than the
+    /// alignment tolerance.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A feature joins a master only within the retention tolerance, and a feature that no master
+    /// takes makes a master of its own. When a compound's retention drifts over the files by more than
+    /// the tolerance, its features end up in two spots. Each spot then gap-fills the files whose peak
+    /// is in the other, and the gap filler integrates whatever lies at the quant mass near the spot's
+    /// centre: noise, or a neighbouring compound.
+    /// </para>
+    /// <para>
+    /// Two spots are joined when all of these hold:
+    /// their masters are more than the retention tolerance apart (on the MSDec retention the joiner
+    /// compares; for a spot already joined, every master it holds), so that retention, not spectrum,
+    /// is what kept the joiner from putting their features together; their centres (the mean
+    /// retention of their detected peaks) are within <see cref="MsdialGcmsParameter.SplitSpotJoinWindow"/>
+    /// times the retention tolerance (2 by default); every detected peak of the joined spot lies within the retention
+    /// tolerance of its centre, the window in which the gap filler re-extracts each file's peak; no file has a detected
+    /// peak in both, so that no file's peak is dropped; the EI
+    /// spectra of their representative peaks pass the dot-product cutoffs the joiner's comparison
+    /// carries (weighted and simple 0.6, reverse 0.8, matched peaks 25% and at least 3) and the
+    /// alignment's EI similarity tolerance, as <see cref="IsSimilarTo"/> asks of two features; each is
+    /// the other's best such match by the integrated EI similarity; and no two of their masters are
+    /// matched to different references. The spot with more detected peaks keeps its master and takes the
+    /// other's peaks. This repeats until no pair is left. A compound split three ways by more than the
+    /// tolerance each time spans more than twice the tolerance, so no re-extraction window holds all of
+    /// it: two of its spots are joined and the third is left apart.
+    /// </para>
+    /// <para>
+    /// The test is stricter than the joiner's own (<see cref="IsSimilarTo"/>): its spectrum similarity
+    /// tolerance (0.5 on the integrated EI similarity for GC-MS) is passed by spectra of two different
+    /// compounds, and a pair of such spots, each detected in other files, would be joined into one. It
+    /// is never weaker: a pair below the tolerance is not joined farther apart than the joiner would
+    /// have joined it within the retention tolerance.
+    /// </para>
+    /// <para>
+    /// Two masters within the tolerance of each other are two masters because the joiner found their
+    /// spectra different. Their spots are left apart even when their representative spectra match:
+    /// on the Kovats demo (RI) such a pair, masters 3 RI units apart, was joined; the quant mass
+    /// chosen over the joined peaks was that of an unannotated spot 1 RI unit away, and the alignment
+    /// refiner removed the joined spot as that spot's duplicate, with all seven of its detected peaks.
+    /// </para>
+    /// </remarks>
+    private List<AlignmentSpotProperty> JoinSpotsSplitByRetentionDrift(List<AlignmentSpotProperty> spots, List<SpectrumFeature> masters, Dictionary<int, MSDecLoader> loaders) {
+        var window = _parameter.SplitSpotJoinWindow * RetentionTolerance;
+        var alive = spots.Select((spot, i) => (Spot: spot, Masters: new List<SpectrumFeature> { masters[i] })).ToList();
+        var loaded = new Dictionary<(int File, int Id), MSDecResult>();
+        MSDecResult? Representative(List<AlignmentChromPeakFeature> detected) {
+            var peak = DataObjConverter.GetRepresentativePeak(detected);
+            if (peak is null) {
+                return null;
+            }
+            var key = (peak.FileID, peak.GetMSDecResultID());
+            if (!loaded.TryGetValue(key, out var result)) {
+                loaded[key] = result = loaders[peak.FileID].LoadMSDecResult(key.Item2);
+            }
+            return result;
+        }
+        while (true) {
+            var members = alive.Select(s => s.Spot.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).ToList()).ToList();
+            var representatives = members.Select(Representative).ToList();
+            var files = members.Select(ps => new HashSet<int>(ps.Select(p => p.FileID))).ToList();
+            var centres = members.Select(ps => ps.Count == 0 ? double.NaN : ps.Average(p => RetentionOf(p.ChromXsTop))).ToList();
+            var order = Enumerable.Range(0, alive.Count).Where(i => files[i].Count > 0).OrderBy(i => centres[i]).ToArray();
+
+            var best = Enumerable.Repeat((Partner: -1, Similarity: double.MinValue), alive.Count).ToArray();
+            for (var a = 0; a < order.Length; a++) {
+                for (var b = a + 1; b < order.Length && centres[order[b]] - centres[order[a]] <= window; b++) {
+                    int i = order[a], j = order[b];
+                    if (!AreMastersApartByRetention(alive[i].Masters, alive[j].Masters)
+                        || files[i].Overlaps(files[j]) || !AreWithinOneReextractionWindow(members[i], members[j])
+                        || !AreSpectraOfOneCompound(representatives[i], representatives[j], alive[i].Masters, alive[j].Masters, out var similarity)) {
+                        continue;
+                    }
+                    if (similarity > best[i].Similarity) best[i] = (j, similarity);
+                    if (similarity > best[j].Similarity) best[j] = (i, similarity);
+                }
+            }
+
+            var gone = new bool[alive.Count];
+            var joined = false;
+            for (var i = 0; i < alive.Count; i++) {
+                var j = best[i].Partner;
+                if (j <= i || best[j].Partner != i) {
+                    continue;
+                }
+                var (keep, give) = files[i].Count >= files[j].Count ? (i, j) : (j, i);
+                var peaks = alive[keep].Spot.AlignedPeakProperties;
+                foreach (var peak in members[give]) {
+                    peaks[peaks.FindIndex(p => p.FileID == peak.FileID)] = peak;
+                }
+                alive[keep].Masters.AddRange(alive[give].Masters);
+                gone[give] = true;
+                joined = true;
+            }
+            if (!joined) {
+                return alive.Select(s => s.Spot).ToList();
+            }
+            alive = alive.Where((_, i) => !gone[i]).ToList();
+        }
+    }
+
+    private bool AreSpectraOfOneCompound(MSDecResult? xSpectrum, MSDecResult? ySpectrum, List<SpectrumFeature> xMasters, List<SpectrumFeature> yMasters, out double similarity) {
+        similarity = double.MinValue;
+        if (xSpectrum is null || ySpectrum is null) {
+            return false;
+        }
+        // The overload without an EI threshold: IsSpectrumMatch is the dot-product cutoffs of _msMatchParam alone.
+        var result = MsScanMatching.CompareEIMSScanProperties(xSpectrum, ySpectrum, _msMatchParam,
+            _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
+            _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        similarity = MsScanMatching.GetIntegratedSpectraSimilarity(result);
+        if (!result.IsSpectrumMatch || similarity <= _alignmentParameter.SpectrumSimilarityAlignmentTolerance) {
+            return false;
+        }
+        if (_evaluator is not null) {
+            var xReferences = ReferencesOf(xMasters);
+            var yReferences = ReferencesOf(yMasters);
+            if (xReferences.Any(x => yReferences.Any(y => x != y))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private List<int> ReferencesOf(List<SpectrumFeature> masters) {
+        return masters.Where(m => m.AnnotatedMSDecResult.IsReferenceMatched(_evaluator))
+            .Select(m => m.AnnotatedMSDecResult.MatchResults.Representative.LibraryID)
+            .ToList();
+    }
+
     private List<AlignmentSpotProperty> ResetQuantMasses(List<AlignmentSpotProperty> spots, Dictionary<int, MSDecLoader> loaders) {
         var results = new List<AlignmentSpotProperty>(spots.Count);
         foreach (var spot in spots) {
-            if (_parameter.IsReplaceQuantmassByUserDefinedValue && spot.IsReferenceMatched(_evaluator)) {
-                var reference = _refer.Refer(spot.MatchResults.Representative);
-                if (reference is not null && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
+            var repPeak = DataObjConverter.GetRepresentativePeak(spot.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).ToList());
+            if (repPeak is null) {
+                continue;
+            }
+            // The library quant mass is read from the representative peak's annotation, as MS-DIAL 4 read it from the
+            // representative file's identification. The spot itself carries no match results yet: PeakAligner copies them
+            // from that peak (DataObjConverter.SetRepresentativeProperty) after gap filling, so a test on the spot here was
+            // always false and the library quant mass never reached the spot. It takes precedence over the base peak and
+            // over the vote below, as in MS-DIAL 4.
+            if (_parameter.IsReplaceQuantmassByUserDefinedValue && IsReferenceMatched(repPeak)) {
+                var reference = _refer?.Refer(repPeak.MatchResults.Representative);
+                if (reference is not null && reference.QuantMass > 0 && _parameter.PeakPickBaseParam.IsInMassRange(reference.QuantMass)) {
                     spot.MassCenter = reference.QuantMass;
                     spot.QuantMass = reference.QuantMass;
                     results.Add(spot);
                     continue;
                 }
-            }
-            var repPeak = DataObjConverter.GetRepresentativePeak(spot.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).ToList());
-            if (repPeak is null) {
-                continue; 
             }
             var rep = repPeak.FileID;
             var loader = loaders[rep];
@@ -128,6 +295,11 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         return results;
     }
 
+    // The test AlignmentSpotProperty.IsReferenceMatched applies to a spot, applied to one aligned peak.
+    private bool IsReferenceMatched(AlignmentChromPeakFeature peak) {
+        return peak.IsReferenceMatched() || peak.MatchResults.IsReferenceMatched(_evaluator);
+    }
+
     private bool QuantMassExists(double quantMass, MSDecResult result) {
         var bin = _parameter.PeakPickBaseParam.CentroidMs1Tolerance;
         var maxIntensity = result.Spectrum.DefaultIfEmpty().Max(s => s?.Intensity ?? 0d);
@@ -146,19 +318,88 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         return false;
     }
 
+    /// <remarks>
+    /// Retention and spectrum are judged separately: two features are similar when they are within
+    /// the retention tolerance and their integrated EI similarity exceeds the spectrum similarity
+    /// tolerance, and only then. <see cref="MsScanMatchResult.IsSpectrumMatch"/>, which the
+    /// comparison also sets when the fixed dot-product cutoffs of <see cref="_msMatchParam"/> pass,
+    /// is not read: those cutoffs are not settings, and a pair that passes them has an integrated
+    /// similarity of at least 0.608, so with them any tolerance above that was not binding. The total
+    /// score only chooses the best master (<see cref="GetSimilality"/>). Two spectra of one compound
+    /// in two files of a GC-MS run commonly score 0.6-0.75 on the integrated similarity, because
+    /// every small peak present in one spectrum lowers the matched-peaks term, so a tolerance of 0.7
+    /// or more splits most compounds; the GC-MS default is 0.5.
+    /// </remarks>
     protected bool IsSimilarTo(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance, 
-            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+        var result = CompareSpectra(x, y);
         var isRetentionMatch = _indextype == AlignmentIndexType.RI ? result.IsRiMatch : result.IsRtMatch;
-        return result.IsSpectrumMatch && isRetentionMatch;
+        return isRetentionMatch && MsScanMatching.GetIntegratedSpectraSimilarity(result) > _alignmentParameter.SpectrumSimilarityAlignmentTolerance;
     }
 
     protected double GetSimilality(SpectrumFeature x, SpectrumFeature y) {
-        var result = MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
-            _alignmentParameter.Ms1AlignmentTolerance, _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
-            _alignmentParameter.Ms1AlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
-        return result.TotalScore;
+        return CompareSpectra(x, y).TotalScore;
+    }
+
+    /// <remarks>
+    /// The threshold and the EI weight are the alignment's spectrum similarity settings ("Spectrum
+    /// similarity tolerance / factor for alignment" in a method file, "EI similarity tolerance /
+    /// factor" in the dialog), not its MS1 settings: "MS1 tolerance for alignment" is an m/z
+    /// tolerance (0.015 in a method file written like an LC-MS one), and as a similarity threshold
+    /// it admits any spectrum within the retention window.
+    /// </remarks>
+    private MsScanMatchResult CompareSpectra(SpectrumFeature x, SpectrumFeature y) {
+        return MsScanMatching.CompareEIMSScanProperties(x.AnnotatedMSDecResult.MSDecResult, y.AnnotatedMSDecResult.MSDecResult, _msMatchParam,
+            _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
+            _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
+    }
+
+    // The joiners place a peak in a bucket, sort the masters, open the search window and stop the scan on the
+    // retention of the deconvoluted (MSDec) result, because that is the retention IsSimilarTo and GetSimilality
+    // compare. The top of the quantified (quant-mass) chromatogram peak can lie outside the tolerance of a master
+    // while the MSDec retention lies inside it; a window on the quant top then never compared the two, and the peak
+    // joined no spot. MS-DIAL 4 windowed, sorted and scored on the MS1Dec retention as well.
+    protected static double GetRetentionTime(SpectrumFeature feature) {
+        return feature.AnnotatedMSDecResult.MSDecResult.ChromXs.RT.Value;
+    }
+
+    protected static double GetRetentionIndex(SpectrumFeature feature) {
+        return feature.AnnotatedMSDecResult.MSDecResult.ChromXs.RI.Value;
+    }
+
+    // A peak of a non-reference file that matches no master becomes a new master only if its height is above 0.1% of
+    // the tallest master, as in MS-DIAL 4 (PeakAlignment.addJointAlignerMasterListByRetentionTime/-Index:
+    // maxIntensity * 0.001 < BasepeakHeight). The tallest master is taken once per file, before the file's peaks are
+    // read: the masters of the reference file and those added by earlier files count, the file's own new masters do
+    // not. The reference file's peaks all become masters, whatever their height. Without the floor every unmatched
+    // noise peak of every file became a master, and the number of spots grew with the number of files.
+    private const double MasterHeightFloorRatio = 0.001;
+
+    protected static double GetMasterHeightFloor(IDictionary<int, List<SpectrumFeature>> master) {
+        var maxHeight = double.NegativeInfinity;
+        foreach (var features in master.Values) {
+            foreach (var feature in features) {
+                var height = GetHeight(feature);
+                if (height > maxHeight) {
+                    maxHeight = height;
+                }
+            }
+        }
+        // No master to compare with (MS-DIAL 4 failed here on an empty master list): no floor.
+        return double.IsNegativeInfinity(maxHeight) ? double.NegativeInfinity : maxHeight * MasterHeightFloorRatio;
+    }
+
+    protected static bool IsAboveMasterHeightFloor(SpectrumFeature feature, double floor) {
+        return GetHeight(feature) > floor;
+    }
+
+    // MS-DIAL 4's BasepeakHeight is the intensity of the deconvoluted model m/z chromatogram at the deconvoluted peak
+    // top (MS1Dec.ms1DecResultProperty). MSDecResult.ModelPeakHeight is the same value, computed the same way
+    // (MSDecProcess.ms1DecResultProperty), and, like the retention the joiners compare, it belongs to the MSDec result.
+    // The height of the quantified chromatogram peak is a different measurement: the smoothed raw chromatogram of the
+    // quant mass, which is the library's quant mass for an annotated peak when IsReplaceQuantmassByUserDefinedValue is
+    // set.
+    private static double GetHeight(SpectrumFeature feature) {
+        return feature.AnnotatedMSDecResult.MSDecResult.ModelPeakHeight;
     }
 
     protected List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<SpectrumFeature> masters, IEnumerable<AnalysisFileBean> analysisFiles, ChromXType mainType) {
@@ -223,6 +464,8 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
         _progress = progress;
     }
 
+    protected override double RetentionTolerance => _rtTol;
+
     protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceID) {
         var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceID);
         if (referenceFile is null) {
@@ -233,7 +476,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
             spectrumFeatures = spectrumFeatures.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
         }
         var master = spectrumFeatures
-            .GroupBy(prop => (int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket))
+            .GroupBy(prop => (int)Math.Ceiling(GetRetentionTime(prop) / _rtBucket))
             .ToDictionary(group => group.Key, group => group.ToList());
 
         var reporter = ReportProgress.FromLength(_progress, 0d, 20d);
@@ -249,17 +492,34 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
             }
             MergeSpectrumFeatures(master, target);
         }
-        return master.Values.SelectMany(props => props).OrderBy(prop => (prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
+        return master.Values.SelectMany(props => props).OrderBy(prop => (GetRetentionTime(prop), prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
     }
 
     private void MergeSpectrumFeatures(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
+        // A file's peaks are compared only with the masters that existed before the file; the peaks that become new
+        // masters are added after the whole file has been read. Adding each one at once made a similar later peak of the
+        // same file look already covered, so that peak became no master and joined no spot (MS-DIAL 4 collected the new
+        // masters in addedMs1DecResults and appended them after the file).
+        var heightFloor = GetMasterHeightFloor(master);
+        var added = new List<SpectrumFeature>();
         foreach (var target in targets) {
-            SetToMaster(master, target);
+            SetToMaster(master, target, added, heightFloor);
+        }
+        foreach (var target in added) {
+            AddToMaster(master, target);
         }
     }
 
-    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
-        var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket);
+    private void AddToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
+        var rtTarget = (int)Math.Ceiling(GetRetentionTime(target) / _rtBucket);
+        if (!master.ContainsKey(rtTarget)) {
+            master[rtTarget] = [];
+        }
+        master[rtTarget].Add(target);
+    }
+
+    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added, double heightFloor) {
+        var rtTarget = (int)Math.Ceiling(GetRetentionTime(target) / _rtBucket);
         for(int rtIdc = rtTarget - _rtWidth; rtIdc <= rtTarget + _rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
             if (master.ContainsKey(rtIdc)) {
                 for (int i = 0; i < master[rtIdc].Count; i++) {
@@ -278,10 +538,10 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                 }
             }
         }
-        if (!master.ContainsKey(rtTarget)) {
-            master[rtTarget] = [];
+        if (!IsAboveMasterHeightFloor(target, heightFloor)) {
+            return false;
         }
-        master[rtTarget].Add(target);
+        added.Add(target);
         return true;
     }
 
@@ -304,9 +564,9 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
         foreach (var target in targets) {
             int? matchIdx = null;
             double matchFactor = double.MinValue;
-            var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value - _rtTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+            var lo = SearchCollection.LowerBound(masters, (GetRetentionTime(target) - _rtTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (GetRetentionTime(s), s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
             for (var i = lo; i < n; i++) {
-                if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value + _rtTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value) {
+                if (GetRetentionTime(target) + _rtTol < GetRetentionTime(masters[i])) {
                     break;
                 }
                 if (!IsSimilarTo(masters[i], target)) {
@@ -315,10 +575,14 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                 var factor = GetSimilality(masters[i], target);
                 if (factor > maxMatchs[i] && factor > matchFactor) {
                     matchIdx = i;
-                    maxMatchs[i] = matchFactor = factor;
+                    matchFactor = factor;
                 }
             }
             if (matchIdx.HasValue) {
+                // Only the master the peak joins records its score. Recording every master that was the best so far
+                // while scanning left a claim on masters the peak did not join, which then refused the file's other
+                // peaks that matched them less well (MS-DIAL 4 recorded the chosen master only).
+                maxMatchs[matchIdx.Value] = matchFactor;
                 DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target, ChromXType.RT);
             }
         }
@@ -346,6 +610,8 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
         _progress = progress;
     }
 
+    protected override double RetentionTolerance => _riTol;
+
     protected override List<SpectrumFeature> GetMasterList(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId) {
 
         var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
@@ -358,7 +624,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
             spectrumFeatures = spectrumFeatures.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
         }
         var master = spectrumFeatures
-            .GroupBy(spectrum => (int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket))
+            .GroupBy(spectrum => (int)Math.Ceiling(GetRetentionIndex(spectrum) / _riBucket))
             .ToDictionary(group => group.Key, group => group.ToList());
 
         var counter = 0;
@@ -376,17 +642,34 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
         }
 
         // AlignPeaksToMaster binary-searches this list on (RI, Mass), so it must be sorted on that key.
-        return master.Values.SelectMany(props => props).OrderBy(prop => (prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
+        return master.Values.SelectMany(props => props).OrderBy(prop => (GetRetentionIndex(prop), prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
     }
 
     private void MergeChromatogramPeaks(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
+        // A file's peaks are compared only with the masters that existed before the file; the peaks that become new
+        // masters are added after the whole file has been read. Adding each one at once made a similar later peak of the
+        // same file look already covered, so that peak became no master and joined no spot (MS-DIAL 4 collected the new
+        // masters in addedMs1DecResults and appended them after the file).
+        var heightFloor = GetMasterHeightFloor(master);
+        var added = new List<SpectrumFeature>();
         foreach (var target in targets) {
-            SetToMaster(master, target);
+            SetToMaster(master, target, added, heightFloor);
+        }
+        foreach (var target in added) {
+            AddToMaster(master, target);
         }
     }
 
-    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
-        var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket);
+    private void AddToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
+        var riTarget = (int)Math.Ceiling(GetRetentionIndex(target) / _riBucket);
+        if (!master.ContainsKey(riTarget)) {
+            master[riTarget] = [];
+        }
+        master[riTarget].Add(target);
+    }
+
+    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added, double heightFloor) {
+        var riTarget = (int)Math.Ceiling(GetRetentionIndex(target) / _riBucket);
         for(int riIdc = riTarget - _riWidth; riIdc <= riTarget + _riWidth; riIdc++) { // in many case, riIdc is from riTarget - 1 to riTarget + 1
             if (master.ContainsKey(riIdc)) {
                 foreach (var candidate in master[riIdc]) {
@@ -396,10 +679,10 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
                 }
             }
         }
-        if (!master.ContainsKey(riTarget)) {
-            master[riTarget] = [];
+        if (!IsAboveMasterHeightFloor(target, heightFloor)) {
+            return false;
         }
-        master[riTarget].Add(target);
+        added.Add(target);
         return true;
     }
 
@@ -422,9 +705,9 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
         foreach (var target in targets) {
             int? matchIdx = null;
             double matchFactor = double.MinValue;
-            var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value - _riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+            var lo = SearchCollection.LowerBound(masters, (GetRetentionIndex(target) - _riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (GetRetentionIndex(s), s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
             for (var i = lo; i < masters.Count; i++) {
-                if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value + _riTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value) {
+                if (GetRetentionIndex(target) + _riTol < GetRetentionIndex(masters[i])) {
                     break;
                 }
                 if (!IsSimilarTo(masters[i], target)) {
@@ -433,10 +716,14 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
                 var factor = GetSimilality(masters[i], target);
                 if (factor > maxMatchs[i] && factor > matchFactor) {
                     matchIdx = i;
-                    maxMatchs[i] = matchFactor = factor;
+                    matchFactor = factor;
                 }
             }
             if (matchIdx.HasValue) {
+                // Only the master the peak joins records its score. Recording every master that was the best so far
+                // while scanning left a claim on masters the peak did not join, which then refused the file's other
+                // peaks that matched them less well (MS-DIAL 4 recorded the chosen master only).
+                maxMatchs[matchIdx.Value] = matchFactor;
                 DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target, ChromXType.RI);
             }
         }

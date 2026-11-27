@@ -591,11 +591,26 @@ namespace CompMs.Common.Algorithm.Scoring {
             MsRefSearchParameterBase param, 
             double eiThreshold, double rtTol, double riTol,
             double eiFactor, double riFactor, bool isUseRetentionIndex = false) {
-            var result = CompareMSScanProperties(scan1, scan2, param, (float)rtTol, (float)riTol, param.Ms1Tolerance, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
-            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
-            if (msMatchedScore > eiThreshold) {
+            var result = CompareEIMSScanProperties(scan1, scan2, param, rtTol, riTol, eiFactor, riFactor, isUseRetentionIndex);
+            if (GetIntegratedSpectraSimilarity(result) > eiThreshold) {
                 result.IsSpectrumMatch = true;
             }
+            return result;
+        }
+
+        /// <summary>
+        /// Compares two acquired EI spectra with their retention: IsRtMatch and IsRiMatch use
+        /// <paramref name="rtTol"/> and <paramref name="riTol"/>, which are also the widths of the
+        /// Gaussian retention similarities, and TotalScore is eiFactor * integrated EI similarity +
+        /// riFactor * retention similarity (RI or RT by <paramref name="isUseRetentionIndex"/>).
+        /// </summary>
+        public static MsScanMatchResult CompareEIMSScanProperties(
+            IMSScanProperty scan1, IMSScanProperty scan2,
+            MsRefSearchParameterBase param,
+            double rtTol, double riTol,
+            double eiFactor, double riFactor, bool isUseRetentionIndex = false) {
+            var result = CompareMSScanProperties(scan1, scan2, param, (float)rtTol, (float)riTol, param.Ms1Tolerance, param.Ms1Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var msMatchedScore = GetIntegratedSpectraSimilarity(result);
             if (isUseRetentionIndex) {
                 result.TotalScore = (float)GetTotalSimilarity(result.RiSimilarity, riFactor, msMatchedScore, eiFactor);
             }

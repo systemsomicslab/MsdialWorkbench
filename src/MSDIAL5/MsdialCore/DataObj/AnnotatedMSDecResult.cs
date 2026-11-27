@@ -16,6 +16,11 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     [MessagePackFormatter(typeof(AnnotatedMSDecResultFormatter))]
     public sealed class AnnotatedMSDecResult {
+        /// <remarks>
+        /// Takes the reference's QUANTMASS whenever it is nonzero, regardless of
+        /// "Replace quant mass by user defined value". GC-MS annotation decides the quant mass
+        /// from that option and passes it to the four-argument constructor instead.
+        /// </remarks>
         public AnnotatedMSDecResult(MSDecResult mSDecResult, MsScanMatchResultContainer matchResults, MoleculeMsReference reference) {
             MSDecResult = mSDecResult;
             MatchResults = matchResults;

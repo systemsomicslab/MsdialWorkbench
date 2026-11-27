@@ -132,4 +132,28 @@ namespace CompMs.App.Msdial.Model.Setting
             Factor = parameter.AlignmentBaseParam.Ms1AlignmentFactor;
         }
     }
+
+    /// <summary>
+    /// The EI spectrum similarity threshold and weight of the GC-MS alignment: "EI similarity
+    /// tolerance" and "EI similarity factor" in the dialog, "Spectrum similarity tolerance / factor
+    /// for alignment" in a method file. GC-MS alignment reads no MS1 alignment setting.
+    /// </summary>
+    public class SpectrumSimilarityEqualityParameterSetting : PeakEqualityParameterSetting, IPeakEqualityParameterSetting
+    {
+        private readonly AlignmentBaseParameter parameter;
+
+        public SpectrumSimilarityEqualityParameterSetting(AlignmentBaseParameter parameter) : base(parameter.SpectrumSimilarityAlignmentTolerance, parameter.SpectrumSimilarityAlignmentFactor) {
+            this.parameter = parameter;
+        }
+
+        public void Commit() {
+            parameter.SpectrumSimilarityAlignmentTolerance = Tolerance;
+            parameter.SpectrumSimilarityAlignmentFactor = Factor;
+        }
+
+        public void Update(ParameterBase parameter) {
+            Tolerance = parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance;
+            Factor = parameter.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor;
+        }
+    }
 }
