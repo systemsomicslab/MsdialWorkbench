@@ -176,10 +176,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         /// text database decides.
         /// </summary>
         /// <remarks>
-        /// A text database sets IsReferenceMatched on precursor-mass agreement alone. That is a
-        /// separate question from this one and deliberately untouched here: the rank sits BELOW
-        /// IsReferenceMatched, so the text-database match still wins, and a change to that would be
-        /// a decision taken on its own.
+        /// A text database sets IsReferenceMatched without comparing a spectrum, by design: the user
+        /// trusts what a text library lists. The rank sits BELOW IsReferenceMatched, so the
+        /// text-database match still wins over a better-evidenced suggestion.
         /// </remarks>
         [TestMethod()]
         public void TheRankSitsBelowTheAnnotatorsOwnVerdict() {
