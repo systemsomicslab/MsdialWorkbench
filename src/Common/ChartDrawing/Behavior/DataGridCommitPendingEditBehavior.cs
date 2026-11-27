@@ -8,13 +8,13 @@ using System.Windows.Threading;
 
 namespace CompMs.Graphics.Behavior
 {
-    public sealed class DataGridPendingEditBehavior
+    public sealed class DataGridCommitPendingEditBehavior
     {
         public static readonly DependencyProperty EnabledProperty =
             DependencyProperty.RegisterAttached(
                 "Enabled",
                 typeof(bool),
-                typeof(DataGridPendingEditBehavior),
+                typeof(DataGridCommitPendingEditBehavior),
                 new PropertyMetadata(
                     BooleanBoxes.FalseBox,
                     OnEnabledChanged));

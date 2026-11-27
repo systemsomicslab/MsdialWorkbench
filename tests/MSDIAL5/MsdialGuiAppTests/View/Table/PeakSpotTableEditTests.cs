@@ -98,7 +98,7 @@ public class PeakSpotTableEditTests
     private static (DataGrid, Window) OpenTable(Harness h) {
         var style = new Style(typeof(DataGrid));
         style.Setters.Add(new Setter(DataGridCommitBehavior.EnableProperty, true));
-        style.Setters.Add(new Setter(DataGridPendingEditBehavior.EnabledProperty, true));
+        style.Setters.Add(new Setter(DataGridCommitPendingEditBehavior.EnabledProperty, true));
         var window = new Window { DataContext = h.Navigator, Width = 600, Height = 400, ShowActivated = true, WindowStartupLocation = WindowStartupLocation.Manual, Left = 0, Top = 0, };
         window.Resources.Add(typeof(DataGrid), style);
         var host = new ContentControl { ContentTemplate = new DataTemplate { VisualTree = new FrameworkElementFactory(typeof(TableView)), }, };

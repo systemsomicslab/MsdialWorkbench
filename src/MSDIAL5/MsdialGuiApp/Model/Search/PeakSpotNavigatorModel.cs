@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -26,6 +25,9 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
+        // One per view in PeakSpotsCollection.
+        private readonly Dictionary<ICollectionView, PendingRefresh> _pendingRefreshes = new Dictionary<ICollectionView, PendingRefresh>();
+
         public PeakSpotNavigatorModel(object peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilderModel) {
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             AmplitudeFilterModel = amplitudeFilterModel;
@@ -44,7 +46,6 @@ namespace CompMs.App.Msdial.Model.Search
         public object PeakSpots { get; }
 
         public ObservableCollection<ICollectionView> PeakSpotsCollection { get; } = new ObservableCollection<ICollectionView>();
-        private readonly Dictionary<ICollectionView, PendingRefresh> _pendingRefreshes = new Dictionary<ICollectionView, PendingRefresh>();
         public ValueFilterModel AmplitudeFilterModel { get; }
         public ObservableCollection<ValueFilterModel> ValueFilterModels { get; }
         public ObservableCollection<KeywordFilterModel> KeywordFilterModels { get; }
@@ -69,28 +70,12 @@ namespace CompMs.App.Msdial.Model.Search
         /// Refreshes every view that is not in an edit transaction now; a view in one is refreshed once, after its edit ends.
         /// </summary>
         /// <remarks>
-        /// A view that fails to refresh does not stop the others: every view is refreshed first, then the failure is rethrown,
-        /// or, when several views failed, all of them together in an <see cref="AggregateException"/>.
+        /// Does not throw: a view that fails to refresh does not stop the others, and its failure is thrown again from
+        /// its own dispatcher operation, where the application's unhandled-exception handling reports it.
         /// </remarks>
         public void RefreshCollectionViews() {
-            var errors = new List<Exception>();
-            foreach (var view in PeakSpotsCollection) {
-                // A view added after the navigator was disposed has no pending refresh, and is no longer refreshed.
-                if (!_pendingRefreshes.TryGetValue(view, out var pendingRefresh)) {
-                    continue;
-                }
-                try {
-                    pendingRefresh.Request();
-                }
-                catch (Exception ex) {
-                    errors.Add(ex);
-                }
-            }
-            if (errors.Count == 1) {
-                ExceptionDispatchInfo.Capture(errors[0]).Throw();
-            }
-            if (errors.Count > 1) {
-                throw new AggregateException(errors);
+            foreach (var pendingRefresh in _pendingRefreshes.Values) {
+                pendingRefresh.Request();
             }
         }
 
