@@ -10,13 +10,13 @@ The build under test and the data are always passed explicitly. Copy `ui.runsett
 edit the paths and pass the copy:
 
 ```
-dotnet test tests/MSDIAL5/MsdialGuiAppUiTests --settings path/to/ui.runsettings
+dotnet test tests/MSDIAL5/MsdialGuiAppUiTests --filter "TestCategory=UI" --settings path/to/ui.runsettings
 ```
 
 or give single values on the command line:
 
 ```
-dotnet test tests/MSDIAL5/MsdialGuiAppUiTests -- "TestRunParameters.Parameter(name=\"MsdialExe\", value=\"C:\path\to\MSDIAL.exe\")"
+dotnet test tests/MSDIAL5/MsdialGuiAppUiTests --filter "TestCategory=UI" -- "TestRunParameters.Parameter(name=\"MsdialExe\", value=\"C:\path\to\MSDIAL.exe\")"
 ```
 
 | Parameter     | Meaning                                                    |
@@ -29,6 +29,10 @@ dotnet test tests/MSDIAL5/MsdialGuiAppUiTests -- "TestRunParameters.Parameter(na
 
 A test whose parameters are missing reports Inconclusive instead of failing, so the
 solution-wide `dotnet test` in CI skips these tests.
+
+The `UI` category is left out of a `dotnet test` given no filter (the default filter is set in the root
+`Directory.Build.props`), which is why the commands here pass `--filter "TestCategory=UI"`. Without it
+no test runs.
 
 The tests take over the mouse and keyboard while they run. Leave the machine alone, or run them in
 a VM.
@@ -82,7 +86,7 @@ To add a vendor or change a setting, edit that file; the code does not change. T
 the datasets, name them in the `Datasets` parameter; the others report Inconclusive:
 
 ```
-dotnet test tests/MSDIAL5/MsdialGuiAppUiTests --settings path/to/ui.runsettings -- "TestRunParameters.Parameter(name=\"Datasets\", value=\"Sciex WIFF,Agilent D\")"
+dotnet test tests/MSDIAL5/MsdialGuiAppUiTests --filter "TestCategory=UI" --settings path/to/ui.runsettings -- "TestRunParameters.Parameter(name=\"Datasets\", value=\"Sciex WIFF,Agilent D\")"
 ```
 
 The datasets are read when the tests run, not when they are discovered, so Test Explorer shows
