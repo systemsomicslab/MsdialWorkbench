@@ -19,6 +19,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
     }
 
+    // The detection filters count a peak as detected by its PeakID. Until gap filling it has the sign of MasterPeakID in
+    // every mode. Gap filling can then count a peak joined from its file as not detected (PeakID -2, MasterPeakID kept),
+    // which the GC-MS gap filler does for a peak with no signal at the spot's quant mass, so PeakAligner applies these
+    // filters again after gap filling.
     public class PeakCountFilter : ISpotFilter
     {
         private readonly double threshold;
@@ -28,7 +32,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         public IEnumerable<AlignmentSpotProperty> Filter(IEnumerable<AlignmentSpotProperty> spots) {
             foreach (var spot in spots) {
-                if (spot.AlignedPeakProperties.Count(peak => peak.MasterPeakID >= 0) >= threshold) {
+                if (spot.AlignedPeakProperties.Count(peak => peak.PeakID >= 0) >= threshold) {
                     yield return spot;
                 }
             }
@@ -47,7 +51,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             foreach (var spot in spots) {
                 var satisfied = spot.AlignedPeakProperties
                     .All(peak => FileID_AnalysisFileType[peak.FileID] != AnalysisFileType.QC
-                              || peak.MasterPeakID >= 0);
+                              || peak.PeakID >= 0);
                 if (satisfied)
                     yield return spot;
             }
@@ -67,7 +71,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             foreach (var spot in spots) {
                 var satisfied = spot.AlignedPeakProperties
                     .GroupBy(peak => FileID_ClassName[peak.FileID])
-                    .Any(group => Group_Threshold[group.Key] <= group.Count(peak => peak.MasterPeakID >= 0));
+                    .Any(group => Group_Threshold[group.Key] <= group.Count(peak => peak.PeakID >= 0));
                 if (satisfied)
                     yield return spot;
             }

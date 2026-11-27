@@ -1546,13 +1546,23 @@ return results;
             }
         }
 
+        /// <summary>
+        /// The peak ID written to the "ID" matrix: the file's own peak, or the cell's negative ID when the cell is not
+        /// detected. A GC-MS peak joined to the spot but re-extracted without signal at the spot's quant mass keeps its
+        /// MasterPeakID (the link to the file's peak) and has PeakID -2; it is exported as -2, like a gap-filled cell,
+        /// so the matrix agrees with the fill percentage. Every other cell exports its MasterPeakID as before.
+        /// </summary>
+        public static int ExportedPeakId(AlignmentChromPeakFeature spotProperty) {
+            return spotProperty.PeakID < 0 ? spotProperty.PeakID : spotProperty.MasterPeakID;
+        }
+
         public static string GetSpotValueAsString(AlignmentChromPeakFeature spotProperty, string exportType) {
             switch (exportType) {
                 case "Height": return Math.Round(spotProperty.PeakHeightTop, 0).ToString();
                 case "Normalized height": return spotProperty.NormalizedPeakHeight.ToString();
                 case "Normalized area": return spotProperty.NormalizedPeakAreaAboveZero.ToString();
                 case "Area": return Math.Round(spotProperty.PeakAreaAboveZero, 0).ToString();
-                case "ID": return spotProperty.MasterPeakID.ToString();
+                case "ID": return ExportedPeakId(spotProperty).ToString();
                 case "RT": return Math.Round(spotProperty.ChromXsTop.RT.Value, 3).ToString();
                 case "RI": return Math.Round(spotProperty.ChromXsTop.RI.Value, 2).ToString();
                 case "Mobility": return Math.Round(spotProperty.ChromXsTop.Drift.Value, 5).ToString();
@@ -1572,7 +1582,7 @@ return results;
                 case "Normalized height": return spotProperty.NormalizedPeakHeight;
                 case "Normalized area": return spotProperty.NormalizedPeakAreaAboveZero;
                 case "Area": return spotProperty.PeakAreaAboveZero;
-                case "ID": return spotProperty.MasterPeakID;
+                case "ID": return ExportedPeakId(spotProperty);
                 case "RT": return spotProperty.ChromXsTop.RT.Value;
                 case "RI": return spotProperty.ChromXsTop.RI.Value;
                 case "Mobility": return spotProperty.ChromXsTop.Drift.Value;
