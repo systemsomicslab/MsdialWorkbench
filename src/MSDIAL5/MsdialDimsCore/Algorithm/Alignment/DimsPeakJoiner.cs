@@ -152,7 +152,12 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
                     results.Add(Tuple.Create(GetSimilality(target, master), itr, dummy++, target));
                 }
             }
-            results.Sort();
+            // Most similar pairs first: each master and each peak is used once, so the order decides which pair wins.
+            // The tuples' default order (results.Sort()) put the least similar pairs first. Ties keep the scan order.
+            results.Sort((x, y) => {
+                var bySimilarity = y.Item1.CompareTo(x.Item1);
+                return bySimilarity != 0 ? bySimilarity : x.Item3.CompareTo(y.Item3);
+            });
 
             var used = new HashSet<IMSScanProperty>();
             var inserted = new bool[spots.Count];
