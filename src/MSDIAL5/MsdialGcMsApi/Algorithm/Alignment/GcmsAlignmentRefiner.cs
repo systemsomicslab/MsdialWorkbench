@@ -72,9 +72,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             return cSpots;
         }
 
-        // Gap-filled peaks have a negative MasterPeakID.
+        // Detected as SpotFilter and the spot's fill percentage count it: PeakID not negative. A gap-filled peak has
+        // PeakID and MasterPeakID -2; a joined peak without signal at the spot's quant mass keeps its MasterPeakID
+        // but has PeakID -2 (GcmsGapFiller.UpdateDetection), and the refiner runs after gap filling.
         private static int CountDetectedPeaks(AlignmentSpotProperty spot) {
-            return spot.AlignedPeakProperties?.Count(peak => peak.MasterPeakID >= 0) ?? 0;
+            return spot.AlignedPeakProperties?.Count(peak => peak.PeakID >= 0) ?? 0;
         }
 
         protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
