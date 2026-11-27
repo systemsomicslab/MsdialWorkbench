@@ -539,6 +539,29 @@ namespace CompMs.MsdialCore.Parameter
         }
         private LipidRtCheckParameter _lipidRtCheckParam = new LipidRtCheckParameter();
 
+        /// <summary>
+        /// Whether, and how, each file's MS1 and MS2 m/z are recalibrated before its peaks are picked for good. LC-MS only
+        /// in this version.
+        /// </summary>
+        /// <remarks>
+        /// Key 19 is the next free key of this class (MsdialDimsParameter uses 20, the other modes 150 and up). A project
+        /// written before it has no element here and reads as off, through the same null-safe getter as
+        /// <see cref="LipidRtCheckParam"/>.
+        /// </remarks>
+        [Key(19)]
+        public MassRecalibrationParameter MassRecalibrationParam {
+            get {
+                var parameter = _massRecalibrationParam;
+                if (parameter is null) {
+                    System.Threading.Interlocked.CompareExchange(ref _massRecalibrationParam, new MassRecalibrationParameter(), null);
+                    parameter = _massRecalibrationParam;
+                }
+                return parameter;
+            }
+            set => _massRecalibrationParam = value;
+        }
+        private MassRecalibrationParameter _massRecalibrationParam = new MassRecalibrationParameter();
+
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
             pStrings.Add("# Project information");

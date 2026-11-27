@@ -46,6 +46,10 @@ namespace CompMs.MsdialLcmsApi.Parameter {
                 pStrings.Add("\r\n");
                 pStrings.Add("# Lipid RT check");
                 pStrings.AddRange(LipidRtCheckParam.ParametersAsText(TargetOmics));
+
+                pStrings.Add("\r\n");
+                pStrings.Add("# Mass recalibration");
+                pStrings.AddRange(MassRecalibrationParam.ParametersAsText());
             }
             return pStrings;
         }

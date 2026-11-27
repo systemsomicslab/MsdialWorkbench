@@ -38,6 +38,8 @@ namespace CompMs.App.Msdial.Model.Setting
         IAlignmentParameterSettingModel? CreateAlignmentParameterSetting();
         MobilitySettingModel? CreateMobilitySetting();
         IsotopeTrackSettingModel? CreateIsotopeTrackSetting();
+        /// <summary>The mass recalibration step; LC-MS only, null for the other methods.</summary>
+        MassRecalibrationSettingModel? CreateMassRecalibrationSetting();
         IMethodModel BuildMethod();
     }
 
@@ -84,6 +86,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public DeconvolutionSettingModel? CreateDeconvolutionSetting() => factoryImpl.CreateDeconvolutionSetting();
         public IIdentificationSettingModel? CreateIdentifySetting() => factoryImpl.CreateIdentifySetting();
         public IsotopeTrackSettingModel? CreateIsotopeTrackSetting() => factoryImpl.CreateIsotopeTrackSetting();
+        public MassRecalibrationSettingModel? CreateMassRecalibrationSetting() => factoryImpl.CreateMassRecalibrationSetting();
         public MobilitySettingModel? CreateMobilitySetting() => factoryImpl.CreateMobilitySetting();
         public IPeakDetectionSettingModel? CreatePeakDetectionSetting() => factoryImpl.CreatePeakDetectionSetting();
     }
@@ -181,6 +184,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
+        public MassRecalibrationSettingModel? CreateMassRecalibrationSetting() => null;
+
         public IMethodModel BuildMethod() {
             return new DimsMethodModel(storage, _analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, _projectBaseParameter, _studyContext, _messageBroker);
         }
@@ -269,6 +274,10 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
+        }
+
+        public MassRecalibrationSettingModel CreateMassRecalibrationSetting() {
+            return new MassRecalibrationSettingModel(storage.Parameter, process);
         }
 
         public IMethodModel BuildMethod() {
@@ -363,6 +372,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
+        public MassRecalibrationSettingModel? CreateMassRecalibrationSetting() => null;
+
         public IMethodModel BuildMethod() {
             return new ImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _fileProperties, _studyContext, _broker);
         }
@@ -455,6 +466,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
+        public MassRecalibrationSettingModel? CreateMassRecalibrationSetting() => null;
+
         public IMethodModel BuildMethod() {
             return new LcimmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _studyContext, _broker);
         }
@@ -546,6 +559,8 @@ namespace CompMs.App.Msdial.Model.Setting
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
+
+        public MassRecalibrationSettingModel? CreateMassRecalibrationSetting() => null;
 
         public IMethodModel BuildMethod() {
             var method = new ImagingDimsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _fileProperties, _studyContext, _broker);
@@ -640,6 +655,8 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(_peakPickBaseParameter, process);
         }
 
+        public MassRecalibrationSettingModel? CreateMassRecalibrationSetting() => null;
+
         public IMethodModel BuildMethod() {
             var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _fileProperties, _studyContext, _broker);
             return method;
@@ -710,6 +727,8 @@ namespace CompMs.App.Msdial.Model.Setting
         public IPeakDetectionSettingModel CreatePeakDetectionSetting() {
             return new GcmsPeakDetectionSettingModel(_peakPickBaseParameter, storage.Parameter.ChromDecBaseParam, process);
         }
+
+        public MassRecalibrationSettingModel? CreateMassRecalibrationSetting() => null;
 
         public IMethodModel BuildMethod() {
             return new GcmsMethodModel(_analysisFileBeanModelCollection, _alignmentFileBeanModelCollection, storage, _projectBaseParameter, _studyContext, _broker);

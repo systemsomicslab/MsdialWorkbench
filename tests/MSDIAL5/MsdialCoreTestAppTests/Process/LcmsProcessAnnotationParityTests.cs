@@ -9,6 +9,7 @@ using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Algorithm.MassCalibration;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -137,6 +138,38 @@ public sealed class LcmsProcessAnnotationParityTests
         Assert.AreEqual(runResult.MatchedPeaksPercentage, calibrationResult.MatchedPeaksPercentage);
         Assert.AreEqual(runResult.TotalScore, calibrationResult.TotalScore);
         Assert.AreEqual(runResult.Name, calibrationResult.Name);
+    }
+
+    [TestMethod]
+    public void EadRun_TheRecalibrationSearchesTheRunsOwnAnnotators()
+    {
+        // The recalibration of a full run, the Console's and the GUI's, takes its libraries from the project's databases:
+        // the very annotators the run annotates with, and, in the GUI, the ones rebuilt from the project's saved keys.
+        var parameter = CreateEadParameter();
+        var storage = LcmsProcess.CreateDataBaseStorage(parameter, [], CreateLbmLibrary(), 1, [], new GeneratedLipidAnnotatorSetting(), new DataBaseMapper());
+        var gui = RebuildAsTheGuiDoes(storage, parameter, new DataBaseMapper());
+
+        var console = CalibrationLibrary.FromDataBases(storage, parameter.TargetOmics);
+        var rebuilt = CalibrationLibrary.FromDataBases(gui, parameter.TargetOmics);
+
+        // The generated EAD lipids annotate from a first match, not from the feature, and are not searched.
+        var library = console.Single();
+        Assert.AreSame(((AnnotationQueryFactory)storage.MetabolomicsDataBases.Single().Pairs.Single().AnnotationQueryFactory).Annotator, library.Annotator);
+        Assert.AreEqual(DataBaseSource.Lbm, library.DataBaseSource);
+        Assert.AreEqual(TargetOmics.Lipidomics, library.Omics);
+        Assert.AreEqual(parameter.LbmSearchParam.Ms1Tolerance, library.Parameter.Ms1Tolerance);
+
+        var (peak, msdec, provider) = SynthesizePeak(Lipids[0].Measured, 0);
+        var spectrum = provider.LoadMsSpectrumFromIndex(0).Spectrum;
+        MsScanMatchResult Score(CalibrationLibrary calibration) {
+            IAnnotationQueryFactory<MsScanMatchResult> query = new AnnotationQueryFactory((LcmsMspAnnotator)calibration.Annotator, parameter.PeakPickBaseParam, calibration.Parameter, ignoreIsotopicPeak: true);
+            return query.Create(peak, msdec, spectrum, peak.PeakCharacter, query.PrepareParameter()).FindCandidates().Single();
+        }
+        var consoleResult = Score(library);
+        var rebuiltResult = Score(rebuilt.Single());
+        Assert.AreEqual(consoleResult.MatchedPeaksPercentage, rebuiltResult.MatchedPeaksPercentage);
+        Assert.AreEqual(consoleResult.TotalScore, rebuiltResult.TotalScore);
+        Assert.AreEqual(consoleResult.Name, rebuiltResult.Name);
     }
 
     private static MsdialLcmsParameter CreateEadParameter()

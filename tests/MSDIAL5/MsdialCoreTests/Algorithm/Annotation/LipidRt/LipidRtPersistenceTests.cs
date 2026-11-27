@@ -152,7 +152,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.LipidRt.Tests
             var parameter = new ParameterBase { TargetOmics = TargetOmics.Lipidomics };
             parameter.LipidRtCheckParam.IsEnabled = false;
             var full = MessagePackSerializer.Serialize(parameter);
-            Assert.AreEqual(19, MessagePackBinary.ReadArrayHeader(full, 0, out _), "key 18 is the last key of ParameterBase");
+            Assert.AreEqual(20, MessagePackBinary.ReadArrayHeader(full, 0, out _), "key 19, the mass recalibration, is the last key of ParameterBase");
 
             var actual = MessagePackSerializer.Deserialize<ParameterBase>(Truncate(full, 18));
 

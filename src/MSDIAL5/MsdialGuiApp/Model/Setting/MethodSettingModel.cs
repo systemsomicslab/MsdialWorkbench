@@ -28,6 +28,7 @@ namespace CompMs.App.Msdial.Model.Setting
             AlignmentParameterSettingModel = settingModelFactory.CreateAlignmentParameterSetting();
             MobilitySettingModel = settingModelFactory.CreateMobilitySetting();
             IsotopeTrackSettingModel = settingModelFactory.CreateIsotopeTrackSetting();
+            MassRecalibrationSettingModel = settingModelFactory.CreateMassRecalibrationSetting();
 
             Option = option;
             IsReadOnlyPeakPickParameter = !option.HasFlag(ProcessOption.PeakSpotting);
@@ -63,6 +64,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IsotopeTrackSettingModel? IsotopeTrackSettingModel { get; }
 
+        /// <summary>The mass recalibration step; LC-MS only, null for the other methods.</summary>
+        public MassRecalibrationSettingModel? MassRecalibrationSettingModel { get; }
+
         public bool IsReadOnlyPeakPickParameter { get; }
 
         public bool IsReadOnlyAnnotationParameter { get; }
@@ -77,6 +81,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
                 PeakDetectionSettingModel?.Commit();
                 DeconvolutionSettingModel?.Commit();
+                if (MassRecalibrationSettingModel is not null && !MassRecalibrationSettingModel.TryCommit()) {
+                    return false;
+                }
             }
             if (Option.HasFlag(ProcessOption.Identification)) {
                 if (IdentifySettingModel != null) {
@@ -121,6 +128,7 @@ namespace CompMs.App.Msdial.Model.Setting
                         IdentifySettingModel?.LoadParameter(parameter);
                         AdductIonSettingModel?.LoadParameter(parameter);
                         AlignmentParameterSettingModel?.LoadParameter(parameter);
+                        MassRecalibrationSettingModel?.LoadParameter(parameter);
                         // MobilitySettingModel?.LoadParameter();
                         // IsotopeTrackSettingModel?.LoadParameter();
                     }

@@ -74,6 +74,9 @@
                 <DataTemplate DataType="{x:Type vm:GcmsIdentificationSettingViewModel}">
                     <Label Content="Identification" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:MassRecalibrationSettingViewModel}">
+                    <Label Content="Mass recalibration" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
                     <Label Content="Adduct ion" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
@@ -180,6 +183,11 @@
                             <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                                 <local:GcmsIdentificationSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                             </ContentControl>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:MassRecalibrationSettingViewModel}">
+                            <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                                <local:MassRecalibrationSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                            </ScrollViewer>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
                             <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">

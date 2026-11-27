@@ -42,6 +42,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public string AnnotatorId { get; }
 
+        /// <summary>The annotator its queries search, for a caller that searches it otherwise, as the mass recalibration does.</summary>
+        public IMatchResultFinder<AnnotationQuery, MsScanMatchResult> Annotator => _annotator;
+
         int IAnnotationQueryFactory<MsScanMatchResult>.Priority => _annotator.Priority;
 
         public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
