@@ -23,10 +23,15 @@ namespace CompMs.App.Msdial.Model.Chart;
 
 internal sealed class CheckChromatogramsModel : BindableBase
 {
+    /// <summary>Mass tolerance [Da] of an empty EIC row.</summary>
+    public const double DefaultEicMassTolerance = 0.01d;
+
     private readonly AccumulateSpectraUsecase _accumulateSpectra;
     private readonly ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? _compoundSearch;
     private readonly AdvancedProcessOptionBaseParameter _advancedProcessParameter;
     private readonly IMessageBroker _broker;
+    private readonly List<PeakFeatureSearchValue> _displaySettingValueCandidates;
+    private readonly ObservableCollection<PeakFeatureSearchValueModel> _displaySettingValues;
     private readonly MsScanCompoundSearchUsecase _scanCompoundSearchUsecase;
 
     public CheckChromatogramsModel(LoadChromatogramsUsecase loadingChromatograms, AccumulateSpectraUsecase accumulateSpectra, ICompoundSearchUsecase<ICompoundResult, PeakSpotModel>? compoundSearch, AdvancedProcessOptionBaseParameter advancedProcessParameter, AnalysisFileBeanModel file, IMessageBroker broker) {
@@ -37,7 +42,11 @@ internal sealed class CheckChromatogramsModel : BindableBase
         File = file;
         _broker = broker;
         advancedProcessParameter.DiplayEicSettingValues ??= [];
-        EicQueries = new EicQueryListModel(advancedProcessParameter.DiplayEicSettingValues);
+        var values = advancedProcessParameter.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
+        values.AddRange(Enumerable.Repeat(0, 100).Select(_ => new PeakFeatureSearchValue { MassTolerance = DefaultEicMassTolerance }));
+        _displaySettingValueCandidates = values;
+        _displaySettingValues = new ObservableCollection<PeakFeatureSearchValueModel>(values.Select(v => new PeakFeatureSearchValueModel(v)));
+        DisplayEicSettingValues = new ReadOnlyObservableCollection<PeakFeatureSearchValueModel>(_displaySettingValues);
         _scanCompoundSearchUsecase = new MsScanCompoundSearchUsecase();
 
         var settings = Properties.Settings.Default;
@@ -118,7 +127,7 @@ internal sealed class CheckChromatogramsModel : BindableBase
     }
     private AccumulatedExtractedMs2SpectrumModel[] _accumulatedMs2SpectrumModels = [];
 
-    public EicQueryListModel EicQueries { get; }
+    public ReadOnlyObservableCollection<PeakFeatureSearchValueModel> DisplayEicSettingValues { get; }
 
     public LoadChromatogramsUsecase LoadChromatogramsUsecase { get; }
 
@@ -133,8 +142,11 @@ internal sealed class CheckChromatogramsModel : BindableBase
     }
 
     public void Update() {
+        foreach (var m in DisplayEicSettingValues) {
+            m.Commit();
+        }
         _advancedProcessParameter.DiplayEicSettingValues.Clear();
-        _advancedProcessParameter.DiplayEicSettingValues.AddRange(EicQueries.ToSearchValues());
+        _advancedProcessParameter.DiplayEicSettingValues.AddRange(_displaySettingValueCandidates.Where(n => n.Mass > 0 && n.MassTolerance > 0));
         var displayEICs = _advancedProcessParameter.DiplayEicSettingValues;
         Chromatograms = LoadChromatogramsUsecase.Load(displayEICs);
         if (Chromatograms.AbundanceAxisItemSelector.SelectedAxisItem?.AxisManager is BaseAxisManager<double> axis) {
@@ -185,10 +197,6 @@ internal sealed class CheckChromatogramsModel : BindableBase
             var subs = RangeSelectableChromatogramModel.SubtractRanges.Select(r => RangeSelectableChromatogramModel.ConvertToRt(r)).ToArray();
             await model.CalculateMs2Async(range, subs, token).ConfigureAwait(false);
         }
-    }
-
-    public void Clear() {
-        EicQueries.Clear();
     }
 
     public bool VisiblePeakLabel {

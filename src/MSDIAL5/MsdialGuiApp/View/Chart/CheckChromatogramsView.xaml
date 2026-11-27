@@ -265,9 +265,9 @@
                                                     Orientation="Horizontal"
                                                     HorizontalAlignment="Left"
                                                     DockPanel.Dock="Top">
-                                            <Button Content="All" Command="{Binding ShowAllCommand, Mode=OneTime}" Width="48" Margin="4"
+                                            <Button Content="Show all" Command="{Binding ShowAllCommand, Mode=OneTime}" Width="64" Margin="4"
                                                     ToolTip="Show all chromatograms"/>
-                                            <Button Content="None" Command="{Binding HideAllCommand, Mode=OneTime}" Width="48" Margin="4"
+                                            <Button Content="Hide all" Command="{Binding HideAllCommand, Mode=OneTime}" Width="64" Margin="4"
                                                     ToolTip="Hide all chromatograms"/>
                                         </StackPanel>
                                         <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -317,94 +317,74 @@
                                         </StackPanel>
                                     </StackPanel>
 
-                                    <Grid Grid.Row="1" Margin="4">
-                                        <Grid.Resources>
-                                            <Style x:Key="EicQueryTextBox" TargetType="{x:Type TextBox}">
-                                                <Setter Property="Margin" Value="1"/>
-                                                <Setter Property="Padding" Value="2,1"/>
-                                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_EicDiplayProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}"
+                                              ItemsSource="{Binding Path=DiplayEicSettingValues, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                              behavior:DataGridPasteBehavior.Enable="True"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True"
+                                              AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"
+                                              AllowDrop="True"
+                                              Margin="4"
+                                              Grid.Row="1">
+                                        <DataGrid.Resources>
+                                            <!--
+                                                Cells show their text in a TextBlock and switch to a single TextBox only while editing (DataGridTextColumn),
+                                                so typing into a selected cell starts the edit with that character, and Tab and Enter move one cell at a time.
+                                                Errors are shown on the displayed text instead of on the editing TextBox, so an invalid value never keeps the cell in edit mode;
+                                                Apply stays disabled until it is fixed.
+                                            -->
+                                            <Style x:Key="EicCellTextBlock" TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Padding" Value="2,0"/>
+                                                <Setter Property="VerticalAlignment" Value="Stretch"/>
                                                 <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
-                                                <EventSetter Event="DataObject.Pasting" Handler="EicQueryTextBox_Pasting"/>
-                                                <EventSetter Event="PreviewKeyDown" Handler="EicQueryTextBox_PreviewKeyDown"/>
                                                 <Style.Triggers>
                                                     <Trigger Property="Validation.HasError" Value="True">
                                                         <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
-                                                        <Setter Property="BorderBrush" Value="Red"/>
-                                                        <Setter Property="Background" Value="#FFFFF0F0"/>
+                                                        <Setter Property="Background" Value="Pink"/>
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Grid.Resources>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
+                                            <Style x:Key="EicMassTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource EicCellTextBlock}">
+                                                <Setter Property="Tag" Value="{Binding Mass.Value, Mode=OneWay, ValidatesOnNotifyDataErrors=True}"/>
+                                            </Style>
+                                            <Style x:Key="EicMassToleranceTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource EicCellTextBlock}">
+                                                <Setter Property="Tag" Value="{Binding MassTolerance.Value, Mode=OneWay, ValidatesOnNotifyDataErrors=True}"/>
+                                            </Style>
+                                        </DataGrid.Resources>
 
-                                        <!-- Header. The last two columns leave room for the remove button and the scroll bar. -->
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="22"/>
-                                                <ColumnDefinition Width="17"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Name" Margin="3,0" FontWeight="SemiBold"/>
-                                            <TextBlock Text="Exact mass" Margin="3,0" FontWeight="SemiBold" Grid.Column="1"/>
-                                            <TextBlock Text="Mass tolerance [Da]" Margin="3,0" FontWeight="SemiBold" Grid.Column="2" TextTrimming="CharacterEllipsis"/>
-                                        </Grid>
+                                        <DataGrid.ColumnHeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGrid.ColumnHeaderStyle>
 
-                                        <ScrollViewer Grid.Row="1"
-                                                      VerticalScrollBarVisibility="Visible"
-                                                      HorizontalScrollBarVisibility="Disabled">
-                                            <ItemsControl ItemsSource="{Binding EicQueries}"
-                                                          KeyboardNavigation.TabNavigation="Continue">
-                                                <ItemsControl.ItemTemplate>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Width="1*" Header="Name"
+                                                                Binding="{Binding Path=Title.Value}"
+                                                                ElementStyle="{StaticResource EicCellTextBlock}"/>
+                                            <DataGridTextColumn Width="1*" Header="Exact mass"
+                                                                Binding="{Binding Path=Mass.Value, ValidatesOnNotifyDataErrors=False}"
+                                                                ElementStyle="{StaticResource EicMassTextBlock}"/>
+                                            <DataGridTextColumn Width="1*" Header="Mass tolerance [Da]"
+                                                                Binding="{Binding Path=MassTolerance.Value, ValidatesOnNotifyDataErrors=False}"
+                                                                ElementStyle="{StaticResource EicMassToleranceTextBlock}"/>
+                                            <DataGridTemplateColumn Width="Auto" CanUserSort="False" IsReadOnly="True">
+                                                <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition Width="22"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <TextBox Text="{Binding Title.Value, UpdateSourceTrigger=PropertyChanged}"
-                                                                     Tag="0"
-                                                                     Style="{StaticResource EicQueryTextBox}"/>
-                                                            <TextBox Text="{Binding Mass.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                                                                     Tag="1"
-                                                                     Style="{StaticResource EicQueryTextBox}"
-                                                                     Grid.Column="1"/>
-                                                            <TextBox Text="{Binding MassTolerance.Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
-                                                                     Tag="2"
-                                                                     Style="{StaticResource EicQueryTextBox}"
-                                                                     Grid.Column="2"/>
-                                                            <Button Content="&#x2715;"
-                                                                    Command="{Binding DataContext.RemoveQueryCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                                    CommandParameter="{Binding}"
-                                                                    ToolTip="Remove this row"
-                                                                    Focusable="False"
-                                                                    Background="Transparent"
-                                                                    BorderThickness="0"
-                                                                    Padding="0"
-                                                                    Margin="1"
-                                                                    Grid.Column="3">
-                                                                <Button.Style>
-                                                                    <Style TargetType="{x:Type Button}">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding IsEmpty.Value}" Value="True">
-                                                                                <Setter Property="Visibility" Value="Hidden"/>
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Button.Style>
-                                                            </Button>
-                                                        </Grid>
+                                                        <Button Content="&#x2715;"
+                                                                Command="{Binding DataContext.ClearRowCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                                CommandParameter="{Binding}"
+                                                                ToolTip="Clear this row"
+                                                                Focusable="False"
+                                                                Foreground="Gray"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Padding="4,0"/>
                                                     </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </ScrollViewer>
-                                    </Grid>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
 
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
                                         <StackPanel.Resources>
@@ -417,7 +397,6 @@
                                         </StackPanel.Resources>
                                         <Button Content="Apply" Command="{Binding ApplyCommand, Mode=OneTime}"/>
                                         <Button Content="Clear" Command="{Binding ClearCommand, Mode=OneTime}"/>
-                                        <Button Content="Copy" Command="{Binding CopyQueriesCommand, Mode=OneTime}" ToolTip="Copy the list as a table"/>
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>
