@@ -21,9 +21,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
                     }
                 },
 
@@ -31,10 +31,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
                     }
                 },
 
@@ -42,10 +42,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 2, PeakID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 3, PeakID = 3 },
                     }
                 },
 
@@ -53,10 +53,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 2, PeakID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 3, PeakID = 3 },
                     }
                 },
 
@@ -64,10 +64,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 0, PeakID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -2, PeakID = -2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 3, PeakID = 3 },
                     }
                 },
             };
@@ -97,12 +97,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 3 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 4 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 5 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 4 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 5 },
                     },
                 },
 
@@ -110,12 +110,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 3 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 4 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 5 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 4 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 5 },
                     },
                 },
 
@@ -123,12 +123,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 3 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 4 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 5 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 4 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 5 },
                     },
                 },
             };
@@ -157,12 +157,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 3 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 4 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 5 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 4 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 5 },
                     },
                 },
 
@@ -170,12 +170,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 3 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 4 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 5 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 4 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 5 },
                     },
                 },
 
@@ -183,12 +183,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     AlignedPeakProperties = new List<AlignmentChromPeakFeature>
                     {
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 0 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 1 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 2 },
-                        new AlignmentChromPeakFeature { MasterPeakID = 1, FileID = 3 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 4 },
-                        new AlignmentChromPeakFeature { MasterPeakID = -1, FileID = 5 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 0 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 1 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 2 },
+                        new AlignmentChromPeakFeature { MasterPeakID = 1, PeakID = 1, FileID = 3 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 4 },
+                        new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1, FileID = 5 },
                     },
                 },
             };
@@ -200,6 +200,58 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 
             Assert.AreEqual(2, actual.Count);
             CollectionAssert.AreEqual(expected, actual);
+        }
+
+        // A peak joined from its file that the gap filler then counted as not detected (the GC-MS gap filler does so for
+        // a peak with no signal at the spot's quant mass) keeps its MasterPeakID and has PeakID -2.
+        private static AlignmentChromPeakFeature Demoted(int fileID) {
+            return new AlignmentChromPeakFeature { MasterPeakID = 5, PeakID = -2, FileID = fileID };
+        }
+
+        private static AlignmentChromPeakFeature Detected(int fileID) {
+            return new AlignmentChromPeakFeature { MasterPeakID = 5, PeakID = 5, FileID = fileID };
+        }
+
+        [TestMethod]
+        public void PeakCountFilterDoesNotCountAPeakCountedAsNotDetected() {
+            var spot = new AlignmentSpotProperty
+            {
+                AlignedPeakProperties = new List<AlignmentChromPeakFeature> { Detected(0), Demoted(1), Demoted(2), },
+            };
+
+            var actual = new PeakCountFilter(2).Filter(new[] { spot, }).ToList();
+
+            Assert.AreEqual(0, actual.Count);
+        }
+
+        [TestMethod]
+        public void QcFilterRejectsAQcPeakCountedAsNotDetected() {
+            var file2type = new Dictionary<int, AnalysisFileType>
+            {
+                { 0, AnalysisFileType.QC },
+                { 1, AnalysisFileType.QC },
+            };
+            var spot = new AlignmentSpotProperty
+            {
+                AlignedPeakProperties = new List<AlignmentChromPeakFeature> { Detected(0), Demoted(1), },
+            };
+
+            var actual = new QcFilter(file2type).Filter(new[] { spot, }).ToList();
+
+            Assert.AreEqual(0, actual.Count);
+        }
+
+        [TestMethod]
+        public void DetectedNumberFilterDoesNotCountAPeakCountedAsNotDetected() {
+            var file2class = new Dictionary<int, string> { { 0, "A" }, { 1, "A" }, { 2, "A" }, { 3, "A" }, };
+            var spot = new AlignmentSpotProperty
+            {
+                AlignedPeakProperties = new List<AlignmentChromPeakFeature> { Detected(0), Demoted(1), Demoted(2), Detected(3), },
+            };
+
+            var actual = new DetectedNumberFilter(file2class, 0.75).Filter(new[] { spot, }).ToList();
+
+            Assert.AreEqual(0, actual.Count);
         }
 
         [TestMethod]

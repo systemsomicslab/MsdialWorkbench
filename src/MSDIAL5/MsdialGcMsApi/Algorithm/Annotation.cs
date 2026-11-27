@@ -91,10 +91,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm
 
                             var reference = _calculateMatchScore.Reference(container.Representative);
                             if (used.Contains(reference)) {
-                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference.AsPutative(), _parameter.IsReplaceQuantmassByUserDefinedValue && reference.QuantMass != 0 ? reference.QuantMass : ms1DecResults[i].ModelPeakMz);
+                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference.AsPutative(), QuantMassOf(reference, ms1DecResults[i]));
                             }
                             else {
-                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference, _parameter.IsReplaceQuantmassByUserDefinedValue && reference.QuantMass != 0 ? reference.QuantMass : ms1DecResults[i].ModelPeakMz);
+                                features[i] = new AnnotatedMSDecResult(ms1DecResults[i], container, reference, QuantMassOf(reference, ms1DecResults[i]));
                                 used.Add(reference);
                             }
                         }
@@ -107,7 +107,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm
                     for (int i = 0; i < ms1DecResults.Count; i++) {
                         var results = containers[i];
                         if (results.Representative is MsScanMatchResult topHit && !topHit.IsUnknown) {
-                            features[i] = new AnnotatedMSDecResult(ms1DecResults[i], results, _calculateMatchScore.Reference(topHit));
+                            var reference = _calculateMatchScore.Reference(topHit);
+                            features[i] = new AnnotatedMSDecResult(ms1DecResults[i], results, reference, QuantMassOf(reference, ms1DecResults[i]));
 
                             MsScanMatchResult[] msScanMatchResults = containers[i].MatchResults.OrderByDescending(r => r.TotalScore).ToArray();
                             ms1DecResults[i].MspIDs.AddRange(msScanMatchResults.Select(r => r.LibraryID));
@@ -125,6 +126,17 @@ namespace CompMs.MsdialGcMsApi.Algorithm
             }
 
             return ms1DecResults.Select(r => new AnnotatedMSDecResult(r, new MsScanMatchResultContainer())).ToArray();
+        }
+
+        /// <summary>
+        /// The m/z this file's annotated peak is quantified at: the library QUANTMASS only when
+        /// "Replace quant mass by user defined value" is on and the reference defines a positive one,
+        /// the deconvoluted model peak m/z otherwise. One rule for both the top-hit and the
+        /// every-hit path. The MSP parser stores -1 for a QUANTMASS it cannot read (for example a
+        /// line run into the next field), which is not an m/z.
+        /// </summary>
+        private double QuantMassOf(MoleculeMsReference reference, MSDecResult result) {
+            return _parameter.IsReplaceQuantmassByUserDefinedValue && reference.QuantMass > 0 ? reference.QuantMass : result.ModelPeakMz;
         }
     }
 

@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _referenceFile = files.FindByID(parameter.AlignmentBaseParam.AlignmentReferenceFileID);
             RtEqualityParameter = new RetentionTimeEqualityParameterSetting(parameter.AlignmentBaseParam);
             RiEqualityParameter = new RetentionIndexEqualityParameterSetting(parameter);
-            EiEqualityParameter = new Ms1EqualityParameterSetting(parameter.AlignmentBaseParam);
+            EiEqualityParameter = new SpectrumSimilarityEqualityParameterSetting(parameter.AlignmentBaseParam);
             PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
             NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;
             BlankFiltering = parameter.PostProcessBaseParam.BlankFiltering;
@@ -50,6 +50,8 @@ namespace CompMs.App.Msdial.Model.Setting
             IndexType = parameter.AlignmentIndexType;
             IsIdentificationOnlyPerformedForAlignmentFile = parameter.RefSpecMatchBaseParam.IsIdentificationOnlyPerformedForAlignmentFile;
             IsRepresentativeQuantMassBasedOnBasePeakMz = parameter.IsRepresentativeQuantMassBasedOnBasePeakMz;
+            JoinSpotsSplitByRetentionDrift = parameter.JoinSpotsSplitByRetentionDrift;
+            SplitSpotJoinWindow = parameter.SplitSpotJoinWindow;
         }
 
         public bool IsReadOnly { get; }
@@ -76,7 +78,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public RetentionTimeEqualityParameterSetting RtEqualityParameter { get; }
         public RetentionIndexEqualityParameterSetting RiEqualityParameter { get; }
-        public Ms1EqualityParameterSetting EiEqualityParameter { get; }
+        public SpectrumSimilarityEqualityParameterSetting EiEqualityParameter { get; }
 
         public float EiSimilarityTolerance {
             get => _eiSimilarityTolerance;
@@ -113,6 +115,19 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref _isRepresentativeQuantMassBasedOnBasePeakMz, value);
         }
         private bool _isRepresentativeQuantMassBasedOnBasePeakMz;
+
+        public bool JoinSpotsSplitByRetentionDrift {
+            get => _joinSpotsSplitByRetentionDrift;
+            set => SetProperty(ref _joinSpotsSplitByRetentionDrift, value);
+        }
+        private bool _joinSpotsSplitByRetentionDrift;
+
+        /// <summary>In multiples of the retention time or retention index tolerance.</summary>
+        public float SplitSpotJoinWindow {
+            get => _splitSpotJoinWindow;
+            set => SetProperty(ref _splitSpotJoinWindow, value);
+        }
+        private float _splitSpotJoinWindow;
 
         public bool ShouldRunAlignment {
             get => _shouldRunAlignment;
@@ -217,6 +232,8 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter.AlignmentIndexType = IndexType;
             _parameter.RefSpecMatchBaseParam.IsIdentificationOnlyPerformedForAlignmentFile = IsIdentificationOnlyPerformedForAlignmentFile;
             _parameter.IsRepresentativeQuantMassBasedOnBasePeakMz = IsRepresentativeQuantMassBasedOnBasePeakMz;
+            _parameter.JoinSpotsSplitByRetentionDrift = JoinSpotsSplitByRetentionDrift;
+            _parameter.SplitSpotJoinWindow = SplitSpotJoinWindow;
 
             IsCompleted = true;
             return true;
@@ -244,6 +261,8 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter is MsdialGcmsParameter gcms) {
                 IndexType = gcms.AlignmentIndexType;
                 IsRepresentativeQuantMassBasedOnBasePeakMz = gcms.IsRepresentativeQuantMassBasedOnBasePeakMz;
+                JoinSpotsSplitByRetentionDrift = gcms.JoinSpotsSplitByRetentionDrift;
+                SplitSpotJoinWindow = gcms.SplitSpotJoinWindow;
             }
         }
     }

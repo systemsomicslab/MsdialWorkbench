@@ -196,6 +196,56 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadForGcms_RunsWithTheMspSearchSettingsThatParametersAsTextWrote()
+    {
+        // A GC-MS project's exported parameter file is read back by the Console with the same EI
+        // library search. The dot product cutoffs are plain cosines both ways.
+        var written = new MsdialGcmsParameter {
+            OnlyReportTopHitInMspSearch = true,
+            IsIdentificationOnlyPerformedForAlignmentFile = true,
+        };
+        var msp = written.MspSearchParam;
+        msp.RtTolerance = 0.3f;
+        msp.RiTolerance = 15f;
+        msp.MassRangeBegin = 70f;
+        msp.MassRangeEnd = 550f;
+        msp.Ms1Tolerance = 0.25f;
+        msp.RelativeAmpCutoff = 0.5f;
+        msp.AbsoluteAmpCutoff = 10f;
+        msp.WeightedDotProductCutOff = 0.7f;
+        msp.SimpleDotProductCutOff = 0.65f;
+        msp.ReverseDotProductCutOff = 0.75f;
+        msp.MatchedPeaksPercentageCutOff = 0.4f;
+        msp.MinimumSpectrumMatch = 4f;
+        msp.TotalScoreCutoff = 0.72f;
+        msp.IsUseTimeForAnnotationScoring = true;
+        msp.IsUseTimeForAnnotationFiltering = true;
+        using var directory = new TemporaryDirectory();
+        var methodFile = directory.CreateFile("method.txt", string.Join(Environment.NewLine, written.ParametersAsText()));
+
+        var parameter = ConfigParser.ReadForGcms(methodFile);
+        var read = parameter.MspSearchParam;
+
+        Assert.AreEqual(0.3f, read.RtTolerance);
+        Assert.AreEqual(15f, read.RiTolerance);
+        Assert.AreEqual(70f, read.MassRangeBegin);
+        Assert.AreEqual(550f, read.MassRangeEnd);
+        Assert.AreEqual(0.25f, read.Ms1Tolerance);
+        Assert.AreEqual(0.5f, read.RelativeAmpCutoff);
+        Assert.AreEqual(10f, read.AbsoluteAmpCutoff);
+        Assert.AreEqual(0.7f, read.WeightedDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.65f, read.SimpleDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.75f, read.ReverseDotProductCutOff, 1e-6f);
+        Assert.AreEqual(0.4f, read.MatchedPeaksPercentageCutOff);
+        Assert.AreEqual(4f, read.MinimumSpectrumMatch);
+        Assert.AreEqual(0.72f, read.TotalScoreCutoff);
+        Assert.IsTrue(read.IsUseTimeForAnnotationScoring);
+        Assert.IsTrue(read.IsUseTimeForAnnotationFiltering);
+        Assert.IsTrue(parameter.OnlyReportTopHitInMspSearch);
+        Assert.IsTrue(parameter.IsIdentificationOnlyPerformedForAlignmentFile);
+    }
+
+    [TestMethod]
     public void ReadCommonParameter_AcceptsAMinimumPeakHeightWrittenAsARealNumber()
     {
         // THE REGRESSION. MinimumAmplitude is a double, ParameterBase:589 writes it back as one,
@@ -320,6 +370,7 @@ public sealed class ConfigParserTests
     [DataTestMethod]
     [DataRow("replace quant mass by user defined value")]
     [DataRow("is quant mass based on base peak mz")]
+    [DataRow("join spots split by retention drift")]
     public void ReadGcmsSpecificParameter_ReadsAnOnOffKeyInBothDirections(string key)
     {
         var parameter = new MsdialGcmsParameter();
@@ -327,10 +378,22 @@ public sealed class ConfigParserTests
         {
             "replace quant mass by user defined value" => () => parameter.IsReplaceQuantmassByUserDefinedValue,
             "is quant mass based on base peak mz" => () => parameter.IsRepresentativeQuantMassBasedOnBasePeakMz,
+            "join spots split by retention drift" => () => parameter.JoinSpotsSplitByRetentionDrift,
             _ => throw new ArgumentOutOfRangeException(nameof(key)),
         };
 
         AssertReadsBothDirections(value => ConfigParser.ReadGcmsSpecificParameter(parameter, key, value), current);
+    }
+
+    [TestMethod]
+    public void ReadGcmsSpecificParameter_ReadsTheSplitSpotJoinWindow()
+    {
+        var parameter = new MsdialGcmsParameter();
+        Assert.AreEqual(MsdialGcmsParameter.DefaultSplitSpotJoinWindow, parameter.SplitSpotJoinWindow);
+
+        Assert.IsTrue(ConfigParser.ReadGcmsSpecificParameter(parameter, "split spot join window", "1.5").IsApplied);
+
+        Assert.AreEqual(1.5f, parameter.SplitSpotJoinWindow);
     }
 
     [TestMethod]
