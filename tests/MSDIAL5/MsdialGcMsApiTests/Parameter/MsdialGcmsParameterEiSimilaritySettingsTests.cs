@@ -13,12 +13,14 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
     /// GcmsPeakJoiner takes the EI similarity threshold and weight from the spectrum similarity settings. A project or
     /// parameter file saved while it took them from Ms1AlignmentTolerance / Ms1AlignmentFactor (the GC-MS dialog wrote
     /// its "EI similarity tolerance / factor" there) must keep aligning with what it aligned with, and the dialog must
-    /// show those values: such a file has no key 157 in MsdialGcmsParameter.
+    /// show those values: such a file ends at key 156 of MsdialGcmsParameter, so it has no marker key.
     /// </summary>
     [TestClass]
     public class MsdialGcmsParameterEiSimilaritySettingsTests
     {
-        private const int EiSimilarityMarkerKey = 157;
+        private const int EiSimilarityMarkerKey = 162;
+        /// <summary>The elements of MsdialGcmsParameter in a file written before the marker existed: keys 0 to 156.</summary>
+        private const int ElementsOfAnOlderFile = 157;
         private const int GcmsParameterKeyInStorage = 6;
 
         private static readonly MessagePackSerializerOptions Options = MessagePackSerializerOptions.Standard.WithResolver(StandardResolver.Instance);
@@ -38,7 +40,7 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
             Assert.AreEqual(EiSimilarityMarkerKey + 1, new MessagePackReader(saved).ReadArrayHeader(), "the marker must be the last key for the fixture to predate it");
 
             // MsdialGcmsDataStorage.LoadParameter is what the method setting dialog's "Load parameter" reads.
-            var actual = new MsdialGcmsDataStorage().LoadParameter(new MemoryStream(Truncate(saved, EiSimilarityMarkerKey)));
+            var actual = new MsdialGcmsDataStorage().LoadParameter(new MemoryStream(Truncate(saved, ElementsOfAnOlderFile)));
 
             // The GC-MS default, neither the 0.7 the dialog wrote into the MS1 alignment tolerance nor the unseen 0.8.
             Assert.AreEqual(MsdialGcmsParameter.DefaultSpectrumSimilarityAlignmentTolerance, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance);
@@ -51,7 +53,7 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
         public void AProjectSavedBeforeTheSpectrumSimilaritySettingsTakesTheGcmsDefaultAndKeepsItsEiWeight() {
             var storage = new MsdialGcmsDataStorage { MsdialGcmsParameter = SavedByAnOlderGui(), };
             var saved = MessagePackSerializer.Serialize(storage, Options);
-            var old = ReplaceElement(saved, GcmsParameterKeyInStorage, parameter => Truncate(parameter, EiSimilarityMarkerKey));
+            var old = ReplaceElement(saved, GcmsParameterKeyInStorage, parameter => Truncate(parameter, ElementsOfAnOlderFile));
 
             // The call MsdialGcmsDataStorage.Serializer makes for the project container.
             var actual = MessagePackDefaultHandler.LoadFromStream<MsdialGcmsDataStorage>(new MemoryStream(old)).MsdialGcmsParameter;
@@ -71,7 +73,7 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
             parameter.AlignmentBaseParam.Ms1AlignmentFactor = .5f;
             var storage = new MsdialGcmsDataStorage { MsdialGcmsParameter = parameter, };
             var saved = MessagePackSerializer.Serialize(storage, Options);
-            var old = ReplaceElement(saved, GcmsParameterKeyInStorage, element => Truncate(element, EiSimilarityMarkerKey));
+            var old = ReplaceElement(saved, GcmsParameterKeyInStorage, element => Truncate(element, ElementsOfAnOlderFile));
 
             var actual = MessagePackDefaultHandler.LoadFromStream<MsdialGcmsDataStorage>(new MemoryStream(old)).MsdialGcmsParameter;
 
@@ -94,6 +96,28 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
             Assert.AreEqual(.4f, actual.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor);
             Assert.AreEqual(.7f, actual.AlignmentBaseParam.Ms1AlignmentTolerance, "the MS1 alignment settings are left as they were");
             Assert.AreEqual(.6f, actual.AlignmentBaseParam.Ms1AlignmentFactor);
+        }
+
+        [TestMethod]
+        public void TheKeysLeftForTheGcxgcColumnSettingsAreWrittenEmpty() {
+            // An unmerged GC×GC branch keeps its column settings at keys 157 to 159 (ModulationTime, a double, at 157).
+            // A file written now must hold nothing there, and the marker must sit after them.
+            var saved = MessagePackSerializer.Serialize(new MsdialGcmsParameter(), Options);
+
+            var reader = new MessagePackReader(saved);
+            var count = reader.ReadArrayHeader();
+            Assert.AreEqual(EiSimilarityMarkerKey + 1, count);
+            for (var i = 0; i < count; i++) {
+                if (i >= 157 && i <= 159) {
+                    Assert.IsTrue(reader.TryReadNil(), $"key {i} must be empty");
+                }
+                else if (i == EiSimilarityMarkerKey) {
+                    Assert.IsTrue(reader.ReadBoolean(), "every save writes the marker true");
+                }
+                else {
+                    reader.Skip();
+                }
+            }
         }
 
         private static MsdialGcmsParameter SavedByAnOlderGui() {

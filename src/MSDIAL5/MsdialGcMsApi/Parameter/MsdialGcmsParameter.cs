@@ -59,8 +59,11 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         /// a method file admits any pair within the retention window. The EI weight the file aligned with,
         /// Ms1AlignmentFactor, is carried into the spectrum similarity factor, so the dialog shows it and the next
         /// alignment uses it.
+        ///
+        /// Keys 157 to 159 are left free: an unmerged GC×GC branch uses them for its column settings (ModulationTime,
+        /// a double, at 157). An older file ends at key 156, so it still has no element for this key.
         /// </remarks>
-        [Key(157)]
+        [Key(162)]
         public bool AlignmentEiSimilarityIsSpectrumSimilarity { get; set; }
 
         void IMessagePackSerializationCallbackReceiver.OnBeforeSerialize() {
