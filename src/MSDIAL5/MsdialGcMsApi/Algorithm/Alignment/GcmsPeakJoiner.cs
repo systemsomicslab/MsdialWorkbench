@@ -204,6 +204,42 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         return feature.AnnotatedMSDecResult.MSDecResult.ChromXs.RI.Value;
     }
 
+    // A peak of a non-reference file that matches no master becomes a new master only if its height is above 0.1% of
+    // the tallest master, as in MS-DIAL 4 (PeakAlignment.addJointAlignerMasterListByRetentionTime/-Index:
+    // maxIntensity * 0.001 < BasepeakHeight). The tallest master is taken once per file, before the file's peaks are
+    // read: the masters of the reference file and those added by earlier files count, the file's own new masters do
+    // not. The reference file's peaks all become masters, whatever their height. Without the floor every unmatched
+    // noise peak of every file became a master, and the number of spots grew with the number of files.
+    private const double MasterHeightFloorRatio = 0.001;
+
+    protected static double GetMasterHeightFloor(IDictionary<int, List<SpectrumFeature>> master) {
+        var maxHeight = double.NegativeInfinity;
+        foreach (var features in master.Values) {
+            foreach (var feature in features) {
+                var height = GetHeight(feature);
+                if (height > maxHeight) {
+                    maxHeight = height;
+                }
+            }
+        }
+        // No master to compare with (MS-DIAL 4 failed here on an empty master list): no floor.
+        return double.IsNegativeInfinity(maxHeight) ? double.NegativeInfinity : maxHeight * MasterHeightFloorRatio;
+    }
+
+    protected static bool IsAboveMasterHeightFloor(SpectrumFeature feature, double floor) {
+        return GetHeight(feature) > floor;
+    }
+
+    // MS-DIAL 4's BasepeakHeight is the intensity of the deconvoluted model m/z chromatogram at the deconvoluted peak
+    // top (MS1Dec.ms1DecResultProperty). MSDecResult.ModelPeakHeight is the same value, computed the same way
+    // (MSDecProcess.ms1DecResultProperty), and, like the retention the joiners compare, it belongs to the MSDec result.
+    // The height of the quantified chromatogram peak is a different measurement: the smoothed raw chromatogram of the
+    // quant mass, which is the library's quant mass for an annotated peak when IsReplaceQuantmassByUserDefinedValue is
+    // set.
+    private static double GetHeight(SpectrumFeature feature) {
+        return feature.AnnotatedMSDecResult.MSDecResult.ModelPeakHeight;
+    }
+
     protected List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<SpectrumFeature> masters, IEnumerable<AnalysisFileBean> analysisFiles, ChromXType mainType) {
         var masterId = 0;
         return InitSpots(masters, analysisFiles, mainType, ref masterId);
@@ -300,9 +336,10 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
         // masters are added after the whole file has been read. Adding each one at once made a similar later peak of the
         // same file look already covered, so that peak became no master and joined no spot (MS-DIAL 4 collected the new
         // masters in addedMs1DecResults and appended them after the file).
+        var heightFloor = GetMasterHeightFloor(master);
         var added = new List<SpectrumFeature>();
         foreach (var target in targets) {
-            SetToMaster(master, target, added);
+            SetToMaster(master, target, added, heightFloor);
         }
         foreach (var target in added) {
             AddToMaster(master, target);
@@ -317,7 +354,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
         master[rtTarget].Add(target);
     }
 
-    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added) {
+    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added, double heightFloor) {
         var rtTarget = (int)Math.Ceiling(GetRetentionTime(target) / _rtBucket);
         for(int rtIdc = rtTarget - _rtWidth; rtIdc <= rtTarget + _rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
             if (master.ContainsKey(rtIdc)) {
@@ -336,6 +373,9 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                     }
                 }
             }
+        }
+        if (!IsAboveMasterHeightFloor(target, heightFloor)) {
+            return false;
         }
         added.Add(target);
         return true;
@@ -444,9 +484,10 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
         // masters are added after the whole file has been read. Adding each one at once made a similar later peak of the
         // same file look already covered, so that peak became no master and joined no spot (MS-DIAL 4 collected the new
         // masters in addedMs1DecResults and appended them after the file).
+        var heightFloor = GetMasterHeightFloor(master);
         var added = new List<SpectrumFeature>();
         foreach (var target in targets) {
-            SetToMaster(master, target, added);
+            SetToMaster(master, target, added, heightFloor);
         }
         foreach (var target in added) {
             AddToMaster(master, target);
@@ -461,7 +502,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
         master[riTarget].Add(target);
     }
 
-    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added) {
+    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added, double heightFloor) {
         var riTarget = (int)Math.Ceiling(GetRetentionIndex(target) / _riBucket);
         for(int riIdc = riTarget - _riWidth; riIdc <= riTarget + _riWidth; riIdc++) { // in many case, riIdc is from riTarget - 1 to riTarget + 1
             if (master.ContainsKey(riIdc)) {
@@ -471,6 +512,9 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
                     }
                 }
             }
+        }
+        if (!IsAboveMasterHeightFloor(target, heightFloor)) {
+            return false;
         }
         added.Add(target);
         return true;

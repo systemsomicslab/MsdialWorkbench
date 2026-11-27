@@ -614,6 +614,56 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
             Assert.AreEqual(0, spots[0].AlignedPeakProperties[1].PeakID, "the peak joins the master");
         }
 
+        [TestMethod]
+        public void RIJoinerMakesAPeakANewMasterOnlyAboveATenthOfAPercentOfTheTallestMaster() {
+            AssertMasterHeightFloor(Join(MasterHeightFloorData()));
+        }
+
+        [TestMethod]
+        public void RTJoinerMakesAPeakANewMasterOnlyAboveATenthOfAPercentOfTheTallestMaster() {
+            AssertMasterHeightFloor(Join(MasterHeightFloorData(), AlignmentIndexType.RT));
+        }
+
+        // The tallest master before file 1 is the reference file's peak at RI 1000 (height 1,000,000), so the floor
+        // for file 1 is 1000. File 1's peak at RI 1500 (height 1000) is not above it and becomes no master; its peaks
+        // at RI 2000 (height 10,000,000) and RI 2500 (height 5000) are, and become masters. The floor is not raised by
+        // the file's own new masters, so the peak at RI 2500 stays a master although it is below 0.1% of the peak at
+        // RI 2000. It is raised for file 2: its peak at RI 3000 (height 5000) is below 10,000 and becomes no master.
+        // The floor only bounds new masters: file 1's peak at RI 1001 (height 10) still joins the master at RI 1000,
+        // and the reference file's peak at RI 4000 (height 1) is a master. The height compared is the MSDec model
+        // peak height, MS-DIAL 4's BasepeakHeight, not the height of the quantified peak (1 for the peak at RI 2500).
+        private static List<List<SpectrumFeature>> MasterHeightFloorData() {
+            return new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1_000_000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 4000d, height: 1d, SpectrumB),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1001d, height: 10d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1500d, height: 1000d, SpectrumB),
+                    CreateFeature(scanId: 2, ri: 2000d, height: 10_000_000d, SpectrumA),
+                    CreateFeature(scanId: 3, ri: 2500d, height: 5000d, SpectrumB, quantPeakHeight: 1d),
+                },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 3000d, height: 5000d, SpectrumA),
+                },
+            };
+        }
+
+        private static void AssertMasterHeightFloor(List<AlignmentSpotProperty> spots) {
+            var byRetention = spots.OrderBy(s => s.TimesCenter.RI.Value).ToArray();
+            CollectionAssert.AreEqual(new[] { 1000d, 2000d, 2500d, 4000d }, byRetention.Select(s => s.TimesCenter.RI.Value).ToArray(),
+                "masters: the reference file's two peaks and file 1's peaks at RI 2000 and 2500");
+            CollectionAssert.AreEqual(new[] { 0, -1, -1, 1 }, byRetention.Select(s => s.AlignedPeakProperties[0].PeakID).ToArray());
+            CollectionAssert.AreEqual(new[] { 0, 2, 3, -1 }, byRetention.Select(s => s.AlignedPeakProperties[1].PeakID).ToArray(),
+                "file 1's peak at RI 1001 joins the master at RI 1000");
+            CollectionAssert.AreEqual(new[] { -1, -1, -1, -1 }, byRetention.Select(s => s.AlignedPeakProperties[2].PeakID).ToArray());
+        }
+
         private List<AlignmentSpotProperty> Join(List<List<SpectrumFeature>> data, AlignmentIndexType indexType = AlignmentIndexType.RI) {
             return Join(data, indexType, _ => { });
         }
@@ -640,8 +690,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         }
 
         // ri is the retention of the MSDec result (RT is ri / 100 min). quantTopRi is the top of the quantified
-        // (quant-mass) chromatogram peak; it is the same as ri unless given.
-        private static SpectrumFeature CreateFeature(int scanId, double ri, double height, (double Mz, double Intensity)[] spectrum, double? quantTopRi = null) {
+        // (quant-mass) chromatogram peak; it is the same as ri unless given. height is the MSDec model peak height;
+        // quantPeakHeight, the height of the quantified peak, is the same unless given.
+        private static SpectrumFeature CreateFeature(int scanId, double ri, double height, (double Mz, double Intensity)[] spectrum, double? quantTopRi = null, double? quantPeakHeight = null) {
             var quantMass = spectrum[0].Mz;
             var top = quantTopRi ?? ri;
             ChromXs Times(double value) => new ChromXs(new RetentionIndex(value)) { RT = new RetentionTime(value / 100d), };
@@ -659,7 +710,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
                 ChromXsLeft = Times(top),
                 ChromXsTop = Times(top),
                 ChromXsRight = Times(top),
-                PeakHeightTop = height,
+                PeakHeightTop = quantPeakHeight ?? height,
                 Mass = quantMass,
             };
             return new SpectrumFeature(
