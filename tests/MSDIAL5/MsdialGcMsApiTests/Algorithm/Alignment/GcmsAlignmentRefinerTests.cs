@@ -226,7 +226,115 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AreEqual(expect, actual);
         }
 
+        [DataTestMethod()]
+        [DataRow(AlignmentIndexType.RT)]
+        [DataRow(AlignmentIndexType.RI)]
+        public void OfTwoUnannotatedDuplicatesTheOneDetectedInMoreFilesIsKept(AlignmentIndexType indexType) {
+            var refiner = Create(BuildDuplicateRemovalParameter(indexType), new IupacDatabase());
+            var spots = BuildUnannotatedDuplicates(indexType, detectedFilesOfFirst: 2, detectedFilesOfSecond: 4);
+
+            (var actuals, var ids) = refiner.Refine(spots);
+
+            Assert.AreEqual(1, actuals.Count);
+            CollectionAssert.AreEqual(new[] { 1 }, ids);
+            Assert.AreEqual(4, actuals[0].AlignedPeakProperties.Count(peak => peak.PeakID >= 0));
+        }
+
+        [DataTestMethod()]
+        [DataRow(AlignmentIndexType.RT)]
+        [DataRow(AlignmentIndexType.RI)]
+        public void JoinedPeaksWithoutSignalAtTheQuantMassDoNotCountAsDetected(AlignmentIndexType indexType) {
+            // The first spot was joined in all four files, but three of them have no signal at its quant mass, so the
+            // gap filler left them joined (MasterPeakID) and not detected (PeakID -2). The second is detected in two.
+            var refiner = Create(BuildDuplicateRemovalParameter(indexType), new IupacDatabase());
+            var spots = BuildUnannotatedDuplicates(indexType, detectedFilesOfFirst: 1, detectedFilesOfSecond: 2, joinedWithoutSignalOfFirst: 3);
+            Assert.AreEqual(4, spots[0].AlignedPeakProperties.Count(peak => peak.MasterPeakID >= 0));
+
+            (var actuals, var ids) = refiner.Refine(spots);
+
+            Assert.AreEqual(1, actuals.Count);
+            CollectionAssert.AreEqual(new[] { 1 }, ids);
+        }
+
+        [DataTestMethod()]
+        [DataRow(AlignmentIndexType.RT)]
+        [DataRow(AlignmentIndexType.RI)]
+        public void OfTwoUnannotatedDuplicatesDetectedInAsManyFilesTheFirstIsKept(AlignmentIndexType indexType) {
+            var refiner = Create(BuildDuplicateRemovalParameter(indexType), new IupacDatabase());
+            var spots = BuildUnannotatedDuplicates(indexType, detectedFilesOfFirst: 3, detectedFilesOfSecond: 3);
+
+            (var actuals, var ids) = refiner.Refine(spots);
+
+            Assert.AreEqual(1, actuals.Count);
+            CollectionAssert.AreEqual(new[] { 0 }, ids);
+        }
+
+        [TestMethod()]
+        public void AnUnannotatedSpotDetectedInMoreFilesStillGivesWayToAnAnnotatedOne() {
+            var refiner = Create(BuildDuplicateRemovalParameter(AlignmentIndexType.RT), new IupacDatabase());
+            var spots = BuildUnannotatedDuplicates(AlignmentIndexType.RT, detectedFilesOfFirst: 4, detectedFilesOfSecond: 1);
+            var annotated = BuildAlignmentSpotProperty(id: 1);
+            annotated.TimesCenter = spots[1].TimesCenter;
+            annotated.AlignedPeakProperties = spots[1].AlignedPeakProperties;
+            spots[1] = annotated;
+
+            (var actuals, var ids) = refiner.Refine(spots);
+
+            Assert.AreEqual(1, actuals.Count);
+            CollectionAssert.AreEqual(new[] { 1 }, ids);
+        }
+
         #region helper
+        MsdialGcmsParameter BuildDuplicateRemovalParameter(AlignmentIndexType indexType) {
+            return new MsdialGcmsParameter
+            {
+                OnlyReportTopHitInMspSearch = false, OnlyReportTopHitInTextDBSearch = false,
+                FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>
+                {
+                    { 0, AnalysisFileType.Sample }, { 1, AnalysisFileType.Sample },
+                    { 2, AnalysisFileType.Sample }, { 3, AnalysisFileType.Sample }
+                },
+                FileID_ClassName = new Dictionary<int, string>
+                {
+                    { 0, "A" }, { 1, "A" },
+                    { 2, "A" }, { 3, "A" }
+                },
+                RetentionTimeAlignmentTolerance = 0.05f,
+                Ms1AlignmentTolerance = 0.015f,
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = false,
+                AlignmentIndexType = indexType,
+                RiCompoundType = RiCompoundType.Alkanes,
+            };
+        }
+
+        // Two unannotated spots with the same quant mass, 0.01 min or 1 RI apart, detected in the given numbers of the
+        // four files and gap-filled in the others (PeakID and MasterPeakID -2). The first spot may also have peaks joined
+        // from their files but without signal at the quant mass (MasterPeakID kept, PeakID -2), after the detected ones.
+        List<AlignmentSpotProperty> BuildUnannotatedDuplicates(AlignmentIndexType indexType, int detectedFilesOfFirst, int detectedFilesOfSecond, int joinedWithoutSignalOfFirst = 0) {
+            var spots = new List<AlignmentSpotProperty>
+            {
+                BuildAlignmentSpotProperty(id: 0),
+                BuildAlignmentSpotProperty(id: 1, d_time: 0.01, d_index: 1),
+            };
+            var detectedFiles = new[] { detectedFilesOfFirst, detectedFilesOfSecond };
+            for (int i = 0; i < spots.Count; i++) {
+                var spot = spots[i];
+                spot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>();
+                spot.TextDbBasedMatchResult = null;
+                spot.MatchResults.ClearResults();
+                if (indexType == AlignmentIndexType.RI) {
+                    spot.TimesCenter.MainType = ChromXType.RI;
+                }
+                var joined = detectedFiles[i] + (i == 0 ? joinedWithoutSignalOfFirst : 0);
+                for (int j = 0; j < spot.AlignedPeakProperties.Count; j++) {
+                    var peak = spot.AlignedPeakProperties[j];
+                    peak.MasterPeakID = j < joined ? j : -2;
+                    peak.PeakID = j < detectedFiles[i] ? j : -2;
+                }
+            }
+            return spots;
+        }
+
         #region equality test method
         void AreEqual(AlignmentSpotProperty expected, AlignmentSpotProperty actual) {
             Assert.AreEqual(expected.MasterAlignmentID, actual.MasterAlignmentID,
