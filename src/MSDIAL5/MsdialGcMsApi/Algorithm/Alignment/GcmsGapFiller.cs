@@ -102,11 +102,11 @@ public abstract class GcmsGapFiller : IGapFiller
     }
 
     /// <summary>
-    /// The joined peaks that the center and width are taken from: those that still have a position. A peak whose
-    /// re-extraction found no peak (an empty chromatogram, or, when gap filling is not forced, no local maximum near
-    /// the center) was reset to RT and RI -1 (<see cref="SetDefaultValueToAlignmentChromPeakFeature"/>). Averaged in,
-    /// it would pull the center away from every other file, so that the files re-extracted after it could miss their
-    /// peak and be reset in turn. When no joined peak has a position, all of them are used, as before.
+    /// The joined peaks that the center and width are taken from: those that still have a position. A joined peak whose
+    /// re-extraction finds no peak now keeps its retention (<see cref="SetNotFound"/>), but an alignment saved by an
+    /// earlier version reset it to RT and RI -1. Averaged in, such a peak would pull the center away from every other
+    /// file, so that the files re-extracted after it could miss their peak. When no joined peak has a position, all of
+    /// them are used, as before.
     /// </summary>
     private static AlignmentChromPeakFeature[] GetLocatedPeaks(AlignmentChromPeakFeature[] joined) {
         var located = joined.Where(peak => peak.ChromXsTop.RT.Value >= 0).ToArray();
@@ -143,7 +143,7 @@ public abstract class GcmsGapFiller : IGapFiller
 
     private void GapFillCore(List<ChromatogramPeak> peaklist, ChromXs center, double axTol, AlignmentChromPeakFeature alignmentChromPeakFeature) {
         if (peaklist is null || peaklist.Count == 0) {
-            SetDefaultValueToAlignmentChromPeakFeature(alignmentChromPeakFeature, center.Mz.Value);
+            SetNotFound(alignmentChromPeakFeature, center.Mz.Value);
             return;
         }
         var result = alignmentChromPeakFeature;
@@ -158,7 +158,7 @@ public abstract class GcmsGapFiller : IGapFiller
         var isForceInsert = this._isForceInsert;
         (var id, var leftId, var rightId) = GetPeakRange(candidates, peaklist, minId, centralAx, isForceInsert);
         if (id == -1 || leftId == -1 || rightId == -1) {
-            SetDefaultValueToAlignmentChromPeakFeature(result, center.Mz.Value);
+            SetNotFound(result, center.Mz.Value);
             return;
         }
 
@@ -284,6 +284,38 @@ public abstract class GcmsGapFiller : IGapFiller
         result.PeakAreaAboveZero = peakAreaAboveZero;
         result.PeakAreaAboveBaseline = peakAreaAboveZero - baseline;
         result.PeakShape.SignalToNoise = (float)result.PeakHeightTop / result.PeakShape.EstimatedNoise;
+    }
+
+    /// <summary>
+    /// A re-extraction that found no peak (an empty chromatogram, or no local maximum when gap filling is not forced).
+    /// </summary>
+    /// <remarks>
+    /// A peak joined from its file keeps its own retention at height 0, as MS-DIAL 4 set it
+    /// (PeakAlignment.recalculationByQuantMass), so that its file still has a position. Reset to RT and RI -1 with m/z as
+    /// its main axis, a representative peak, which stays detected (<see cref="UpdateDetection"/>), put that -1 into the
+    /// spot's average retention and made m/z the spot's main axis. A gap cell is reset as before.
+    /// </remarks>
+    private static void SetNotFound(AlignmentChromPeakFeature result, double mz) {
+        if (result.MasterPeakID >= 0 && result.ChromXsTop.RT.Value >= 0) {
+            SetZeroAtOwnPosition(result, mz);
+        }
+        else {
+            SetDefaultValueToAlignmentChromPeakFeature(result, mz);
+        }
+    }
+
+    private static void SetZeroAtOwnPosition(AlignmentChromPeakFeature result, double mz) {
+        result.Mass = mz;
+        result.ChromXsLeft = result.ChromXsTop;
+        result.ChromXsRight = result.ChromXsTop;
+        result.ChromScanIdLeft = result.ChromScanIdTop;
+        result.ChromScanIdRight = result.ChromScanIdTop;
+        result.PeakHeightTop = 0;
+        result.PeakHeightLeft = 0;
+        result.PeakHeightRight = 0;
+        result.PeakAreaAboveZero = 0;
+        result.PeakAreaAboveBaseline = 0;
+        result.PeakShape.SignalToNoise = 0;
     }
 
     private static void SetDefaultValueToAlignmentChromPeakFeature(AlignmentChromPeakFeature result, double mz) {
