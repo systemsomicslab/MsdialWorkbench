@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
             older.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .8f;
             older.AlignmentBaseParam.SpectrumSimilarityAlignmentFactor = .5f;
             var saved = MessagePackSerializer.Serialize(older, MessagePackSerializerOptions.Standard.WithResolver(StandardResolver.Instance));
-            var loaded = new MsdialGcmsDataStorage().LoadParameter(new MemoryStream(WithoutLastKey(saved)));
+            var loaded = new MsdialGcmsDataStorage().LoadParameter(new MemoryStream(FirstKeys(saved, 157)));
 
             var parameter = new MsdialGcmsParameter();
             parameter.ProjectParam.ProjectFolderPath = Path.GetTempPath();
@@ -81,20 +81,61 @@ namespace CompMs.App.Msdial.Model.Setting.Tests
             Assert.AreEqual(.6f, model.EiEqualityParameter.Factor);
         }
 
-        /// <summary>The int-keyed array without its last element, as a version without that key wrote it.</summary>
-        private static byte[] WithoutLastKey(byte[] saved) {
+        [TestMethod()]
+        public void TheSplitSpotJoinSettingsShowAndCommitTheParameter() {
+            var parameter = new MsdialGcmsParameter();
+            parameter.ProjectParam.ProjectFolderPath = Path.GetTempPath();
+            var model = CreateModel(parameter);
+
+            Assert.IsTrue(model.JoinSpotsSplitByRetentionDrift);
+            Assert.AreEqual(MsdialGcmsParameter.DefaultSplitSpotJoinWindow, model.SplitSpotJoinWindow);
+
+            model.JoinSpotsSplitByRetentionDrift = false;
+            model.SplitSpotJoinWindow = 1.5f;
+            Assert.IsTrue(model.TryCommit());
+
+            Assert.IsFalse(parameter.JoinSpotsSplitByRetentionDrift);
+            Assert.AreEqual(1.5f, parameter.SplitSpotJoinWindow);
+        }
+
+        [TestMethod()]
+        public void LoadingAParameterFileShowsItsSplitSpotJoinSettings() {
+            var saved = new MsdialGcmsParameter { JoinSpotsSplitByRetentionDrift = false, SplitSpotJoinWindow = 3f, };
+            var parameter = new MsdialGcmsParameter();
+            parameter.ProjectParam.ProjectFolderPath = Path.GetTempPath();
+            var model = CreateModel(parameter);
+
+            model.LoadParameter(saved);
+
+            Assert.IsFalse(model.JoinSpotsSplitByRetentionDrift);
+            Assert.AreEqual(3f, model.SplitSpotJoinWindow);
+        }
+
+        private static GcmsAlignmentParameterSettingModel CreateModel(MsdialGcmsParameter parameter) {
+            var analysisFiles = new List<AnalysisFileBean>
+            {
+                new AnalysisFileBean { AnalysisFileId = 0, AnalysisFileName = "file0", },
+                new AnalysisFileBean { AnalysisFileId = 1, AnalysisFileName = "file1", },
+            };
+            var files = new AnalysisFileBeanModelCollection(analysisFiles);
+            var alignments = new AlignmentFileBeanModelCollection(new List<AlignmentFileBean>(), analysisFiles);
+            return new GcmsAlignmentParameterSettingModel(parameter, DateTime.Now, files, alignments, ProcessOption.All, new MessageBroker());
+        }
+
+        /// <summary>The first <paramref name="length"/> elements of the int-keyed array, as a version without the later keys wrote it.</summary>
+        private static byte[] FirstKeys(byte[] saved, int length) {
             var reader = new MessagePackReader(saved);
             var count = reader.ReadArrayHeader();
-            Assert.IsTrue(count > 15 && count <= ushort.MaxValue, "an array16 header is rewritten below");
+            Assert.IsTrue(length > 15 && length < count && count <= ushort.MaxValue, "an array16 header is rewritten below");
             var headerLength = (int)reader.Consumed;
-            for (var i = 0; i < count - 1; i++) {
+            for (var i = 0; i < length; i++) {
                 reader.Skip();
             }
             var bodyLength = (int)reader.Consumed - headerLength;
             var result = new byte[3 + bodyLength];
             result[0] = 0xdc;
-            result[1] = (byte)((count - 1) >> 8);
-            result[2] = (byte)(count - 1);
+            result[1] = (byte)(length >> 8);
+            result[2] = (byte)length;
             Array.Copy(saved, headerLength, result, 3, bodyLength);
             return result;
         }

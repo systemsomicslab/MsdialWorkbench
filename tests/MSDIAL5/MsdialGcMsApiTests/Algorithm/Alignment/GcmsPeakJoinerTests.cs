@@ -25,6 +25,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         private static readonly (double Mz, double Intensity)[] SpectrumAInPart = [(73d, 1000d), (147d, 600d), (117d, 900d), (191d, 700d), (265d, 400d)];
         // SpectrumA's four peaks with other intensities: the default dot-product cutoffs call it a match.
         private static readonly (double Mz, double Intensity)[] SpectrumAReweighed = [(73d, 1000d), (147d, 250d), (221d, 700d), (295d, 40d)];
+        // Four peaks of equal height, and two spectra that each share two of them and nothing with each other.
+        private static readonly (double Mz, double Intensity)[] SpectrumC = [(73d, 1000d), (147d, 1000d), (221d, 1000d), (295d, 1000d)];
+        private static readonly (double Mz, double Intensity)[] SpectrumCFirstHalf = [(73d, 1000d), (147d, 1000d), (117d, 1000d), (191d, 1000d)];
+        private static readonly (double Mz, double Intensity)[] SpectrumCSecondHalf = [(221d, 1000d), (295d, 1000d), (265d, 1000d), (339d, 1000d)];
 
         private string _directory = string.Empty;
 
@@ -206,8 +210,27 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         [TestMethod]
         [DataRow(AlignmentIndexType.RI)]
         [DataRow(AlignmentIndexType.RT)]
-        public void TheSameSpectrumOutsideTheRetentionToleranceIsKeptApart(AlignmentIndexType indexType) {
-            // 12 RI units (0.12 min) away, outside both retention tolerances (10 RI units, 0.1 min).
+        public void TheSameSpectrumBeyondTwiceTheRetentionToleranceIsKeptApart(AlignmentIndexType indexType) {
+            // 25 RI units (0.25 min) away: outside both retention tolerances (10 RI units, 0.1 min),
+            // and beyond twice them, within which two spots split by retention drift are joined.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1025d, height: 1000d, SpectrumA), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, spots.Count);
+            Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 1));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsOfOneCompoundSplitByRetentionDriftAreJoined(AlignmentIndexType indexType) {
+            // 12 RI units (0.12 min) away, outside the retention tolerance: the joiner makes a master
+            // of each, and the two spots, with the same spectrum and no file in common, are joined.
             var data = new List<List<SpectrumFeature>>
             {
                 new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
@@ -216,8 +239,239 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
 
             var spots = Join(data, indexType, _ => { });
 
+            Assert.AreEqual(1, spots.Count);
+            Assert.IsTrue(spots[0].AlignedPeakProperties.All(p => p.MasterPeakID >= 0));
+            Assert.AreEqual(1000d, spots[0].AlignedPeakProperties[0].ChromXsTop.RI.Value);
+            Assert.AreEqual(1012d, spots[0].AlignedPeakProperties[1].ChromXsTop.RI.Value);
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsSplitByRetentionDriftAreLeftApartWhenTheJoinIsOff(AlignmentIndexType indexType) {
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 1000d, SpectrumA), },
+            };
+
+            var spots = Join(data, indexType, p => p.JoinSpotsSplitByRetentionDrift = false);
+
             Assert.AreEqual(2, spots.Count);
             Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 1));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI, 2f, 15d, 1)]
+        [DataRow(AlignmentIndexType.RI, 1f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RI, 0f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RI, 3f, 25d, 2)]
+        [DataRow(AlignmentIndexType.RT, 2f, 15d, 1)]
+        [DataRow(AlignmentIndexType.RT, 1f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RT, 0f, 15d, 2)]
+        [DataRow(AlignmentIndexType.RT, 3f, 25d, 2)]
+        public void TheJoinWindowIsInMultiplesOfTheRetentionTolerance(AlignmentIndexType indexType, float window, double distance, int expectedSpots) {
+            // 15 RI units (0.15 min) apart, 1.5 retention tolerances: within a window of 2, beyond one of 1, and 0 turns
+            // the join off. 25 apart are not joined even within a window of 3: the joined spot's centre would be 12.5
+            // from each peak, outside the gap filler's re-extraction window of one tolerance.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d + distance, height: 1000d, SpectrumA), },
+            };
+
+            var spots = Join(data, indexType, p => p.SplitSpotJoinWindow = window);
+
+            Assert.AreEqual(expectedSpots, spots.Count);
+            Assert.AreEqual(2, spots.Sum(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0)), "no detected peak is lost either way");
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void ACompoundSplitThreeWaysIsJoinedOnlyAsFarAsOneReextractionWindowReaches(AlignmentIndexType indexType) {
+            // Each file 12 RI units (0.12 min) later than the one before: three masters. The first two spots are joined
+            // (centre 1006, both peaks within 10 of it). Joined with the third, the centre would be 1012 and the peaks
+            // at 1000 and 1024 would lie outside the window the gap filler re-extracts in, so the third stays apart.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1024d, height: 1000d, SpectrumA), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, spots.Count);
+            Assert.AreEqual(3, spots.Sum(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0)), "no detected peak is lost");
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsAreNotJoinedWhenAPeakWouldLieOutsideTheReextractionWindow(AlignmentIndexType indexType) {
+            // Six files near 1000 and two near 1018: masters 18 apart, within the join window of 20. Joined, the
+            // centre would be 1004.5 and the gap filler would re-extract within 994.5-1014.5, where the peaks at 1018
+            // are not. Two files near 1000 and two near 1012 (centre 1006) are joined.
+            List<List<SpectrumFeature>> Data(int near, double far) {
+                var data = Enumerable.Range(0, near)
+                    .Select(i => new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d + (i % 2), height: 1000d, SpectrumA), })
+                    .ToList();
+                data.Add(new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: far, height: 1000d, SpectrumA), });
+                data.Add(new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: far, height: 1000d, SpectrumA), });
+                return data;
+            }
+
+            var unbalanced = Join(Data(6, 1018d), indexType, _ => { });
+            var balanced = Join(Data(2, 1012d), indexType, _ => { });
+
+            Assert.AreEqual(2, unbalanced.Count);
+            Assert.AreEqual(1, balanced.Count);
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsWithPeaksOfOneFileInBothAreNotJoined(AlignmentIndexType indexType) {
+            // File 2 has a peak of this spectrum in each spot: two compounds of one spectrum (isomers),
+            // or two components of one, and joining the spots would drop one of file 2's peaks.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature>
+                {
+                    CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA),
+                    CreateFeature(scanId: 1, ri: 1012d, height: 1000d, SpectrumA),
+                },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, spots.Count);
+            Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 2));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsOfSpectraBelowTheDotProductCutoffsAreNotJoined(AlignmentIndexType indexType) {
+            // Integrated EI similarity about 0.67, above the GC-MS spectrum similarity tolerance (0.5)
+            // that joins features within the retention tolerance, but below the dot-product cutoffs
+            // that joining two spots asks for.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 1000d, SpectrumAInPart), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, spots.Count);
+            Assert.IsTrue(spots.All(s => s.AlignedPeakProperties.Count(p => p.MasterPeakID >= 0) == 1));
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsWhoseMastersTheJoinerKeptApartWithinTheToleranceAreNotJoined(AlignmentIndexType indexType) {
+            // Two masters 8 RI units (0.08 min) apart, inside the retention tolerance, made two because
+            // their spectra share nothing. The taller peak each takes from another file has the same
+            // spectrum, which matches both masters in part, so the two spots' representative spectra
+            // match. Retention did not keep these spots apart, and they are not joined.
+            var parameter = new MsRefSearchParameterBase { Ms1Tolerance = .5f, Ms2Tolerance = .5f, MassRangeBegin = 0, MassRangeEnd = 2000, };
+            var isRi = indexType == AlignmentIndexType.RI;
+            CompMs.Common.DataObj.Result.MsScanMatchResult Compare((double, double)[] x, (double, double)[] y) => MsScanMatching.CompareEIMSScanProperties(
+                CreateFeature(scanId: 0, ri: 1000d, height: 1000d, x).AnnotatedMSDecResult.MSDecResult,
+                CreateFeature(scanId: 0, ri: 1000d, height: 1000d, y).AnnotatedMSDecResult.MSDecResult,
+                parameter, rtTol: .1, riTol: RiTolerance, eiFactor: .5, riFactor: .5, isUseRetentionIndex: isRi);
+            var first = MsScanMatching.GetIntegratedSpectraSimilarity(Compare(SpectrumC, SpectrumCFirstHalf));
+            var second = MsScanMatching.GetIntegratedSpectraSimilarity(Compare(SpectrumC, SpectrumCSecondHalf));
+            var halves = Compare(SpectrumCFirstHalf, SpectrumCSecondHalf);
+            Assert.IsTrue(first > .5 && second > .5, $"the full spectrum matches each half: {first}, {second}");
+            Assert.IsTrue(MsScanMatching.GetIntegratedSpectraSimilarity(halves) < .5 && !halves.IsSpectrumMatch, "the halves do not match each other");
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumCFirstHalf), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 999d, height: 5000d, SpectrumC), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1008d, height: 1000d, SpectrumCSecondHalf), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1009d, height: 5000d, SpectrumC), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, spots.Count);
+            var byFirstFile = spots.OrderBy(s => s.AlignedPeakProperties[0].MasterPeakID >= 0 ? 0 : 1).ToArray();
+            CollectionAssert.AreEqual(new[] { 0, 1 }, byFirstFile[0].AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).Select(p => p.FileID).ToArray());
+            CollectionAssert.AreEqual(new[] { 2, 3 }, byFirstFile[1].AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).Select(p => p.FileID).ToArray());
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void TheMasterGapIsJudgedOnTheMSDecRetentionTheJoinerCompares(AlignmentIndexType indexType) {
+            // As SpotsWhoseMastersTheJoinerKeptApartWithinTheToleranceAreNotJoined, but file 2's quantified peak tops at
+            // 1012: its MSDec retention, 1008, is what the joiner compared with the master at 1000 and found within the
+            // tolerance. Read on the quant top the masters would seem 12 apart and the spots would be joined.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumCFirstHalf), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 999d, height: 5000d, SpectrumC), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1008d, height: 1000d, SpectrumCSecondHalf, quantTopRi: 1012d), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1009d, height: 5000d, SpectrumC), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, spots.Count);
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void SpotsBelowTheEISimilarityToleranceAreNotJoined(AlignmentIndexType indexType) {
+            // The pair of TheDotProductCutoffsDoNotGrantAMatchBelowTheTolerance (integrated EI similarity about 0.92,
+            // dot-product cutoffs passed) 12 RI units (0.12 min) apart. At a tolerance of 0.95 the joiner keeps them
+            // apart within the retention tolerance, and joining their spots must not undo that farther away.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumA), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 1000d, SpectrumAReweighed), },
+            };
+
+            var strict = Join(data, indexType, p => p.AlignmentBaseParam.SpectrumSimilarityAlignmentTolerance = .95f);
+            var gcmsDefault = Join(data, indexType, _ => { });
+
+            Assert.AreEqual(2, strict.Count);
+            Assert.AreEqual(1, gcmsDefault.Count, "at the GC-MS default of 0.5 the same pair is joined");
+        }
+
+        [TestMethod]
+        [DataRow(AlignmentIndexType.RI)]
+        [DataRow(AlignmentIndexType.RT)]
+        public void MastersKeptApartStayApartAfterOneOfTheirSpotsJoinsAnother(AlignmentIndexType indexType) {
+            // Three masters: C at 1000 (file 0), C1st at 1012 (file 1) and C2nd at 1020 (file 2). C1st and C2nd are 8
+            // apart, within the tolerance, and two masters because their spectra share nothing. Files 3 and 4 add C
+            // to each of them, and file 5 adds C at 1001 to the first. The spots of C (1000) and C1st (1012) are
+            // joined. The joined spot still holds the master C1st, which the joiner kept apart from C2nd, so the
+            // spot of C2nd is not joined to it in the next round.
+            var data = new List<List<SpectrumFeature>>
+            {
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1000d, height: 1000d, SpectrumC), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 1000d, SpectrumCFirstHalf), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1020d, height: 1000d, SpectrumCSecondHalf), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1012d, height: 5000d, SpectrumC), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1022d, height: 5000d, SpectrumC), },
+                new List<SpectrumFeature> { CreateFeature(scanId: 0, ri: 1001d, height: 1000d, SpectrumC), },
+            };
+
+            var spots = Join(data, indexType, _ => { });
+
+            var files = spots.Select(s => s.AlignedPeakProperties.Where(p => p.MasterPeakID >= 0).Select(p => p.FileID).OrderBy(f => f).ToArray())
+                .OrderBy(f => f[0]).ToArray();
+            Assert.AreEqual(2, files.Length, string.Join(" | ", files.Select(f => string.Join(",", f))));
+            CollectionAssert.AreEqual(new[] { 0, 1, 3, 5 }, files[0]);
+            CollectionAssert.AreEqual(new[] { 2, 4 }, files[1]);
         }
 
         [TestMethod]

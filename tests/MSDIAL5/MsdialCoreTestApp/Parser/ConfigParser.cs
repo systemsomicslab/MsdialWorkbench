@@ -1808,6 +1808,10 @@ namespace CompMs.App.MsdialConsole.Parser
                     return TrueOrFalse(valueLower, v => param.IsReplaceQuantmassByUserDefinedValue = v);
                 case "is quant mass based on base peak mz":
                     return TrueOrFalse(valueLower, v => param.IsRepresentativeQuantMassBasedOnBasePeakMz = v);
+                case "join spots split by retention drift":
+                    return TrueOrFalse(valueLower, v => param.JoinSpotsSplitByRetentionDrift = v);
+                case "split spot join window":
+                    return Number(valueLower, v => param.SplitSpotJoinWindow = (float)v);
                 default: return false;
             }
         }

@@ -370,6 +370,7 @@ public sealed class ConfigParserTests
     [DataTestMethod]
     [DataRow("replace quant mass by user defined value")]
     [DataRow("is quant mass based on base peak mz")]
+    [DataRow("join spots split by retention drift")]
     public void ReadGcmsSpecificParameter_ReadsAnOnOffKeyInBothDirections(string key)
     {
         var parameter = new MsdialGcmsParameter();
@@ -377,10 +378,22 @@ public sealed class ConfigParserTests
         {
             "replace quant mass by user defined value" => () => parameter.IsReplaceQuantmassByUserDefinedValue,
             "is quant mass based on base peak mz" => () => parameter.IsRepresentativeQuantMassBasedOnBasePeakMz,
+            "join spots split by retention drift" => () => parameter.JoinSpotsSplitByRetentionDrift,
             _ => throw new ArgumentOutOfRangeException(nameof(key)),
         };
 
         AssertReadsBothDirections(value => ConfigParser.ReadGcmsSpecificParameter(parameter, key, value), current);
+    }
+
+    [TestMethod]
+    public void ReadGcmsSpecificParameter_ReadsTheSplitSpotJoinWindow()
+    {
+        var parameter = new MsdialGcmsParameter();
+        Assert.AreEqual(MsdialGcmsParameter.DefaultSplitSpotJoinWindow, parameter.SplitSpotJoinWindow);
+
+        Assert.IsTrue(ConfigParser.ReadGcmsSpecificParameter(parameter, "split spot join window", "1.5").IsApplied);
+
+        Assert.AreEqual(1.5f, parameter.SplitSpotJoinWindow);
     }
 
     [TestMethod]
