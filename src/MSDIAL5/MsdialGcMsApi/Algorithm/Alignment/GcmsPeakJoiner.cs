@@ -191,6 +191,19 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
             _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
     }
 
+    // The joiners place a peak in a bucket, sort the masters, open the search window and stop the scan on the
+    // retention of the deconvoluted (MSDec) result, because that is the retention IsSimilarTo and GetSimilality
+    // compare. The top of the quantified (quant-mass) chromatogram peak can lie outside the tolerance of a master
+    // while the MSDec retention lies inside it; a window on the quant top then never compared the two, and the peak
+    // joined no spot. MS-DIAL 4 windowed, sorted and scored on the MS1Dec retention as well.
+    protected static double GetRetentionTime(SpectrumFeature feature) {
+        return feature.AnnotatedMSDecResult.MSDecResult.ChromXs.RT.Value;
+    }
+
+    protected static double GetRetentionIndex(SpectrumFeature feature) {
+        return feature.AnnotatedMSDecResult.MSDecResult.ChromXs.RI.Value;
+    }
+
     protected List<AlignmentSpotProperty> GetSpots(IReadOnlyCollection<SpectrumFeature> masters, IEnumerable<AnalysisFileBean> analysisFiles, ChromXType mainType) {
         var masterId = 0;
         return InitSpots(masters, analysisFiles, mainType, ref masterId);
@@ -263,7 +276,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
             spectrumFeatures = spectrumFeatures.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
         }
         var master = spectrumFeatures
-            .GroupBy(prop => (int)Math.Ceiling(prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket))
+            .GroupBy(prop => (int)Math.Ceiling(GetRetentionTime(prop) / _rtBucket))
             .ToDictionary(group => group.Key, group => group.ToList());
 
         var reporter = ReportProgress.FromLength(_progress, 0d, 20d);
@@ -279,7 +292,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
             }
             MergeSpectrumFeatures(master, target);
         }
-        return master.Values.SelectMany(props => props).OrderBy(prop => (prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
+        return master.Values.SelectMany(props => props).OrderBy(prop => (GetRetentionTime(prop), prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
     }
 
     private void MergeSpectrumFeatures(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
@@ -297,7 +310,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
     }
 
     private void AddToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
-        var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket);
+        var rtTarget = (int)Math.Ceiling(GetRetentionTime(target) / _rtBucket);
         if (!master.ContainsKey(rtTarget)) {
             master[rtTarget] = [];
         }
@@ -305,7 +318,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
     }
 
     private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added) {
-        var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket);
+        var rtTarget = (int)Math.Ceiling(GetRetentionTime(target) / _rtBucket);
         for(int rtIdc = rtTarget - _rtWidth; rtIdc <= rtTarget + _rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
             if (master.ContainsKey(rtIdc)) {
                 for (int i = 0; i < master[rtIdc].Count; i++) {
@@ -347,9 +360,9 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
         foreach (var target in targets) {
             int? matchIdx = null;
             double matchFactor = double.MinValue;
-            var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value - _rtTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+            var lo = SearchCollection.LowerBound(masters, (GetRetentionTime(target) - _rtTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (GetRetentionTime(s), s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
             for (var i = lo; i < n; i++) {
-                if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value + _rtTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value) {
+                if (GetRetentionTime(target) + _rtTol < GetRetentionTime(masters[i])) {
                     break;
                 }
                 if (!IsSimilarTo(masters[i], target)) {
@@ -405,7 +418,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
             spectrumFeatures = spectrumFeatures.Where(s => s.AnnotatedMSDecResult.IsReferenceMatched(_evaluator));
         }
         var master = spectrumFeatures
-            .GroupBy(spectrum => (int)Math.Ceiling(spectrum.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket))
+            .GroupBy(spectrum => (int)Math.Ceiling(GetRetentionIndex(spectrum) / _riBucket))
             .ToDictionary(group => group.Key, group => group.ToList());
 
         var counter = 0;
@@ -423,7 +436,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
         }
 
         // AlignPeaksToMaster binary-searches this list on (RI, Mass), so it must be sorted on that key.
-        return master.Values.SelectMany(props => props).OrderBy(prop => (prop.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
+        return master.Values.SelectMany(props => props).OrderBy(prop => (GetRetentionIndex(prop), prop.QuantifiedChromatogramPeak.PeakFeature.Mass)).ToList();
     }
 
     private void MergeChromatogramPeaks(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
@@ -441,7 +454,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
     }
 
     private void AddToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
-        var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket);
+        var riTarget = (int)Math.Ceiling(GetRetentionIndex(target) / _riBucket);
         if (!master.ContainsKey(riTarget)) {
             master[riTarget] = [];
         }
@@ -449,7 +462,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
     }
 
     private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added) {
-        var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket);
+        var riTarget = (int)Math.Ceiling(GetRetentionIndex(target) / _riBucket);
         for(int riIdc = riTarget - _riWidth; riIdc <= riTarget + _riWidth; riIdc++) { // in many case, riIdc is from riTarget - 1 to riTarget + 1
             if (master.ContainsKey(riIdc)) {
                 foreach (var candidate in master[riIdc]) {
@@ -482,9 +495,9 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
         foreach (var target in targets) {
             int? matchIdx = null;
             double matchFactor = double.MinValue;
-            var lo = SearchCollection.LowerBound(masters, (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value - _riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (s.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value, s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
+            var lo = SearchCollection.LowerBound(masters, (GetRetentionIndex(target) - _riTol, target.QuantifiedChromatogramPeak.PeakFeature.Mass), (s, p) => (GetRetentionIndex(s), s.QuantifiedChromatogramPeak.PeakFeature.Mass).CompareTo(p));
             for (var i = lo; i < masters.Count; i++) {
-                if (target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value + _riTol < masters[i].QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value) {
+                if (GetRetentionIndex(target) + _riTol < GetRetentionIndex(masters[i])) {
                     break;
                 }
                 if (!IsSimilarTo(masters[i], target)) {
