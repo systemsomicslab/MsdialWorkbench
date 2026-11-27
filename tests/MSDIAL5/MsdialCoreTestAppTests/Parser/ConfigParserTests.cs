@@ -652,6 +652,39 @@ public sealed class ConfigParserTests
     }
 
     [TestMethod]
+    public void ReadMassRecalibration_IsOffUnlessTheMethodFileSaysTrueWithAPositiveWindowAndANonNegativeMinimum()
+    {
+        using var directory = new TemporaryDirectory();
+        var none = directory.CreateFile("none.txt", "Acquisition type: SWATH\n");
+        var on = directory.CreateFile("on.txt", "Mass recalibration: True\nMass recalibration search window (ppm): 60\nMass recalibration minimum correction (ppm): 0\n");
+        var unusable = directory.CreateFile("unusable.txt", "Mass recalibration: yes\nMass recalibration search window (ppm): 0\nMass recalibration minimum correction (ppm): -1\n");
+
+        Assert.IsFalse(ConfigParser.ReadMassRecalibration(none, out var noneValue));
+        Assert.IsNull(noneValue);
+        Assert.AreEqual(100d, ConfigParser.ReadMassRecalibrationSearchWindow(none, out var noWindow));
+        Assert.IsNull(noWindow);
+        Assert.AreEqual(1.5d, ConfigParser.ReadMassRecalibrationMinimumCorrection(none, out var noMinimum));
+        Assert.IsNull(noMinimum);
+
+        Assert.IsTrue(ConfigParser.ReadMassRecalibration(on, out var onValue));
+        Assert.IsNull(onValue);
+        Assert.AreEqual(60d, ConfigParser.ReadMassRecalibrationSearchWindow(on, out _));
+        Assert.AreEqual(0d, ConfigParser.ReadMassRecalibrationMinimumCorrection(on, out var zero), "zero applies any significant model");
+        Assert.IsNull(zero);
+
+        Assert.IsFalse(ConfigParser.ReadMassRecalibration(unusable, out var unusableValue));
+        Assert.AreEqual("yes", unusableValue);
+        Assert.AreEqual(100d, ConfigParser.ReadMassRecalibrationSearchWindow(unusable, out var unusableWindow));
+        Assert.AreEqual("0", unusableWindow);
+        Assert.AreEqual(1.5d, ConfigParser.ReadMassRecalibrationMinimumCorrection(unusable, out var unusableMinimum));
+        Assert.AreEqual("-1", unusableMinimum);
+        ConfigParser.ReadForLcmsParameter(unusable);
+        CollectionAssert.AreEquivalent(
+            new[] { "Mass recalibration: yes", "Mass recalibration search window (ppm): 0", "Mass recalibration minimum correction (ppm): -1" },
+            RecordedKeys(unusable, "unusable"));
+    }
+
+    [TestMethod]
     public void ReadForLcms_WritesWhatHappenedToEveryKeyBesideTheMethodFile()
     {
         // The Console said all of this on stdout and nowhere else. Stdout reaches a log the caller

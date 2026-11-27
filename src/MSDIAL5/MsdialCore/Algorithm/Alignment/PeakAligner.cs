@@ -176,7 +176,11 @@ public class PeakAligner {
             spectra = provider?.LoadMs1Spectrums();
             if (spectra == null) {
                 using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, false, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
-                    spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
+                    var measured = rawDataAccess.GetMeasurement()?.SpectrumList;
+                    if (measured != null) {
+                        analysisFile.MassRecalibration?.ApplyTo(measured);
+                    }
+                    spectra = measured;
                 }
             }
         }

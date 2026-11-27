@@ -92,7 +92,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void AnOlderMsdialReadsASingleBeanWithTheFormatRecorded() {
             var bean = CreateFullBean(3, RawFileFormat.WatersRaw);
             var bytes = MessagePackSerializer.Serialize(bean);
-            Assert.AreEqual(20, MessagePackBinary.ReadArrayHeader(bytes, 0, out _), "key 19 is written");
+            Assert.AreEqual(21, MessagePackBinary.ReadArrayHeader(bytes, 0, out _), "keys 19 and 20 are written");
 
             var old = MessagePackSerializer.Deserialize<AnalysisFileBeanWithoutRawFileFormat>(bytes);
 
@@ -197,7 +197,8 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var oldBytes = MessagePackSerializer.Serialize(old);
             var actualBytes = MessagePackSerializer.Serialize(actual);
             Assert.AreEqual(19, MessagePackBinary.ReadArrayHeader(oldBytes, 0, out var oldOffset));
-            Assert.AreEqual(20, MessagePackBinary.ReadArrayHeader(actualBytes, 0, out var actualOffset));
+            // Keys 0-20: key 20 is the mass recalibration (AnalysisFileBeanMassRecalibrationTests).
+            Assert.AreEqual(21, MessagePackBinary.ReadArrayHeader(actualBytes, 0, out var actualOffset));
             for (int key = 0; key < 19; key++) {
                 var oldSize = MessagePackBinary.ReadNextBlock(oldBytes, oldOffset);
                 var actualSize = MessagePackBinary.ReadNextBlock(actualBytes, actualOffset);
