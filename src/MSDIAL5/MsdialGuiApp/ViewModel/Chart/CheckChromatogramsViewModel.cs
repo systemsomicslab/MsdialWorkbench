@@ -11,9 +11,11 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -69,16 +71,16 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
             .WithSubscribe(SaveAsTableAsync)
             .AddTo(Disposables);
 
-        DiplayEicSettingValues = model.DisplayEicSettingValues
-            .ToReadOnlyReactiveCollection(x => new PeakFeatureSearchValueViewModel(x))
+        EicQueries = model.EicQueries.Queries
+            .ToReadOnlyReactiveCollection(x => new EicQueryViewModel(x), ImmediateScheduler.Instance)
             .AddTo(Disposables);
 
         var settingHasError = new[] {
-            DiplayEicSettingValues.ObserveAddChanged().ToUnit(),
-            DiplayEicSettingValues.ObserveRemoveChanged().ToUnit(),
-            DiplayEicSettingValues.ObserveElementObservableProperty(vm => vm.HasErrors).ToUnit(),
+            EicQueries.CollectionChangedAsObservable().ToUnit(),
+            EicQueries.ObserveElementObservableProperty(vm => vm.HasErrors).ToUnit(),
         }.Merge()
-        .Select(_ => DiplayEicSettingValues.Any(vm => vm.HasErrors.Value));
+        .Select(_ => EicQueries.Any(vm => vm.HasErrors.Value))
+        .StartWith(EicQueries.Any(vm => vm.HasErrors.Value));
 
         ObserveHasErrors = new[]
         {
@@ -117,7 +119,7 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
 
         ViewModels = [
             new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, VisiblePeakLabel, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
-            new EicSettingViewModel(DiplayEicSettingValues, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand),
+            new EicSettingViewModel(model.EicQueries, EicQueries, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand),
             new PeakPickViewModel(ChromatogramsViewModel, VisiblePeakLabel, DetectPeaksCommand, AddPeaksCommand, ResetPeaksCommand, RemovePeakCommand, ExportPeaksCommand),
         ];
     }
@@ -187,7 +189,7 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
         }
     }
 
-    public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; }
+    public ReadOnlyReactiveCollection<EicQueryViewModel> EicQueries { get; }
     public ReactivePropertySlim<bool> InsertTic { get; }
     public ReactivePropertySlim<bool> InsertBpc { get; }
     public ReactivePropertySlim<bool> InsertHighestEic { get; }
@@ -207,9 +209,6 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
     public ReactiveCommand ClearCommand { get; }
 
     private void Apply() {
-        foreach (var value in DiplayEicSettingValues) {
-            value.Commit();
-        }
         _model.Update();
     }
 
@@ -253,7 +252,8 @@ internal sealed class ChromatogramViewModel(
 }
 
 internal sealed class EicSettingViewModel(
-    ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> diplayEicSettingValues,
+    EicQueryListModel eicQueryList,
+    ReadOnlyReactiveCollection<EicQueryViewModel> eicQueries,
     ReactivePropertySlim<bool> insertTic,
     ReactivePropertySlim<bool> insertBpc,
     ReactivePropertySlim<bool> insertHighestEic,
@@ -262,7 +262,17 @@ internal sealed class EicSettingViewModel(
     ReactiveCommand clearCommand) : BindableBase
 {
     public string Title { get; } = "Setting";
-    public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; } = diplayEicSettingValues;
+    public ReadOnlyReactiveCollection<EicQueryViewModel> EicQueries { get; } = eicQueries;
+
+    public DelegateCommand<EicQueryViewModel> RemoveQueryCommand { get; } = new DelegateCommand<EicQueryViewModel>(vm => { if (vm is not null) eicQueryList.Remove(vm.Model); });
+
+    public DelegateCommand CopyQueriesCommand { get; } = new DelegateCommand(() => Clipboard.SetDataObject(eicQueryList.ToTableText()));
+
+    /// <returns>The 1-based line numbers that could not be pasted.</returns>
+    public List<int> Paste(EicQueryViewModel startRow, int startColumn, string text) {
+        return eicQueryList.Paste(eicQueryList.Queries.IndexOf(startRow.Model), startColumn, text);
+    }
+
     public ReactivePropertySlim<bool> InsertTic { get; } = insertTic;
     public ReactivePropertySlim<bool> InsertBpc { get; } = insertBpc;
     public ReactivePropertySlim<bool> InsertHighestEic { get; } = insertHighestEic;

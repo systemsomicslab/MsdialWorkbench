@@ -23,7 +23,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             _broker = broker ?? MessageBroker.Default;
             CopyAsTableCommand = new ReactiveCommand().WithSubscribe(CopyAsTable).AddTo(Disposables);
             SaveAsTableCommand = new AsyncReactiveCommand().WithSubscribe(SaveAsTableAsync).AddTo(Disposables);
+            ShowAllCommand = new ReactiveCommand().WithSubscribe(() => _model.SetAllVisible(true)).AddTo(Disposables);
+            HideAllCommand = new ReactiveCommand().WithSubscribe(() => _model.SetAllVisible(false)).AddTo(Disposables);
         }
+
+        public ReactiveCommand ShowAllCommand { get; }
+        public ReactiveCommand HideAllCommand { get; }
 
         public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms => _model.DisplayChromatograms;
 

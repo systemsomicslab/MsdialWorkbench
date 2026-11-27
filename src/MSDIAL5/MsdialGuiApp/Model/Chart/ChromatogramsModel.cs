@@ -33,6 +33,12 @@ public sealed class ChromatogramsModel : DisposableModelBase {
         {
             LabelType = LabelType.Order,
         }.AddTo(Disposables);
+        _abundanceAxis = abundanceAxis;
+        foreach (var chromatogram in chromatograms) {
+            chromatogram.ObserveProperty(c => c.Visible, isPushCurrentValueAtFirst: false)
+                .Subscribe(_ => UpdateAbundanceRange())
+                .AddTo(Disposables);
+        }
         var chromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, AxisRange?>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new AxisRange(0d, 1d)).AddTo(Disposables);
 
         AbundanceAxisItemSelector = new AxisItemSelector<double>(new AxisItemModel<double>(verticalTitle, abundanceAxis, verticalTitle)).AddTo(Disposables);
@@ -56,6 +62,24 @@ public sealed class ChromatogramsModel : DisposableModelBase {
 
     public ReadOnlyObservableCollection<DisplayChromatogram> DisplayChromatograms { get; }
 
+    private readonly ContinuousAxisManager<double> _abundanceAxis;
+
+    // Fit the intensity axis to the chromatograms that are currently drawn.
+    private void UpdateAbundanceRange() {
+        var visibles = DisplayChromatograms.Where(c => c.Visible).ToArray();
+        if (visibles.Length == 0) {
+            return;
+        }
+        var max = visibles.Max(c => c.MaxIntensity);
+        _abundanceAxis.UpdateInitialRange(0d, max > 0d ? max : 1d);
+    }
+
+    public void SetAllVisible(bool visible) {
+        foreach (var chromatogram in DisplayChromatograms) {
+            chromatogram.Visible = visible;
+        }
+    }
+
     public AxisItemSelector<double> AbundanceAxisItemSelector { get; }
     public AxisItemSelector<double> ChromAxisItemSelector { get; }
 
@@ -73,6 +97,9 @@ public sealed class ChromatogramsModel : DisposableModelBase {
         await writer.WriteLineAsync(string.Format("Chromatogram{0}Time{0}Intensity", separator)).ConfigureAwait(false);
         for (int i = 0; i < DisplayChromatograms.Count; i++) {
             var chromatogram = DisplayChromatograms[i];
+            if (!chromatogram.Visible) {
+                continue;
+            }
             var builder = new StringBuilder();
             foreach (var peak in chromatogram.ChromatogramPeaks) {
                 builder.AppendLine(string.Format("{1}{0}{2}{0}{3}", separator, chromatogram.Name, peak.Time, peak.Intensity));
