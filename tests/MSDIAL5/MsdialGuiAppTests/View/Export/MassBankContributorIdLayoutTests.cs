@@ -27,15 +27,12 @@ namespace CompMs.App.Msdial.View.Export.Tests
     /// The MassBank contributor ID of the two export dialogs (Export &gt; Peak list result and Export &gt; Alignment
     /// result): the message that says what the ID must be takes a line of its own under the text box, so it never
     /// covers the check boxes below it. The section's own DataTemplate, taken from the dialog, is shown off screen.
-    /// Showing it makes a real window, so these run only when asked (see <see cref="WindowTests"/>).
+    /// Showing it makes a real window, so these are in the Window category (see the project README).
     /// </summary>
     [TestClass]
-    [TestCategory(WindowTests.Category)]
+    [TestCategory("Window")]
     public class MassBankContributorIdLayoutTests
     {
-        [TestInitialize]
-        public void RequireOptIn() => WindowTests.RequireOptIn();
-
         private const string Contributor = "MSDIAL_TEST";
 
         [TestMethod]

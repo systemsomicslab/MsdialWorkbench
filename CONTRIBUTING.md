@@ -30,12 +30,6 @@ However, only the version 5 series of MS-DIAL has reproducible builds that can b
 To conduct tests, please refer to section `test:` of GitHub Actions.
 (https://github.com/systemsomicslab/MsdialWorkbench/blob/master/.github/workflows/dotnet_test.yml#L24)
 
-Tests that show a real window (`TestCategory("Window")` in `tests/MSDIAL5/MsdialGuiAppTests`) report Inconclusive unless `MSDIAL_RUN_WINDOW_TESTS=1`, so a plain `dotnet test` puts nothing on screen. CI sets the variable. To run them locally (PowerShell):
-
-```powershell
-$env:MSDIAL_RUN_WINDOW_TESTS = "1"; dotnet test tests/MSDIAL5/MsdialGuiAppTests --filter "TestCategory=Window"
-```
-
 Note that MS-DIAL is Windows desktop application primarily designed for GUI operations, so we apologize that the unit testing aspect for partial functionalities is not currently set up for trial.
 
 ## Did you find a bug?

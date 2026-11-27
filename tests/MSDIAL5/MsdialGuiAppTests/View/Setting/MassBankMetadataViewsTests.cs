@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.View.Setting.Tests
     /// The views of the MassBank format constraint: every binding resolves, the free-text and constrained controls
     /// swap with the toggle, and the lists show the saved values. Most are laid out without a window; the checks of
     /// what the person sees (messages under the fields, closing without Finish) show the view in a SettingDialog
-    /// off screen, as MainWindow does. Those make a real window, so they run only when asked (see <see cref="WindowTests"/>).
+    /// off screen, as MainWindow does. Those make a real window, so they are in the Window category (see the project README).
     /// </summary>
     [TestClass]
     public class MassBankMetadataViewsTests
@@ -123,9 +123,8 @@ namespace CompMs.App.Msdial.View.Setting.Tests
 
         // Hosted as MainWindow hosts it: in a SettingDialog, whose window template has no AdornerDecorator of its own.
         [TestMethod]
-        [TestCategory(WindowTests.Category)]
+        [TestCategory("Window")]
         public void TheSettingDialogShowsWhatAConstrainedFieldNeeds() {
-            WindowTests.RequireOptIn();
             TestApplication.Ensure();
             Application.Current.Dispatcher.Invoke(() => {
                 var parameter = new ProjectBaseParameter { InstrumentType = "LC-MS/MS", License = "CC-BY", };
@@ -175,9 +174,8 @@ namespace CompMs.App.Msdial.View.Setting.Tests
         }
 
         [TestMethod]
-        [TestCategory(WindowTests.Category)]
+        [TestCategory("Window")]
         public void ClosingTheDialogWithoutFinishThrowsTheEditsAway() {
-            WindowTests.RequireOptIn();
             TestApplication.Ensure();
             Application.Current.Dispatcher.Invoke(() => {
                 var parameter = new ProjectBaseParameter { Authors = "Saved", MassBankContributorId = "SAVED_ID", };
