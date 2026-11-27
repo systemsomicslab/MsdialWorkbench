@@ -1,6 +1,7 @@
 using CompMs.Common;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
+using CompMs.MsdialCore.Algorithm.MassCalibration;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
@@ -119,7 +120,8 @@ public static class MethodFileTemplate
         w.Value("Mass range begin for MSP-based annotation", F(p.MspSearchParam.MassRangeBegin));
         w.Value("Mass range end for MSP-based annotation", F(p.MspSearchParam.MassRangeEnd));
         w.Value("MS1 tolerance for MSP-based annotation", F(p.MspSearchParam.Ms1Tolerance));
-        w.Value("Relative amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.RelativeAmpCutoff));
+        w.Comment("Percent of the base peak (0.1 means 0.1%), as in the GUI.");
+        w.Value("Relative amplitude cutoff for MSP-based annotation", Percent(p.MspSearchParam.RelativeAmpCutoff));
         w.Value("Absolute amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.AbsoluteAmpCutoff));
         SpectrumScores(w, p.MspSearchParam, "MSP");
         w.Value("Total score cutoff for MSP-based annotation", F(p.MspSearchParam.TotalScoreCutoff));
@@ -141,10 +143,16 @@ public static class MethodFileTemplate
         w.Value("Retention time tolerance for alignment", F(p.RetentionTimeAlignmentTolerance));
         w.Value("Retention index tolerance for alignment", F(p.RetentionIndexAlignmentTolerance));
         w.Value("Retention time factor for alignment", F(p.RetentionTimeAlignmentFactor));
-        w.Value("MS1 tolerance for alignment", F(p.Ms1AlignmentTolerance));
+        // GC-MS alignment compares EI spectra; it reads no MS1 alignment setting.
+        w.Value("Spectrum similarity tolerance for alignment", F(p.SpectrumSimilarityAlignmentTolerance));
+        w.Value("Spectrum similarity factor for alignment", F(p.SpectrumSimilarityAlignmentFactor));
         w.Value("Force insert peaks in gap filling", B(p.IsForceInsertForGapFilling));
         w.Value("Replace quant mass by user defined value", B(p.IsReplaceQuantmassByUserDefinedValue));
         w.Value("Is quant mass based on base peak mz", B(p.IsRepresentativeQuantMassBasedOnBasePeakMz));
+        w.Comment("Joins the two spots of a compound that retention drift split: their EI spectra match, no file has a peak in both,");
+        w.Comment("and their centres are within the window, in multiples of the retention time or retention index tolerance above.");
+        w.Value("Join spots split by retention drift", B(p.JoinSpotsSplitByRetentionDrift));
+        w.Value("Split spot join window", F(p.SplitSpotJoinWindow));
         Filtering(w, p);
     }
 
@@ -168,6 +176,7 @@ public static class MethodFileTemplate
         w.Value("Target CE", D(p.TargetCE));
         MsmsEntropyCleanup(w, p.ChromDecBaseParam);
         LiquidAnnotation(w, p, retention: true, mobility: false, annotatorTables: true, generatedLipid: true);
+        MassRecalibration(w);
         w.Section("Alignment");
         LiquidAlignment(w, p, retention: true);
         Filtering(w, p);
@@ -347,7 +356,8 @@ public static class MethodFileTemplate
         SearchWindow(w, p.MspSearchParam, "MSP", retention, mobility);
         w.Value("Mass range begin for MSP-based annotation", F(p.MspSearchParam.MassRangeBegin));
         w.Value("Mass range end for MSP-based annotation", F(p.MspSearchParam.MassRangeEnd));
-        w.Value("Relative amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.RelativeAmpCutoff));
+        w.Comment("Percent of the base peak (0.1 means 0.1%), as in the GUI.");
+        w.Value("Relative amplitude cutoff for MSP-based annotation", Percent(p.MspSearchParam.RelativeAmpCutoff));
         w.Value("Absolute amplitude cutoff for MSP-based annotation", F(p.MspSearchParam.AbsoluteAmpCutoff));
         SpectrumScores(w, p.MspSearchParam, "MSP");
         w.Value("Total score cutoff for MSP-based annotation", F(p.MspSearchParam.TotalScoreCutoff));
@@ -363,7 +373,8 @@ public static class MethodFileTemplate
         SearchWindow(w, p.LbmSearchParam, "LBM", retention, mobility);
         w.Value("Mass range begin for LBM-based annotation", F(p.LbmSearchParam.MassRangeBegin));
         w.Value("Mass range end for LBM-based annotation", F(p.LbmSearchParam.MassRangeEnd));
-        w.Value("Relative amplitude cutoff for LBM-based annotation", F(p.LbmSearchParam.RelativeAmpCutoff));
+        w.Comment("Percent of the base peak (0.1 means 0.1%), as in the GUI.");
+        w.Value("Relative amplitude cutoff for LBM-based annotation", Percent(p.LbmSearchParam.RelativeAmpCutoff));
         w.Value("Absolute amplitude cutoff for LBM-based annotation", F(p.LbmSearchParam.AbsoluteAmpCutoff));
         if (generatedLipid) {
             // ConfigParser.ApplyGeneratedLipidLbmDefaults lowers only the cut-offs a file leaves
@@ -382,7 +393,7 @@ public static class MethodFileTemplate
         w.Choice("Solvent type", p.LipidQueryContainer.SolventType.ToString(), "CH3COONH4", "HCOONH4", "NH4HCO3");
 
         if (generatedLipid) {
-            GeneratedLipidAnnotation(w);
+            GeneratedLipidAnnotation(w, retention);
         }
 
         w.Section("Text-based annotation");
@@ -408,20 +419,31 @@ public static class MethodFileTemplate
         }
     }
 
-    private static void GeneratedLipidAnnotation(Writer w) {
+    private static void GeneratedLipidAnnotation(Writer w, bool retention) {
         var s = GeneratedLipidAnnotatorSetting.CreateDefaultSearchParameter();
         w.Section("Generated lipid library (Target omics: Lipidomics, Collision type: EAD, OAD or EID)");
         w.Comment("Spectra generated for each lipid the LBM or MSP library matches, which resolve chain, sn-position and double-bond positions.");
         w.Blank("Use generated lipid library", "True | False. Blank follows Target omics and Collision type, as the GUI does.");
         w.Blank("Generated lipid annotator priority", "Blank ranks it above every other annotator, as the GUI does.");
+        if (retention) {
+            w.Value("RT tolerance for generated lipid annotation", F(s.RtTolerance));
+        }
         w.Value("MS1 tolerance for generated lipid annotation", F(s.Ms1Tolerance));
         w.Value("MS2 tolerance for generated lipid annotation", F(s.Ms2Tolerance));
+        w.Value("Mass range begin for generated lipid annotation", F(s.MassRangeBegin));
+        w.Value("Mass range end for generated lipid annotation", F(s.MassRangeEnd));
+        w.Value("Relative amplitude cutoff for generated lipid annotation", F(s.RelativeAmpCutoff));
+        w.Value("Absolute amplitude cutoff for generated lipid annotation", F(s.AbsoluteAmpCutoff));
         w.Value("Square root of weighted dot product cutoff for generated lipid annotation", F(s.WeightedDotProductCutOff));
         w.Value("Square root of simple dot product cutoff for generated lipid annotation", F(s.SimpleDotProductCutOff));
         w.Value("Square root of reverse dot product cutoff for generated lipid annotation", F(s.ReverseDotProductCutOff));
         w.Value("Matched peaks percentage cutoff for generated lipid annotation", F(s.MatchedPeaksPercentageCutOff));
         w.Value("Minimum spectrum match for generated lipid annotation", F(s.MinimumSpectrumMatch));
         w.Value("Total score cutoff for generated lipid annotation", F(s.TotalScoreCutoff));
+        if (retention) {
+            w.Value("Use retention information for generated lipid annotation scoring", B(s.IsUseTimeForAnnotationScoring));
+            w.Value("Use retention information for generated lipid annotation filtering", B(s.IsUseTimeForAnnotationFiltering));
+        }
     }
 
     private static void SearchWindow(Writer w, MsRefSearchParameterBase s, string kind, bool retention, bool mobility) {
@@ -484,6 +506,20 @@ public static class MethodFileTemplate
         w.Value("MS/MS entropy cleanup protected percent of base peak", D(c.MsmsEntropyCleanupProtectedPercentOfBasePeak));
     }
 
+    // The Console's own defaults: the recalibration is read by LcmsProcess, not into the parameter object.
+    private static void MassRecalibration(Writer w) {
+        w.Section("Mass recalibration");
+        w.Comment("Recalibrates each file's MS1 and MS2 m/z before its peaks are picked for good. The features are first annotated against");
+        w.Comment("the MSP and LBM libraries above with wide m/z windows; an MS1 or MS2 error model that reaches the minimum correction and");
+        w.Comment($"{MassCalibrationDecision.SignificanceFactor.ToString("0", CultureInfo.InvariantCulture)} standard errors is taken out of the file's spectra. Needs an MSP or LBM library. The models are written to");
+        w.Comment("mass_recalibration/ in the output folder.");
+        w.Choice("Mass recalibration", B(false), "True", "False");
+        w.Comment("Half width of the first annotation's m/z windows, in ppm; it must hold the largest error expected.");
+        w.Value("Mass recalibration search window (ppm)", D(AnnotationCalibrantCollector.DefaultSearchPpm));
+        w.Comment("A modelled error smaller than this, in ppm, is not corrected; 0 corrects every significant one.");
+        w.Value("Mass recalibration minimum correction (ppm)", D(MassCalibrationDecision.DefaultMinimumCorrectionPpm));
+    }
+
     private static void LipidRtCheck(Writer w, LipidRtCheckParameter c) {
         w.Section("Lipid retention-time check (Target omics: Lipidomics)");
         w.Comment("Confirms a lipid annotation whose class, total carbons, double bonds and oxygens elute in reversed-phase order");
@@ -525,6 +561,9 @@ public static class MethodFileTemplate
     // "R" because .NET Framework's default float formatting keeps only 7 significant digits and
     // does not always read back as the same value.
     private static string F(float value) => value.ToString("R", CultureInfo.InvariantCulture);
+
+    // A fraction of the base peak written as the percent the method key is read in.
+    private static string Percent(float fraction) => F((float)Math.Round(fraction * 100d, 6));
     private static string D(double value) => value.ToString("R", CultureInfo.InvariantCulture);
     private static string I(int value) => value.ToString(CultureInfo.InvariantCulture);
     private static string B(bool value) => value ? "True" : "False";

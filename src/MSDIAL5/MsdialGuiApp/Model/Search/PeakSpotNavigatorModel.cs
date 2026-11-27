@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
@@ -23,12 +25,16 @@ namespace CompMs.App.Msdial.Model.Search
 
     internal sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
+        // One per view in PeakSpotsCollection.
+        private readonly Dictionary<ICollectionView, PendingRefresh> _pendingRefreshes = new Dictionary<ICollectionView, PendingRefresh>();
+
         public PeakSpotNavigatorModel(object peakSpots, IReadOnlyList<ValueFilterModel> valueFilterModels, IReadOnlyList<KeywordFilterModel> keywordFilterModels, ValueFilterModel amplitudeFilterModel, PeakSpotTagSearchQueryBuilderModel tagSearchQueryBuilderModel) {
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             AmplitudeFilterModel = amplitudeFilterModel;
             ValueFilterModels = new ObservableCollection<ValueFilterModel>(valueFilterModels);
             KeywordFilterModels = new ObservableCollection<KeywordFilterModel>(keywordFilterModels);
             TagSearchQueryBuilder = tagSearchQueryBuilderModel;
+            PeakSpotsCollection.CollectionChanged += OnPeakSpotsCollectionChanged;
         }
 
         public string? SelectedAnnotationLabel {
@@ -60,9 +66,27 @@ namespace CompMs.App.Msdial.Model.Search
             TagSearchQueryBuilder.Reset();
         }
 
+        /// <summary>
+        /// Refreshes every view that is not in an edit transaction now; a view in one is refreshed once, after its edit ends.
+        /// </summary>
+        /// <remarks>
+        /// Does not throw: a view that fails to refresh does not stop the others, and its failure is thrown again from
+        /// its own dispatcher operation, where the application's unhandled-exception handling reports it.
+        /// </remarks>
         public void RefreshCollectionViews() {
-            foreach (var view in PeakSpotsCollection) {
-                view.Refresh();
+            foreach (var pendingRefresh in _pendingRefreshes.Values) {
+                pendingRefresh.Request();
+            }
+        }
+
+        // Keeps one PendingRefresh per view in the list; a view leaving the list drops its pending refresh.
+        private void OnPeakSpotsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            foreach (var removed in _pendingRefreshes.Keys.Except(PeakSpotsCollection).ToArray()) {
+                _pendingRefreshes[removed].Dispose();
+                _pendingRefreshes.Remove(removed);
+            }
+            foreach (var added in PeakSpotsCollection.Except(_pendingRefreshes.Keys).ToArray()) {
+                _pendingRefreshes.Add(added, new PendingRefresh(added));
             }
         }
 
@@ -70,6 +94,7 @@ namespace CompMs.App.Msdial.Model.Search
             if (disposing) {
                 PeakFilters.Clear();
                 PeakSpotsCollection.Clear();
+                PeakSpotsCollection.CollectionChanged -= OnPeakSpotsCollectionChanged;
             }
             base.Dispose(disposing);
         }

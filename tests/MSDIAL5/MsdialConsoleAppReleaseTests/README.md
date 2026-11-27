@@ -8,7 +8,7 @@ vendor format and processing mode and fails unless the run finishes with peaks i
 The executable under test, the demo data and the list of cases are always passed explicitly:
 
 ```
-dotnet test tests/MSDIAL5/MsdialConsoleAppReleaseTests -- "TestRunParameters.Parameter(name=\"ConsoleExe\", value=\"C:\path\to\MSDIALCUI.exe\")" "TestRunParameters.Parameter(name=\"DemoDataDir\", value=\"D:\msdial_demofiles\")" "TestRunParameters.Parameter(name=\"CasesFile\", value=\"C:\path\to\console-cases.json\")"
+dotnet test tests/MSDIAL5/MsdialConsoleAppReleaseTests --filter "TestCategory=ReleaseCheck" -- "TestRunParameters.Parameter(name=\"ConsoleExe\", value=\"C:\path\to\MSDIALCUI.exe\")" "TestRunParameters.Parameter(name=\"DemoDataDir\", value=\"D:\msdial_demofiles\")" "TestRunParameters.Parameter(name=\"CasesFile\", value=\"C:\path\to\console-cases.json\")"
 ```
 
 | Parameter     | Meaning                                                            |
@@ -18,8 +18,10 @@ dotnet test tests/MSDIAL5/MsdialConsoleAppReleaseTests -- "TestRunParameters.Par
 | `CasesFile`   | The JSON file listing the cases (see [Cases](#cases)). Keep it outside the repository. |
 | `Cases`       | Optional. Comma-separated case names to run (`sciex_wiff2,gcms_netcdf`); the rest report Inconclusive. |
 
-A test whose parameters are missing reports Inconclusive, so the solution-wide `dotnet test` in CI
-skips these tests. The whole set takes about an hour; it does not use the mouse or keyboard.
+The tests carry the `ReleaseCheck` category, which a `dotnet test` given no filter leaves out (the
+default filter is set in the root `Directory.Build.props`); hence the `--filter` above. CI gives its
+own filter, so it runs them, and a test whose parameters are missing reports Inconclusive there. The
+whole set takes about an hour; it does not use the mouse or keyboard.
 
 ## What a case does
 

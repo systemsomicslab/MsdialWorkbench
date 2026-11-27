@@ -36,4 +36,16 @@
     <RestoreLockedMode>true</RestoreLockedMode>
     <NuGetLockFilePath>$(MSBuildProjectDirectory)\packages.lock.ReleaseVendorUnsupported.json</NuGetLockFilePath>
   </PropertyGroup>
+
+  <!--
+    A plain `dotnet test` leaves out two categories:
+    - UI: tests that put a real window on screen, the view tests of MsdialGuiAppTests and the
+      MSDIAL.exe tests of MsdialGuiAppUiTests;
+    - ReleaseCheck: MsdialConsoleAppReleaseTests, which process demo data with a built MSDIALCUI.exe.
+    A filter given to dotnet test replaces this one (CI gives one, so CI runs them), and
+    -p:RunAllTests=true runs everything. See the Testing section of CONTRIBUTING.md.
+  -->
+  <PropertyGroup Condition="'$(VSTestTestCaseFilter)' == '' And '$(RunAllTests)' != 'true'">
+    <VSTestTestCaseFilter>TestCategory!=UI&amp;TestCategory!=ReleaseCheck</VSTestTestCaseFilter>
+  </PropertyGroup>
 </Project>

@@ -1256,7 +1256,9 @@ namespace CompMs.MsdialCore.Parameter
             return false;
         }
 
-        public bool IsInMassRange(double mz) => Math.Abs(mz - MassRangeBegin) > 1e-6 && Math.Abs(MassRangeEnd - mz) > 1e-6;
+        // Inclusive at both ends, as MS-DIAL 4 checked a library quant mass (MassRangeBegin <= mass <= MassRangeEnd). The
+        // earlier form, |mz - begin| > 1e-6 && |end - mz| > 1e-6, accepted every value except the two bounds themselves.
+        public bool IsInMassRange(double mz) => mz >= MassRangeBegin - 1e-6 && mz <= MassRangeEnd + 1e-6;
     }
 
     [MessagePackObject]

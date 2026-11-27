@@ -24,8 +24,10 @@ namespace CompMs.App.Msdial.View.Table.Tests;
 /// Editing the name, ontology or comment in the peak spot table, as the table views set it up: a DataGrid over the
 /// navigator's collection view, with the editing behavior that holds the filters back while a row is in edit.
 /// A row edit left without Enter must not keep the filters held back.
+/// Each test shows the table window on screen and types into it, so it is in the UI category (see the project README).
 /// </summary>
 [TestClass]
+[TestCategory("UI")]
 public class PeakSpotTableEditTests
 {
     private sealed class Evaluator : IMatchResultEvaluator<AlignmentSpotPropertyModel>
@@ -85,7 +87,6 @@ public class PeakSpotTableEditTests
             grid.IsSynchronizedWithCurrentItem = true;
             grid.SelectionUnit = DataGridSelectionUnit.FullRow;
             grid.SetBinding(ItemsControl.ItemsSourceProperty, new Binding(nameof(PeakSpotNavigatorViewModel.PeakSpotsView)));
-            grid.SetBinding(DataGridIsEdittingBehavior.IsEdittingProperty, new Binding("IsEditting.Value") { Mode = BindingMode.OneWayToSource, });
             grid.Columns.Add(new DataGridTextColumn { Header = "Name", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Name)), });
             grid.Columns.Add(new DataGridTextColumn { Header = "Ontology", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Ontology)), });
             grid.Columns.Add(new DataGridTextColumn { Header = "Comment", Binding = new Binding(nameof(AlignmentSpotPropertyModel.Comment)), });
@@ -99,7 +100,7 @@ public class PeakSpotTableEditTests
     private static (DataGrid, Window) OpenTable(Harness h) {
         var style = new Style(typeof(DataGrid));
         style.Setters.Add(new Setter(DataGridCommitBehavior.EnableProperty, true));
-        style.Setters.Add(new Setter(DataGridIsEdittingBehavior.EnabledProperty, true));
+        style.Setters.Add(new Setter(DataGridCommitPendingEditBehavior.EnabledProperty, true));
         var window = new Window { DataContext = h.Navigator, Width = 600, Height = 400, ShowActivated = true, WindowStartupLocation = WindowStartupLocation.Manual, Left = 0, Top = 0, };
         window.Resources.Add(typeof(DataGrid), style);
         var host = new ContentControl { ContentTemplate = new DataTemplate { VisualTree = new FrameworkElementFactory(typeof(TableView)), }, };

@@ -1,6 +1,7 @@
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm.MassCalibration;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -172,6 +173,12 @@ public sealed class MethodFileTemplateTests
         Assert.AreEqual(1, ConfigParser.ReadLbmAnnotatorPriority(method));
         Assert.AreEqual(0, ConfigParser.ReadMspAnnotatorSettings(method, new MsdialLcmsParameter()).Count);
         Assert.AreEqual(0, ConfigParser.ReadTextAnnotatorSettings(method, new MsdialLcmsParameter()).Count);
+        Assert.IsFalse(ConfigParser.ReadMassRecalibration(method, out var unusableSwitch));
+        Assert.IsNull(unusableSwitch);
+        Assert.AreEqual(AnnotationCalibrantCollector.DefaultSearchPpm, ConfigParser.ReadMassRecalibrationSearchWindow(method, out var unusableWindow));
+        Assert.IsNull(unusableWindow);
+        Assert.AreEqual(MassCalibrationDecision.DefaultMinimumCorrectionPpm, ConfigParser.ReadMassRecalibrationMinimumCorrection(method, out var unusableMinimum));
+        Assert.IsNull(unusableMinimum);
     }
 
     [TestMethod]
