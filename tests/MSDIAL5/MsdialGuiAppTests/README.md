@@ -19,3 +19,6 @@ dotnet test tests/MSDIAL5/MsdialGuiAppTests -p:RunAllTests=true
 Any `--filter` replaces the default one, so CI, which gives its own filter, runs the Window tests in the
 main test step. Run them before submitting changes to the views they cover. Give a test that shows a
 window `[TestCategory("Window")]`.
+
+The default filter applies to `dotnet test` only. Visual Studio's Test Explorer does not read it, so it
+lists and runs the Window tests with the rest (the category shows there as a trait).
