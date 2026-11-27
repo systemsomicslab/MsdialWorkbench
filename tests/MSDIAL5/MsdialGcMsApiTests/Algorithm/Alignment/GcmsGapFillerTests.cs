@@ -121,6 +121,28 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         }
 
         [TestMethod()]
+        public void GapFillResetsACellGapFilledEarlierWhoseReextractionFindsNothing() {
+            // A cell gap filled at an earlier quant mass has a retention but no joined peak (MasterPeakID -2). When
+            // re-quantification at a new quant mass finds nothing there, it is reset like any gap cell: only a peak
+            // joined from its file keeps its retention.
+            var filler = new StubGcmsGapFiller(new MsdialGcmsParameter());
+            var (spot, _, _, missing) = CreateSpot();
+            missing.MasterPeakID = -2;
+            missing.PeakID = -2;
+            missing.PeakHeightTop = 300d;
+            missing.ChromXsLeft = new ChromXs(0.9d, ChromXType.RT, ChromXUnit.Min);
+            missing.ChromXsTop = new ChromXs(1.0d, ChromXType.RT, ChromXUnit.Min);
+            missing.ChromXsRight = new ChromXs(1.1d, ChromXType.RT, ChromXUnit.Min);
+
+            filler.GapFill(null, null, null, spot, fileID: missing.FileID);
+
+            Assert.AreEqual(-1d, missing.ChromXsTop.RT.Value);
+            Assert.AreEqual(ChromXType.Mz, missing.ChromXsTop.MainType);
+            Assert.AreEqual(0d, missing.PeakHeightTop);
+            Assert.IsTrue(missing.PeakID < 0);
+        }
+
+        [TestMethod()]
         public void WithoutForcingARepresentativeWhoseReextractionFindsNoApexKeepsItsRetention() {
             // Not forced, and no apex at the spot's quant mass in the representative's file. The representative stays
             // detected (the spot takes its name and spectrum from it) at height 0. It keeps its retention, so the spot's
@@ -191,8 +213,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests {
         [TestMethod()]
         public void GapFillWithoutForcingIsNotDraggedOffByOneFileWithoutTheQuantIon() {
             // Ten files with the same peak at 10.00 min. File 1 has no ion at the quant mass, and gap filling is not
-            // forced, so its re-extraction finds nothing and it is reset to RT -1. Averaged into the center, that -1 moved
-            // it to 8.9 min for file 2, whose peak at 10.00 then fell outside the window, and so on for every later file.
+            // forced, so its re-extraction finds nothing. Earlier versions reset it to RT -1, and averaged into the
+            // center that -1 moved it to 8.9 min for file 2, whose peak at 10.00 then fell outside the window, and so on
+            // for every later file. File 1 now keeps its retention at height 0 (#959); the exclusion of a -1 read back
+            // from an older alignment is tested by GapFillDoesNotCenterLaterFilesOnAPeakWithoutAPosition.
             var parameter = new MsdialGcmsParameter { IsForceInsertForGapFilling = false, RetentionTimeAlignmentTolerance = 0.075f, };
             var filler = new SyntheticRtGapFiller(parameter, fileWithoutIon: 1);
             var peaks = Enumerable.Range(0, 10).Select(fileID => new AlignmentChromPeakFeature {
