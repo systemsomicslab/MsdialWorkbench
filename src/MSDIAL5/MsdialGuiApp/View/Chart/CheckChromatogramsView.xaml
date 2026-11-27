@@ -320,6 +320,9 @@
                                     <!--
                                         Each cell shows its value in a TextBox that only displays it, so a click selects the cell and a drag selects a range.
                                         Editing (typing, F2 or a double click) swaps in the editing TextBox, and EicDataGrid_PreparingCellForEdit keeps the first typed character.
+                                        The cell and clipboard bindings name a binding group that does not exist, so they stay out of the row's own binding group.
+                                        In that group an error stays on the row after the value is fixed, and DataGridPasteCommand then rejects every later paste into the row.
+                                        Out of it, a pasted value that is not a number is shown as an error in its cell, and Apply stays disabled until it is fixed.
                                     -->
                                     <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_EicDiplayProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 
                                               ItemsSource="{Binding Path=DiplayEicSettingValues, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
@@ -340,10 +343,10 @@
 
                                         <DataGrid.Columns>
 
-                                            <DataGridTemplateColumn Width="1*" Header="Name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Title.Value}">
+                                            <DataGridTemplateColumn Width="1*" Header="Name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Title.Value, BindingGroupName=EicCell}">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBox Name="TextBox_EicName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=Title.Value, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"
+                                                        <TextBox Name="TextBox_EicName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=Title.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" VerticalContentAlignment="Center"
                                                                  Focusable="False" IsHitTestVisible="False"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -351,20 +354,20 @@
                                                 <DataGridTemplateColumn.CellEditingTemplate>
                                                     <DataTemplate>
                                                         <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_EicName}">
-                                                            <TextBox Name="TextBox_EicName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Title.Value, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+                                                            <TextBox Name="TextBox_EicName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Title.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" VerticalContentAlignment="Center"/>
                                                         </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellEditingTemplate>
                                             </DataGridTemplateColumn>
 
                                             <DataGridTemplateColumn SortMemberPath="Mass.Value" Width="1*" 
-                                                                    Header="Exact mass" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Mass.Value}">
+                                                                    Header="Exact mass" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Mass.Value, BindingGroupName=EicCell}">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <!-- The TextBox takes no mouse input, so the Grid shows the error as a tool tip. -->
                                                         <Grid Background="Transparent" ToolTip="{Binding Path=(Validation.Errors)/ErrorContent, ElementName=TextBox_ExactMass}">
                                                             <TextBox Name="TextBox_ExactMass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                                                     Text="{Binding Path=Mass.Value, UpdateSourceTrigger=PropertyChanged}"
+                                                                     Text="{Binding Path=Mass.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}"
                                                                      Focusable="False" IsHitTestVisible="False"/>
                                                         </Grid>
                                                     </DataTemplate>
@@ -374,19 +377,19 @@
                                                     <DataTemplate>
                                                         <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_ExactMass}">
                                                             <TextBox Name="TextBox_ExactMass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                                                     Text="{Binding Mass.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                                     Text="{Binding Mass.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" />
                                                         </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellEditingTemplate>
                                             </DataGridTemplateColumn>
 
                                             <DataGridTemplateColumn SortMemberPath="MassTolerance.Value" Width="*" 
-                                                                    Header="Mass tolerance [Da]" IsReadOnly="False" ClipboardContentBinding="{Binding Path=MassTolerance.Value}">
+                                                                    Header="Mass tolerance [Da]" IsReadOnly="False" ClipboardContentBinding="{Binding Path=MassTolerance.Value, BindingGroupName=EicCell}">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <Grid Background="Transparent" ToolTip="{Binding Path=(Validation.Errors)/ErrorContent, ElementName=TextBox_MassTolerance}">
                                                             <TextBox Name="TextBox_MassTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                                                     Text="{Binding Path=MassTolerance.Value, UpdateSourceTrigger=PropertyChanged}"
+                                                                     Text="{Binding Path=MassTolerance.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}"
                                                                      Focusable="False" IsHitTestVisible="False"/>
                                                         </Grid>
                                                     </DataTemplate>
@@ -396,7 +399,7 @@
                                                     <DataTemplate>
                                                         <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_MassTolerance}">
                                                             <TextBox Name="TextBox_MassTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                                                     Text="{Binding MassTolerance.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                                     Text="{Binding MassTolerance.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" />
                                                         </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellEditingTemplate>
