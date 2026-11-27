@@ -263,12 +263,28 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
     }
 
     private void MergeSpectrumFeatures(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
+        // A file's peaks are compared only with the masters that existed before the file; the peaks that become new
+        // masters are added after the whole file has been read. Adding each one at once made a similar later peak of the
+        // same file look already covered, so that peak became no master and joined no spot (MS-DIAL 4 collected the new
+        // masters in addedMs1DecResults and appended them after the file).
+        var added = new List<SpectrumFeature>();
         foreach (var target in targets) {
-            SetToMaster(master, target);
+            SetToMaster(master, target, added);
+        }
+        foreach (var target in added) {
+            AddToMaster(master, target);
         }
     }
 
-    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
+    private void AddToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
+        var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket);
+        if (!master.ContainsKey(rtTarget)) {
+            master[rtTarget] = [];
+        }
+        master[rtTarget].Add(target);
+    }
+
+    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added) {
         var rtTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RT.Value / _rtBucket);
         for(int rtIdc = rtTarget - _rtWidth; rtIdc <= rtTarget + _rtWidth; rtIdc++) { // in many case, rtIdc is from rtTarget - 1 to rtTarget + 1
             if (master.ContainsKey(rtIdc)) {
@@ -288,10 +304,7 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                 }
             }
         }
-        if (!master.ContainsKey(rtTarget)) {
-            master[rtTarget] = [];
-        }
-        master[rtTarget].Add(target);
+        added.Add(target);
         return true;
     }
 
@@ -325,10 +338,14 @@ internal sealed class GcmsRTPeakJoiner : GcmsPeakJoiner
                 var factor = GetSimilality(masters[i], target);
                 if (factor > maxMatchs[i] && factor > matchFactor) {
                     matchIdx = i;
-                    maxMatchs[i] = matchFactor = factor;
+                    matchFactor = factor;
                 }
             }
             if (matchIdx.HasValue) {
+                // Only the master the peak joins records its score. Recording every master that was the best so far
+                // while scanning left a claim on masters the peak did not join, which then refused the file's other
+                // peaks that matched them less well (MS-DIAL 4 recorded the chosen master only).
+                maxMatchs[matchIdx.Value] = matchFactor;
                 DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target, ChromXType.RT);
             }
         }
@@ -390,12 +407,28 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
     }
 
     private void MergeChromatogramPeaks(IDictionary<int, List<SpectrumFeature>> master, IEnumerable<SpectrumFeature> targets) {
+        // A file's peaks are compared only with the masters that existed before the file; the peaks that become new
+        // masters are added after the whole file has been read. Adding each one at once made a similar later peak of the
+        // same file look already covered, so that peak became no master and joined no spot (MS-DIAL 4 collected the new
+        // masters in addedMs1DecResults and appended them after the file).
+        var added = new List<SpectrumFeature>();
         foreach (var target in targets) {
-            SetToMaster(master, target);
+            SetToMaster(master, target, added);
+        }
+        foreach (var target in added) {
+            AddToMaster(master, target);
         }
     }
 
-    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
+    private void AddToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target) {
+        var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket);
+        if (!master.ContainsKey(riTarget)) {
+            master[riTarget] = [];
+        }
+        master[riTarget].Add(target);
+    }
+
+    private bool SetToMaster(IDictionary<int, List<SpectrumFeature>> master, SpectrumFeature target, List<SpectrumFeature> added) {
         var riTarget = (int)Math.Ceiling(target.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop.RI.Value / _riBucket);
         for(int riIdc = riTarget - _riWidth; riIdc <= riTarget + _riWidth; riIdc++) { // in many case, riIdc is from riTarget - 1 to riTarget + 1
             if (master.ContainsKey(riIdc)) {
@@ -406,10 +439,7 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
                 }
             }
         }
-        if (!master.ContainsKey(riTarget)) {
-            master[riTarget] = [];
-        }
-        master[riTarget].Add(target);
+        added.Add(target);
         return true;
     }
 
@@ -443,10 +473,14 @@ internal sealed class GcmsRIPeakJoiner : GcmsPeakJoiner
                 var factor = GetSimilality(masters[i], target);
                 if (factor > maxMatchs[i] && factor > matchFactor) {
                     matchIdx = i;
-                    maxMatchs[i] = matchFactor = factor;
+                    matchFactor = factor;
                 }
             }
             if (matchIdx.HasValue) {
+                // Only the master the peak joins records its score. Recording every master that was the best so far
+                // while scanning left a claim on masters the peak did not join, which then refused the file's other
+                // peaks that matched them less well (MS-DIAL 4 recorded the chosen master only).
+                maxMatchs[matchIdx.Value] = matchFactor;
                 DataObjConverter.SetAlignmentChromPeakFeatureFromSpectrumFeature(spots[matchIdx.Value].AlignedPeakProperties[fileId], target, ChromXType.RI);
             }
         }
