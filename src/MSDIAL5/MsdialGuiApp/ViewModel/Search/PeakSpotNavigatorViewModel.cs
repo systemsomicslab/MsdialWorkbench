@@ -36,6 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             AmplitudeUpperValue.SetValidateNotifyError(v => AmplitudeLowerValue.Value <= v ? null : "Too small");
             ValueFilterViewModels = model.ValueFilterModels.ToReadOnlyReactiveCollection(m => new ValueFilterViewModel(m)).AddTo(Disposables);
             KeywordFilterViewModels = model.KeywordFilterModels.ToReadOnlyReactiveCollection(m => new KeywordFilterViewModel(m)).AddTo(Disposables);
+            CheckFilterViewModels = model.CheckFilterModels.ToReadOnlyReactiveCollection(m => new CheckFilterViewModel(m)).AddTo(Disposables);
 
             IsEditting = new ReactivePropertySlim<bool>().AddTo(Disposables);
 
@@ -49,6 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 AmplitudeUpperValue.ToUnit(),
                 ValueFilterViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanged).ToUnit(),
                 KeywordFilterViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanged).ToUnit(),
+                CheckFilterViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanged).ToUnit(),
             }.Merge().Publish();
 
             var editEnd = IsEditting.Where(e => !e);
@@ -82,6 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactiveProperty<double> AmplitudeUpperValue { get; }
         public ReadOnlyReactiveCollection<ValueFilterViewModel> ValueFilterViewModels { get; }
         public ReadOnlyReactiveCollection<KeywordFilterViewModel> KeywordFilterViewModels { get; }
+        public ReadOnlyReactiveCollection<CheckFilterViewModel> CheckFilterViewModels { get; }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotTagSearchQueryBuilderViewModel TagSearchBuilderViewModel { get; }

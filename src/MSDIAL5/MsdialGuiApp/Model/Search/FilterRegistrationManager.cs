@@ -15,7 +15,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         public FilterRegistrationManager(IReadOnlyList<T> spots, PeakSpotFiltering<T> peakSpotFiltering) {
             PeakSpotFiltering = peakSpotFiltering;
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(spots, peakSpotFiltering.ValueFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.KeywordFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.AmplitudeFilterModel, peakSpotFiltering.TagSearchQueryBuilder);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(spots, peakSpotFiltering.ValueFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.KeywordFilterManagers.Select(pair => pair.Filter).ToArray(), peakSpotFiltering.AmplitudeFilterModel, peakSpotFiltering.TagSearchQueryBuilder, peakSpotFiltering.CheckFilterManagers.Select(pair => pair.Filter).ToArray());
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -127,6 +127,36 @@ namespace CompMs.App.Msdial.Model.Search
 
         public void Dispose() {
             _model.Dispose();
+        }
+    }
+
+    public class CheckFilterManager<T> where T : IAnnotatedObject, IFilterable
+    {
+        private readonly CheckFilterModel _model;
+        private readonly FilterEnableStatus _status;
+        private readonly Func<T, bool> _predicate;
+
+        public CheckFilterManager(CheckFilterModel model, FilterEnableStatus status, Func<T, bool> predicate) {
+            _model = model;
+            _status = status;
+            _predicate = predicate;
+        }
+
+        public CheckFilterModel Filter => _model;
+
+        public IEnumerable<T> Apply(IEnumerable<T> peaks, FilterEnableStatus status) {
+            if ((status & _status) == _status && _model.IsEnabled) {
+                return peaks.Where(_predicate);
+            }
+            return peaks;
+        }
+
+        public bool TryAttachFilter(PeakSpotFiltering<T> filtering, ICollectionView collection, FilterEnableStatus status) {
+            if ((status & _status) == _status) {
+                filtering.AttachFilter(_model, _predicate, collection);
+                return true;
+            }
+            return false;
         }
     }
 }

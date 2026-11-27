@@ -563,6 +563,29 @@
         </StackPanel>
     </DataTemplate>
 
+    <!-- On/off table filters such as "IS candidates", listed in a row. -->
+    <Style x:Key="CheckFilterItems" TargetType="ItemsControl"
+           xmlns:searchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate DataType="{x:Type searchVM:CheckFilterViewModel}">
+                    <CheckBox Content="{Binding Label, Mode=OneTime}"
+                              ToolTip="{Binding Description, Mode=OneTime}"
+                              IsChecked="{Binding IsChecked.Value, Mode=TwoWay}"
+                              Margin="8,0" VerticalAlignment="Center" FontSize="12"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="RadioButton" x:Key="IconRadioButton">
         <Setter Property="Height" Value="32"/>
         <Setter Property="Width" Value="32"/>
