@@ -1,0 +1,33 @@
+# Line endings: git stores text files with LF whatever each machine's core.autocrlf is.
+# Working copies follow core.eol / core.autocrlf (CRLF on a default Windows install).
+# Files whose exact bytes are pinned by tests carry `-text` in a nested .gitattributes
+# next to them (e.g. tests/**/Resources/*Fixtures, tests/MSFINDER/**/Resources/Ini).
+* text=auto
+
+# Windows tools expect CRLF in the working copy.
+*.sln text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts must keep LF to run.
+*.sh  text eol=lf
+
+# Binary files: never convert, never diff as text.
+*.ico       binary
+*.png       binary
+*.jpg       binary
+*.gif       binary
+*.snk       binary
+*.dll       binary
+*.exe       binary
+*.xlsx      binary
+*.nupkg     binary
+*.zip       binary
+*.gz        binary
+# MS-DIAL project and alignment result files (MessagePack / binary).
+*.mdproject binary
+*.mddata    binary
+*.arf       binary
+*.arf2      binary
+*.dcl       binary
+*.dbs       binary
