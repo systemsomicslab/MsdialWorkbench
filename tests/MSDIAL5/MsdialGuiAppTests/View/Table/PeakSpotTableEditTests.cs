@@ -24,10 +24,15 @@ namespace CompMs.App.Msdial.View.Table.Tests;
 /// Editing the name, ontology or comment in the peak spot table, as the table views set it up: a DataGrid over the
 /// navigator's collection view, with the editing behavior that holds the filters back while a row is in edit.
 /// A row edit left without Enter must not keep the filters held back.
+/// Each test shows the table window on screen and types into it, so they run only when asked (see <see cref="WindowTests"/>).
 /// </summary>
 [TestClass]
+[TestCategory(WindowTests.Category)]
 public class PeakSpotTableEditTests
 {
+    [TestInitialize]
+    public void RequireOptIn() => WindowTests.RequireOptIn();
+
     private sealed class Evaluator : IMatchResultEvaluator<AlignmentSpotPropertyModel>
     {
         public List<AlignmentSpotPropertyModel> FilterByThreshold(IEnumerable<AlignmentSpotPropertyModel> results) => results.ToList();

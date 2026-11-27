@@ -51,6 +51,9 @@ jobs:
         id: build
         run: dotnet build --no-restore --configuration "Debug vendor unsupported" /property:BclBuildImported=Ignore /property:DownloadLibrary=false
       - name: Test
+        # Tests that show a real window run only when this is set (tests/MSDIAL5/MsdialGuiAppTests/Utility/WindowTests.cs).
+        env:
+          MSDIAL_RUN_WINDOW_TESTS: '1'
         run: dotnet test --no-build --verbosity normal --configuration "Debug vendor unsupported" --filter "TestCategory!=Integration|FullyQualifiedName!~MsdialCoreTestAppTests."
       - name: Test LC-MS integration
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
