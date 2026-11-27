@@ -99,8 +99,9 @@ internal static class SyntheticLcmsMzml
     /// As <see cref="Write"/>, with SWATH product-ion scans after every MS1 scan, one per isolation window in
     /// <paramref name="windows"/>, 0.001 min apart. Each compound has an M+1 isotope at 30% of its height, and in the
     /// window that holds it, a third of the precursor and of its isotope survive unfragmented beside a fragment at
-    /// 60% of its m/z. Every product ion is read <paramref name="ms2ShiftPpm"/> off its true m/z, as a product-ion
-    /// scan with a calibration error would read it; the MS1 scans are exact.
+    /// 60% of its m/z, or beside the fragments given for it in <paramref name="fragments"/> (m/z, and height relative to
+    /// the precursor's). Every product ion is read <paramref name="ms2ShiftPpm"/> off its true m/z, and every MS1 ion
+    /// <paramref name="ms1ShiftPpm"/> off, as scans with a calibration error would read them.
     /// </summary>
     public static void WriteSwath(
         string path,
@@ -108,7 +109,9 @@ internal static class SyntheticLcmsMzml
         IReadOnlyList<(double Lower, double Upper)> windows,
         double ms2ShiftPpm,
         double cycle = 0.02,
-        double end = 10) {
+        double end = 10,
+        double ms1ShiftPpm = 0d,
+        IReadOnlyList<IReadOnlyList<(double Mz, double Relative)>>? fragments = null) {
         var cycles = (int)Math.Round(end / cycle) + 1;
         var scanCount = cycles * (1 + windows.Count);
         using var writer = XmlWriter.Create(path, new XmlWriterSettings { Indent = true });
@@ -167,14 +170,15 @@ internal static class SyntheticLcmsMzml
         writer.WriteAttributeString("defaultDataProcessingRef", "synthesis");
         var index = 0;
         var shift = 1d + ms2ShiftPpm * 1e-6;
+        var ms1Shift = 1d + ms1ShiftPpm * 1e-6;
         for (var c = 0; c < cycles; c++) {
             var rt = c * cycle;
             var heights = compounds.Select(compound => compound.Height * Math.Exp(-Math.Pow(rt - compound.Rt, 2) / (2 * 0.05 * 0.05))).ToArray();
 
             var ms1 = new List<(double Mz, double Intensity)>();
             for (var i = 0; i < compounds.Count; i++) {
-                ms1.Add((compounds[i].Mz, 50d + heights[i]));
-                ms1.Add((compounds[i].Mz + C13Spacing, 15d + 0.3d * heights[i]));
+                ms1.Add((compounds[i].Mz * ms1Shift, 50d + heights[i]));
+                ms1.Add(((compounds[i].Mz + C13Spacing) * ms1Shift, 15d + 0.3d * heights[i]));
             }
             ms1.Add((LastMz, 3000d));
             ms1 = ms1.OrderBy(peak => peak.Mz).ToList();
@@ -189,7 +193,14 @@ internal static class SyntheticLcmsMzml
                     }
                     ms2.Add((compounds[i].Mz * shift, 20d + heights[i] / 3d));
                     ms2.Add(((compounds[i].Mz + C13Spacing) * shift, 6d + 0.1d * heights[i]));
-                    ms2.Add((0.6d * compounds[i].Mz * shift, 30d + 0.5d * heights[i]));
+                    if (fragments is null) {
+                        ms2.Add((0.6d * compounds[i].Mz * shift, 30d + 0.5d * heights[i]));
+                    }
+                    else {
+                        foreach (var (mz, relative) in fragments[i]) {
+                            ms2.Add((mz * shift, 30d + relative * heights[i]));
+                        }
+                    }
                 }
                 ms2.Add((LastMz, 3000d));
                 ms2 = ms2.OrderBy(peak => peak.Mz).ToList();

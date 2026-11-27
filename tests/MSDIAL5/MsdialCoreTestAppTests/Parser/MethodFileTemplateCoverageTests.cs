@@ -132,6 +132,8 @@ public sealed class MethodFileTemplateCoverageTests
         ["use ccs for generated lipid annotation filtering"] = MobilityOnly,
 
         ["ms2 mass accuracy preview only"] = MassAccuracyPreview,
+        ["annotation mass accuracy preview only"] = MassAccuracyPreview,
+        ["annotation mass accuracy search window (ppm)"] = MassAccuracyPreview,
 
         ["execute automatic rt correction for alignment"] = Undecided,
         ["automatic rt correction reference file id"] = Undecided,

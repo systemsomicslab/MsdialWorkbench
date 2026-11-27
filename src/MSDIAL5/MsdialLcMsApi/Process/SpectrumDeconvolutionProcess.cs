@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace CompMs.MsdialLcMsApi.Process
 {
-    internal sealed class SpectrumDeconvolutionProcess
+    public sealed class SpectrumDeconvolutionProcess
     {
         private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
 
