@@ -31,6 +31,23 @@ public class EicSettingTests {
     }
 
     [TestMethod]
+    public void DeleteClearsOnlyTheSelectedValue() {
+        var model = new PeakFeatureSearchValueModel(new PeakFeatureSearchValue { Title = "a", Mass = 100d, MassTolerance = 0.005d });
+        using var row = new PeakFeatureSearchValueViewModel(model);
+
+        CheckChromatogramsViewModel.ClearEicQueryValue(row, "Mass");
+        Assert.AreEqual("a", row.Title.Value);
+        Assert.AreEqual("0", row.Mass.Value);
+        Assert.AreEqual("0.005", row.MassTolerance.Value);
+
+        CheckChromatogramsViewModel.ClearEicQueryValue(row, "Title");
+        CheckChromatogramsViewModel.ClearEicQueryValue(row, "MassTolerance");
+        Assert.AreEqual(string.Empty, row.Title.Value);
+        Assert.AreEqual("0.01", row.MassTolerance.Value);
+        Assert.IsFalse(row.HasErrors.Value);
+    }
+
+    [TestMethod]
     public void NumbersUseAPeriodWhateverTheCulture() {
         var culture = Thread.CurrentThread.CurrentCulture;
         try {

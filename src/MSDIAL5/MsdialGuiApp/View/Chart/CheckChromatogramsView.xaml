@@ -320,6 +320,7 @@
                                     <!--
                                         Each cell shows its value in a TextBox that only displays it, so a click selects the cell and a drag selects a range.
                                         Editing (typing, F2 or a double click) swaps in the editing TextBox, and EicDataGrid_PreparingCellForEdit keeps the first typed character.
+                                        Delete clears the selected cells (EicDataGrid_PreviewKeyDown).
                                         The cell and clipboard bindings name a binding group that does not exist, so they stay out of the row's own binding group.
                                         In that group an error stays on the row after the value is fixed, and DataGridPasteCommand then rejects every later paste into the row.
                                         Out of it, a pasted value that is not a number is shown as an error in its cell, and Apply stays disabled until it is fixed.
@@ -328,6 +329,7 @@
                                               ItemsSource="{Binding Path=DiplayEicSettingValues, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
                                               behavior:DataGridPasteBehavior.Enable="True"
                                               PreparingCellForEdit="EicDataGrid_PreparingCellForEdit"
+                                              PreviewKeyDown="EicDataGrid_PreviewKeyDown"
                                               ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                                               VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
                                               AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"

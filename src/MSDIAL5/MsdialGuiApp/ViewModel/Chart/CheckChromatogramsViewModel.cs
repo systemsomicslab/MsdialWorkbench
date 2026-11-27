@@ -220,9 +220,24 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
         if (value is null) {
             return;
         }
-        value.Title.Value = string.Empty;
-        value.Mass.Value = "0";
-        value.MassTolerance.Value = CheckChromatogramsModel.DefaultEicMassTolerance.ToString(CultureInfo.InvariantCulture);
+        foreach (var property in new[] { nameof(value.Title), nameof(value.Mass), nameof(value.MassTolerance) }) {
+            ClearEicQueryValue(value, property);
+        }
+    }
+
+    // Clears one value of the row (Delete on a selected cell), back to what an empty row has.
+    internal static void ClearEicQueryValue(PeakFeatureSearchValueViewModel value, string property) {
+        switch (property) {
+            case nameof(value.Title):
+                value.Title.Value = string.Empty;
+                break;
+            case nameof(value.Mass):
+                value.Mass.Value = "0";
+                break;
+            case nameof(value.MassTolerance):
+                value.MassTolerance.Value = CheckChromatogramsModel.DefaultEicMassTolerance.ToString(CultureInfo.InvariantCulture);
+                break;
+        }
     }
 
     private void Apply() {

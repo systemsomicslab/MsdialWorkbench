@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Setting;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -32,6 +35,22 @@ namespace CompMs.App.Msdial.View.Chart
                     }
                 });
             }
+        }
+
+        // Delete on selected cells (not while a cell is being edited) clears their values.
+        private void EicDataGrid_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Delete || Keyboard.Modifiers != ModifierKeys.None || e.OriginalSource is TextBox || sender is not DataGrid grid) {
+                return;
+            }
+            var cleared = false;
+            foreach (var cell in grid.SelectedCells) {
+                // The bound property is the first part of the column's clipboard binding path, e.g. "Mass" in "Mass.Value".
+                if (cell.Item is PeakFeatureSearchValueViewModel row && cell.Column?.ClipboardContentBinding is Binding { Path.Path: string path }) {
+                    CheckChromatogramsViewModel.ClearEicQueryValue(row, path.Split('.')[0]);
+                    cleared = true;
+                }
+            }
+            e.Handled = cleared;
         }
 
         private static void StartWith(TextBox textBox, string text) {
