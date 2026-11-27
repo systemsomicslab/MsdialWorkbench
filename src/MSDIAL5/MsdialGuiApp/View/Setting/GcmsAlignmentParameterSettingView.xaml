@@ -97,7 +97,7 @@
                                    AppendLabel="%">
                     <TextBox Text="{Binding EiEqualityParameterSetting.Tolerance.Value, Converter={StaticResource ToPercent}}"
                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
-                             ToolTip="70-80 is better."
+                             ToolTip="Minimum EI spectral similarity for two peaks to align; retention is judged separately by its own tolerance. Spectra of one compound in two files often score 60-75, so 50 (the default) is recommended; 70 or more splits most compounds."
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Height="24"
                              VerticalContentAlignment="Center"

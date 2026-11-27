@@ -142,7 +142,9 @@ public static class MethodFileTemplate
         w.Value("Retention time tolerance for alignment", F(p.RetentionTimeAlignmentTolerance));
         w.Value("Retention index tolerance for alignment", F(p.RetentionIndexAlignmentTolerance));
         w.Value("Retention time factor for alignment", F(p.RetentionTimeAlignmentFactor));
-        w.Value("MS1 tolerance for alignment", F(p.Ms1AlignmentTolerance));
+        // GC-MS alignment compares EI spectra; it reads no MS1 alignment setting.
+        w.Value("Spectrum similarity tolerance for alignment", F(p.SpectrumSimilarityAlignmentTolerance));
+        w.Value("Spectrum similarity factor for alignment", F(p.SpectrumSimilarityAlignmentFactor));
         w.Value("Force insert peaks in gap filling", B(p.IsForceInsertForGapFilling));
         w.Value("Replace quant mass by user defined value", B(p.IsReplaceQuantmassByUserDefinedValue));
         w.Value("Is quant mass based on base peak mz", B(p.IsRepresentativeQuantMassBasedOnBasePeakMz));

@@ -586,6 +586,9 @@ namespace CompMs.App.MsdialConsole.Parser
             }
         }
 
+        private const string GcmsMs1AlignmentToleranceKey = "MS1 tolerance for alignment";
+        private const string GcmsMs1AlignmentFactorKey = "MS1 factor for alignment";
+
         public static MsdialGcmsParameter ReadForGcms(string filepath)
         {
             var param = new MsdialGcmsParameter();
@@ -604,6 +607,13 @@ namespace CompMs.App.MsdialConsole.Parser
                     }
                 }
             }
+            // GC-MS alignment compares EI spectra by the spectrum similarity settings (GcmsPeakJoiner); the MS1
+            // alignment settings, which an older GC-MS template and LC-MS-style method files write, have no effect
+            // on it. The tolerance is still the m/z tolerance of isotope label tracking, when that is on.
+            if (!param.TrackingIsotopeLabels) {
+                keys.Override(GcmsMs1AlignmentToleranceKey, "GC-MS alignment does not read it; it compares EI spectra by 'Spectrum similarity tolerance for alignment'");
+            }
+            keys.Override(GcmsMs1AlignmentFactorKey, "GC-MS alignment does not read it; the EI weight is 'Spectrum similarity factor for alignment'");
             keys.Report(filepath);
             if (param.AccuracyType == AccuracyType.IsNominal) {
                 param.MassSliceWidth = 0.5F;

@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _referenceFile = files.FindByID(parameter.AlignmentBaseParam.AlignmentReferenceFileID);
             RtEqualityParameter = new RetentionTimeEqualityParameterSetting(parameter.AlignmentBaseParam);
             RiEqualityParameter = new RetentionIndexEqualityParameterSetting(parameter);
-            EiEqualityParameter = new Ms1EqualityParameterSetting(parameter.AlignmentBaseParam);
+            EiEqualityParameter = new SpectrumSimilarityEqualityParameterSetting(parameter.AlignmentBaseParam);
             PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
             NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;
             BlankFiltering = parameter.PostProcessBaseParam.BlankFiltering;
@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public RetentionTimeEqualityParameterSetting RtEqualityParameter { get; }
         public RetentionIndexEqualityParameterSetting RiEqualityParameter { get; }
-        public Ms1EqualityParameterSetting EiEqualityParameter { get; }
+        public SpectrumSimilarityEqualityParameterSetting EiEqualityParameter { get; }
 
         public float EiSimilarityTolerance {
             get => _eiSimilarityTolerance;

@@ -163,8 +163,6 @@ public sealed class MethodFileTemplateCoverageTests
         ["relative amplitude cut off"] = Undecided,
         ["ri tolerance for lbm-based annotation"] = Undecided,
         ["only report top hit for text-based annotation"] = Undecided,
-        ["spectrum similarity tolerance for alignment"] = Undecided,
-        ["spectrum similarity factor for alignment"] = Undecided,
         ["together with alignment"] = Undecided,
     };
 
