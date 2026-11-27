@@ -25,10 +25,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
     /// did not" is exactly what a suggestion is for.
     ///
     /// The reference match itself is untouched: <see cref="AnAgreeingRowIsStillAReferenceMatch"/> is
-    /// the control. Note that the flag it asserts is itself under separate review -- a text database
-    /// holds no spectrum, so calling a mass agreement a reference match is the defect pinned by
-    /// TextDbVerdictWithoutASpectrumTests. This test asserts today's answer for that question and
-    /// only changes the retention-time half.
+    /// the control. A text database holds no spectrum, and an agreeing row is a reference match by
+    /// design, since the user trusts what a text library lists (see
+    /// TextDbVerdictWithoutASpectrumTests); this test only changes the retention-time half.
     /// </remarks>
     [TestClass()]
     public class TextDbRetentionTimeSuggestionTests
