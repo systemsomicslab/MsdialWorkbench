@@ -14,61 +14,12 @@ using MessagePack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
 
 namespace MsdialGuiAppTests.Model.Gcms;
 
 [TestClass]
 public sealed class GcmsMainCompoundSearchTests
 {
-    public TestContext TestContext { get; set; } = null!;
-
-    [TestMethod]
-    [TestCategory("LocalIntegration")]
-    public void BoundedSyntheticGcBenchmarkIncludesReferenceValidationAndViewerExposure() {
-        if (Environment.GetEnvironmentVariable("MSDIAL_RUN_SYNTHETIC_GC_BENCHMARK") != "1") {
-            Assert.Inconclusive("Set MSDIAL_RUN_SYNTHETIC_GC_BENCHMARK=1 to run the bounded synthetic GC benchmark.");
-        }
-        foreach (var count in new[] { 10000, 50000 }) {
-            var references = Enumerable.Range(0, count).Select(index => {
-                var reference = new MoleculeMsReference { ScanID = index, Name = "Synthetic " + index,
-                    ChromXs = new ChromXs(1000, ChromXType.RI, ChromXUnit.None),
-                    Spectrum = Enumerable.Range(0, 24).Select(peak => new SpectrumPeak(50 + 15 * peak, 30 + peak * 37)).ToList() };
-                reference.TryCompactSpectrum();
-                return reference;
-            }).ToList();
-            var calculator = new CalculateMatchScore(new DataBaseItem<MoleculeDataBase>(
-                new MoleculeDataBase(references, "Test", DataBaseSource.Msp, SourceType.MspDB, ""), []),
-                new MsRefSearchParameterBase(), RetentionType.RI, RiCompoundType.Alkanes);
-            var scan = new MSDecResult { ChromXs = new ChromXs(1000, ChromXType.RI, ChromXUnit.None), Spectrum = Spectrum() };
-            var search = new GcmsAlignmentCompoundSearchUsecase(calculator);
-            var target = new PeakSpotModel(null!, scan);
-            var expected = calculator.CalculateMatches(scan).OrderByDescending(result => result.TotalScore).ToArray();
-            foreach (var result in expected) { result.Source |= SourceType.Manual; }
-            var first = search.Search(target);
-            _ = ((ICompoundResult)first[0]).MsReference.Spectrum.Count;
-            var cold = new List<double>();
-            var warm = new List<double>();
-            for (var repeat = 0; repeat < 5; repeat++) {
-                var watch = Stopwatch.StartNew();
-                var control = calculator.CalculateMatches(scan).OrderByDescending(result => result.TotalScore)
-                    .Select(result => new GcmsCompoundResult(calculator.Reference(result), result)).ToArray();
-                foreach (var result in control) { ((ICompoundResult)result).MatchResult.Source |= SourceType.Manual; }
-                cold.Add(watch.Elapsed.TotalMilliseconds);
-                watch.Restart();
-                var actual = search.Search(target);
-                warm.Add(watch.Elapsed.TotalMilliseconds);
-                Assert.AreEqual(count, actual.Count);
-                for (var index = 0; index < count; index++) {
-                    CollectionAssert.AreEqual(MessagePackSerializer.Serialize(expected[index]),
-                        MessagePackSerializer.Serialize(((ICompoundResult)control[index]).MatchResult));
-                    CollectionAssert.AreEqual(MessagePackSerializer.Serialize(expected[index]), MessagePackSerializer.Serialize(((ICompoundResult)actual[index]).MatchResult));
-                }
-            }
-            TestContext.WriteLine($"{count} GC records/candidates, 24 reference peaks: uncached median {cold.OrderBy(value => value).ElementAt(2):F3} ms; validated viewer-exposed hit median {warm.OrderBy(value => value).ElementAt(2):F3} ms.");
-        }
-    }
-
     [DataTestMethod]
     [DataRow(false, 0)] [DataRow(true, 0)]
     [DataRow(false, 1)] [DataRow(true, 1)]

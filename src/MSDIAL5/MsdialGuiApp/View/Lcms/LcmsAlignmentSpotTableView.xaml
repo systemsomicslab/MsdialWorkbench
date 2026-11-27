@@ -182,7 +182,6 @@
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridPasteBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
-                  behavior:DataGridIsEdittingBehavior.IsEditting="{Binding PeakSpotNavigatorViewModel.IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
             <DataGrid.ContextMenu>
                 <ContextMenu>

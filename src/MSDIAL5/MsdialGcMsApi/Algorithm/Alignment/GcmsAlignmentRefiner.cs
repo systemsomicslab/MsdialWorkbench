@@ -15,6 +15,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
     {
         public GcmsAlignmentRefiner(MsdialGcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(param, iupac, evaluator) { }
 
+        /// <remarks>
+        /// Annotated spots are all kept. An unannotated spot is left out when a kept spot has the same quant mass (within
+        /// the centroid MS1 tolerance) and nearly the same retention: RI within 2.5 (alkanes) or 1000 (FAMEs), or RT
+        /// within 0.025 min. The peaks of a spot left out are in no output.
+        /// Unannotated spots are taken in descending order of the files they were detected in, so of two such spots the
+        /// one detected in more files is kept. Spots detected in as many files keep the list order.
+        /// </remarks>
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignmentSpotList) {
             if (!(_param is MsdialGcmsParameter param)) return alignmentSpotList;
 
@@ -22,7 +29,12 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             cSpots.AddRange(alignmentSpotList.Where(spot => spot.IsReferenceMatched(evaluator) && !spot.Name.StartsWith("Putative")));
 
             //if both Quant mass and Retention is same, exclude the spot information.
-            foreach (var aSpot in alignmentSpotList.Where(spot => !spot.IsReferenceMatched(evaluator) || spot.Name.StartsWith("Putative"))) {
+            // Taken in list order alone, a spot detected in every file could be left out for one detected in a few.
+            // OrderByDescending is stable, so ties keep the list order.
+            var unannotated = alignmentSpotList
+                .Where(spot => !spot.IsReferenceMatched(evaluator) || spot.Name.StartsWith("Putative"))
+                .OrderByDescending(CountDetectedPeaks);
+            foreach (var aSpot in unannotated) {
                 var aSpotRt = aSpot.TimesCenter.RT.Value;
                 var aSpotRi = aSpot.TimesCenter.RI.Value;
                 var aSpotMass = aSpot.QuantMass;
@@ -58,6 +70,13 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                 if (!flg) cSpots.Add(aSpot);
             }
             return cSpots;
+        }
+
+        // Detected as SpotFilter and the spot's fill percentage count it: PeakID not negative. A gap-filled peak has
+        // PeakID and MasterPeakID -2; a joined peak without signal at the spot's quant mass keeps its MasterPeakID
+        // but has PeakID -2 (GcmsGapFiller.UpdateDetection), and the refiner runs after gap filling.
+        private static int CountDetectedPeaks(AlignmentSpotProperty spot) {
+            return spot.AlignedPeakProperties?.Count(peak => peak.PeakID >= 0) ?? 0;
         }
 
         protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {

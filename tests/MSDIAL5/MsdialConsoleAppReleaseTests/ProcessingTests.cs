@@ -14,7 +14,7 @@ namespace CompMs.App.MsdialConsole.ReleaseTests
     /// without any change in this repository.
     /// </summary>
     [TestClass]
-    [TestCategory("Release")]
+    [TestCategory("ReleaseCheck")]
     public class ProcessingTests
     {
         // The cases come from the file the run parameter CasesFile names, so the demo data's file

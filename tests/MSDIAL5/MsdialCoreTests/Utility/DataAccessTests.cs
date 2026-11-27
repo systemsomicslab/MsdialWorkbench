@@ -241,6 +241,22 @@ public class DataAccessTests
         }
     }
 
+    [TestMethod()]
+    public void IdMatrixExportsANotDetectedCellAsNotDetected() {
+        var detected = new AlignmentChromPeakFeature { MasterPeakID = 12, PeakID = 12 };
+        var gapFilled = new AlignmentChromPeakFeature { MasterPeakID = -2, PeakID = -2 };
+        var undetected = new AlignmentChromPeakFeature { MasterPeakID = -1, PeakID = -1 };
+        // A GC-MS peak joined to the spot but re-extracted without signal at the quant mass.
+        var demoted = new AlignmentChromPeakFeature { MasterPeakID = 7, PeakID = -2 };
+
+        Assert.AreEqual("12", DataAccess.GetSpotValueAsString(detected, "ID"));
+        Assert.AreEqual("-2", DataAccess.GetSpotValueAsString(gapFilled, "ID"));
+        Assert.AreEqual("-1", DataAccess.GetSpotValueAsString(undetected, "ID"));
+        Assert.AreEqual("-2", DataAccess.GetSpotValueAsString(demoted, "ID"));
+        Assert.AreEqual(-2d, DataAccess.GetSpotValue(demoted, "ID"));
+        Assert.AreEqual(12d, DataAccess.GetSpotValue(detected, "ID"));
+    }
+
     /// <summary>
     /// The author's decision of 2026-10-28: an in-silico match is never an identification, so the QA
     /// matrix does not count a peak whose accepted annotation is one as "Reference matched"; it marks it
