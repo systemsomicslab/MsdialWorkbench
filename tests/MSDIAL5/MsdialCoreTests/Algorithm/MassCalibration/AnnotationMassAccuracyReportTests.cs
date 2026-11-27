@@ -81,8 +81,8 @@ public class AnnotationMassAccuracyReportTests
         var lines = text.ToString().TrimEnd('\r', '\n').Split(new[] { Environment.NewLine }, StringSplitOptions.None);
         Assert.AreEqual(5, lines.Length);
         var header = lines[0].Split('\t').ToList();
-        Assert.AreEqual(15, header.Count);
-        Assert.IsTrue(lines.All(line => line.Split('\t').Length == 15));
+        Assert.AreEqual(17, header.Count);
+        Assert.IsTrue(lines.All(line => line.Split('\t').Length == 17));
         var last = lines[4].Split('\t');
         Assert.AreEqual("10.00", last[header.IndexOf("Error (ppm)")]);
         Assert.AreEqual("PredictedMsp", last[header.IndexOf("Library kind")]);

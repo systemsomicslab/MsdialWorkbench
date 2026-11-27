@@ -21,9 +21,13 @@ public static class Ms2MassAccuracyReport
     public const string PairsFileSuffix = ".ms2_precursor_pairs.tsv";
     public const string AllPairs = "All";
     public const string IsotopeConfirmedPairs = "Isotope confirmed";
+    public const string ModelsFileName = "ms2_mass_error_models.tsv";
+
+    /// <summary>The points of the model: the product-ion scans' error against the MS1 survey.</summary>
+    public const string ModelPoints = "MS2 against MS1";
 
     /// <summary>Isolation windows narrower than this are a DDA precursor's own, too many to report one by one.</summary>
-    private const double MinimumReportedIsolationWidth = 5d;
+    private const double MinimumReportedIsolationWidth = MassCalibrationPoint.MinimumWindowWidth;
 
     private static readonly string[] PairsHeader =
     {
@@ -89,6 +93,20 @@ public static class Ms2MassAccuracyReport
             text += $"; isotope-confirmed: {Describe(confirmed.Estimate)} from {confirmed.Estimate.PairCount.ToString(CultureInfo.InvariantCulture)}";
         }
         return text + ".";
+    }
+
+    /// <summary>
+    /// The mass error model of the product-ion scans against the MS1 survey, chosen and judged on all candidate pairs
+    /// (<see cref="MassCalibrationDecision"/>).
+    /// </summary>
+    public static MassCalibrationDecision DecideModel(
+        IReadOnlyList<Ms2PrecursorCalibrant> pairs,
+        double searchPpm = PrecursorCalibrantCollector.DefaultSearchPpm,
+        double minimumCorrectionPpm = MassCalibrationDecision.DefaultMinimumCorrectionPpm) {
+        if (pairs is null) {
+            throw new ArgumentNullException(nameof(pairs));
+        }
+        return MassCalibrationDecision.Decide(MassCalibrationPoint.FromPrecursorPairs(pairs), searchPpm, minimumCorrectionPpm);
     }
 
     private static string Describe(MassErrorEstimate estimate) => MassAccuracySummary.Describe(estimate);

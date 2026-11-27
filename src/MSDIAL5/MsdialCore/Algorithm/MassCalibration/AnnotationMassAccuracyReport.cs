@@ -21,11 +21,13 @@ public static class AnnotationMassAccuracyReport
     public const string CalibrantsFileSuffix = ".annotation_calibrants.tsv";
     public const string Ms1Pairs = "MS1 precursor";
     public const string Ms2Pairs = "MS2 product ion";
+    public const string ModelsFileName = "annotation_mass_error_models.tsv";
 
     private static readonly string[] CalibrantsHeader =
     {
         "Peak ID", "RT (min)", "MS level", "Observed m/z", "Reference m/z", "Reference m/z from", "Error (ppm)", "Observed intensity",
         "Precursor m/z", "Precursor ion", "Reference", "Library", "Library kind", "Score", "Scan index",
+        "Isolation lower m/z", "Isolation upper m/z",
     };
 
     public static string CalibrantsFileName(string analysisFileName) => analysisFileName + CalibrantsFileSuffix;
@@ -50,6 +52,8 @@ public static class AnnotationMassAccuracyReport
                 calibrant.DataBaseSource.ToString(),
                 Format(calibrant.Score, "0.000"),
                 calibrant.ScanIndex.ToString(CultureInfo.InvariantCulture),
+                Format(calibrant.IsolationLowerMz, "0.0000"),
+                Format(calibrant.IsolationUpperMz, "0.0000"),
             }));
         }
     }
@@ -97,6 +101,29 @@ public static class AnnotationMassAccuracyReport
             return $"{count} {what}, fewer than {MassErrorEstimate.MinimumSignalPairs.ToString(CultureInfo.InvariantCulture)} of them above the background: no offset";
         }
         return $"{MassAccuracySummary.Describe(overall.Estimate)} from {count} {what}";
+    }
+
+    /// <summary>
+    /// The mass error model of the MS1 precursors and that of the MS2 product ions, each chosen and judged on its own
+    /// points (<see cref="MassCalibrationDecision"/>), labelled <see cref="Ms1Pairs"/> and <see cref="Ms2Pairs"/>.
+    /// </summary>
+    public static List<(string Points, MassCalibrationDecision Decision)> DecideModels(
+        IReadOnlyList<AnnotationCalibrant> calibrants,
+        double searchPpm = AnnotationCalibrantCollector.DefaultSearchPpm,
+        double minimumCorrectionPpm = MassCalibrationDecision.DefaultMinimumCorrectionPpm) {
+        if (calibrants is null) {
+            throw new ArgumentNullException(nameof(calibrants));
+        }
+        return new List<(string, MassCalibrationDecision)>
+        {
+            (Ms1Pairs, MassCalibrationDecision.Decide(MassCalibrationPoint.FromAnnotation(calibrants, 1), searchPpm, minimumCorrectionPpm)),
+            (Ms2Pairs, MassCalibrationDecision.Decide(MassCalibrationPoint.FromAnnotation(calibrants, 2), searchPpm, minimumCorrectionPpm)),
+        };
+    }
+
+    /// <summary>One line for the console: "MS1 …; MS2 …." from <see cref="MassCalibrationReport.Describe"/>.</summary>
+    public static string DescribeModels(IReadOnlyList<(string Points, MassCalibrationDecision Decision)> models) {
+        return string.Join("; ", models.Select(model => $"{(model.Points == Ms1Pairs ? "MS1" : model.Points == Ms2Pairs ? "MS2" : model.Points)} {MassCalibrationReport.Describe(model.Decision)}")) + ".";
     }
 
     // A library name or a compound name with a tab or a line break in it would shift every later column.

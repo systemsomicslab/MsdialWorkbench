@@ -509,6 +509,7 @@ public sealed class LcmsProcess
             Directory.CreateDirectory(folder);
             var earlier = Directory.GetFiles(folder, "*" + Ms2MassAccuracyReport.PairsFileSuffix)
                 .Concat(Directory.GetFiles(folder, Ms2MassAccuracyReport.SummaryFileName))
+                .Concat(Directory.GetFiles(folder, Ms2MassAccuracyReport.ModelsFileName))
                 .ToList();
             foreach (var path in earlier) {
                 File.Delete(path);
@@ -526,6 +527,7 @@ public sealed class LcmsProcess
         var picker = new PeakPickProcess(storage);
         var collector = new PrecursorCalibrantCollector(parameter.CentroidMs1Tolerance);
         var rows = new ConcurrentDictionary<int, List<MassAccuracyRow>>();
+        var models = new ConcurrentDictionary<int, MassCalibrationDecision>();
         var completed = 0;
         try {
             // Files in parallel as ProcessRunner takes them, Math.Max(1, ...) for the reason
@@ -539,7 +541,9 @@ public sealed class LcmsProcess
                 }
                 var summary = Ms2MassAccuracyReport.Summarize(file.AnalysisFileName, pairs, collector.SearchPpm);
                 rows[file.AnalysisFileId] = summary;
-                Console.WriteLine($"MS2 mass accuracy preview: {Interlocked.Increment(ref completed)}/{files.Count} files read ({file.AnalysisFileName}): {Ms2MassAccuracyReport.Describe(summary)}");
+                var model = Ms2MassAccuracyReport.DecideModel(pairs, collector.SearchPpm);
+                models[file.AnalysisFileId] = model;
+                Console.WriteLine($"MS2 mass accuracy preview: {Interlocked.Increment(ref completed)}/{files.Count} files read ({file.AnalysisFileName}): {Ms2MassAccuracyReport.Describe(summary)} Error model: {MassCalibrationReport.Describe(model)}");
             });
         }
         catch (AggregateException ex) {
@@ -554,7 +558,14 @@ public sealed class LcmsProcess
                 Ms2MassAccuracyReport.WriteSummaryRows(writer, rows[file.AnalysisFileId]);
             }
         }
-        Console.WriteLine($"MS2 mass accuracy preview: {summaryPath}. No m/z was corrected; the offsets are the product-ion scans' error against the MS1 survey, positive when the product-ion m/z is higher.");
+        var modelsPath = Path.Combine(folder, Ms2MassAccuracyReport.ModelsFileName);
+        using (var writer = new StreamWriter(modelsPath)) {
+            MassCalibrationReport.WriteHeader(writer);
+            foreach (var file in files) {
+                MassCalibrationReport.WriteRow(writer, file.AnalysisFileName, Ms2MassAccuracyReport.ModelPoints, models[file.AnalysisFileId]);
+            }
+        }
+        Console.WriteLine($"MS2 mass accuracy preview: {summaryPath} and {modelsPath}. No m/z was corrected; the offsets are the product-ion scans' error against the MS1 survey, positive when the product-ion m/z is higher, and a model marked Apply is one a recalibration would apply.");
         return 0;
     }
 
@@ -600,6 +611,7 @@ public sealed class LcmsProcess
             Directory.CreateDirectory(folder);
             var earlier = Directory.GetFiles(folder, "*" + AnnotationMassAccuracyReport.CalibrantsFileSuffix)
                 .Concat(Directory.GetFiles(folder, AnnotationMassAccuracyReport.SummaryFileName))
+                .Concat(Directory.GetFiles(folder, AnnotationMassAccuracyReport.ModelsFileName))
                 .ToList();
             foreach (var path in earlier) {
                 File.Delete(path);
@@ -618,6 +630,7 @@ public sealed class LcmsProcess
         var deconvoluter = new SpectrumDeconvolutionProcess(storage);
         var collector = new AnnotationCalibrantCollector(libraries, searchPpm);
         var rows = new ConcurrentDictionary<int, List<MassAccuracyRow>>();
+        var models = new ConcurrentDictionary<int, List<(string Points, MassCalibrationDecision Decision)>>();
         var completed = 0;
         try {
             Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, parameter.NumThreads / 2) }, file => {
@@ -632,7 +645,9 @@ public sealed class LcmsProcess
                 }
                 var summary = AnnotationMassAccuracyReport.Summarize(file.AnalysisFileName, calibrants, searchPpm);
                 rows[file.AnalysisFileId] = summary;
-                Console.WriteLine($"Annotation mass accuracy preview: {Interlocked.Increment(ref completed)}/{files.Count} files read ({file.AnalysisFileName}): {AnnotationMassAccuracyReport.Describe(summary)}");
+                var decisions = AnnotationMassAccuracyReport.DecideModels(calibrants, searchPpm);
+                models[file.AnalysisFileId] = decisions;
+                Console.WriteLine($"Annotation mass accuracy preview: {Interlocked.Increment(ref completed)}/{files.Count} files read ({file.AnalysisFileName}): {AnnotationMassAccuracyReport.Describe(summary)} Error models: {AnnotationMassAccuracyReport.DescribeModels(decisions)}");
             });
         }
         catch (AggregateException ex) {
@@ -647,7 +662,16 @@ public sealed class LcmsProcess
                 MassAccuracySummary.WriteRows(writer, rows[file.AnalysisFileId]);
             }
         }
-        Console.WriteLine($"Annotation mass accuracy preview: {summaryPath}. No m/z was corrected and no annotation was kept; the offsets are the observed m/z's error against the theoretical m/z of what each feature matched, positive when the observed m/z is higher.");
+        var modelsPath = Path.Combine(folder, AnnotationMassAccuracyReport.ModelsFileName);
+        using (var writer = new StreamWriter(modelsPath)) {
+            MassCalibrationReport.WriteHeader(writer);
+            foreach (var file in files) {
+                foreach (var (points, decision) in models[file.AnalysisFileId]) {
+                    MassCalibrationReport.WriteRow(writer, file.AnalysisFileName, points, decision);
+                }
+            }
+        }
+        Console.WriteLine($"Annotation mass accuracy preview: {summaryPath} and {modelsPath}. No m/z was corrected and no annotation was kept; the offsets are the observed m/z's error against the theoretical m/z of what each feature matched, positive when the observed m/z is higher, and a model marked Apply is one a recalibration would apply.");
         return 0;
     }
 
