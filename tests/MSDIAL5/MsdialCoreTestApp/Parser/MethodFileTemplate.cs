@@ -176,7 +176,7 @@ public static class MethodFileTemplate
         w.Value("Target CE", D(p.TargetCE));
         MsmsEntropyCleanup(w, p.ChromDecBaseParam);
         LiquidAnnotation(w, p, retention: true, mobility: false, annotatorTables: true, generatedLipid: true);
-        MassRecalibration(w);
+        MassRecalibration(w, p.MassRecalibrationParam);
         w.Section("Alignment");
         LiquidAlignment(w, p, retention: true);
         Filtering(w, p);
@@ -506,18 +506,17 @@ public static class MethodFileTemplate
         w.Value("MS/MS entropy cleanup protected percent of base peak", D(c.MsmsEntropyCleanupProtectedPercentOfBasePeak));
     }
 
-    // The Console's own defaults: the recalibration is read by LcmsProcess, not into the parameter object.
-    private static void MassRecalibration(Writer w) {
+    private static void MassRecalibration(Writer w, MassRecalibrationParameter c) {
         w.Section("Mass recalibration");
         w.Comment("Recalibrates each file's MS1 and MS2 m/z before its peaks are picked for good. The features are first annotated against");
         w.Comment("the MSP and LBM libraries above with wide m/z windows; an MS1 or MS2 error model that reaches the minimum correction and");
         w.Comment($"{MassCalibrationDecision.SignificanceFactor.ToString("0", CultureInfo.InvariantCulture)} standard errors is taken out of the file's spectra. Needs an MSP or LBM library. The models are written to");
         w.Comment("mass_recalibration/ in the output folder.");
-        w.Choice("Mass recalibration", B(false), "True", "False");
+        w.Choice(MassRecalibrationParameter.IsEnabledKey, B(c.IsEnabled), "True", "False");
         w.Comment("Half width of the first annotation's m/z windows, in ppm; it must hold the largest error expected.");
-        w.Value("Mass recalibration search window (ppm)", D(AnnotationCalibrantCollector.DefaultSearchPpm));
+        w.Value(MassRecalibrationParameter.SearchPpmKey, D(c.SearchPpm));
         w.Comment("A modelled error smaller than this, in ppm, is not corrected; 0 corrects every significant one.");
-        w.Value("Mass recalibration minimum correction (ppm)", D(MassCalibrationDecision.DefaultMinimumCorrectionPpm));
+        w.Value(MassRecalibrationParameter.MinimumCorrectionPpmKey, D(c.MinimumCorrectionPpm));
     }
 
     private static void LipidRtCheck(Writer w, LipidRtCheckParameter c) {
