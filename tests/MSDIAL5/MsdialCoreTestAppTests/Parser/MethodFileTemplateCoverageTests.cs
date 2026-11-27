@@ -34,6 +34,7 @@ public sealed class MethodFileTemplateCoverageTests
     private const string NotWorkingInConsole = "a feature that does not work from the Console yet (see MethodFileTemplate's remarks)";
     private const string LabInternal = "a lab-internal switch";
     private const string MobilityOnly = "CCS of the generated lipid library, which only LC-MS and DIMS build and neither has ion mobility";
+    private const string MassAccuracyPreview = "a diagnostic run that measures the m/z error, writes its report and stops before alignment, or a setting of that run; not part of a processing method";
     // Not offered and no reason recorded yet. Move a key out of here by offering it in the template
     // or by giving it one of the reasons above.
     private const string Undecided = "not offered; no reason recorded yet";
@@ -129,6 +130,8 @@ public sealed class MethodFileTemplateCoverageTests
         ["ccs tolerance for generated lipid annotation"] = MobilityOnly,
         ["use ccs for generated lipid annotation scoring"] = MobilityOnly,
         ["use ccs for generated lipid annotation filtering"] = MobilityOnly,
+
+        ["ms2 mass accuracy preview only"] = MassAccuracyPreview,
 
         ["execute automatic rt correction for alignment"] = Undecided,
         ["automatic rt correction reference file id"] = Undecided,
