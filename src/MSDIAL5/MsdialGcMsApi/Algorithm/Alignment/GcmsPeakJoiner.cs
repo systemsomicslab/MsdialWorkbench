@@ -84,7 +84,15 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
 
     private double RetentionOf(ChromXs chromXs) => _indextype == AlignmentIndexType.RI ? chromXs.RI.Value : chromXs.RT.Value;
 
-    private double MasterRetention(SpectrumFeature master) => RetentionOf(master.QuantifiedChromatogramPeak.PeakFeature.ChromXsTop);
+    // The retention the joiner bucketed, windowed and compared the master on (GetRetentionTime / GetRetentionIndex,
+    // the MSDec retention), so that "more than the tolerance apart" means what kept the joiner from comparing them.
+    private double MasterRetention(SpectrumFeature master) => _indextype == AlignmentIndexType.RI ? GetRetentionIndex(master) : GetRetentionTime(master);
+
+    // Every master of one spot more than the tolerance from every master of the other. A joined spot holds the masters
+    // of all the spots it took, so a pair the joiner kept apart on spectrum stays apart after either joins a third.
+    private bool AreMastersApartByRetention(List<SpectrumFeature> xs, List<SpectrumFeature> ys) {
+        return xs.All(x => ys.All(y => Math.Abs(MasterRetention(x) - MasterRetention(y)) > RetentionTolerance));
+    }
 
     /// <summary>
     /// Joins the spots of one compound whose retention drifted across the files by more than the
@@ -100,21 +108,25 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     /// </para>
     /// <para>
     /// Two spots are joined when all of these hold:
-    /// their masters are more than the retention tolerance apart, so that retention, not spectrum,
+    /// their masters are more than the retention tolerance apart (on the MSDec retention the joiner
+    /// compares; for a spot already joined, every master it holds), so that retention, not spectrum,
     /// is what kept the joiner from putting their features together; their centres (the mean
     /// retention of their detected peaks) are within <see cref="MsdialGcmsParameter.SplitSpotJoinWindow"/>
     /// times the retention tolerance (2 by default); no file has a detected peak in both, so that no file's peak is dropped; the EI
     /// spectra of their representative peaks pass the dot-product cutoffs the joiner's comparison
-    /// carries (weighted and simple 0.6, reverse 0.8, matched peaks 25% and at least 3); each is the
-    /// other's best such match by the integrated EI similarity; and their masters are not matched to
-    /// two different references. The spot with more detected peaks keeps its master and takes the
+    /// carries (weighted and simple 0.6, reverse 0.8, matched peaks 25% and at least 3) and the
+    /// alignment's EI similarity tolerance, as <see cref="IsSimilarTo"/> asks of two features; each is
+    /// the other's best such match by the integrated EI similarity; and no two of their masters are
+    /// matched to different references. The spot with more detected peaks keeps its master and takes the
     /// other's peaks. This repeats until no pair is left, so a compound split three ways is joined
     /// as well.
     /// </para>
     /// <para>
-    /// The test is not the joiner's own (<see cref="IsSimilarTo"/>): its spectrum similarity tolerance
-    /// (0.5 on the integrated EI similarity for GC-MS) is passed by spectra of two different
-    /// compounds, and a pair of such spots, each detected in other files, would be joined into one.
+    /// The test is stricter than the joiner's own (<see cref="IsSimilarTo"/>): its spectrum similarity
+    /// tolerance (0.5 on the integrated EI similarity for GC-MS) is passed by spectra of two different
+    /// compounds, and a pair of such spots, each detected in other files, would be joined into one. It
+    /// is never weaker: a pair below the tolerance is not joined farther apart than the joiner would
+    /// have joined it within the retention tolerance.
     /// </para>
     /// <para>
     /// Two masters within the tolerance of each other are two masters because the joiner found their
@@ -126,7 +138,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
     /// </remarks>
     private List<AlignmentSpotProperty> JoinSpotsSplitByRetentionDrift(List<AlignmentSpotProperty> spots, List<SpectrumFeature> masters, Dictionary<int, MSDecLoader> loaders) {
         var window = _parameter.SplitSpotJoinWindow * RetentionTolerance;
-        var alive = spots.Select((spot, i) => (Spot: spot, Master: masters[i])).ToList();
+        var alive = spots.Select((spot, i) => (Spot: spot, Masters: new List<SpectrumFeature> { masters[i] })).ToList();
         var loaded = new Dictionary<(int File, int Id), MSDecResult>();
         MSDecResult? Representative(List<AlignmentChromPeakFeature> detected) {
             var peak = DataObjConverter.GetRepresentativePeak(detected);
@@ -150,8 +162,8 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
             for (var a = 0; a < order.Length; a++) {
                 for (var b = a + 1; b < order.Length && centres[order[b]] - centres[order[a]] <= window; b++) {
                     int i = order[a], j = order[b];
-                    if (Math.Abs(MasterRetention(alive[i].Master) - MasterRetention(alive[j].Master)) <= RetentionTolerance
-                        || files[i].Overlaps(files[j]) || !AreSpectraOfOneCompound(representatives[i], representatives[j], alive[i].Master, alive[j].Master, out var similarity)) {
+                    if (!AreMastersApartByRetention(alive[i].Masters, alive[j].Masters)
+                        || files[i].Overlaps(files[j]) || !AreSpectraOfOneCompound(representatives[i], representatives[j], alive[i].Masters, alive[j].Masters, out var similarity)) {
                         continue;
                     }
                     if (similarity > best[i].Similarity) best[i] = (j, similarity);
@@ -171,6 +183,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
                 foreach (var peak in members[give]) {
                     peaks[peaks.FindIndex(p => p.FileID == peak.FileID)] = peak;
                 }
+                alive[keep].Masters.AddRange(alive[give].Masters);
                 gone[give] = true;
                 joined = true;
             }
@@ -181,7 +194,7 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
         }
     }
 
-    private bool AreSpectraOfOneCompound(MSDecResult? xSpectrum, MSDecResult? ySpectrum, SpectrumFeature x, SpectrumFeature y, out double similarity) {
+    private bool AreSpectraOfOneCompound(MSDecResult? xSpectrum, MSDecResult? ySpectrum, List<SpectrumFeature> xMasters, List<SpectrumFeature> yMasters, out double similarity) {
         similarity = double.MinValue;
         if (xSpectrum is null || ySpectrum is null) {
             return false;
@@ -191,15 +204,23 @@ public abstract class GcmsPeakJoiner : IPeakJoiner
             _alignmentParameter.RetentionTimeAlignmentTolerance, _parameter.RetentionIndexAlignmentTolerance,
             _alignmentParameter.SpectrumSimilarityAlignmentFactor, _alignmentParameter.RetentionTimeAlignmentFactor, _indextype == AlignmentIndexType.RI);
         similarity = MsScanMatching.GetIntegratedSpectraSimilarity(result);
-        if (!result.IsSpectrumMatch) {
+        if (!result.IsSpectrumMatch || similarity <= _alignmentParameter.SpectrumSimilarityAlignmentTolerance) {
             return false;
         }
-        if (_evaluator is not null
-            && x.AnnotatedMSDecResult.IsReferenceMatched(_evaluator) && y.AnnotatedMSDecResult.IsReferenceMatched(_evaluator)
-            && x.AnnotatedMSDecResult.MatchResults.Representative.LibraryID != y.AnnotatedMSDecResult.MatchResults.Representative.LibraryID) {
-            return false;
+        if (_evaluator is not null) {
+            var xReferences = ReferencesOf(xMasters);
+            var yReferences = ReferencesOf(yMasters);
+            if (xReferences.Any(x => yReferences.Any(y => x != y))) {
+                return false;
+            }
         }
         return true;
+    }
+
+    private List<int> ReferencesOf(List<SpectrumFeature> masters) {
+        return masters.Where(m => m.AnnotatedMSDecResult.IsReferenceMatched(_evaluator))
+            .Select(m => m.AnnotatedMSDecResult.MatchResults.Representative.LibraryID)
+            .ToList();
     }
 
     private List<AlignmentSpotProperty> ResetQuantMasses(List<AlignmentSpotProperty> spots, Dictionary<int, MSDecLoader> loaders) {

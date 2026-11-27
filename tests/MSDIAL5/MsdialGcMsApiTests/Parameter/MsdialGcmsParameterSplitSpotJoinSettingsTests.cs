@@ -14,7 +14,7 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
     [TestClass]
     public class MsdialGcmsParameterSplitSpotJoinSettingsTests
     {
-        private const int FirstSplitSpotJoinKey = 160;
+        private const int FirstSplitSpotJoinKey = 158;
 
         private static readonly MessagePackSerializerOptions Options = MessagePackSerializerOptions.Standard.WithResolver(StandardResolver.Instance);
 
@@ -47,6 +47,23 @@ namespace CompMs.MsdialGcMsApi.Parameter.Tests
 
             Assert.IsTrue(actual.JoinSpotsSplitByRetentionDrift);
             Assert.AreEqual(MsdialGcmsParameter.DefaultSplitSpotJoinWindow, actual.SplitSpotJoinWindow);
+        }
+
+        [TestMethod]
+        public void TheJoinSettingsFollowTheEiSimilarityMarkerWithoutAGap() {
+            // MessagePack writes nil into a gap of an int-keyed array, which a value-type member added there later
+            // could not read. MsdialGcmsParameter's own keys start at 150.
+            var saved = MessagePackSerializer.Serialize(new MsdialGcmsParameter(), Options);
+
+            var reader = new MessagePackReader(saved);
+            var count = reader.ReadArrayHeader();
+            Assert.AreEqual(FirstSplitSpotJoinKey + 2, count);
+            for (var i = 0; i < count; i++) {
+                if (i >= 150) {
+                    Assert.IsFalse(reader.TryReadNil(), $"key {i} is empty");
+                }
+                reader.Skip();
+            }
         }
 
         /// <summary>The first <paramref name="length"/> elements of an int-keyed object, as an older version wrote it.</summary>

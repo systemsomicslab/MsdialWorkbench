@@ -68,9 +68,10 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         /// GcmsPeakJoiner), when their centres are within <see cref="SplitSpotJoinWindow"/>.
         /// </summary>
         /// <remarks>
-        /// Keys 158 and 159 are left free: an unmerged GC×GC branch uses 157-159 for its column settings.
+        /// Keys follow on from 157 without a gap. MessagePack writes nil into a gap of an int-keyed array, and a
+        /// value-type member (bool, float, double) added at that key later could not read such a file.
         /// </remarks>
-        [Key(160)]
+        [Key(158)]
         public bool JoinSpotsSplitByRetentionDrift { get; set; } = true;
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         /// tolerance: <see cref="AlignmentBaseParameter.RetentionTimeAlignmentTolerance"/> when aligning on
         /// retention time, <see cref="RetentionIndexAlignmentTolerance"/> on retention index.
         /// </summary>
-        [Key(161)]
+        [Key(159)]
         public float SplitSpotJoinWindow { get; set; } = DefaultSplitSpotJoinWindow;
 
         public const float DefaultSplitSpotJoinWindow = 2f;
