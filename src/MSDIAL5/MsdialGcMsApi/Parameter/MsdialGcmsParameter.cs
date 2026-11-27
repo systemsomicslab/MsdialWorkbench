@@ -64,7 +64,8 @@ namespace CompMs.MsdialGcMsApi.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Mass range begin for MSP-based annotation", F(msp.MassRangeBegin) }));
             pStrings.Add(String.Join(": ", new string[] { "Mass range end for MSP-based annotation", F(msp.MassRangeEnd) }));
             pStrings.Add(String.Join(": ", new string[] { "MS1 tolerance for MSP-based annotation", F(msp.Ms1Tolerance) }));
-            pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cutoff for MSP-based annotation", F(msp.RelativeAmpCutoff) }));
+            // The Console reads this key in percent of the base peak, as the GUI shows it; the model holds a fraction.
+            pStrings.Add(String.Join(": ", new string[] { "Relative amplitude cutoff for MSP-based annotation", F((float)Math.Round(msp.RelativeAmpCutoff * 100d, 6)) }));
             pStrings.Add(String.Join(": ", new string[] { "Absolute amplitude cutoff for MSP-based annotation", F(msp.AbsoluteAmpCutoff) }));
             pStrings.Add(String.Join(": ", new string[] { "Square root of weighted dot product cutoff for MSP-based annotation", F(msp.WeightedDotProductCutOff) }));
             pStrings.Add(String.Join(": ", new string[] { "Square root of simple dot product cutoff for MSP-based annotation", F(msp.SimpleDotProductCutOff) }));
