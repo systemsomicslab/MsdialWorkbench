@@ -50,6 +50,9 @@ internal sealed class EicTableHistory
         public string After { get; } = after;
     }
 
+    /// <summary>A cell is being edited: between <see cref="BeginEdit"/> and <see cref="EndEdit"/>.</summary>
+    public bool IsEditing => _isEditing;
+
     public bool CanUndo => !_isEditing && (_undo.Count > 0 || HasUnrecordedChanges());
     public bool CanRedo => !_isEditing && _redo.Count > 0 && !HasUnrecordedChanges();
 

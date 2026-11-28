@@ -292,13 +292,19 @@
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type vm:EicSettingViewModel}">
                                 <!--
-                                    Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z) undo and redo the changes to the table, also after the Clear button took the focus.
-                                    While a cell is being edited, its TextBox undoes the typing instead.
+                                    The keys work anywhere on the tab, also after the Clear button took the focus.
+                                    Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z) undo and redo the changes to the table. While a cell is being edited, its TextBox undoes the typing instead.
+                                    Ctrl+C, Ctrl+X and Ctrl+V go through EicTable_ExecuteClipboard, before DataGrid's and TextBox's own handling,
+                                    so the clipboard is read and written with WindowsClipboard, which waits while another program has it open and says so if it cannot.
+                                    WPF only calls the preview handlers of a binding that also has the plain ones, so the same handlers are set for both.
                                 -->
                                 <Grid>
                                     <Grid.CommandBindings>
                                         <CommandBinding Command="Undo" CanExecute="EicTable_CanUndo" Executed="EicTable_Undo"/>
                                         <CommandBinding Command="Redo" CanExecute="EicTable_CanRedo" Executed="EicTable_Redo"/>
+                                        <CommandBinding Command="Copy" PreviewCanExecute="EicTable_CanExecuteClipboard" PreviewExecuted="EicTable_ExecuteClipboard" CanExecute="EicTable_CanExecuteClipboard" Executed="EicTable_ExecuteClipboard"/>
+                                        <CommandBinding Command="Cut" PreviewCanExecute="EicTable_CanExecuteClipboard" PreviewExecuted="EicTable_ExecuteClipboard" CanExecute="EicTable_CanExecuteClipboard" Executed="EicTable_ExecuteClipboard"/>
+                                        <CommandBinding Command="Paste" PreviewCanExecute="EicTable_CanExecuteClipboard" PreviewExecuted="EicTable_ExecuteClipboard" CanExecute="EicTable_CanExecuteClipboard" Executed="EicTable_ExecuteClipboard"/>
                                     </Grid.CommandBindings>
                                     <Grid.InputBindings>
                                         <KeyBinding Command="Redo" Gesture="Ctrl+Shift+Z"/>
@@ -332,15 +338,14 @@
                                         Each cell shows its value in a TextBox that only displays it, so a click selects the cell and a drag selects a range.
                                         Editing (typing, F2 or a double click) swaps in the editing TextBox, and EicDataGrid_PreparingCellForEdit keeps the first typed character.
                                         Delete clears the selected cells (EicDataGrid_PreviewKeyDown).
-                                        Ctrl+C copies the selected cells with EicDataGrid_Copy, which keeps trying while another program holds the clipboard and says so if it cannot copy.
-                                        A cell edit is one undo step: EicDataGrid_PreparingCellForEdit starts it and EicDataGrid_CellEditEnding ends it.
-                                        The cell and clipboard bindings name a binding group that does not exist, so they stay out of the row's own binding group.
-                                        In that group an error stays on the row after the value is fixed, and DataGridPasteCommand then rejects every later paste into the row.
-                                        Out of it, a pasted value that is not a number is shown as an error in its cell, and Apply stays disabled until it is fixed.
+                                        Ctrl+C copies the selected cells as DataGrid would, and Ctrl+V pastes from the top left selected cell, or fills the selected cells with a single value
+                                        (see the clipboard handlers on the tab above). A paste, a Delete and a cell edit are one undo step each:
+                                        EicDataGrid_PreparingCellForEdit starts the step of an edit and EicDataGrid_CellEditEnding ends it.
+                                        The cell and clipboard bindings name a binding group that does not exist, so they stay out of the row's own binding group,
+                                        where an error stays on the row after the value is fixed. A value that is not a number is shown as an error in its cell, and Apply stays disabled until it is fixed.
                                     -->
                                     <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_EicDiplayProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 
                                               ItemsSource="{Binding Path=DiplayEicSettingValues, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                              behavior:DataGridPasteBehavior.Enable="True"
                                               PreparingCellForEdit="EicDataGrid_PreparingCellForEdit"
                                               CellEditEnding="EicDataGrid_CellEditEnding"
                                               PreviewKeyDown="EicDataGrid_PreviewKeyDown"
@@ -350,10 +355,6 @@
                                               AllowDrop="True"
                                               Margin="4"
                                               Grid.Row="1">
-
-                                        <DataGrid.CommandBindings>
-                                            <CommandBinding Command="Copy" CanExecute="EicDataGrid_CanCopy" Executed="EicDataGrid_Copy"/>
-                                        </DataGrid.CommandBindings>
 
                                         <DataGrid.ColumnHeaderStyle>
                                             <Style TargetType="DataGridColumnHeader">

@@ -227,15 +227,25 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
 
     // Clears one value of the row (Delete on a selected cell), back to what an empty row has.
     internal static void ClearEicQueryValue(PeakFeatureSearchValueViewModel value, string property) {
+        SetEicQueryValue(value, property, property switch
+        {
+            nameof(value.Mass) => "0",
+            nameof(value.MassTolerance) => CheckChromatogramsModel.DefaultEicMassTolerance.ToString(CultureInfo.InvariantCulture),
+            _ => string.Empty,
+        });
+    }
+
+    // Sets the text of one value of the row (a pasted value). A value that is not a number shows as an error in its cell until it is fixed.
+    internal static void SetEicQueryValue(PeakFeatureSearchValueViewModel value, string property, string text) {
         switch (property) {
             case nameof(value.Title):
-                value.Title.Value = string.Empty;
+                value.Title.Value = text;
                 break;
             case nameof(value.Mass):
-                value.Mass.Value = "0";
+                value.Mass.Value = text;
                 break;
             case nameof(value.MassTolerance):
-                value.MassTolerance.Value = CheckChromatogramsModel.DefaultEicMassTolerance.ToString(CultureInfo.InvariantCulture);
+                value.MassTolerance.Value = text;
                 break;
         }
     }

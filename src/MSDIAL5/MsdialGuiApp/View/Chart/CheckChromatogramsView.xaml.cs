@@ -42,46 +42,6 @@ namespace CompMs.App.Msdial.View.Chart
             }
         }
 
-        // Delete on selected cells (not while a cell is being edited) clears their values.
-        private void EicDataGrid_PreviewKeyDown(object sender, KeyEventArgs e) {
-            if (e.Key != Key.Delete || Keyboard.Modifiers != ModifierKeys.None || e.OriginalSource is TextBox || sender is not DataGrid grid) {
-                return;
-            }
-            var cleared = false;
-            foreach (var cell in grid.SelectedCells) {
-                // The bound property is the first part of the column's clipboard binding path, e.g. "Mass" in "Mass.Value".
-                if (cell.Item is PeakFeatureSearchValueViewModel row && cell.Column?.ClipboardContentBinding is Binding { Path.Path: string path }) {
-                    CheckChromatogramsViewModel.ClearEicQueryValue(row, path.Split('.')[0]);
-                    cleared = true;
-                }
-            }
-            e.Handled = cleared;
-        }
-
-        // Ctrl+C on selected cells. While a cell is being edited, its TextBox copies the selected text instead.
-        // DataGrid's own copy keeps the previous clipboard contents without a word when another program holds the clipboard; see DataGridSelectionCopy.
-        private void EicDataGrid_CanCopy(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = sender is DataGrid { SelectedCells.Count: > 0 };
-            e.Handled = true;
-        }
-
-        private void EicDataGrid_Copy(object sender, ExecutedRoutedEventArgs e) {
-            e.Handled = true;
-            if (sender is not DataGrid grid || DataGridSelectionCopy.CreateDataObject(grid) is not DataObject data) {
-                return;
-            }
-            if (!DataGridSelectionCopy.TrySetClipboard(data)) {
-                var owner = Window.GetWindow(grid);
-                var message = "The cells were not copied because another application is using the clipboard. Please try again.";
-                if (owner is null) {
-                    MessageBox.Show(message, "Copy failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else {
-                    MessageBox.Show(owner, message, "Copy failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-        }
-
         // The edit goes on when the value could not be committed, so the undo step ends only once the DataGrid has finished with the cell.
         private void EicDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e) {
             if (sender is not DataGrid { DataContext: EicSettingViewModel table } grid) {
@@ -92,6 +52,124 @@ namespace CompMs.App.Msdial.View.Chart
                     table.History.EndEdit();
                 }
             });
+        }
+
+        // Delete on selected cells (not while a cell is being edited) clears their values, as one undo step.
+        private void EicDataGrid_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key != Key.Delete || Keyboard.Modifiers != ModifierKeys.None || e.OriginalSource is TextBox || sender is not DataGrid { DataContext: EicSettingViewModel table } grid) {
+                return;
+            }
+            var cells = grid.SelectedCells.Where(cell => cell.Item is PeakFeatureSearchValueViewModel && EicProperty(cell.Column) is not null).ToList();
+            if (cells.Count == 0) {
+                return;
+            }
+            table.History.Record();
+            foreach (var cell in cells) {
+                CheckChromatogramsViewModel.ClearEicQueryValue((PeakFeatureSearchValueViewModel)cell.Item, EicProperty(cell.Column)!);
+            }
+            table.History.Record();
+            e.Handled = true;
+        }
+
+        // Ctrl+C, Ctrl+X and Ctrl+V anywhere on the tab. These handlers run before DataGrid's and TextBox's own, which drop a copy without a word when the clipboard is busy.
+        // On selected cells: Ctrl+C copies them and Ctrl+V pastes into them. While a cell is being edited: Ctrl+C and Ctrl+X take the selected text,
+        // Ctrl+C with no text selected copies the cell, and Ctrl+V pastes one value into the text or several cells into the table.
+        private void EicTable_CanExecuteClipboard(object sender, CanExecuteRoutedEventArgs e) {
+            if (sender is not FrameworkElement root || FindDescendant<DataGrid>(root) is not DataGrid grid) {
+                return;
+            }
+            if (EditingTextBox(grid, e.OriginalSource) is TextBox textBox) {
+                e.CanExecute = e.Command == ApplicationCommands.Paste
+                    || textBox.SelectionLength > 0
+                    || e.Command == ApplicationCommands.Copy && grid.SelectedCells.Count > 0;
+            }
+            else {
+                e.CanExecute = e.Command != ApplicationCommands.Cut && grid.SelectedCells.Count > 0;
+            }
+            e.Handled = true;
+        }
+
+        private void EicTable_ExecuteClipboard(object sender, ExecutedRoutedEventArgs e) {
+            if (sender is not FrameworkElement { DataContext: EicSettingViewModel table } root || FindDescendant<DataGrid>(root) is not DataGrid grid) {
+                return;
+            }
+            e.Handled = true;
+            var textBox = EditingTextBox(grid, e.OriginalSource);
+            if (e.Command == ApplicationCommands.Paste) {
+                Paste(grid, table, textBox);
+            }
+            else if (textBox is { SelectionLength: > 0 }) {
+                if (Copy(grid, new WindowsClipboard.Content(textBox.SelectedText)) && e.Command == ApplicationCommands.Cut) {
+                    textBox.SelectedText = string.Empty;
+                }
+            }
+            else if (e.Command == ApplicationCommands.Copy && DataGridSelectionCopy.CreateContent(grid) is WindowsClipboard.Content content) {
+                Copy(grid, content);
+            }
+        }
+
+        private static bool Copy(DataGrid grid, WindowsClipboard.Content content) {
+            if (WindowsClipboard.TryWrite(content, WindowsClipboard.DefaultTimeout)) {
+                return true;
+            }
+            Warn(grid, "Nothing was copied because another application is using the clipboard. Please try again.", "Copy failed");
+            return false;
+        }
+
+        private static void Paste(DataGrid grid, EicSettingViewModel table, TextBox? textBox) {
+            if (!WindowsClipboard.TryReadText(WindowsClipboard.DefaultTimeout, out var text)) {
+                Warn(grid, "Nothing was pasted because another application is using the clipboard. Please try again.", "Paste failed");
+                return;
+            }
+            if (string.IsNullOrEmpty(text)) {
+                return;
+            }
+            var values = DataGridRangePaste.Parse(text!);
+            if (textBox is not null) {
+                if (values.Count <= 1 && values.All(row => row.Count <= 1)) {
+                    // One value goes into the text being edited, without the line break Excel adds after it.
+                    textBox.SelectedText = values.FirstOrDefault()?.FirstOrDefault() ?? string.Empty;
+                    textBox.Select(textBox.SelectionStart + textBox.SelectionLength, 0);
+                    return;
+                }
+                // Several cells end the edit and are pasted from the edited cell on.
+            }
+            EndCellEdit(grid, table);
+
+            var cells = DataGridRangePaste.Plan(grid, values);
+            if (cells.Count == 0) {
+                return;
+            }
+            table.History.Record();
+            foreach (var cell in cells) {
+                if (cell.Item is PeakFeatureSearchValueViewModel row && EicProperty(cell.Column) is string property) {
+                    CheckChromatogramsViewModel.SetEicQueryValue(row, property, cell.Value);
+                }
+            }
+            table.History.Record();
+            Select(grid, cells.Select(cell => new DataGridCellInfo(cell.Item, cell.Column)).ToList());
+        }
+
+        // Ends a cell edit that is still going on, so what it changed is an undo step before the paste.
+        private static void EndCellEdit(DataGrid grid, EicSettingViewModel table) {
+            if (table.History.IsEditing) {
+                grid.CommitEdit(DataGridEditingUnit.Cell, exitEditingMode: true);
+                table.History.EndEdit();
+            }
+        }
+
+        // The TextBox of the cell being edited, when the command comes from it.
+        private static TextBox? EditingTextBox(DataGrid grid, object source) {
+            return source is TextBox textBox && grid.IsAncestorOf(textBox) ? textBox : null;
+        }
+
+        private static void Warn(DataGrid grid, string message, string caption) {
+            if (Window.GetWindow(grid) is Window owner) {
+                MessageBox.Show(owner, message, caption, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else {
+                MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void EicTable_CanUndo(object sender, CanExecuteRoutedEventArgs e) {
@@ -118,15 +196,19 @@ namespace CompMs.App.Msdial.View.Chart
             }
         }
 
-        // Selects the cells an undo or redo changed and scrolls to the first, so the change can be seen in a long table.
+        // Selects the cells an undo or redo changed, so the change can be seen in a long table.
         private static void ShowChanges(DataGrid? grid, IReadOnlyList<EicTableHistory.Change> changes) {
-            if (grid is null || changes.Count == 0) {
+            if (grid is null) {
                 return;
             }
-            var cells = changes
-                .Select(change => new DataGridCellInfo(change.Row, grid.Columns.FirstOrDefault(column => column.ClipboardContentBinding is Binding { Path.Path: string path } && path.Split('.')[0] == change.Property)))
+            Select(grid, changes
+                .Select(change => new DataGridCellInfo(change.Row, grid.Columns.FirstOrDefault(column => EicProperty(column) == change.Property)))
                 .Where(cell => cell.Column is not null)
-                .ToList();
+                .ToList());
+        }
+
+        // Selects the cells and scrolls to the first.
+        private static void Select(DataGrid grid, IReadOnlyList<DataGridCellInfo> cells) {
             if (cells.Count == 0) {
                 return;
             }
@@ -136,6 +218,11 @@ namespace CompMs.App.Msdial.View.Chart
                 grid.SelectedCells.Add(cell);
             }
             grid.ScrollIntoView(cells[0].Item, cells[0].Column);
+        }
+
+        // The row property a column shows: the first part of its clipboard binding path, e.g. "Mass" in "Mass.Value".
+        private static string? EicProperty(DataGridColumn? column) {
+            return column?.ClipboardContentBinding is Binding { Path.Path: string path } ? path.Split('.')[0] : null;
         }
 
         private static void StartWith(TextBox textBox, string text) {
