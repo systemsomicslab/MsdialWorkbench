@@ -148,7 +148,8 @@
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid ClipToBounds="True">
+                                                        <Grid ClipToBounds="True"
+                                                              Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibility}}">
                                                             <chart:MultiAreaChartControl ItemsSources="{Binding Peaks}"
                                                                                          CollectionDataType="{x:Type do:DisplayPeakOfChromatogram}"
                                                                                          ItemsProperty="Points"
@@ -260,20 +261,54 @@
                                             <Button Content="-" Command="{Binding SetSubtractRangeCommand, Mode=OneTime}" Width="32" Margin="4"/>
                                             <Button Content="Reset" Command="{Binding RemoveRangesCommand, Mode=OneTime}" Width="64" Margin="4"/>
                                         </StackPanel>
-                                        <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
-                                                      ItemsSource="{Binding DisplayChromatograms}"
-                                                      VerticalAlignment="Center">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                        <StackPanel DataContext="{Binding ChromatogramsViewModel.Value}"
+                                                    Orientation="Horizontal"
+                                                    HorizontalAlignment="Left"
+                                                    DockPanel.Dock="Top">
+                                            <Button Content="Show all" Command="{Binding ShowAllCommand, Mode=OneTime}" Width="64" Margin="4"
+                                                    ToolTip="Show all chromatograms"/>
+                                            <Button Content="Hide all" Command="{Binding HideAllCommand, Mode=OneTime}" Width="64" Margin="4"
+                                                    ToolTip="Hide all chromatograms"/>
+                                        </StackPanel>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                                      HorizontalScrollBarVisibility="Disabled">
+                                            <ItemsControl DataContext="{Binding ChromatogramsViewModel.Value}"
+                                                          ItemsSource="{Binding DisplayChromatograms}"
+                                                          VerticalAlignment="Center">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsChecked="{Binding Visible, Mode=TwoWay}"
+                                                                  VerticalContentAlignment="Center"
+                                                                  Margin="8,1"
+                                                                  ToolTip="{Binding Name}">
+                                                            <TextBlock Text="{Binding Name}" Foreground="{Binding LineBrush}" TextTrimming="CharacterEllipsis"/>
+                                                        </CheckBox>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
                                     </DockPanel>
                                 </Grid>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type vm:EicSettingViewModel}">
+                                <!--
+                                    The keys work anywhere on the tab, also after the Clear button took the focus.
+                                    Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z) undo and redo the changes to the table. While a cell is being edited, its TextBox undoes the typing instead.
+                                    Ctrl+C, Ctrl+X and Ctrl+V go through EicTable_ExecuteClipboard, before DataGrid's and TextBox's own handling,
+                                    so the clipboard is read and written with WindowsClipboard, which waits while another program has it open and says so if it cannot.
+                                    WPF only calls the preview handlers of a binding that also has the plain ones, so the same handlers are set for both.
+                                -->
                                 <Grid>
+                                    <Grid.CommandBindings>
+                                        <CommandBinding Command="Undo" CanExecute="EicTable_CanUndo" Executed="EicTable_Undo"/>
+                                        <CommandBinding Command="Redo" CanExecute="EicTable_CanRedo" Executed="EicTable_Redo"/>
+                                        <CommandBinding Command="Copy" PreviewCanExecute="EicTable_CanExecuteClipboard" PreviewExecuted="EicTable_ExecuteClipboard" CanExecute="EicTable_CanExecuteClipboard" Executed="EicTable_ExecuteClipboard"/>
+                                        <CommandBinding Command="Cut" PreviewCanExecute="EicTable_CanExecuteClipboard" PreviewExecuted="EicTable_ExecuteClipboard" CanExecute="EicTable_CanExecuteClipboard" Executed="EicTable_ExecuteClipboard"/>
+                                        <CommandBinding Command="Paste" PreviewCanExecute="EicTable_CanExecuteClipboard" PreviewExecuted="EicTable_ExecuteClipboard" CanExecute="EicTable_CanExecuteClipboard" Executed="EicTable_ExecuteClipboard"/>
+                                    </Grid.CommandBindings>
+                                    <Grid.InputBindings>
+                                        <KeyBinding Command="Redo" Gesture="Ctrl+Shift+Z"/>
+                                    </Grid.InputBindings>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" MaxHeight="80"/>
                                         <RowDefinition/>
@@ -299,16 +334,28 @@
                                         </StackPanel>
                                     </StackPanel>
 
+                                    <!--
+                                        Each cell shows its value in a TextBox that only displays it, so a click selects the cell and a drag selects a range.
+                                        Editing (typing, F2 or a double click) swaps in the editing TextBox, and EicDataGrid_PreparingCellForEdit keeps the first typed character.
+                                        Delete clears the selected cells (EicDataGrid_PreviewKeyDown).
+                                        Ctrl+C copies the selected cells as DataGrid would, and Ctrl+V pastes from the top left selected cell, or fills the selected cells with a single value
+                                        (see the clipboard handlers on the tab above). A paste, a Delete and a cell edit are one undo step each:
+                                        EicDataGrid_PreparingCellForEdit starts the step of an edit and EicDataGrid_CellEditEnding ends it.
+                                        The cell and clipboard bindings name a binding group that does not exist, so they stay out of the row's own binding group,
+                                        where an error stays on the row after the value is fixed. A value that is not a number is shown as an error in its cell, and Apply stays disabled until it is fixed.
+                                    -->
                                     <DataGrid ClipboardCopyMode="IncludeHeader" x:Name="Datagrid_EicDiplayProperties" Style="{StaticResource ResourceKey=ToolTipErrorStyleDataGrid}" 
                                               ItemsSource="{Binding Path=DiplayEicSettingValues, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                                              behavior:DataGridPasteBehavior.Enable="True"
+                                              PreparingCellForEdit="EicDataGrid_PreparingCellForEdit"
+                                              CellEditEnding="EicDataGrid_CellEditEnding"
+                                              PreviewKeyDown="EicDataGrid_PreviewKeyDown"
                                               ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                                               VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
                                               AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"
                                               AllowDrop="True"
                                               Margin="4"
                                               Grid.Row="1">
-                                      
+
                                         <DataGrid.ColumnHeaderStyle>
                                             <Style TargetType="DataGridColumnHeader">
                                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -317,60 +364,93 @@
 
                                         <DataGrid.Columns>
 
-                                            <DataGridTemplateColumn Width="1*" Header="Name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Title.Value}">
+                                            <DataGridTemplateColumn Width="1*" Header="Name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Title.Value, BindingGroupName=EicCell}">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBox Name="TextBox_EicName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=Title.Value, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center"/>
+                                                        <TextBox Name="TextBox_EicName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Path=Title.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" VerticalContentAlignment="Center"
+                                                                 Focusable="False" IsHitTestVisible="False"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
 
                                                 <DataGridTemplateColumn.CellEditingTemplate>
                                                     <DataTemplate>
                                                         <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_EicName}">
-                                                            <TextBox Name="TextBox_EicName" Text="{Binding Title.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                            <TextBox Name="TextBox_EicName" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" Text="{Binding Title.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" VerticalContentAlignment="Center"/>
                                                         </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellEditingTemplate>
                                             </DataGridTemplateColumn>
 
                                             <DataGridTemplateColumn SortMemberPath="Mass.Value" Width="1*" 
-                                                                    Header="Exact mass" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Mass.Value}">
+                                                                    Header="Exact mass" IsReadOnly="False" ClipboardContentBinding="{Binding Path=Mass.Value, BindingGroupName=EicCell}">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBox Name="TextBox_ExactMass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                                                 Text="{Binding Path=Mass.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                        <!-- The TextBox takes no mouse input, so the Grid shows the error as a tool tip. -->
+                                                        <Grid Background="Transparent" ToolTip="{Binding Path=(Validation.Errors)/ErrorContent, ElementName=TextBox_ExactMass}">
+                                                            <TextBox Name="TextBox_ExactMass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                                                     Text="{Binding Path=Mass.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}"
+                                                                     Focusable="False" IsHitTestVisible="False"/>
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
 
                                                 <DataGridTemplateColumn.CellEditingTemplate>
                                                     <DataTemplate>
                                                         <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_ExactMass}">
-                                                            <TextBox Name="TextBox_ExactMass" Text="{Binding Mass.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                            <TextBox Name="TextBox_ExactMass" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                                                     Text="{Binding Mass.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" />
                                                         </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellEditingTemplate>
                                             </DataGridTemplateColumn>
 
                                             <DataGridTemplateColumn SortMemberPath="MassTolerance.Value" Width="*" 
-                                                                    Header="Mass tolerance [Da]" IsReadOnly="False" ClipboardContentBinding="{Binding Path=MassTolerance.Value}">
+                                                                    Header="Mass tolerance [Da]" IsReadOnly="False" ClipboardContentBinding="{Binding Path=MassTolerance.Value, BindingGroupName=EicCell}">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBox Name="TextBox_MassTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                                                 Text="{Binding Path=MassTolerance.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                                                        <Grid Background="Transparent" ToolTip="{Binding Path=(Validation.Errors)/ErrorContent, ElementName=TextBox_MassTolerance}">
+                                                            <TextBox Name="TextBox_MassTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                                                     Text="{Binding Path=MassTolerance.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}"
+                                                                     Focusable="False" IsHitTestVisible="False"/>
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
 
                                                 <DataGridTemplateColumn.CellEditingTemplate>
                                                     <DataTemplate>
                                                         <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_MassTolerance}">
-                                                            <TextBox Name="TextBox_MassTolerance" Text="{Binding MassTolerance.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                            <TextBox Name="TextBox_MassTolerance" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                                                     Text="{Binding MassTolerance.Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=EicCell}" />
                                                         </Grid>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellEditingTemplate>
                                             </DataGridTemplateColumn>
 
+                                            <DataGridTemplateColumn Width="Auto" CanUserSort="False" IsReadOnly="True">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="&#x2715;"
+                                                                Command="{Binding DataContext.ClearRowCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                                CommandParameter="{Binding}"
+                                                                ToolTip="Clear this row"
+                                                                Focusable="False"
+                                                                Foreground="Gray"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Padding="4,0"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
                                         </DataGrid.Columns>
                                     </DataGrid>
+
+                                    <!-- The keys for undo and redo, which nothing else on the tab shows. -->
+                                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0" Grid.Row="2"
+                                                TextElement.Foreground="Gray" TextElement.FontSize="11">
+                                        <TextBlock Text="Ctrl+Z: Undo"/>
+                                        <TextBlock Text="Ctrl+Y: Redo"/>
+                                    </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
                                         <StackPanel.Resources>

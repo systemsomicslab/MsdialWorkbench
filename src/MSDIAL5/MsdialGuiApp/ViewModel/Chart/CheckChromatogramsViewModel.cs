@@ -12,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -93,7 +94,14 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
            .WithSubscribe(Apply)
            .AddTo(Disposables);
         ClearCommand = new ReactiveCommand()
-            .WithSubscribe(model.Clear)
+            .WithSubscribe(() => {
+                foreach (var value in DiplayEicSettingValues) {
+                    ClearEicQuery(value);
+                }
+            })
+            .AddTo(Disposables);
+        ClearRowCommand = new ReactiveCommand<PeakFeatureSearchValueViewModel>()
+            .WithSubscribe(ClearEicQuery)
             .AddTo(Disposables);
 
         ShowAccumulatedMs1SpectrumCommand = RangeSelectableChromatogramViewModel.Select(vm => vm is not null)
@@ -117,7 +125,7 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
 
         ViewModels = [
             new ChromatogramViewModel(ChromatogramsViewModel, RangeSelectableChromatogramViewModel, AccumulatedMs2SpectrumViewModel, AccumulatedMs2SpectrumViewModels, AccumulatedSpecificExperimentMS2SpectrumViewModels, VisiblePeakLabel, ShowAccumulatedMs1SpectrumCommand, ShowAccumulatedSpectrumCommand, CopyAsTableCommand, SaveAsTableCommand),
-            new EicSettingViewModel(DiplayEicSettingValues, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand),
+            new EicSettingViewModel(DiplayEicSettingValues, InsertTic, InsertBpc, InsertHighestEic, InsertMS2Tic, ApplyCommand, ClearCommand, ClearRowCommand),
             new PeakPickViewModel(ChromatogramsViewModel, VisiblePeakLabel, DetectPeaksCommand, AddPeaksCommand, ResetPeaksCommand, RemovePeakCommand, ExportPeaksCommand),
         ];
     }
@@ -205,6 +213,42 @@ internal sealed class CheckChromatogramsViewModel : ViewModelBase, IDialogProper
 
     public ReactiveCommand ApplyCommand { get; }
     public ReactiveCommand ClearCommand { get; }
+    public ReactiveCommand<PeakFeatureSearchValueViewModel> ClearRowCommand { get; }
+
+    // Clears the text of the row, so a value that could not be parsed is cleared too. It takes effect on Apply, like any other edit.
+    internal static void ClearEicQuery(PeakFeatureSearchValueViewModel? value) {
+        if (value is null) {
+            return;
+        }
+        foreach (var property in new[] { nameof(value.Title), nameof(value.Mass), nameof(value.MassTolerance) }) {
+            ClearEicQueryValue(value, property);
+        }
+    }
+
+    // Clears one value of the row (Delete on a selected cell), back to what an empty row has.
+    internal static void ClearEicQueryValue(PeakFeatureSearchValueViewModel value, string property) {
+        SetEicQueryValue(value, property, property switch
+        {
+            nameof(value.Mass) => "0",
+            nameof(value.MassTolerance) => CheckChromatogramsModel.DefaultEicMassTolerance.ToString(CultureInfo.InvariantCulture),
+            _ => string.Empty,
+        });
+    }
+
+    // Sets the text of one value of the row (a pasted value). A value that is not a number shows as an error in its cell until it is fixed.
+    internal static void SetEicQueryValue(PeakFeatureSearchValueViewModel value, string property, string text) {
+        switch (property) {
+            case nameof(value.Title):
+                value.Title.Value = text;
+                break;
+            case nameof(value.Mass):
+                value.Mass.Value = text;
+                break;
+            case nameof(value.MassTolerance):
+                value.MassTolerance.Value = text;
+                break;
+        }
+    }
 
     private void Apply() {
         foreach (var value in DiplayEicSettingValues) {
@@ -259,7 +303,8 @@ internal sealed class EicSettingViewModel(
     ReactivePropertySlim<bool> insertHighestEic,
     ReactivePropertySlim<bool> insertMS2Tic,
     ReactiveCommand applyCommand,
-    ReactiveCommand clearCommand) : BindableBase
+    ReactiveCommand clearCommand,
+    ReactiveCommand<PeakFeatureSearchValueViewModel> clearRowCommand) : BindableBase
 {
     public string Title { get; } = "Setting";
     public ReadOnlyReactiveCollection<PeakFeatureSearchValueViewModel> DiplayEicSettingValues { get; } = diplayEicSettingValues;
@@ -269,6 +314,8 @@ internal sealed class EicSettingViewModel(
     public ReactivePropertySlim<bool> InsertMS2Tic { get; } = insertMS2Tic;
     public ReactiveCommand ApplyCommand { get; } = applyCommand;
     public ReactiveCommand ClearCommand { get; } = clearCommand;
+    public ReactiveCommand<PeakFeatureSearchValueViewModel> ClearRowCommand { get; } = clearRowCommand;
+    public EicTableHistory History { get; } = new EicTableHistory(diplayEicSettingValues);
 }
 
 internal sealed class PeakPickViewModel(

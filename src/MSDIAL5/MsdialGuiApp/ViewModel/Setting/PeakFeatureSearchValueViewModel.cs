@@ -5,6 +5,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -27,43 +28,43 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             Mass = searchValueModel.ToReactivePropertyAsSynchronized(
                 m => m.Mass,
-                op => op.Select(m => m.ToString()),
-                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p)),
+                op => op.Select(m => m.ToString(CultureInfo.InvariantCulture)),
+                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p, CultureInfo.InvariantCulture)),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => Mass)
                 .AddTo(Disposables);
             MassTolerance = searchValueModel.ToReactivePropertyAsSynchronized(
                 m => m.MassTolerance,
-                op => op.Select(m => m.ToString()),
-                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p)),
+                op => op.Select(m => m.ToString(CultureInfo.InvariantCulture)),
+                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p, CultureInfo.InvariantCulture)),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => MassTolerance)
                 .AddTo(Disposables);
             Time = searchValueModel.ToReactivePropertyAsSynchronized(
                 m => m.TimeMin,
-                op => op.Select(m => m.ToString()),
-                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p)),
+                op => op.Select(m => m.ToString(CultureInfo.InvariantCulture)),
+                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p, CultureInfo.InvariantCulture)),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => Time)
                 .AddTo(Disposables);
             TimeTolerance = searchValueModel.ToReactivePropertyAsSynchronized(
                 m => m.TimeMax,
-                op => op.Select(m => m.ToString()),
-                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p)),
+                op => op.Select(m => m.ToString(CultureInfo.InvariantCulture)),
+                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p, CultureInfo.InvariantCulture)),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => TimeTolerance)
                 .AddTo(Disposables);
             AbsoluteIntensityCutoff = searchValueModel.ToReactivePropertyAsSynchronized(
                 m => m.AbsoluteIntensityCutoff,
-                op => op.Select(m => m.ToString()),
-                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p)),
+                op => op.Select(m => m.ToString(CultureInfo.InvariantCulture)),
+                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p, CultureInfo.InvariantCulture)),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => AbsoluteIntensityCutoff)
                 .AddTo(Disposables);
             RelativeIntensityCutoff = searchValueModel.ToReactivePropertyAsSynchronized(
                 m => m.RelativeIntensityCutoff,
-                op => op.Select(m => m.ToString()),
-                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p)),
+                op => op.Select(m => m.ToString(CultureInfo.InvariantCulture)),
+                op => CommitAsObservable.WithLatestFrom(op, (_, p) => double.Parse(p, CultureInfo.InvariantCulture)),
                 ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => RelativeIntensityCutoff)
                 .AddTo(Disposables);
