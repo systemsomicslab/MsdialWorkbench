@@ -291,7 +291,18 @@
                                 </Grid>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type vm:EicSettingViewModel}">
+                                <!--
+                                    Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z) undo and redo the changes to the table, also after the Clear button took the focus.
+                                    While a cell is being edited, its TextBox undoes the typing instead.
+                                -->
                                 <Grid>
+                                    <Grid.CommandBindings>
+                                        <CommandBinding Command="Undo" CanExecute="EicTable_CanUndo" Executed="EicTable_Undo"/>
+                                        <CommandBinding Command="Redo" CanExecute="EicTable_CanRedo" Executed="EicTable_Redo"/>
+                                    </Grid.CommandBindings>
+                                    <Grid.InputBindings>
+                                        <KeyBinding Command="Redo" Gesture="Ctrl+Shift+Z"/>
+                                    </Grid.InputBindings>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" MaxHeight="80"/>
                                         <RowDefinition/>
@@ -321,6 +332,8 @@
                                         Each cell shows its value in a TextBox that only displays it, so a click selects the cell and a drag selects a range.
                                         Editing (typing, F2 or a double click) swaps in the editing TextBox, and EicDataGrid_PreparingCellForEdit keeps the first typed character.
                                         Delete clears the selected cells (EicDataGrid_PreviewKeyDown).
+                                        Ctrl+C copies the selected cells with EicDataGrid_Copy, which keeps trying while another program holds the clipboard and says so if it cannot copy.
+                                        A cell edit is one undo step: EicDataGrid_PreparingCellForEdit starts it and EicDataGrid_CellEditEnding ends it.
                                         The cell and clipboard bindings name a binding group that does not exist, so they stay out of the row's own binding group.
                                         In that group an error stays on the row after the value is fixed, and DataGridPasteCommand then rejects every later paste into the row.
                                         Out of it, a pasted value that is not a number is shown as an error in its cell, and Apply stays disabled until it is fixed.
@@ -329,6 +342,7 @@
                                               ItemsSource="{Binding Path=DiplayEicSettingValues, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
                                               behavior:DataGridPasteBehavior.Enable="True"
                                               PreparingCellForEdit="EicDataGrid_PreparingCellForEdit"
+                                              CellEditEnding="EicDataGrid_CellEditEnding"
                                               PreviewKeyDown="EicDataGrid_PreviewKeyDown"
                                               ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                                               VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
@@ -336,7 +350,11 @@
                                               AllowDrop="True"
                                               Margin="4"
                                               Grid.Row="1">
-                                      
+
+                                        <DataGrid.CommandBindings>
+                                            <CommandBinding Command="Copy" CanExecute="EicDataGrid_CanCopy" Executed="EicDataGrid_Copy"/>
+                                        </DataGrid.CommandBindings>
+
                                         <DataGrid.ColumnHeaderStyle>
                                             <Style TargetType="DataGridColumnHeader">
                                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -425,6 +443,13 @@
 
                                         </DataGrid.Columns>
                                     </DataGrid>
+
+                                    <!-- The keys for undo and redo, which nothing else on the tab shows. -->
+                                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0" Grid.Row="2"
+                                                TextElement.Foreground="Gray" TextElement.FontSize="11">
+                                        <TextBlock Text="Ctrl+Z: Undo"/>
+                                        <TextBlock Text="Ctrl+Y: Redo"/>
+                                    </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
                                         <StackPanel.Resources>

@@ -305,6 +305,7 @@ internal sealed class EicSettingViewModel(
     public ReactiveCommand ApplyCommand { get; } = applyCommand;
     public ReactiveCommand ClearCommand { get; } = clearCommand;
     public ReactiveCommand<PeakFeatureSearchValueViewModel> ClearRowCommand { get; } = clearRowCommand;
+    public EicTableHistory History { get; } = new EicTableHistory(diplayEicSettingValues);
 }
 
 internal sealed class PeakPickViewModel(
